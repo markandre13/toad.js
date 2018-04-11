@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Introduction to toad.js</title>
+    <meta name="description" content="An introduction to the TOAD JavaScript/TypeScript GUI Library (toad.js).">
+    <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>"/>
+    <script type="application/javascript" src="../polyfill/webcomponents-hi-sd-ce.js"></script>
+    <script src="../js/toad.min.js"></script>
+    <style>
+      :root {
+        --toad-font-family: "Trebuchet MS", Futura, Helvetica Neue, Helvetica, Arial, sans-serif;
+        --toad-font-size: 12px;
+        --toad-outline-color: #9eccfb;
+        --toad-selection-color: #0069d4;
+      }
+      body {
+        font-family: var(--toad-font-family);
+        font-size: var(--toad-font-size);
+      }
+    </style>
+  </head>
+  <body>
+    <p style="text-align: center">
+      <img src="toad.gif" alt="TOAD" /><br />
+      JavaScript/TypeScript Edition
+    </p>
+    
+    <p>
+      toad.js brings some of the ideas from the TOAD C++ GUI library to the web.
+    </p>
+    
+    <ul>
+      <li>intended for the development of
+          <a href="https://en.wikipedia.org/wiki/Progressive_Web_Apps">Progressive
+          Web Apps</a>
+      <li>keep your HTML free of code
+      <li>effortless bind HTML to your code
+    </ul>
+    
+    <p>
+      toad.js makes use of new web technologes like Custom Elements, Shadow
+      DOM and templates.  When you have a browser like Safari, Chrome or
+      Opera, you should be able to checkout some of toad.js' controls:
+    </p>
+
+
+    <h3>&lt;toad-text&gt;</h3>
+    <toad-text model="hello"></toad-text>
+    <toad-text model="hello"></toad-text>
+    <script>
+      let textModel = new toad.TextModel("")
+      toad.bind("hello", textModel)
+    </script>
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-text model="hello"&gt;&lt;/toad-text&gt;
+      &lt;toad-text model="hello"&gt;&lt;/toad-text&gt;</pre>
+    <h4>JavaScript</h4>
+    <pre>
+      let textModel = new toad.TextModel("")
+      toad.bind("hello", textModel)</pre>
+
+    <h3>&lt;toad-button&gt;</h3>
+    <toad-button action="hitMe">Hit me!</toad-button>
+    <toad-button action="hitMeMore" model="hello">I get my text from the
+    model registered as 'hello'</toad-button>
+    <script>
+      toad.action("hitMe", () => {
+          textModel.value = "Hit me too!"
+          hitMeMore.enabled = true
+      })
+      var hitMeMore = toad.action("hitMeMore", () => {
+          textModel.value = "You hit me!"
+          hitMeMore.enabled = false
+      })
+    </script>
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-button action="hitMe"&gt;Hit me!&lt;/toad-button&gt;
+      &lt;toad-button action="hitMeMore" model="hello"&gt;I get my text from the model registered as 'hello'&lt;/toad-button&gt;</pre>
+    <h4>JavaScript</h4>
+    <pre>
+      toad.action("hitMe", () =&gt; {
+          textModel.value = "Hit me too!"
+          hitMeMore.enabled = true
+      })
+      var hitMeMore = toad.action("hitMeMore", () =&gt; {
+          textModel.value = "You hit me!"
+          hitMeMore.enabled = false
+      })</pre>
+    
+    <h3>&lt;toad-checkbox&gt; and &lt;toad-if&gt;</h3>
+    The answer to life, the universe and everything?
+    <toad-checkbox model="onoff"></toad-checkbox>
+    <toad-if model="onoff">
+      <p>What is 6 &times; 7?</p>
+    </toad-if>
+    <script>
+      let onoff = new toad.BooleanModel(false)
+      toad.bind("onoff", onoff)
+    </script>
+    <h4>HTML</h4>
+    <pre>
+      The answer to life, the universe and everything?
+      &lt;toad-checkbox model="onoff">&lt;/toad-checkbox&gt;
+      &lt;toad-if model="onoff"&gt;
+        &lt;p>What is 6 &amp;times; 7?&lt;/p&gt;
+      &lt;/toad-if&gt;</pre>
+    <h4>JavaScript</h4>
+    <pre>
+      let onoff = new toad.BooleanModel(false)
+      toad.bind("onoff", onoff)</pre>
+    
+    <h3>&lt;toad-slider&gt;</h3>
+    <toad-text model="size"></toad-text>
+    <toad-slider model="size"></toad-slider>
+    <script>
+      let size = new toad.NumberModel(42, {min: 0, max: 99})
+      toad.bind("size", size)
+    </script>
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-text model="size"&gt;&lt;/toad-text&gt;
+      &lt;toad-slider model="size"&gt;&lt;/toad-slider&gt;</pre>
+    <h4>JavaScipt</h4>
+    <pre>
+      let size = new toad.NumberModel(42, {min: 0, max: 99})
+      toad.bind("size", size)</pre>
+    
+
+    <h3>&lt;toad-table&gt;</h3>
+    <toad-table model="books"></toad-table>
+    <script>
+    let bookData = [
+      [ "The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966 ],
+      [ "Stranger In A Strange Land", "Robert A. Heinlein", 1961 ],
+      [ "The Fountains of Paradise", "Arthur C. Clarke", 1979],
+      [ "Rendezvous with Rama", "Arthur C. Clarke", 1973 ],
+      [ "2001: A Space Odyssey", "Arthur C. Clarke", 1968 ],
+      [ "Do Androids Dream of Electric Sheep?", "Philip K. Dick", 1968],
+      [ "A Scanner Darkly", "Philip K. Dick", 1977],
+      [ "Second Variety", "Philip K. Dick", 1953]
+    ]
+    let bookModel = toad.createTableModel(bookData)
+    toad.bind("books", bookModel)
+    </script>
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-table model="books"&gt;&lt;/toad-table&gt;</pre>
+    <h4>JavaScript</h4>
+    <pre>
+      let bookData = [
+        [ "The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966 ],
+        [ "Stranger In A Strange Land", "Robert A. Heinlein", 1961 ],
+        [ "The Fountains of Paradise", "Arthur C. Clarke", 1979],
+        [ "Rendezvous with Rama", "Arthur C. Clarke", 1973 ],
+        [ "2001: A Space Odyssey", "Arthur C. Clarke", 1968 ],
+        [ "Do Androids Dream of Electric Sheep?", "Philip K. Dick", 1968],
+        [ "A Scanner Darkly", "Philip K. Dick", 1977],
+        [ "Second Variety", "Philip K. Dick", 1953]
+      ]
+      let bookModel = toad.createTableModel(bookData, ["Title", "Author", "Year"])
+      toad.bind("books", bookModel)
+    </pre>
+
+    <h3>&lt;toad-menu&gt;</h3>
+    <toad-menu>
+      <toad-menuentry name="file" label="File">
+        <toad-menuentry name="new" label="New">
+          <toad-menuentry name="empty" label="Empty"></toad-menuentry>
+          <toad-menuentry name="template" label="From Template"></toad-menuentry>
+          <toad-menuentry name="upload" label="Upload"></toad-menuentry>
+        </toad-menuentry>
+        <toad-menuentry name="open" label="Open"></toad-menuentry>
+        <toad-menuentry name="close" label="Close"></toad-menuentry>
+        <toad-menuentry name="logout" label="Logout"></toad-menuentry>
+      </toad-menuentry>
+      <toad-menuentry name="edit" label="Edit">
+        <toad-menuentry name="cut" label="Cut" shortcut="Ctrl+X"></toad-menuentry>
+        <toad-menuentry name="copy" label="Copy" shortcut="Ctrl+C"></toad-menuentry>
+        <toad-menuentry name="paste" label="Paste" shortcut="Ctrl+V"></toad-menuentry>
+      </toad-menuentry>
+      <toad-menuspacer></toad-menuspacer>
+      <toad-menuentry name="help" label="Help"></toad-menuentry>
+      <toad-menuentry name="settings" label="Settings">
+        <toad-menuentry name="account" label="Account"></toad-menuentry>
+        <toad-menuentry name="system" label="System"></toad-menuentry>
+      </toad-menuentry>
+    </toad-menu>
+    <script>
+    toad.action("file|logout", () => {
+      alert("You are about to logout")
+    })
+    toad.action("help", () => {
+      alert("Please.")
+    })
+    </script>
+
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-menu&gt;
+        &lt;toad-menuentry name="file" label="File"&gt;
+          &lt;toad-menuentry name="new" label="New"&gt;
+            &lt;toad-menuentry name="empty" label="Empty"&gt;&lt;/toad-menuentry&gt;
+            &lt;toad-menuentry name="template" label="From Template"&gt;&lt;/toad-menuentry&gt;
+            &lt;toad-menuentry name="upload" label="Upload"&gt;&lt;/toad-menuentry&gt;
+          &lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="open" label="Open"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="close" label="Close"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="logout" label="Logout"&gt;&lt;/toad-menuentry&gt;
+        &lt;/toad-menuentry&gt;
+        &lt;toad-menuentry name="edit" label="Edit"&gt;
+          &lt;toad-menuentry name="cut" label="Cut" shortcut="Ctrl+X"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="copy" label="Copy" shortcut="Ctrl+C"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="paste" label="Paste" shortcut="Ctrl+V"&gt;&lt;/toad-menuentry&gt;
+        &lt;/toad-menuentry&gt;
+        &lt;toad-menuspacer&gt;&lt;/toad-menuspacer&gt;
+        &lt;toad-menuentry name="help" label="Help"&gt;&lt;/toad-menuentry&gt;
+        &lt;toad-menuentry name="settings" label="Settings"&gt;
+          &lt;toad-menuentry name="account" label="Account"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="system" label="System"&gt;&lt;/toad-menuentry&gt;
+        &lt;/toad-menuentry&gt;
+      &lt;/toad-menu&gt;</pre>
+    <h4>JavaScript</h4>
+    <pre>
+    toad.action("file|logout", () =&gt; {
+      alert("You are about to logout")
+    })
+    toad.action("help", () =&gt; {
+      alert("Please.")
+    })</pre>
+  </body>
+</html>

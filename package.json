@@ -1,6 +1,6 @@
 {
   "name": "toad.js",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "The TOAD JavaScript/TypeScript GUI Library",
   "author": "Mark-André Hopf <mhopf@mark13.org>",
   "license": "GPL-3.0",
@@ -12,9 +12,27 @@
   },
   "scripts": {
     "build": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/.bin/karma start",
+    "ui-test": "./node_modules/.bin/mocha ui-test/bootstrap.js -t 100000 --recursive ui-test",
+    "ui-test-httpd": "./node_modules/.bin/http-server"
   },
   "devDependencies": {
-    "typescript": "^2.8.1"
+    "@types/chai": "^4.1.2",
+    "@types/mocha": "^5.0.0",
+    "chai": "^4.1.2",
+    "http-server": "^0.11.1",
+    "karma": "^2.0.0",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.5",
+    "karma-source-map-support": "^1.2.0",
+    "karma-typescript": "^3.0.12",
+    "mocha": "^5.0.5",
+    "puppeteer": "^1.2.0",
+    "ts-loader": "^4.2.0",
+    "typescript": "^2.8.1",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
   }
 }
