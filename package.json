@@ -1,9 +1,11 @@
 {
   "name": "toad.js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "The TOAD JavaScript/TypeScript GUI Library",
-  "main": "index.js",
-  "types": "index.d.ts",
+  "author": "Mark-André Hopf <mhopf@mark13.org>",
+  "license": "GPL-3.0",
+  "main": "lib/toad.js",
+  "types": "lib/toad.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/markandre13/toad.js.git"
@@ -12,8 +14,6 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Mark-André Hopf",
-  "license": "GPL-3.0",
   "devDependencies": {
     "typescript": "^2.8.1"
   }

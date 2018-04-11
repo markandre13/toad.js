@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "commonjs",
+    "target": "es5",
+    "module": "es6",
     "declaration": true,
-    "outDir": ".",
+    "outDir": "lib",
     "strict": true,
-    "noImplicitAny": true,
     "allowJs": false,
+    "noImplicitAny": true,
     "sourceMap": true
   },
   "exclude": [
