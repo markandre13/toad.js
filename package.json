@@ -1,9 +1,9 @@
 {
   "name": "toad.js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "The TOAD JavaScript/TypeScript GUI Library",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/markandre13/toad.js.git"

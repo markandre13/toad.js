@@ -1,9 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2015",
     "module": "commonjs",
     "declaration": true,
-    "outDir": "./dist",
-    "strict": true
-  }
+    "outDir": ".",
+    "strict": true,
+    "noImplicitAny": true,
+    "allowJs": false,
+    "sourceMap": true
+  },
+  "exclude": [
+    "node_modules"
+  ]
 }
