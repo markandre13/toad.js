@@ -40,7 +40,7 @@ export { Controller, Template, bind, action, unbind, globalController, boolean,
 // <toad-if> requires correct HTML otherwise <toad-if> and it's content might
 // be separated by stuff like an </p> inserted automatically by the browser
 // so one should use stuff like htmltidy or htmlhint
-class MVCIf extends GenericView<BooleanModel> {
+class ToadIf extends GenericView<BooleanModel> {
   updateModel() {
   }
 
@@ -50,7 +50,7 @@ class MVCIf extends GenericView<BooleanModel> {
     }
   }
 }
-customElements.define('toad-if', MVCIf)
+customElements.define('toad-if', ToadIf)
 
 /*
  * OLD STUFF I MIGHT WANT TO GET RID OF
