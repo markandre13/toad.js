@@ -54,22 +54,21 @@ export function remove(n: Node): void {
 export function erase(n: Element): void { while(n.firstChild) n.removeChild(n.firstChild); }
 
 export function grabMouse(event: MouseEvent) {
-/*
   let target = event.target as HTMLElement
 //  console.log(event)
     
-  let documentMouseMove = function(event: MouseEvent) {
+  let documentMouseMove = (event: MouseEvent) => {
 //  console.log("document.moveMove", target)
-//  target.dispatchEvent(new MouseEvent("mousemove", {}))
+    target.dispatchEvent(new MouseEvent("mousemove", event))
     // srcElement, target, toElement, offsetX, offsetY, ...?
-    target.onmousemove(event)
+//    target.onmousemove(event)
     event.stopPropagation()
   }
 
-  let documentMouseUp = function(event: MouseEvent) {
+  let documentMouseUp = (event: MouseEvent) => {
 //  console.log("document.mouseUp", target)
-//  target.dispatchEvent(new MouseEvent("mouseup", {}))
-    target.onmouseup(event)
+    target.dispatchEvent(new MouseEvent("mouseup", event))
+//    target.onmouseup(event)
     document.removeEventListener("mousemove", documentMouseMove, {capture: true})
     document.removeEventListener("mouseup", documentMouseUp, {capture: true})
     document.body.style.pointerEvents = "auto"
@@ -81,7 +80,6 @@ export function grabMouse(event: MouseEvent) {
   document.body.style.pointerEvents = "none"
   event.preventDefault()
   event.stopPropagation()
-*/
 }
 
 export function attribute(element: Element, name: string): string {
