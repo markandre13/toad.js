@@ -25,7 +25,7 @@ let buttonStyle = document.createElement("style")
 buttonStyle.textContent=`
   button {
     border: none;
-    background-color: #0052cc;
+    background-color: var(--toad-primary-color, #0052cc);
     color: #ffffff;
     border-radius: 3px;
     font-size: 14px;
@@ -53,6 +53,8 @@ buttonStyle.textContent=`
 
 export class ButtonView extends ActionView {
   button: HTMLButtonElement
+  _observer?: MutationObserver
+  _timer?: number
 
   constructor() {
     super()
@@ -70,7 +72,28 @@ export class ButtonView extends ActionView {
     this.shadowRoot.appendChild(document.importNode(buttonStyle, true))
     this.shadowRoot.appendChild(this.button)
   }
-  
+
+  connectedCallback() {
+    super.connectedCallback()
+    if (this.children.length===0) {
+      // Chrome, Opera invoke connectedCallback() before the children are conected
+      this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
+        if (this._timer !== undefined)
+          clearTimeout(this._timer)
+        this._timer = setTimeout( () => {
+          this._timer = undefined
+          this.updateView()
+        }, 100)
+      })
+      this._observer.observe(this, {
+        childList: true,
+        subtree: true,
+        characterData: true
+      })
+    }
+  }
+
+
   updateModel() {
   }
 

@@ -25,6 +25,7 @@ export abstract class View extends HTMLElement {
   controller?: Controller
 
   abstract setModel(model?: Model): void
+
   getModelId(): string {
     if (!this.hasAttribute("model")) 
       throw Error("no 'model' attribute")
@@ -32,6 +33,15 @@ export abstract class View extends HTMLElement {
     if (!modelId)
       throw Error("no model id")
     return "M:"+modelId
+  }
+
+  getActionId(): string {
+    if (!this.hasAttribute("action")) 
+      throw Error("no 'action' attribute")
+    let actionId = this.getAttribute("action") // FIXME: both hasAttribute & getAttribute? really?
+    if (!actionId)
+      throw Error("no action id")
+    return "A:"+actionId
   }
 
 }
@@ -88,8 +98,10 @@ export abstract class ActionView extends GenericView<TextModel> {
   }
 
   connectedCallback() {
-    if (this.controller)
+    if (this.controller) {
+      this.updateView()
       return
+    }
 
     try {
       globalController.registerView(this.getActionId(), this) // FIXME: don't register always on globalController
@@ -112,15 +124,6 @@ export abstract class ActionView extends GenericView<TextModel> {
       this.controller.unregisterView(this)
   }
   
-  getActionId(): string {
-    if (!this.hasAttribute("action")) 
-      throw Error("no 'action' attribute")
-    let actionId = this.getAttribute("action") // FIXME: both hasAttribute & getAttribute? really?
-    if (!actionId)
-      throw Error("no action id")
-    return "A:"+actionId
-  }
-
   setModel(model?: Model): void {
     if (!model) {
       if (this.model)

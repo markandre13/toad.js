@@ -164,6 +164,8 @@ export class Menu extends MenuHelper
 {
   root: Node
   view?: HTMLElement
+  _observer?: MutationObserver
+  _timer?: number
   
   constructor() {
     super()
@@ -172,9 +174,28 @@ export class Menu extends MenuHelper
   }
 
   connectedCallback() {
-    this.layout2nodes(this.children, this.root)
-    this.referenceActions()
-    this.createShadowDOM()
+    if (this.children.length===0) {
+      // Chrome, Opera invoke connectedCallback() before the children are conected
+      this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
+        if (this._timer !== undefined)
+          clearTimeout(this._timer)
+        this._timer = setTimeout( () => {
+          this._timer = undefined
+          this.layout2nodes(this.children, this.root)
+          this.referenceActions()
+          this.createShadowDOM()
+        }, 100)
+      })
+      this._observer.observe(this, {
+        childList: true,
+        subtree: true
+      })
+    } else {
+      // Safari invokes connectedCallback() after the children are connected
+      this.layout2nodes(this.children, this.root)
+      this.referenceActions()
+      this.createShadowDOM()
+    }
 /*    
     globalController.sigChanged.add(() => {
       if (globalController.reasonType==="action-add") {

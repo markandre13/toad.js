@@ -1,4 +1,4 @@
-describe("uilibrary", function() {
+describe("toad", function() {
     describe("<toad-table>, TableModel and SelectionModel", function() {
     
         let html = `<!doctype html>

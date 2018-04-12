@@ -168,7 +168,11 @@ export class Template extends Controller {
       let view = element as View
       if (!view)
         continue
-      this.registerView(view.getModelId(), view)
+      try {
+        this.registerView(view.getModelId(), view)
+      }
+      catch(e) {
+      }
     }
     
     views = this.root.querySelectorAll("[action]")
@@ -179,7 +183,11 @@ export class Template extends Controller {
       if (!view)
         continue
 //      view.controller = this
-      this.registerView(view.getModelId(), view)
+      try {
+        this.registerView(view.getActionId(), view)
+      }
+      catch(e) {
+      }
     }
     
   }
@@ -197,4 +205,12 @@ export function action(actionId: string, action: () => void): Action { // FIXME:
 
 export function unbind() {
   globalController.clear()
+}
+
+export function text(modelId: string, value: string): TextModel {
+  return globalController.text(modelId, value)
+}
+
+export function boolean(modelId: string, value: boolean): BooleanModel {
+  return globalController.boolean(modelId, value)
 }

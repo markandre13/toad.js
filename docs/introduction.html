@@ -19,8 +19,48 @@
         font-size: var(--toad-font-size);
       }
     </style>
+
+    <template id="my-code-button">
+      <style>
+        toad-button {
+          --toad-primary-color: #800;
+        }
+      </style>
+      <p>
+        <toad-button action="action" model="label"></toad-button>
+      </p>
+    </template>
+    
+    <script>
+      class MyCodeButton extends HTMLElement {
+        constructor() {
+          super()
+          this.condition = new toad.BooleanModel(false)
+          let template = new toad.Template("my-code-button") // FIXME: how about inlining the HTML?
+          let label = template.text("label", "Show Code")
+          template.action("action", () => {
+            if (this.condition.value) {
+              this.condition.value = false
+              label.value = "Show Code"
+            } else {
+              this.condition.value = true
+              label.value = "Hide Code"
+            }
+          })
+          this.attachShadow({mode: 'open'})
+          this.shadowRoot.appendChild(template.root)
+        }
+        connectedCallback() {
+          toad.bind(this.getAttribute("condition"), this.condition) // FIXME: bind to parents context
+        }
+      }
+      window.customElements.define("my-code-button", MyCodeButton)
+    </script>
+
   </head>
+
   <body>
+
     <p style="text-align: center">
       <img src="toad.gif" alt="TOAD" /><br />
       JavaScript/TypeScript Edition
@@ -53,30 +93,7 @@
       toad.bind("hello", textModel)
     </script>
 
-    <!-- FIXME: need a nice way to compose a custom element with the
-     ---    following so that it can be used like this:
-     ---    
-     --- <my-code-button name="text-condition"</my-code-button>
-     --->
-    <p>
-      <toad-button action="text-action" model="text-label">Show Code</toad-button>
-      <script>
-        {
-          let condition = toad.boolean("text-condition", false)
-          let label = toad.text("text-label", "Show Code")
-          toad.action("text-action", () => {
-            if (condition.value) {
-              condition.value = false
-              label.value = "Show Code"
-            } else {
-              condition.value = true
-              label.value = "Hide Code"
-            }
-          })
-        }
-      </script>
-    </p>
-
+    <my-code-button condition="text-condition"></my-code-button>
     <toad-if model="text-condition">
     <h4>HTML</h4>
     <pre>
@@ -102,6 +119,9 @@
           hitMeMore.enabled = false
       })
     </script>
+
+    <my-code-button condition="button-condition"></my-code-button>
+    <toad-if model="button-condition">
     <h4>HTML</h4>
     <pre>
       &lt;toad-button action="hitMe"&gt;Hit me!&lt;/toad-button&gt;
@@ -116,6 +136,7 @@
           textModel.value = "You hit me!"
           hitMeMore.enabled = false
       })</pre>
+    </toad-if>
     
     <h3>&lt;toad-checkbox&gt; and &lt;toad-if&gt;</h3>
     The answer to life, the universe and everything?
@@ -127,6 +148,9 @@
       let onoff = new toad.BooleanModel(false)
       toad.bind("onoff", onoff)
     </script>
+    
+    <my-code-button condition="checkbox-condition"></my-code-button>
+    <toad-if model="checkbox-condition">
     <h4>HTML</h4>
     <pre>
       The answer to life, the universe and everything?
@@ -138,6 +162,7 @@
     <pre>
       let onoff = new toad.BooleanModel(false)
       toad.bind("onoff", onoff)</pre>
+    </toad-if>
     
     <h3>&lt;toad-slider&gt;</h3>
     <toad-text model="size"></toad-text>
@@ -146,6 +171,9 @@
       let size = new toad.NumberModel(42, {min: 0, max: 99})
       toad.bind("size", size)
     </script>
+    
+    <my-code-button condition="slider-condition"></my-code-button>
+    <toad-if model="slider-condition">
     <h4>HTML</h4>
     <pre>
       &lt;toad-text model="size"&gt;&lt;/toad-text&gt;
@@ -154,7 +182,7 @@
     <pre>
       let size = new toad.NumberModel(42, {min: 0, max: 99})
       toad.bind("size", size)</pre>
-    
+    </toad-if>
 
     <h3>&lt;toad-table&gt;</h3>
     <toad-table model="books"></toad-table>
@@ -172,6 +200,9 @@
     let bookModel = toad.createTableModel(bookData)
     toad.bind("books", bookModel)
     </script>
+    
+    <my-code-button condition="table-condition"></my-code-button>
+    <toad-if model="table-condition">
     <h4>HTML</h4>
     <pre>
       &lt;toad-table model="books"&gt;&lt;/toad-table&gt;</pre>
@@ -188,10 +219,11 @@
         [ "Second Variety", "Philip K. Dick", 1953]
       ]
       let bookModel = toad.createTableModel(bookData, ["Title", "Author", "Year"])
-      toad.bind("books", bookModel)
-    </pre>
+      toad.bind("books", bookModel)</pre>
+    </toad-if>
 
     <h3>&lt;toad-menu&gt;</h3>
+    
     <toad-menu>
       <toad-menuentry name="file" label="File">
         <toad-menuentry name="new" label="New">
@@ -224,6 +256,8 @@
     })
     </script>
 
+    <my-code-button condition="menu-condition"></my-code-button>
+    <toad-if model="menu-condition">
     <h4>HTML</h4>
     <pre>
       &lt;toad-menu&gt;
@@ -257,5 +291,7 @@
     toad.action("help", () =&gt; {
       alert("Please.")
     })</pre>
+    </toad-if>
+
   </body>
 </html>
