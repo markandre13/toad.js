@@ -312,6 +312,9 @@ window.customElements.define("toad-menuspacer", MenuSpacer)
 export class PopupMenu extends MenuHelper
 {
   root: Node
+  vertical: boolean
+  parentButton: MenuButton
+  popup: HTMLElement
 
   constructor(root: Node, parent: MenuButton) {
     super()
@@ -319,28 +322,33 @@ export class PopupMenu extends MenuHelper
     this.root = root
     this.parentButton = parent
 
-    let div = document.createElement("div")
-    div.classList.add("menu-popup")
+    this.popup = document.createElement("div")
+    this.popup.classList.add("menu-popup")
 
     let node = root.down
     while(node) {
       if (node.isAvailable()) {
-        node.createWindowAt(this, div)
+        node.createWindowAt(this, this.popup)
       } else {
         node.deleteWindow()
       }
       node = node.next
     }
-    this.appendChild(div)
-
-    let button = parent as MenuButton
-    if (!button || !button.master)
-      throw Error("fuck")
+    this.appendChild(this.popup)
+    this.show()
+  }
     
-    if (!button.master.vertical)
-      placePopupVertical(parent, div)
+  
+  show() {
+    if (!this.parentButton.master!.vertical)
+      placePopupVertical(this.parentButton, this.popup)
     else
-      placePopupHorizontal(parent, div)
+      placePopupHorizontal(this.parentButton, this.popup)
+    this.style.display = ""
+  }
+  
+  hide() {
+    this.style.display = "none"
   }
 }
 window.customElements.define("toad-popupmenu", PopupMenu)
@@ -659,7 +667,7 @@ export class MenuButton extends GenericView<TextModel> {
       this.popup = new PopupMenu(this.node, this)
       this.shadowRoot.appendChild(this.popup)
     } else {
-      this.popup.style.display = ""
+      this.popup.show()
     }
   }
   
@@ -668,7 +676,7 @@ export class MenuButton extends GenericView<TextModel> {
       return
     if (this.popup.active)
       this.popup.active.deactivate()
-    this.popup.style.display = "none"
+    this.popup.hide()
   }
   
   activate(): void {
