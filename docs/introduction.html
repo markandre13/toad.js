@@ -52,6 +52,32 @@
       let textModel = new toad.TextModel("")
       toad.bind("hello", textModel)
     </script>
+
+    <!-- FIXME: need a nice way to compose a custom element with the
+     ---    following so that it can be used like this:
+     ---    
+     --- <my-code-button name="text-condition"</my-code-button>
+     --->
+    <p>
+      <toad-button action="text-action" model="text-label">Show Code</toad-button>
+      <script>
+        {
+          let condition = toad.boolean("text-condition", false)
+          let label = toad.text("text-label", "Show Code")
+          toad.action("text-action", () => {
+            if (condition.value) {
+              condition.value = false
+              label.value = "Show Code"
+            } else {
+              condition.value = true
+              label.value = "Hide Code"
+            }
+          })
+        }
+      </script>
+    </p>
+
+    <toad-if model="text-condition">
     <h4>HTML</h4>
     <pre>
       &lt;toad-text model="hello"&gt;&lt;/toad-text&gt;
@@ -60,6 +86,7 @@
     <pre>
       let textModel = new toad.TextModel("")
       toad.bind("hello", textModel)</pre>
+    </toad-if>
 
     <h3>&lt;toad-button&gt;</h3>
     <toad-button action="hitMe">Hit me!</toad-button>
