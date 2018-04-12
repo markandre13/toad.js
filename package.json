@@ -1,6 +1,6 @@
 {
   "name": "toad.js",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "The TOAD JavaScript/TypeScript GUI Library",
   "author": "Mark-André Hopf <mhopf@mark13.org>",
   "license": "GPL-3.0",
@@ -11,10 +11,10 @@
     "url": "git+https://github.com/markandre13/toad.js.git"
   },
   "scripts": {
-    "build": "tsc",
-    "test": "./node_modules/.bin/karma start",
-    "ui-test": "./node_modules/.bin/mocha ui-test/bootstrap.js -t 100000 --recursive ui-test",
-    "ui-test-httpd": "./node_modules/.bin/http-server"
+    "build-lib": "tsc",
+    "build-include": "webpack",
+    "test": "karma start",
+    "ui-test": "webpack ; mocha ui-test/bootstrap.js -t 100000 --recursive ui-test"
   },
   "devDependencies": {
     "@types/chai": "^4.1.2",

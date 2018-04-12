@@ -8,7 +8,7 @@ describe("uilibrary", function() {
     <title>Workflow</title>
     <script type="application/javascript" src="http://127.0.0.1:8080/polyfill/webcomponents-lite.min.js"></script>
     <script type="application/javascript" src="http://127.0.0.1:8080/polyfill/path-data-polyfill.js"></script>
-    <script type="application/javascript" src="http://127.0.0.1:8080/bundle.js"></script>
+    <script type="application/javascript" src="http://127.0.0.1:8080/js/toad.min.js"></script>
   </head>
   <body>
     <toad-text id="first"></toad-text>
@@ -16,7 +16,7 @@ describe("uilibrary", function() {
     <toad-text id="last"></toad-text>
     <script>
       try {
-      class MyTableModel extends workflow.TableModel {
+      class MyTableModel extends toad.TableModel {
         constructor() {
           super()
           this.data = [
@@ -34,14 +34,14 @@ describe("uilibrary", function() {
         }
         getColumnHead(column) {
           switch(column) {
-            case 0: return new workflow.TextModel("Title")
-            case 1: return new workflow.TextModel("Author")
-            case 2: return new workflow.TextModel("Year")
+            case 0: return new toad.TextModel("Title")
+            case 1: return new toad.TextModel("Author")
+            case 2: return new toad.TextModel("Year")
           }
           throw Error("fuck")
         }
         getFieldModel(col, row) {
-          let model = new workflow.TextModel(this.data[row][col])
+          let model = new toad.TextModel(this.data[row][col])
           model.modified.add( () => {
             this.data[row][col] = model.value
             this.modified.trigger()
@@ -49,7 +49,7 @@ describe("uilibrary", function() {
           return model
         }
         getFieldView(col, row) {
-          return new workflow.TextView()
+          return new toad.TextView()
         }
       }
       let dataModel = new MyTableModel()
@@ -72,18 +72,18 @@ describe("uilibrary", function() {
           }
         }
       })
-      workflow.bind("books", dataModel)
+      toad.bind("books", dataModel)
       
       let selection = document.createElement("input")
       selection.id = "selection"
       document.body.appendChild(selection)
 
-      let selectionModel = new workflow.SelectionModel()
-      selectionModel.mode = workflow.TableEditMode.EDIT_CELL
+      let selectionModel = new toad.SelectionModel()
+      selectionModel.mode = toad.TableEditMode.EDIT_CELL
       selectionModel.modified.add( () => {
         selection.value = selectionModel.col + "," + selectionModel.row
       })
-      workflow.bind("books", selectionModel)
+      toad.bind("books", selectionModel)
     } catch(e) {
       console.log("caught error", e.stack)
     }
