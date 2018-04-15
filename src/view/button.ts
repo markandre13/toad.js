@@ -67,10 +67,8 @@ export class ButtonView extends ActionView {
     this.button.disabled = true
     
     this.attachShadow({mode: 'open'})
-    if (!this.shadowRoot)
-      throw Error("fuck")
-    this.shadowRoot.appendChild(document.importNode(buttonStyle, true))
-    this.shadowRoot.appendChild(this.button)
+    this.shadowRoot!.appendChild(document.importNode(buttonStyle, true))
+    this.shadowRoot!.appendChild(this.button)
   }
 
   connectedCallback() {

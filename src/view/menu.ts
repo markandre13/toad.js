@@ -294,10 +294,8 @@ export class Menu extends MenuHelper
     }
 
     this.attachShadow({mode: 'open'})
-    if (!this.shadowRoot)
-      throw Error("fuck")
-    this.shadowRoot.appendChild(document.importNode(menuStyle, true))
-    this.shadowRoot.appendChild(this.view)
+    this.shadowRoot!.appendChild(document.importNode(menuStyle, true))
+    this.shadowRoot!.appendChild(this.view)
   }
 }
 window.customElements.define("toad-menu", Menu)
@@ -388,7 +386,7 @@ export class MenuButton extends GenericView<TextModel> {
         event.preventDefault()
         setTimeout(()=>{
           if (MenuButton.buttonDown)
-            menuButton.dispatchEvent(new MouseEvent("mouseup"))
+            menuButton.dispatchEvent(new MouseEvent("mouseup", event))
         }, 0)
       }
       document.addEventListener("mouseup", documentMouseUp, {capture: true})
@@ -436,19 +434,18 @@ export class MenuButton extends GenericView<TextModel> {
             this.master.state = MenuState.UP_N_HOLD
             
             if (MenuButton.documentMouseDown) {
-              document.removeEventListener("mousedown", MenuButton.documentMouseDown, {capture: true})
+              document.removeEventListener("mousedown", MenuButton.documentMouseDown, {capture: false})
             }
             MenuButton.documentMouseDown = function(event: MouseEvent) {
-              if (!MenuButton.documentMouseDown)
-                throw Error("fuck")
-              document.removeEventListener("mousedown", MenuButton.documentMouseDown, {capture: true})
+              if (MenuButton.documentMouseDown)
+                document.removeEventListener("mousedown", MenuButton.documentMouseDown, {capture: false})
               MenuButton.documentMouseDown = undefined
-              if ((event.target as HTMLElement).tagName!="TOAD-MENU") {
+              let tagName = (event.target as HTMLElement).tagName
+              if (tagName!=="TOAD-MENUBUTTON") {
                 menuButton.collapse()
               }
             }
-            document.addEventListener("mousedown", MenuButton.documentMouseDown, {capture: true})
-            
+            document.addEventListener("mousedown", MenuButton.documentMouseDown, {capture: false})
           }
           break
         case MenuState.DOWN_N_HOLD:
