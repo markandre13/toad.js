@@ -171,9 +171,12 @@ export class Menu extends MenuHelper
     super()
     this.vertical = false
     this.root = new Node("", "", undefined, undefined)
+    
   }
 
   connectedCallback() {
+    this.tabIndex = 0
+
     if (this.children.length===0) {
       // Chrome, Opera invoke connectedCallback() before the children are conected
       this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {

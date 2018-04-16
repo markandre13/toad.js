@@ -35,7 +35,7 @@ export { SliderView } from "./view/slider"
 export { TableView, TableModel, TableEditMode, SelectionModel, registerTableModelLocator, createTableModel } from "./view/table"
 export { TextView } from "./view/text"
 
-export { Controller, Template, bind, action, unbind, globalController, boolean, text } from "./controller"
+export { Controller, Template, Dialog, bind, action, unbind, globalController, boolean } from "./controller"
 
 // <toad-if> requires correct HTML otherwise <toad-if> and it's content might
 // be separated by stuff like an </p> inserted automatically by the browser
