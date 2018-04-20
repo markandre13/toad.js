@@ -1,1 +1,7 @@
+*~
 src/
+test/
+ui-test/
+docs/
+polyfill/
+js/
