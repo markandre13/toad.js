@@ -23,6 +23,7 @@ import { Model, GenericModel, TextModel, HtmlModel, NumberModel, BooleanModel, R
 import { GenericView } from "./view"
 import { Controller, globalController } from "./controller"
 
+export { Point, MatrixStruct, Matrix } from "./matrix"
 export { Signal } from "./signal"
 export { Action } from "./action"
 export { Model, GenericModel, TextModel, HtmlModel, NumberModel, BooleanModel, RadioStateModel } from "./model"
