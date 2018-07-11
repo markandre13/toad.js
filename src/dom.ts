@@ -38,8 +38,8 @@ export function tmpl(name: string): DocumentFragment {
 export function find(node: Element|DocumentFragment, selector: string): Element|null {
   return node.querySelector(selector);
 }
-export function tag(name: string): HTMLElement { return document.createElement(name); }
-export function txt(txt: string): Text { return document.createTextNode(txt); }
+export function tag(name: string): HTMLElement { return document.createElement(name); } // FIXME: stupid idea with TypeScript
+export function txt(txt: string): Text { return document.createTextNode(txt); } // FIXME: stupid idea with TypeScript
 export function img(src: string): HTMLImageElement {
   let img = document.createElement("img") as HTMLImageElement
   img.src = src

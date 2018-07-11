@@ -82,35 +82,48 @@ export class BooleanModel extends GenericModel<boolean> {
   }
 }
 
-export class RadioStateModel<T> extends Model {
-  private _value?: T
+export class OptionModelBase extends Model {
+    private _stringValue: string
+    
+    constructor() {
+        super()
+        this._stringValue = ""
+    }
+    
+    set stringValue(v: string) {
+        if (this._stringValue === v)
+            return
+        this._stringValue = v
+        this.modified.trigger()
+    }
+    
+    get stringValue() {
+        return this._stringValue
+    }
+    
+    isValidStringValue(stringValue: string): boolean {
+        return false
+    }
+}
 
-  constructor() {
-    super()
-  }
+export class OptionModel<T> extends OptionModelBase {
+    private _map: Map<string, T>
 
-  set value(value: T) {
-    this.setValue(value)
-  }
+    constructor() {
+        super()
+        this._map = new Map<string, T>()
+    }
 
-  get value(): T {
-    return this.getValue()
-  }
+    add(id: string, value: T) {
+        this._map.set(id, value)
+    }
 
-  hasValue(): boolean {
-    return this._value != undefined
-  }
-  
-  setValue(value: T): void { // FIXME: set value(value: T)
-    if (this._value == value)
-      return
-    this._value = value
-    this.modified.trigger()
-  }
-  
-  getValue(): T { // FIXME: get value()
-    if (this._value === undefined)
-      throw Error("fuck")
-    return this._value
-  }
+    isValidStringValue(stringValue: string): boolean {
+        return this._map.has(stringValue)
+    }
+
+    get value(): T {
+        return this._map.get(this.stringValue)!
+    }
+
 }
