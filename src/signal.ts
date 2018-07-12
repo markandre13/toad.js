@@ -26,7 +26,8 @@ export class SignalLink {
 }
 
 export class Signal {
-
+  locked?: boolean
+  triggered?: boolean
   callbacks?: Array<SignalLink>
 
   add(callback: () => void): void
@@ -51,8 +52,24 @@ export class Signal {
       return 0
     return this.callbacks.length
   }
+  
+  lock(): void {
+    this.locked = true
+  }
+  
+  unlock(): void {
+    this.locked = undefined
+    if (this.triggered) {
+      this.triggered = undefined
+      this.trigger()
+    }
+  }
 
   trigger(): void {
+    if (this.locked) {
+      this.triggered = true
+      return
+    }
     if (!this.callbacks)
       return
     for(let i=0; i<this.callbacks.length; ++i)
