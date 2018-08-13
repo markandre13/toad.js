@@ -28,7 +28,7 @@ export { Signal } from "./signal"
 export { Action } from "./action"
 export { Model, GenericModel, TextModel, HtmlModel, NumberModel, BooleanModel, OptionModel, OptionModelBase } from "./model"
 
-export { View, GenericView, SlotView } from "./view"
+export { View, GenericView, ActionView, SlotView } from "./view"
 export { ButtonView } from "./view/button"
 export { ToolButton } from "./view/toolbutton"	// FIXME: no View in name?
 export { CheckboxView } from "./view/checkbox"

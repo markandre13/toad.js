@@ -90,6 +90,7 @@ export abstract class GenericView<T extends Model> extends View {
   }
 }
 
+// FIXME: ActionView should also be a template instead of having a fixed TextModel
 export abstract class ActionView extends GenericView<TextModel> {
   action?: Action
 
