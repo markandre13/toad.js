@@ -51,9 +51,9 @@ export class Action extends Model {
     return this._enabled
   }
   
-  trigger(): void {
+  trigger(data?: any): void {
     if (!this._enabled)
       return
-    this.signal.trigger()
+    this.signal.trigger(data)
   }
 }

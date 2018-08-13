@@ -17,9 +17,9 @@
  */
 
 export class SignalLink {
-  callback: () => void
+  callback: (data?: any) => void
   id?: any
-  constructor(callback: () => void, id?: any) {
+  constructor(callback: (data?: any) => void, id?: any) {
     this.callback = callback
     this.id = id
   }
@@ -27,7 +27,7 @@ export class SignalLink {
 
 export class Signal {
   locked?: boolean
-  triggered?: boolean
+  triggered?: any
   callbacks?: Array<SignalLink>
 
   add(callback: () => void): void
@@ -60,19 +60,20 @@ export class Signal {
   unlock(): void {
     this.locked = undefined
     if (this.triggered) {
+      let data = this.triggered.data
       this.triggered = undefined
-      this.trigger()
+      this.trigger(data)
     }
   }
 
-  trigger(): void {
+  trigger(data?: any): void {
     if (this.locked) {
-      this.triggered = true
+      this.triggered = { data: data }
       return
     }
     if (!this.callbacks)
       return
     for(let i=0; i<this.callbacks.length; ++i)
-      this.callbacks[i].callback()
+      this.callbacks[i].callback(data)
   }
 }
