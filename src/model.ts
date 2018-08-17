@@ -49,9 +49,43 @@ export class GenericModel<T> extends Model {
   }
 }
 
-export class TextModel extends GenericModel<string> {
+export class TextModel extends Model {
+  _value: string|Function
+
   constructor(value: string) {
-    super(value)
+    super()
+    this._value = value
+  }
+  
+  set promise(promise: Function) {
+    this._value = promise
+    this.modified.trigger()
+  }
+  
+  get promise(): Function {
+    if (typeof this._value === "string") {
+      return () => {
+        return this._value
+      }
+    }
+    return this._value
+  }
+  
+  set value(value: string) {
+    if (this._value == value)
+      return
+    this._value = value
+    this.modified.trigger()
+  }
+  
+  get value(): string {
+    if (typeof this._value === "number") {
+      this._value = String(this._value)
+    } else
+    if (typeof this._value !== "string") {
+      this._value = this._value() as string
+    }
+    return this._value
   }
 }
 

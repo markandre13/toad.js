@@ -36,6 +36,7 @@ export { MenuButton } from "./view/menu"	// FIXME: no View in name?
 export { SliderView } from "./view/slider"
 export { TableView, TableModel, TableEditMode, SelectionModel, registerTableModelLocator, createTableModel } from "./view/table"
 export { TextView } from "./view/text"
+export { TextArea, TextTool } from "./view/textarea"
 
 export { Controller, Template, Dialog, bind, action, unbind, globalController, boolean } from "./controller"
 

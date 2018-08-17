@@ -194,5 +194,3 @@ Yf&&(window.ShadyCSS.CustomStyleInterface=Yf);/*
 */
 var Zf=window.customElements,$f=window.HTMLImports,ag=window.HTMLTemplateElement;window.WebComponents=window.WebComponents||{};if(Zf&&Zf.polyfillWrapFlushCallback){var bg,cg=function(){if(bg){ag.Ca&&ag.Ca(window.document);var a=bg;bg=null;a();return!0}},dg=$f.whenReady;Zf.polyfillWrapFlushCallback(function(a){bg=a;dg(cg)});$f.whenReady=function(a){dg(function(){cg()?$f.whenReady(a):a()})}}
 $f.whenReady(function(){requestAnimationFrame(function(){window.WebComponents.ready=!0;document.dispatchEvent(new CustomEvent("WebComponentsReady",{bubbles:!0}))})});var eg=document.createElement("style");eg.textContent="body {transition: opacity ease-in 0.2s; } \nbody[unresolved] {opacity: 0; display: block; overflow: hidden; position: relative; } \n";var fg=document.querySelector("head");fg.insertBefore(eg,fg.firstChild);}).call(this);
-
-//# sourceMappingURL=webcomponents-hi-sd-ce.js.map
