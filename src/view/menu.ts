@@ -182,7 +182,7 @@ export class Menu extends MenuHelper
       this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
         if (this._timer !== undefined)
           clearTimeout(this._timer)
-        this._timer = setTimeout( () => {
+        this._timer = window.setTimeout( () => {
           this._timer = undefined
           this.layout2nodes(this.children, this.root)
           this.referenceActions()

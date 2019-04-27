@@ -78,7 +78,7 @@ export class ButtonView extends ActionView {
       this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
         if (this._timer !== undefined)
           clearTimeout(this._timer)
-        this._timer = setTimeout( () => {
+        this._timer = window.setTimeout( () => {
           this._timer = undefined
           this.updateView()
         }, 100)

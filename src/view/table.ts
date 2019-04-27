@@ -399,7 +399,7 @@ export class TableView extends GenericView<TableModel> {
     bodyTable.onmousedown = (event: MouseEvent) => {
       if (!event.srcElement)
         return
-      if (event.srcElement.tagName !== "TD")
+      if ((event.srcElement as HTMLElement).tagName !== "TD")
         return
       event.preventDefault() // otherwise field will loose focus again
       this.goToField(event.srcElement as HTMLTableDataCellElement)

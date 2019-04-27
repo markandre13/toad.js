@@ -22,6 +22,13 @@ import { View } from "./view"
 import { Action } from "./action"
 import { Signal } from "./signal"
 
+// HTML Imports Working Draft
+declare global {
+  interface HTMLLinkElement {
+    import?: Document
+  }
+}
+
 export class Controller {
   modelId2Models: Map<string, Set<Model>>
   modelId2Views: Map<string, Set<View>>
