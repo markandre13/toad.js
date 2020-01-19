@@ -54,7 +54,7 @@ export abstract class GenericView<T extends Model> extends View {
   }
 
   abstract updateModel(): void
-  abstract updateView(): void
+  abstract updateView(data?: any): void
   
   connectedCallback() {
     if (this.controller)
@@ -83,7 +83,7 @@ export abstract class GenericView<T extends Model> extends View {
       this.model.modified.remove(view)
     
     if (model)
-      model.modified.add(() => { view.updateView() }, view)
+      model.modified.add((data?: any) => { view.updateView(data) }, view)
 
     this.model = model
     this.updateView()
