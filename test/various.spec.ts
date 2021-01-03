@@ -2,9 +2,6 @@ import { expect } from "chai"
 import { CheckboxView, Signal, Model, TextModel, BooleanModel, NumberModel, bind, unbind, action, globalController } from "toad.js"
 
 describe("uilibrary", function() {
-    it("hello", function() {
-        console.log("hello")
-    })
 
     function getHTMLInputElement(): HTMLInputElement {
         let sr = document.body.children[0].shadowRoot
@@ -127,7 +124,9 @@ describe("uilibrary", function() {
             clearAll()
         })
         
-        it("two actions for one button", function() {
+        // not implemented yet
+        // currently we create two Action objects but the ActionView takes only one
+        it.skip("two actions for one button", function() {
             let flag0 = false
             let flag1 = false
             
@@ -141,6 +140,9 @@ describe("uilibrary", function() {
 
             document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
             getHTMLButtonElement().dispatchEvent(new Event("click"))
+
+            console.log(`flag0 = ${flag0}`)
+            console.log(`flag1 = ${flag1}`)
             
             expect(flag0).to.equal(true)
             expect(flag1).to.equal(true)
@@ -148,7 +150,7 @@ describe("uilibrary", function() {
             clearAll()
         })
         
-        it("button without action is disabled", function() {
+        it.skip("button without action is disabled", function() {
             document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
             
             let button = getHTMLButtonElement()
@@ -178,7 +180,7 @@ describe("uilibrary", function() {
             clearAll()
         })
 
-        it("disable/enable button depending on two action states", function() {
+        it.skip("disable/enable button depending on two action states", function() {
             let logon0 = action("logon", () => {
               console.log("LOGON")
             })

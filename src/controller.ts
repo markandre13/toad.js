@@ -56,17 +56,19 @@ export class Controller {
   }
   
   _registerModel(modelId: string, model: Model): void {
-    let models = this.modelId2Models.get(modelId)
-    if (!models) {
-      models = new Set<Model>()
-      this.modelId2Models.set(modelId, models)
+    let modelsForModelId = this.modelId2Models.get(modelId)
+    if (!modelsForModelId) {
+      modelsForModelId = new Set<Model>()
+      this.modelId2Models.set(modelId, modelsForModelId)
     }
-    models.add(model)
+  
+    modelsForModelId.add(model)
     
-    let views = this.modelId2Views.get(modelId)
-    if (!views)
+    let viewsForModelId = this.modelId2Views.get(modelId)
+    if (!viewsForModelId)
       return
-    for(let view of views) {
+  
+    for(let view of viewsForModelId) {
       view.setModel(model)
     }
   }
@@ -78,24 +80,27 @@ export class Controller {
     }
     view.controller = this
   
-    let modelIds = this.view2ModelIds.get(view)
-    if (!modelIds) {
-      modelIds = new Set<string>()
-      this.view2ModelIds.set(view, modelIds)
+    let modelIdsForView = this.view2ModelIds.get(view)
+    if (!modelIdsForView) {
+      modelIdsForView = new Set<string>()
+      this.view2ModelIds.set(view, modelIdsForView)
     }
-    modelIds.add(modelId)
+    modelIdsForView.add(modelId)
   
-    let views = this.modelId2Views.get(modelId)
-    if (!views) {
-      views = new Set<View>()
-      this.modelId2Views.set(modelId, views)
+    let viewsForModelId = this.modelId2Views.get(modelId)
+    if (!viewsForModelId) {
+      viewsForModelId = new Set<View>()
+      this.modelId2Views.set(modelId, viewsForModelId)
     }
-    views.add(view)
+    viewsForModelId.add(view)
     
-    let models = this.modelId2Models.get(modelId)
-    if (models)
-      for(let model of models)
+    let modelsForView = this.modelId2Models.get(modelId)
+    if (!modelsForView)
+      return
+
+    for(let model of modelsForView) {
         view.setModel(model)
+    }
   }
   
   unregisterView(view: View): void {

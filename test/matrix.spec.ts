@@ -1,8 +1,8 @@
 import { expect } from 'chai'
 import { Matrix } from "../src/matrix"
 
-describe.only("Matrix", () => {
-    it.only("new matrix is identity", () => {
+describe("Matrix", () => {
+    it("new matrix is identity", () => {
         let matrix = new Matrix()
         expect(matrix.m11).to.equal(1.0)
         expect(matrix.m12).to.equal(0.0)
@@ -12,7 +12,7 @@ describe.only("Matrix", () => {
         expect(matrix.tY).to.equal(0.0)
     })
     
-    it.only("append", () => {
+    it("append", () => {
         let m0 = new Matrix()
         m0.rotate(0.2)
         
@@ -33,7 +33,7 @@ describe.only("Matrix", () => {
         expect(m0.tY).to.be.approximately ( 5.826190, 0.000001)
     })
 
-    it.only("prepend", () => {
+    it("prepend", () => {
         let m0 = new Matrix()
         m0.rotate(0.2)
         
@@ -54,7 +54,7 @@ describe.only("Matrix", () => {
         expect(m0.tY).to.be.approximately ( 5.496340, 0.000001)
     })
 
-    it.only("invert", () => {
+    it("invert", () => {
         let m0 = new Matrix()
         m0.rotate(0.2)
         
@@ -76,7 +76,7 @@ describe.only("Matrix", () => {
         expect(m0.tY).to.be.approximately (-4.304324, 0.000001)
     })
     
-    it.only("transformPoint", () => {
+    it("transformPoint", () => {
         let m0 = new Matrix()
         m0.rotate(0.2)
         
@@ -94,7 +94,7 @@ describe.only("Matrix", () => {
         expect(p.y).to.be.approximately(22.855532, 0.000001)
     })
 
-    it.only("transformArrayPoint", () => {
+    it("transformArrayPoint", () => {
         let m0 = new Matrix()
         m0.rotate(0.2)
         

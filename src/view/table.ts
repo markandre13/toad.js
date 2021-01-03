@@ -199,18 +199,12 @@ export class SelectionModel extends Model {
 
 // FIXME: API for insert, delete and move row(s)
 export abstract class TableModel extends Model {
-  cols: number
-  rows: number
   
-  constructor() {
-    super()
-    this.cols = 0
-    this.rows = 0
-  }
+  abstract get colCount(): number
+  abstract get rowCount(): number
+  isEmpty() { return this.colCount === 0 && this.rowCount === 0 } 
 
-//  set value(data: any) {}
-//  get value(): any { return undefined }
-
+  // TODO: not sure about these
   getColumnHead(column: number): TextModel | undefined { return undefined }
   abstract getFieldModel(col: number, row: number): TextModel
   getFieldView(col: number, row: number): View | undefined { return undefined }
@@ -238,9 +232,10 @@ class ArrayTableModel extends TableModel {
   constructor(data: any) {
     super()
     this.data = data
-    this.rows = this.data.length
-    this.cols = this.data[0].length
   }
+
+  get colCount(): number { return this.data[0].length }
+  get rowCount(): number { return this.data.length }
 
   getColumnHead(column: number): TextModel {
     switch(column) {
@@ -318,7 +313,7 @@ export class TableView extends GenericView<TableModel> {
           let row = this.selectionModel.value.row
           switch(event.key) {
             case "ArrowDown":
-              if (row+1<this.model!.rows)
+              if (row+1<this.model!.rowCount)
                 ++row
               break
             case "ArrowUp":
@@ -336,7 +331,7 @@ export class TableView extends GenericView<TableModel> {
           let pos = { col: this.selectionModel.col, row: this.selectionModel.row }
           switch(event.key) {
             case "ArrowRight":
-              if (pos.col+1<this.model!.cols) {
+              if (pos.col+1<this.model!.colCount) {
                 ++pos.col
               }
               break
@@ -346,7 +341,7 @@ export class TableView extends GenericView<TableModel> {
               }
               break
             case "ArrowDown":
-              if (pos.row+1<this.model!.rows)
+              if (pos.row+1<this.model!.rowCount)
                 ++pos.row
               break
             case "ArrowUp":
@@ -439,7 +434,7 @@ export class TableView extends GenericView<TableModel> {
         if (dom.order(event.relatedTarget as Node, this)) {
           this.goTo(0, 0)
         } else {
-          this.goTo(this.model.cols-1, this.model.rows-1)
+          this.goTo(this.model.colCount-1, this.model.rowCount-1)
         }
       }
     })
@@ -514,10 +509,10 @@ export class TableView extends GenericView<TableModel> {
 
     let noHeader = false
 
-    while(this.headRow.children.length>this.model.cols+1)
+    while(this.headRow.children.length>this.model.colCount+1)
       this.headRow.removeChild(this.headRow.children[this.headRow.children.length-1])
 
-    for(let i=0; i<this.model.cols; ++i) {
+    for(let i=0; i<this.model.colCount; ++i) {
       let cell
       if (i>=this.headRow.children.length) {
         cell = dom.tag("th")
@@ -539,7 +534,7 @@ export class TableView extends GenericView<TableModel> {
     }
     
     let fillerForMissingScrollbar
-    if (this.headRow.children.length<this.model.cols+1) {
+    if (this.headRow.children.length<this.model.colCount+1) {
       fillerForMissingScrollbar = dom.tag("th") as HTMLTableDataCellElement
       this.headRow.appendChild(fillerForMissingScrollbar)
     } else {
@@ -556,10 +551,10 @@ export class TableView extends GenericView<TableModel> {
     if (!this.model)
       throw Error("fuck")
       
-    while(this.bodyRow.children.length > this.model.cols)
+    while(this.bodyRow.children.length > this.model.colCount)
       this.bodyRow.removeChild(this.bodyRow.children[this.bodyRow.children.length-1])
 
-    while(this.bodyRow.children.length < this.model.cols) {
+    while(this.bodyRow.children.length < this.model.colCount) {
       let cell = dom.tag("td")
       cell.style.paddingTop = "0"
       cell.style.paddingBottom = "0"
@@ -567,10 +562,10 @@ export class TableView extends GenericView<TableModel> {
     }
 //    (this.bodyRow.children[this.bodyRow.children.length] as HTMLElement).style.width="100%"
 
-    while(this.bodyBody.children.length-1 > this.model.rows)
+    while(this.bodyBody.children.length-1 > this.model.rowCount)
       this.bodyBody.removeChild(this.bodyBody.children[this.bodyBody.children.length-1])
 
-    for(let row=0; row<this.model.rows; ++row) {
+    for(let row=0; row<this.model.rowCount; ++row) {
       let bodyRow: HTMLTableRowElement
       if (row+1 >= this.bodyBody.children.length) {
         bodyRow = dom.tag("tr") as HTMLTableRowElement
@@ -579,10 +574,10 @@ export class TableView extends GenericView<TableModel> {
         bodyRow = this.bodyBody.children[row+1] as HTMLTableRowElement
       }
 
-      while(bodyRow.children.length>this.model.cols)
+      while(bodyRow.children.length>this.model.colCount)
         bodyRow.removeChild(bodyRow.children[bodyRow.children.length-1])
 
-      for(let col=0; col<this.model.cols; ++col) {
+      for(let col=0; col<this.model.colCount; ++col) {
         let cell: HTMLTableDataCellElement
         if (col >= bodyRow.children.length) {
           cell = dom.tag("td") as HTMLTableDataCellElement
@@ -643,7 +638,7 @@ export class TableView extends GenericView<TableModel> {
   adjustInternalTables() {
     let headRow = this.headRow.children
     let bodyRow = this.bodyRow.children
-    for(let col=0; col<this.model!.cols; ++col) {
+    for(let col=0; col<this.model!.colCount; ++col) {
       let head = headRow[col] as HTMLElement
       let body = bodyRow[col] as HTMLElement
       
@@ -671,7 +666,7 @@ export class TableView extends GenericView<TableModel> {
   }
 
   toggleCellSelection(pos: TablePos, flag: boolean): void {
-    if (pos.col >= this.model!.cols || pos.row >= this.model!.rows)
+    if (pos.col >= this.model!.colCount || pos.row >= this.model!.rowCount)
       return
     let element = this.bodyBody.children[pos.row+1].children[pos.col]
     element.classList.toggle("selected", flag)
@@ -685,7 +680,7 @@ export class TableView extends GenericView<TableModel> {
   }
 
   toggleRowSelection(row: number, flag: boolean): void {
-    if (row >= this.model!.rows)
+    if (row >= this.model!.rowCount)
       return
     let rowElement = this.bodyBody.children[1+this.selectionModel!.value.row]
     rowElement.classList.toggle("selected", flag)
@@ -816,7 +811,7 @@ export class TableView extends GenericView<TableModel> {
     fieldView.onkeydown = (event: KeyboardEvent) => {
       switch(event.key) {
         case "ArrowDown":
-          if (pos.row+1 >= this.model!.rows)
+          if (pos.row+1 >= this.model!.rowCount)
             break
           event.preventDefault()
           this.goTo(pos.col, pos.row+1)
@@ -835,15 +830,15 @@ export class TableView extends GenericView<TableModel> {
             } else {
               if (pos.row>0) {
                 event.preventDefault()
-                this.goTo(this.model!.cols-1, pos.row-1)
+                this.goTo(this.model!.colCount-1, pos.row-1)
               }
             }
           } else {
-            if (pos.col+1<this.model!.cols) {
+            if (pos.col+1<this.model!.colCount) {
               event.preventDefault()
               this.goTo(pos.col+1, pos.row)
             } else {
-              if (pos.row+1<this.model!.rows) {
+              if (pos.row+1<this.model!.rowCount) {
                 event.preventDefault()
                 this.goTo(0, pos.row+1)
               }
@@ -868,11 +863,11 @@ export class TableView extends GenericView<TableModel> {
   
   positionOfField(element: HTMLElement): TablePos {
     let col:number, row:number
-    for(col=0; col<this.model!.cols; ++col) {
+    for(col=0; col<this.model!.colCount; ++col) {
       if (element.parentElement!.children[col]===element)
         break
     }
-    for(row=1; row<this.model!.rows+1; ++row) {
+    for(row=1; row<this.model!.rowCount+1; ++row) {
       if (element.parentElement!.parentElement!.children[row]===element.parentElement)
         break
     }
