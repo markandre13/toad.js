@@ -44,6 +44,7 @@ export class Controller {
   }
 
   registerAction(actionId: string, callback: () => void): Action {
+    // console.log(`registerAction("${actionId}", <callback>)`)
     let action = new Action(undefined, actionId)
     action.signal.add(callback)
     this._registerModel("A:"+actionId, action)
