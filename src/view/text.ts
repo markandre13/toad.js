@@ -74,7 +74,7 @@ export class TextView extends GenericView<TextModel> {
     this.input.blur()
   }
   
-  static get observedAttributes() {return ['value'] }
+  static get observedAttributes() { return ['value'] }
   
   attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
     switch(name) {

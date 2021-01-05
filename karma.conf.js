@@ -27,6 +27,13 @@ module.exports = (config) => {
         "sourceMap": true
       }
     },
+    // client: {
+    //   mocha: {
+    //     // timeout: 6000,
+    //     reporter: "karma",
+    //     debug: true
+    //   }
+    // },
     port: 9876,
     colors: true,
     browsers: ['ChromeHeadless'],

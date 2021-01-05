@@ -1,7 +1,7 @@
 import { expect } from "chai"
 import { CheckboxView, Signal, Model, TextModel, BooleanModel, NumberModel, bind, unbind, action, globalController } from "toad.js"
 
-describe("uilibrary", function() {
+describe("toad.js", function() {
 
     function getHTMLInputElement(): HTMLInputElement {
         let sr = document.body.children[0].shadowRoot

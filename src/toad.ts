@@ -35,7 +35,7 @@ export { CheckboxView } from "./view/checkbox"
 export { MenuButton } from "./view/menu"	// FIXME: no View in name?
 export { SliderView } from "./view/slider"
 export { TableView, TableModel, TableEditMode, SelectionModel, registerTableModelLocator, createTableModel } from "./view/table"
-export { TableEventType, TableEvent, TreeModel, TreeNodeModel as DownAndNextTreeNodeModel } from "./tree"
+export { TableEventType, TableEvent, TreeModel, TreeNodeModel, myTreeTest } from "./tree"
 export { TextView } from "./view/text"
 export { TextArea, TextTool } from "./view/textarea"
 

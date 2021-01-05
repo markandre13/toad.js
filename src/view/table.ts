@@ -234,8 +234,8 @@ class ArrayTableModel extends TableModel {
     this.data = data
   }
 
-  get colCount(): number { return this.data[0].length }
-  get rowCount(): number { return this.data.length }
+  get colCount(): number { return this.data ? this.data[0].length : 0 }
+  get rowCount(): number { return this.data ? this.data.length : 0 }
 
   getColumnHead(column: number): TextModel {
     switch(column) {
@@ -594,7 +594,10 @@ export class TableView extends GenericView<TableModel> {
           if (fieldModel instanceof HtmlModel)
             cell.innerHTML = fieldModel.value
           else
+          if (fieldModel instanceof TextModel)
             cell.innerText = fieldModel.value
+          else
+            cell.appendChild(this.model.getFieldView(col, row)!)
         }
       }
       

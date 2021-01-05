@@ -25,6 +25,7 @@
 export function instantiateTemplate(name: string): DocumentFragment {
   return tmpl(name);
 }
+
 export function tmpl(name: string): DocumentFragment {
   let t = document.querySelector('template[id="'+name+'"]');
   if (!t) {
@@ -35,9 +36,11 @@ export function tmpl(name: string): DocumentFragment {
   let y = document.importNode(z, true);
   return y;
 }
+
 export function find(node: Element|DocumentFragment, selector: string): Element|null {
   return node.querySelector(selector);
 }
+
 export function tag(name: string): HTMLElement { return document.createElement(name); } // FIXME: stupid idea with TypeScript
 export function txt(txt: string): Text { return document.createTextNode(txt); } // FIXME: stupid idea with TypeScript
 export function img(src: string): HTMLImageElement {
@@ -45,6 +48,7 @@ export function img(src: string): HTMLImageElement {
   img.src = src
   return img
 }
+
 export function add(n0: Node, n1: Node): void { n0.appendChild(n1); }
 export function remove(n: Node): void { 
   if (!n.parentNode)
@@ -96,6 +100,7 @@ export function attributeOrUndefined(element: Element, name: string): string|und
   return attribute === null ? undefined : attribute
 }
 
+// return true when first appears before second within the dom hierachy
 export function order(first: Node, second: Node): boolean {
   let parentsOfFirstNode = new Map<Node, Node>()
   let node: Node|null
