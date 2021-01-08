@@ -16,7 +16,22 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TableAdapter } from './TableAdapter'
+import { TreeModel } from './TreeModel'
+import { TreeNode } from './TreeNode'
 
-export class TypedTableAdapter<T> extends TableAdapter {
+export class TreeNodeModel<T extends TreeNode> extends TreeModel<T> {
+    root?: T
+    constructor(nodeClass: new() => T, root?: T) {
+        super(nodeClass)
+        this.root = root
+    }
+
+    createNode(): T { return new this.nodeClass() }
+    deleteNode(node: T): void { }
+    getRoot(): T | undefined { return this.root }
+    setRoot(node?: T): void { this.root = node }
+    getDown(node: T): T | undefined { return node.down as T }
+    setDown(node: T, down?: T): void { node.down = down }
+    getNext(node: T): T | undefined { return node.next as T }
+    setNext(node: T, next?: T): void { node.next = next }
 }

@@ -26,9 +26,9 @@ export abstract class TableModel extends Model {
   abstract get rowCount(): number
   isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
 
-  // TODO: not sure about these
+  // TODO: to be replaced by TableAdapter
   getColumnHead(column: number): TextModel | undefined { return undefined }
-  abstract getFieldModel(col: number, row: number): TextModel
+  getFieldModel(col: number, row: number): TextModel { throw Error("obsolete") }
   getFieldView(col: number, row: number): View | undefined { return undefined }
 }
 

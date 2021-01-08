@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TableAdapter } from './TableAdapter'
-
-export class TypedTableAdapter<T> extends TableAdapter {
+export interface TreeNode {
+    next?: TreeNode
+    down?: TreeNode
 }

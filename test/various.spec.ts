@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { CheckboxView, Signal, Model, TextModel, BooleanModel, NumberModel, bind, unbind, action, globalController } from "toad.js"
+import { Signal, TextModel, NumberModel, bind, unbind, action } from "../src/toad"
 
 describe("toad.js", function() {
 

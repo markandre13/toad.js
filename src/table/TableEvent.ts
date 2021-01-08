@@ -16,7 +16,17 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TableAdapter } from './TableAdapter'
+import { TableEventType } from './TableEventType'
 
-export class TypedTableAdapter<T> extends TableAdapter {
+// TODO: rename into TableModelEvent ???
+
+export class TableEvent {
+    type: TableEventType
+    index: number
+    size: number
+    constructor(type: TableEventType, index: number, size: number) {
+        this.type = type
+        this.index = index
+        this.size = size
+    }
 }

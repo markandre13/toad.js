@@ -31,10 +31,17 @@ export { CheckboxView } from "./view/checkbox"
 export { MenuButton } from "./view/menu"	// FIXME: no View in name?
 export { SliderView } from "./view/slider"
 
-export { TableEditMode, registerTableModelLocator, createTableModel } from "./table/table"
-export { TableEventType, TableEvent, TreeModel, TreeNodeModel, myTreeTest } from "./table/tree"
 export { TableView } from "./table/TableView"
+export { TableAdapter } from "./table/TableAdapter"
 export { TableModel } from "./table/TableModel"
+export { TableEditMode, registerTableModelLocator, createTableModel } from "./table/table"
+export { TableEventType } from "./table/TableEventType"
+export { TableEvent } from "./table/TableEvent"
+export { TreeModel } from "./table/TreeModel"
+export { TreeNode } from "./table/TreeNode"
+export { TreeNodeModel } from "./table/TreeNodeModel"
+export { myTreeTest } from "./table/tree"
+
 export { SelectionModel } from "./table/SelectionModel"
 
 export { TextView } from "./view/text"
