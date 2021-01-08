@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018, 2021 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@
  */
 
 import { TableModel } from "./TableModel"
+import { TypedTableModel } from "./TypedTableModel"
+import { TableAdapter } from "./TableAdapter"
+import { TypedTableAdapter } from "./TypedTableAdapter"
 import { ArrayTableModel } from "./ArrayTableModel"
 
 function dump(element: HTMLElement, depth?: number): void {
@@ -54,6 +57,55 @@ export class TablePos {
     this.row = row
   }
 }
+
+const nameToModel = new Map<string, TableModel>()
+const modelToAdapter = new Map<any, Map<any,any>>()
+
+export function registerTableAdapter<T, A extends TypedTableAdapter<T>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
+export function registerTableAdapter(adapter: new() => TableAdapter, model: new()=>TableModel): void
+export function registerTableAdapter(adapter: new() => TableAdapter, model: new()=>TableModel, data?: any): void
+{
+//  console.log("register ============")
+//  console.log(adapter)
+//  console.log(model)
+//  console.log(data)
+  let typeToModel = modelToAdapter.get(model)
+  if (typeToModel === undefined) {
+    typeToModel = new Map<any, any>()
+    modelToAdapter.set(model, typeToModel)
+  }
+  if (typeToModel.get(data) !== undefined) {
+    throw Error(`attempt to redefine existing table adapter`)
+  }
+  typeToModel.set(data, adapter)
+}
+
+function lookupTableAdapter(model: TableModel): TableAdapter | undefined {
+  let nodeClass: any
+  if(model instanceof TypedTableModel) {
+    nodeClass = model.nodeClass
+  } else {
+    nodeClass = undefined
+  }
+  
+  let adapter: TableAdapter | undefined
+  adapter = modelToAdapter.get(Object.getPrototypeOf(model).constructor)?.get(nodeClass)
+
+  if (adapter === undefined) {
+    for(let baseClass of modelToAdapter.keys()) {
+      if (model instanceof baseClass) {
+        adapter = modelToAdapter.get(baseClass)?.get(nodeClass)
+        break
+      }
+    }
+  }
+
+  return adapter
+}
+
+/*
+ * the following is most likely to become obsolete
+ */
 
 let tableModelLocators = new Array<(data: any) => TableModel|undefined>()
 
