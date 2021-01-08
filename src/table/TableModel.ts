@@ -22,7 +22,6 @@ import { View } from "../view"
 // FIXME: API for insert, delete and move row(s)
 
 export abstract class TableModel extends Model {
-
   abstract get colCount(): number
   abstract get rowCount(): number
   isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
@@ -32,3 +31,5 @@ export abstract class TableModel extends Model {
   abstract getFieldModel(col: number, row: number): TextModel
   getFieldView(col: number, row: number): View | undefined { return undefined }
 }
+
+
