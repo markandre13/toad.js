@@ -36,12 +36,6 @@ function dump(element: HTMLElement, depth?: number): void {
     dump(child as HTMLElement, depth+1)
 }
 
-declare global {
-  interface Element {
-    scrollIntoViewIfNeeded(center?: boolean): void
-  }
-}
-
 export enum TableEditMode {
   EDIT_CELL, // FIXME: replace with SELECT_CELL and TableModel.getFieldView will return undefined when not editable
   SELECT_CELL,

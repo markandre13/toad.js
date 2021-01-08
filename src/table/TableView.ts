@@ -23,6 +23,12 @@ import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"
 import { TableEditMode, TablePos } from "./table"
 
+declare global {
+    interface Element {
+        scrollIntoViewIfNeeded(center?: boolean): void
+    }
+}
+
 function pixelToNumber(pixel: string): number {
     if (pixel.substr(pixel.length - 2) !== "px")
         throw Error("expected 'px' suffix")
