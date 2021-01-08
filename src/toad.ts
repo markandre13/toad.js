@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018, 2021 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,12 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as dom from "./dom"
-
-import { Signal } from "./signal"
-import { Model, GenericModel, TextModel, HtmlModel, NumberModel, BooleanModel } from "./model"
+import { BooleanModel } from "./model"
 import { GenericView } from "./view"
-import { Controller, globalController } from "./controller"
 
 export { Point, MatrixStruct, Matrix } from "./matrix"
 export { Signal } from "./signal"
@@ -34,8 +30,13 @@ export { ToolButton } from "./view/toolbutton"	// FIXME: no View in name?
 export { CheckboxView } from "./view/checkbox"
 export { MenuButton } from "./view/menu"	// FIXME: no View in name?
 export { SliderView } from "./view/slider"
-export { TableView, TableModel, TableEditMode, SelectionModel, registerTableModelLocator, createTableModel } from "./view/table"
-export { TableEventType, TableEvent, TreeModel, TreeNodeModel, myTreeTest } from "./tree"
+
+export { TableEditMode, registerTableModelLocator, createTableModel } from "./table/table"
+export { TableEventType, TableEvent, TreeModel, TreeNodeModel, myTreeTest } from "./table/tree"
+export { TableView } from "./table/TableView"
+export { TableModel } from "./table/TableModel"
+export { SelectionModel } from "./table/SelectionModel"
+
 export { TextView } from "./view/text"
 export { TextArea, TextTool } from "./view/textarea"
 

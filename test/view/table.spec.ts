@@ -100,18 +100,18 @@ describe("toad.js", function() {
                 
                 expect(row.classList.contains("selected")).to.equal(false)
                 
-                let text = table.input.children[0] as TextView
+                let text = table.inputDiv.children[0] as TextView
                 expect(text.tagName).to.equal("TOAD-TEXT")
                 expect(text.value).to.equal("The Moon Is A Harsh Mistress")
                 
                 selectionModel.row = 1
                 
-                text = table.input.children[0] as TextView
+                text = table.inputDiv.children[0] as TextView
                 expect(text.tagName).to.equal("TOAD-TEXT")
                 expect(text.value).to.equal("Stranger In A Strange Land")
                 
                 selectionModel.col = 1
-                text = table.input.children[0] as TextView
+                text = table.inputDiv.children[0] as TextView
                 expect(text.tagName).to.equal("TOAD-TEXT")
                 expect(text.value).to.equal("Robert A. Heinlein")
             })
