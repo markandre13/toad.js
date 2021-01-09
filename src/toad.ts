@@ -33,7 +33,11 @@ export { SliderView } from "./view/slider"
 
 export { TableView } from "./table/TableView"
 export { TableAdapter } from "./table/TableAdapter"
+export { TypedTableAdapter } from "./table/TypedTableAdapter"
 export { TableModel } from "./table/TableModel"
+export { TypedTableModel } from "./table/TypedTableModel"
+export { SelectionModel } from "./table/SelectionModel"
+
 export { TableEditMode, registerTableModelLocator, createTableModel } from "./table/table"
 export { TableEventType } from "./table/TableEventType"
 export { TableEvent } from "./table/TableEvent"
@@ -41,8 +45,6 @@ export { TreeModel } from "./table/TreeModel"
 export { TreeNode } from "./table/TreeNode"
 export { TreeNodeModel } from "./table/TreeNodeModel"
 export { myTreeTest } from "./table/tree"
-
-export { SelectionModel } from "./table/SelectionModel"
 
 export { TextView } from "./view/text"
 export { TextArea, TextTool } from "./view/textarea"
