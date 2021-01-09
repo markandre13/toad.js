@@ -17,19 +17,10 @@
  */
 
 import { Model, TextModel } from "../model"
-import { View } from "../view"
 
-// FIXME: API for insert, delete and move row(s)
-
+// TODO: API for insert, delete and move rows and columns
 export abstract class TableModel extends Model {
   abstract get colCount(): number
   abstract get rowCount(): number
   isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
-
-  // TODO: to be replaced by TableAdapter
-  getColumnHead(column: number): TextModel | undefined { return undefined }
-  getFieldModel(col: number, row: number): TextModel { throw Error("obsolete") }
-  getFieldView(col: number, row: number): View | undefined { return undefined }
 }
-
-

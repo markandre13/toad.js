@@ -33,24 +33,24 @@ export class ArrayTableModel extends TableModel {
   get colCount(): number { return this.data ? this.data[0].length : 0 }
   get rowCount(): number { return this.data ? this.data.length : 0 }
 
-  getColumnHead(column: number): TextModel {
-    switch (column) {
-      case 0: return new TextModel("Title")
-      case 1: return new TextModel("Author")
-      case 2: return new TextModel("Year")
-    }
-    throw Error("fuck")
-  }
+  // getColumnHead(column: number): TextModel {
+  //   switch (column) {
+  //     case 0: return new TextModel("Title")
+  //     case 1: return new TextModel("Author")
+  //     case 2: return new TextModel("Year")
+  //   }
+  //   throw Error("fuck")
+  // }
 
-  getFieldModel(col: number, row: number): TextModel {
-    let model = new TextModel(this.data[row][col])
-    model.modified.add(() => {
-      this.data[row][col] = model.value
-    })
-    return model
-  }
+  // getFieldModel(col: number, row: number): TextModel {
+  //   let model = new TextModel(this.data[row][col])
+  //   model.modified.add(() => {
+  //     this.data[row][col] = model.value
+  //   })
+  //   return model
+  // }
 
-  getFieldView(col: number, row: number): View {
-    return new TextView()
-  }
+  // getFieldView(col: number, row: number): View {
+  //   return new TextView()
+  // }
 }

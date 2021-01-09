@@ -16,9 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "./model"
-import { GenericView } from "./view"
-
 export { Point, MatrixStruct, Matrix } from "./matrix"
 export { Signal } from "./signal"
 export { Action } from "./action"
@@ -30,6 +27,8 @@ export { ToolButton } from "./view/toolbutton"	// FIXME: no View in name?
 export { CheckboxView } from "./view/checkbox"
 export { MenuButton } from "./view/menu"	// FIXME: no View in name?
 export { SliderView } from "./view/slider"
+export { TextView } from "./view/text"
+export { TextArea, TextTool } from "./view/textarea"
 
 export { TableView } from "./table/TableView"
 export { TableAdapter } from "./table/TableAdapter"
@@ -37,19 +36,18 @@ export { TypedTableAdapter } from "./table/TypedTableAdapter"
 export { TableModel } from "./table/TableModel"
 export { TypedTableModel } from "./table/TypedTableModel"
 export { SelectionModel } from "./table/SelectionModel"
-
 export { TableEditMode, registerTableModelLocator, createTableModel } from "./table/table"
 export { TableEventType } from "./table/TableEventType"
 export { TableEvent } from "./table/TableEvent"
 export { TreeModel } from "./table/TreeModel"
+export { TreeAdapter } from "./table/TreeAdapter"
 export { TreeNode } from "./table/TreeNode"
 export { TreeNodeModel } from "./table/TreeNodeModel"
-export { myTreeTest } from "./table/tree"
-
-export { TextView } from "./view/text"
-export { TextArea, TextTool } from "./view/textarea"
 
 export { Controller, Template, Dialog, bind, action, unbind, globalController, boolean } from "./controller"
+
+import { BooleanModel } from "./model"
+import { GenericView } from "./view"
 
 // <toad-if> requires correct HTML otherwise <toad-if> and it's content might
 // be separated by stuff like an </p> inserted automatically by the browser

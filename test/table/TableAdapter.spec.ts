@@ -18,13 +18,13 @@ describe("toad.js", function () {
                     TableAdapter.register(FubarTableAdapter, FubarTableModel)
 
                     // works when the table model is exactly the type being registered
-                    let model0 = new FubarTableModel()
+                    const model0 = new FubarTableModel()
                     const adapter0 = TableAdapter.lookup(model0)
                     expect(adapter0).equals(FubarTableAdapter)
 
                     // works also when the table model is subclassed
                     class FoobarTableModel extends FubarTableModel { }
-                    let model1 = new FoobarTableModel()
+                    const model1 = new FoobarTableModel()
                     const adapter1 = TableAdapter.lookup(model1)
                     expect(adapter1).equals(FubarTableAdapter)
                 })
@@ -47,11 +47,11 @@ describe("toad.js", function () {
                     TableAdapter.register(Adapter1, TreeNodeModel, Node1)
 
                     // works when the table model's data type is exactly the type being registered
-                    let tree0 = new TreeNodeModel(Node0)
+                    const tree0 = new TreeNodeModel(Node0)
                     const adapter0 = TableAdapter.lookup(tree0)
                     expect(adapter0).equals(Adapter0)
 
-                    let tree1 = new TreeNodeModel(Node1)
+                    const tree1 = new TreeNodeModel(Node1)
                     const adapter1 = TableAdapter.lookup(tree1)
                     expect(adapter1).equals(Adapter1)
 

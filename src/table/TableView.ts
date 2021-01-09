@@ -22,6 +22,7 @@ import { GenericView } from "../view"
 import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"
 import { TableEditMode, TablePos } from "./table"
+import { TableAdapter } from "./TableAdapter"
 
 declare global {
     interface Element {
@@ -219,6 +220,7 @@ div .t2d tr td.selected {
 
 export class TableView extends GenericView<TableModel> {
 
+  adapter?: TableAdapter
   selectionModel?: SelectionModel
 
   rootDiv: HTMLDivElement
@@ -411,7 +413,14 @@ export class TableView extends GenericView<TableModel> {
     }
     else if (model instanceof TableModel) {
       this.model = model
-      this.updateView()
+      const adapter = TableAdapter.lookup(model)
+      if (adapter) {
+        this.adapter = new adapter()
+        this.adapter.setModel(model)
+        this.updateView()
+      } else {
+        throw Error("did not find an adapter for model of type " + model.constructor.name)
+      }
     } else {
       throw Error("unexpected model of type " + model.constructor.name)
     }
@@ -440,7 +449,9 @@ export class TableView extends GenericView<TableModel> {
 
   updateHeader() {
     if (!this.model)
-      throw Error("fuck")
+      throw Error("no model")
+    if (!this.adapter)
+      throw Error("no adapter")
 
     let noHeader = false
 
@@ -457,16 +468,17 @@ export class TableView extends GenericView<TableModel> {
         cell.style.minWidth = ""
         cell.style.border = ""
       }
-      let text = this.model.getColumnHead(i)
-      if (text === undefined) {
+      let content = this.adapter.getColumnHead(i)
+      if (content === undefined) {
         noHeader = true
         continue
       }
-      if (text instanceof HtmlModel)
-        cell.innerHTML = text.value
+      cell.appendChild(content)
+      // if (text instanceof HtmlModel)
+      //   cell.innerHTML = text.value
 
-      else
-        cell.innerText = text.value
+      // else
+      //   cell.innerText = text.value
     }
 
     let fillerForMissingScrollbar
@@ -485,7 +497,9 @@ export class TableView extends GenericView<TableModel> {
 
   updateBody() {
     if (!this.model)
-      throw Error("fuck")
+      throw Error("no model")
+    if (!this.adapter)
+      throw Error("no adapter")
 
     while (this.bodyRow.children.length > this.model.colCount)
       this.bodyRow.removeChild(this.bodyRow.children[this.bodyRow.children.length - 1])
@@ -521,20 +535,25 @@ export class TableView extends GenericView<TableModel> {
           cell = bodyRow.children[col] as HTMLTableDataCellElement
         }
         cell.style.width = ""
-        let fieldModel = this.model.getFieldModel(col, row)
-        //console.log("  updateBody. cell "+col+", "+row+" = '"+fieldModel.value+"'")
-        if (cell.innerText != fieldModel.value) {
-          //          if (cell.innerText != "")
-          //            throw Error("TableView.updateBody(): cell "+col+", "+row+" differs during update, old='" + cell.innerText + "', new='" + fieldModel.value + "'")
-          if (fieldModel instanceof HtmlModel)
-            cell.innerHTML = fieldModel.value
-
-          else if (fieldModel instanceof TextModel)
-            cell.innerText = fieldModel.value
-          else {
-            cell.appendChild(this.model.getFieldView(col, row)!)
-          }
+        const content = this.adapter.displayCell(col, row)
+        if (content) {
+          cell.appendChild(content)
         }
+
+        // let fieldModel = this.adapter.getFieldModel(col, row)
+        // //console.log("  updateBody. cell "+col+", "+row+" = '"+fieldModel.value+"'")
+        // if (cell.innerText != fieldModel.value) {
+        //   //          if (cell.innerText != "")
+        //   //            throw Error("TableView.updateBody(): cell "+col+", "+row+" differs during update, old='" + cell.innerText + "', new='" + fieldModel.value + "'")
+        //   if (fieldModel instanceof HtmlModel)
+        //     cell.innerHTML = fieldModel.value
+
+        //   else if (fieldModel instanceof TextModel)
+        //     cell.innerText = fieldModel.value
+        //   else {
+        //     cell.appendChild(this.model.getFieldView(col, row)!)
+        //   }
+        // }
       }
 
       if (this.style.width === "100%") {
@@ -553,7 +572,7 @@ export class TableView extends GenericView<TableModel> {
     switch (this.selectionModel.mode) {
       case TableEditMode.EDIT_CELL:
         this.prepareFieldAtPosition(this.selectionModel.col, this.selectionModel.row)
-        delete this.rootDiv.tabIndex
+        delete (this.rootDiv as any).tabIndex
         break
       case TableEditMode.SELECT_CELL: {
         let allSelected = this.bodyBody.querySelectorAll("tbody > tr > td.selected")
@@ -694,6 +713,9 @@ export class TableView extends GenericView<TableModel> {
   }
 
   prepareFieldAtElement(element: HTMLTableDataCellElement | undefined) {
+    if (!this.adapter)
+      return
+
     if (element === undefined || element.tagName !== "TD")
       return
 
@@ -717,87 +739,87 @@ export class TableView extends GenericView<TableModel> {
       }
     }
 
-    let fieldView = this.model!.getFieldView(pos.col, pos.row)
+    let fieldView = this.adapter.editCell(pos.col, pos.row)
     if (!fieldView)
       return
-    this.fieldView = fieldView
-    fieldView.classList.add("embedded")
+    // this.fieldView = fieldView
+    // fieldView.classList.add("embedded")
 
-    let fieldModel = this.model!.getFieldModel(pos.col, pos.row)
-    fieldView.setModel(fieldModel)
+    // let fieldModel = this.model!.getFieldModel(pos.col, pos.row)
+    // fieldView.setModel(fieldModel)
 
-    /*
-        // adjust table size while editing (cursor handling is ugly)
-        fieldModel.modified.add( () => {
-          element.innerText = fieldModel.value
-          setTimeout( () => {
-            // apply element size to fieldView
-            this.adjustInputToElement(element)
-            this.adjustInternalTables()
-          }, 0)
-        })
-    */
-    fieldView.onblur = () => {
-      if (element.innerText == fieldModel.value)
-        return
-      element.innerText = fieldModel.value
-      this.unadjustInternalTables(pos)
-      setTimeout(() => {
-        this.adjustInternalTables()
-      }, 0)
-    }
+    // /*
+    //     // adjust table size while editing (cursor handling is ugly)
+    //     fieldModel.modified.add( () => {
+    //       element.innerText = fieldModel.value
+    //       setTimeout( () => {
+    //         // apply element size to fieldView
+    //         this.adjustInputToElement(element)
+    //         this.adjustInternalTables()
+    //       }, 0)
+    //     })
+    // */
+    // fieldView.onblur = () => {
+    //   if (element.innerText == fieldModel.value)
+    //     return
+    //   element.innerText = fieldModel.value
+    //   this.unadjustInternalTables(pos)
+    //   setTimeout(() => {
+    //     this.adjustInternalTables()
+    //   }, 0)
+    // }
 
-    fieldView.onkeydown = (event: KeyboardEvent) => {
-      switch (event.key) {
-        case "ArrowDown":
-          if (pos.row + 1 >= this.model!.rowCount)
-            break
-          event.preventDefault()
-          this.goTo(pos.col, pos.row + 1)
-          break
-        case "ArrowUp":
-          if (pos.row === 0)
-            break
-          event.preventDefault()
-          this.goTo(pos.col, pos.row - 1)
-          break
-        case "Tab":
-          if (event.shiftKey) {
-            if (pos.col > 0) {
-              event.preventDefault()
-              this.goTo(pos.col - 1, pos.row)
-            } else {
-              if (pos.row > 0) {
-                event.preventDefault()
-                this.goTo(this.model!.colCount - 1, pos.row - 1)
-              }
-            }
-          } else {
-            if (pos.col + 1 < this.model!.colCount) {
-              event.preventDefault()
-              this.goTo(pos.col + 1, pos.row)
-            } else {
-              if (pos.row + 1 < this.model!.rowCount) {
-                event.preventDefault()
-                this.goTo(0, pos.row + 1)
-              }
-            }
-          }
-          break
-      }
+    // fieldView.onkeydown = (event: KeyboardEvent) => {
+    //   switch (event.key) {
+    //     case "ArrowDown":
+    //       if (pos.row + 1 >= this.model!.rowCount)
+    //         break
+    //       event.preventDefault()
+    //       this.goTo(pos.col, pos.row + 1)
+    //       break
+    //     case "ArrowUp":
+    //       if (pos.row === 0)
+    //         break
+    //       event.preventDefault()
+    //       this.goTo(pos.col, pos.row - 1)
+    //       break
+    //     case "Tab":
+    //       if (event.shiftKey) {
+    //         if (pos.col > 0) {
+    //           event.preventDefault()
+    //           this.goTo(pos.col - 1, pos.row)
+    //         } else {
+    //           if (pos.row > 0) {
+    //             event.preventDefault()
+    //             this.goTo(this.model!.colCount - 1, pos.row - 1)
+    //           }
+    //         }
+    //       } else {
+    //         if (pos.col + 1 < this.model!.colCount) {
+    //           event.preventDefault()
+    //           this.goTo(pos.col + 1, pos.row)
+    //         } else {
+    //           if (pos.row + 1 < this.model!.rowCount) {
+    //             event.preventDefault()
+    //             this.goTo(0, pos.row + 1)
+    //           }
+    //         }
+    //       }
+    //       break
+    //   }
 
-    }
+  //   }
 
-    if (this.inputDiv.children.length === 0) {
-      this.inputDiv.appendChild(fieldView)
-    } else {
-      if (document.hasFocus() && document.activeElement === this) {
-        this.inputDiv.children[0].dispatchEvent(new FocusEvent("blur"))
-      }
-      this.inputDiv.replaceChild(fieldView, this.inputDiv.children[0])
-    }
+  //   if (this.inputDiv.children.length === 0) {
+  //     this.inputDiv.appendChild(fieldView)
+  //   } else {
+  //     if (document.hasFocus() && document.activeElement === this) {
+  //       this.inputDiv.children[0].dispatchEvent(new FocusEvent("blur"))
+  //     }
+  //     this.inputDiv.replaceChild(fieldView, this.inputDiv.children[0])
+  //   }
 
-    this.adjustInputToElement(element)
+  //   this.adjustInputToElement(element)
   }
 
   positionOfField(element: HTMLElement): TablePos {
