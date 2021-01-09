@@ -16,108 +16,43 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model, TextModel, HtmlModel } from "../model"
+import { Model } from "../model"
 import { GenericView } from "../view"
+import { textareaStyle } from "./TextArea"
 
-let textareaStyle = document.createElement("style")
-textareaStyle.textContent=`
-.toolbar button {
-    background: #fff;
-    color: #000;
-    border: 1px #ccc;
-    border-style: solid solid solid none;
-    padding: 5;
-    margin: 0;
-}
-
-.toolbar button.left {
-    border-style: solid;
-    border-radius: 3px 0 0 3px;
-}
-
-.toolbar button.right {
-    border: 1px #ccc;
-    border-style: solid solid solid none;
-    border-radius: 0 3px 3px 0;
-}
-
-.toolbar button.active {
-    background: linear-gradient(to bottom, #7abcff 0%,#0052cc 100%,#4096ee 100%);
-    border: 1px #0052cc solid;
-    color: #fff;
-}
-
-div.textarea {
-  font-family: var(--toad-font-family, sans-serif);
-  font-size: var(--toad-font-size, 12px);
-  border: 1px #ccc solid;
-  border-radius: 3px;
-  margin: 2px;
-  padding: 4px 5px;
-  outline-offset: -2px;
-}
-
-div.textarea h1 {
-  font-size: 22px;
-  margin: 0;
-  padding: 4px 0 4px 0;
-}
-
-div.textarea h2 {
-  font-size: 18px;
-  margin: 0;
-  padding: 4px 0 4px 0;
-}
-
-div.textarea h3 {
-  font-size: 16px;
-  margin: 0;
-  padding: 4px 0 4px 0;
-}
-
-div.textarea h4 {
-  font-size: 14px;
-  margin: 0;
-  padding: 4px 0 4px 0;
-}
-
-div.textarea div {
-  padding: 2px 0 2px 0;
-}
-`
+// TODO: we should be able to reduce the amount of code by adding some helper functions
 
 export class TextTool extends GenericView<Model> {
     // FIXME: make this a list where all texttools register/unregister via connectedCallback()/disconnectedCallback()
     // FIXME: disable texttool when it is not above an active textarea in the view hierachy
     static texttool?: TextTool
-    
+
     buttonH1: HTMLElement
     buttonH2: HTMLElement
     buttonH3: HTMLElement
     buttonH4: HTMLElement
     buttonUnorderedList: HTMLElement
     buttonOrderedList: HTMLElement
-    
+
     buttonBold: HTMLElement
     buttonItalic: HTMLElement
     buttonUnderline: HTMLElement
     buttonStrikeThrough: HTMLElement
     buttonSubscript: HTMLElement
     buttonSuperscript: HTMLElement
-    
+
     buttonJustifyLeft: HTMLElement
     buttonJustifyCenter: HTMLElement
     buttonJustifyRight: HTMLElement
-//    buttonJustifyFull: HTMLElement
-
+    //    buttonJustifyFull: HTMLElement
     constructor() {
         super()
-        
+
         TextTool.texttool = this
-        
+
         let toolbar = document.createElement("div")
         toolbar.classList.add("toolbar")
-        
+
         this.buttonH1 = document.createElement("button")
         this.buttonH1.classList.add("left")
         this.buttonH1.innerHTML = "H1"
@@ -221,7 +156,7 @@ export class TextTool extends GenericView<Model> {
             this.update()
         }
         toolbar.appendChild(this.buttonJustifyLeft)
-        
+
         this.buttonJustifyCenter = document.createElement("button")
         this.buttonJustifyCenter.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
             <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
@@ -235,7 +170,7 @@ export class TextTool extends GenericView<Model> {
             this.update()
         }
         toolbar.appendChild(this.buttonJustifyCenter)
-        
+
         this.buttonJustifyRight = document.createElement("button")
         this.buttonJustifyRight.classList.add("right")
         this.buttonJustifyRight.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
@@ -251,22 +186,22 @@ export class TextTool extends GenericView<Model> {
         }
         toolbar.appendChild(this.buttonJustifyRight)
 
-/*        
-        this.buttonJustifyFull = document.createElement("button")
-        this.buttonJustifyFull.classList.add("right")
-        this.buttonJustifyFull.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
-            <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-            <line x1="0" y1="2.5" x2="10" y2="2.5" stroke="#000" />
-            <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-            <line x1="0" y1="6.5" x2="10" y2="6.5" stroke="#000" />
-            <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
-            </svg>`
-        this.buttonJustifyFull.onclick = () => {
-            document.execCommand("justifyFull", false)
-            this.update()
-        }
-        toolbar.appendChild(this.buttonJustifyFull)
-*/        
+        /*
+                this.buttonJustifyFull = document.createElement("button")
+                this.buttonJustifyFull.classList.add("right")
+                this.buttonJustifyFull.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
+                    <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
+                    <line x1="0" y1="2.5" x2="10" y2="2.5" stroke="#000" />
+                    <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
+                    <line x1="0" y1="6.5" x2="10" y2="6.5" stroke="#000" />
+                    <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+                    </svg>`
+                this.buttonJustifyFull.onclick = () => {
+                    document.execCommand("justifyFull", false)
+                    this.update()
+                }
+                toolbar.appendChild(this.buttonJustifyFull)
+        */
         toolbar.appendChild(document.createTextNode(" "))
 
         this.buttonUnorderedList = document.createElement("button")
@@ -284,7 +219,7 @@ export class TextTool extends GenericView<Model> {
             this.update()
         }
         toolbar.appendChild(this.buttonUnorderedList)
-        
+
         this.buttonOrderedList = document.createElement("button")
         this.buttonOrderedList.classList.add("right")
         this.buttonOrderedList.innerHTML = `<svg viewBox="0 0 17 10.5" width="17" height="10.5">
@@ -304,35 +239,35 @@ export class TextTool extends GenericView<Model> {
         }
         toolbar.appendChild(this.buttonOrderedList)
 
-        this.attachShadow({mode: 'open'})
+        this.attachShadow({ mode: 'open' })
         this.shadowRoot!.appendChild(document.importNode(textareaStyle, true))
         this.shadowRoot!.appendChild(toolbar)
     }
-    
+
     update() {
         this.buttonH1.classList.toggle("active", document.queryCommandValue("formatBlock") === "h1")
         this.buttonH2.classList.toggle("active", document.queryCommandValue("formatBlock") === "h2")
         this.buttonH3.classList.toggle("active", document.queryCommandValue("formatBlock") === "h3")
         this.buttonH4.classList.toggle("active", document.queryCommandValue("formatBlock") === "h4")
-        
+
         this.buttonBold.classList.toggle("active", document.queryCommandState("bold"))
         this.buttonItalic.classList.toggle("active", document.queryCommandState("italic"))
         this.buttonUnderline.classList.toggle("active", document.queryCommandState("underline"))
         this.buttonStrikeThrough.classList.toggle("active", document.queryCommandState("strikeThrough"))
         this.buttonSubscript.classList.toggle("active", document.queryCommandState("subscript"))
         this.buttonSuperscript.classList.toggle("active", document.queryCommandState("superscript"))
-        
+
         this.buttonJustifyLeft.classList.toggle("active", document.queryCommandState("justifyLeft"))
         this.buttonJustifyCenter.classList.toggle("active", document.queryCommandState("justifyCenter"))
         this.buttonJustifyRight.classList.toggle("active", document.queryCommandState("justifyRight"))
-//        this.buttonJustifyFull.classList.toggle("active", document.queryCommandState("justifyFull"))
+        //        this.buttonJustifyFull.classList.toggle("active", document.queryCommandState("justifyFull"))
     }
-    
+
     updateModel() {
         if (this.model) {
         }
     }
-    
+
     updateView() {
         if (!this.model) {
             return
@@ -340,136 +275,3 @@ export class TextTool extends GenericView<Model> {
     }
 }
 window.customElements.define("toad-texttool", TextTool)
-
-export class TextArea extends GenericView<TextModel> {
-
-    content: HTMLElement
-
-    constructor() {
-        super()
-
-        // FIXME: when model is not HtmlModel but TextModel, use <textarea> instead of <div contenteditable>
-        let content = document.createElement("div")
-        this.content = content
-        content.classList.add("textarea")
-        content.contentEditable = "true"
-        
-        content.oninput = (event: Event) => {
-            let firstChild = (event.target as Node).firstChild
-            if (firstChild && firstChild.nodeType === 3) {
-                // if the document starts with text, wrap it into a paragraph
-                document.execCommand("formatBlock", false, `<div>`)
-            }
-            else if (content.innerHTML === "<br>") {
-                content.innerHTML = ""
-            }
-            this.updateModel()
-        }
-        
-        content.onkeydown = (event: KeyboardEvent) => {
-            if (event.metaKey === true && event.key === "b") {
-                event.preventDefault()
-                document.execCommand("bold", false)
-                this.updateTextTool()
-            } else
-            if (event.metaKey === true && event.key === "i") {
-                event.preventDefault()
-                document.execCommand("italic", false)
-                this.updateTextTool()
-            } else
-            if (event.metaKey === true && event.key === "u") {
-                event.preventDefault()
-                document.execCommand("underline", false)
-                this.updateTextTool()
-            } else
-            if (event.key === "Tab") {
-                event.preventDefault()
-            } else
-            if (event.key === "Enter" &&
-                event.shiftKey !== true &&
-                document.queryCommandValue("formatBlock") === "blockquote" )
-            {
-                document.execCommand("formatBlock", false, "<p>")
-            }
-/*
-            else if (event.key === "Enter" &&
-                event.shiftKey === true )
-            {
-                event.preventDefault()
-            
-                // entering <br> with execCommand will also insert a paragraph, hence the following.
-                // beware! it is not perfect when inserting <br> at the end of the document.
-                // sometimes is works, sometimes it doesn't
-                let docFragment = document.createDocumentFragment()
-
-                let lineBreak = document.createElement("br")
-                docFragment.appendChild(lineBreak)
-                let lineCR = document.createTextNode("\n")
-                docFragment.appendChild(lineCR)
-
-                // replace selection with <br>\n
-                let range = window.getSelection().getRangeAt(0)
-                range.deleteContents()
-                range.insertNode(docFragment)
-
-                // create a new range
-                range = document.createRange()
-                range.setStartAfter(lineCR);
-                range.collapse(true)
-
-                // move cursor
-                let selection = window.getSelection()
-                selection.removeAllRanges()
-                selection.addRange(range)
-
-                this.updateTextTool()
-            }
-*/
-        }
-        
-        content.onkeyup = () => {
-            this.updateTextTool()
-        }
-        content.onmouseup = () => {
-            this.updateTextTool()
-        }
-
-        this.attachShadow({mode: 'open'})
-        this.shadowRoot!.appendChild(document.importNode(textareaStyle, true))
-        this.shadowRoot!.appendChild(content)
-    }
-    
-    updateTextTool() {
-        if (TextTool.texttool !== undefined)
-            TextTool.texttool.update()
-    }
-    
-    updateModel() {
-        if (this.model) {
-            // textarea with it's markup may be expensive, hence we let the model fetch it's data on demand
-            this.model.promise = () => {
-                return this.content.innerHTML
-            }
-        }
-    }
-    
-    updateView() {
-        if (!this.model) {
-            return
-        }
-        if (this.model instanceof HtmlModel) {
-            // because of TextModel.promise we check here instead inside the model
-            // if we don't check at all, the cursor ends up in the wrong location
-            // after each change
-            if (this.content.innerHTML !== this.model.value) {
-                this.content.innerHTML = this.model.value
-            }
-        } else {
-            // FIXME: no tested
-            if (this.content.innerText !== this.model.value) {
-                this.content.innerText = this.model.value
-            }
-        }
-    }
-}
-window.customElements.define("toad-textarea", TextArea)

@@ -28,7 +28,8 @@ export { CheckboxView } from "./view/checkbox"
 export { MenuButton } from "./view/menu"	// FIXME: no View in name?
 export { SliderView } from "./view/slider"
 export { TextView } from "./view/text"
-export { TextArea, TextTool } from "./view/textarea"
+export { TextArea } from "./view/TextArea"
+export { TextTool } from "./view/TextTool"
 
 export { TableView } from "./table/TableView"
 export { TableAdapter } from "./table/TableAdapter"
