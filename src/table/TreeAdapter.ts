@@ -16,7 +16,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TableModel, TreeModel, TypedTableAdapter } from '../toad'
+import { TableModel } from "./TableModel"
+import { TreeModel } from "./TreeModel"
+import { TypedTableAdapter } from "./TypedTableAdapter"
 import { text, line, rectangle } from "../svg"
 
 const sx = 12     // horizontal step width

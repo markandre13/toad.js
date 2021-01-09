@@ -16,7 +16,88 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TreeNode, TreeNodeModel, TreeAdapter, bind } from '..'
+import { 
+    TableModel, TableAdapter,
+    TreeNode, TreeNodeModel, TreeAdapter,
+    bind
+} from '..'
+
+//
+// Books
+//
+
+class Book {
+    title: string
+    author: string
+    year: number
+    constructor(title: string, author: string, year: number) {
+        this.title = title
+        this.author = author
+        this.year = year
+    }
+}
+
+// TODO: use ArrayTableModel for this
+class BookTableModel extends TableModel {
+    data: Array<Book>
+    constructor(data: Array<Book>) {
+        super()
+        this.data = data
+    }
+    get colCount(): number { return 3 }
+    get rowCount(): number { return this.data.length }
+}
+
+class BookTableAdapter extends TableAdapter {
+    model?: BookTableModel
+
+    setModel(model: TableModel) {
+        this.model = model as BookTableModel
+    }
+
+    getColumnHead(col: number): Node | undefined {
+        switch(col) {
+            case 0: return document.createTextNode("Title")
+            case 1: return document.createTextNode("Author")
+            case 2: return document.createTextNode("Year")
+        }
+        return undefined
+    }
+
+    displayCell(col: number, row: number): Node | undefined {       
+        if (!this.model)
+            return undefined
+        switch(col) {
+            case 0: return document.createTextNode(this.model.data[row].title)
+            case 1: return document.createTextNode(this.model.data[row].author)
+            case 2: return document.createTextNode(`${this.model.data[row].year}`)
+        }
+        return undefined
+    }
+}
+TableAdapter.register(BookTableAdapter, BookTableModel)
+
+function initializeBooks() {
+    const data = new Array<Book>()
+    const init = [
+        [ "The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966 ],
+        [ "Stranger In A Strange Land", "Robert A. Heinlein", 1961 ],
+        [ "The Fountains of Paradise", "Arthur C. Clarke", 1979],
+        [ "Rendezvous with Rama", "Arthur C. Clarke", 1973 ],
+        [ "2001: A Space Odyssey", "Arthur C. Clarke", 1968 ],
+        [ "Do Androids Dream of Electric Sheep?", "Philip K. Dick", 1968],
+        [ "A Scanner Darkly", "Philip K. Dick", 1977],
+        [ "Second Variety", "Philip K. Dick", 1953]
+    ].forEach( (e) => {
+        data.push(new Book(e[0] as string, e[1] as string, e[2] as number))
+    })
+    const books = new BookTableModel(data)
+    bind("books", books)
+}
+
+//
+// Tree
+//
 
 class MyNode implements TreeNode {
     label: string
@@ -35,10 +116,9 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
         return this.treeCell(row, this.model.rows[row].node.label)
     }
 }
-
 TreeAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
 
-export function main() {
+function initializeTree(): void {
     let tree = new TreeNodeModel(MyNode)
     tree.addSiblingAfter(0)
     tree.addChildAfter(0)
@@ -46,4 +126,9 @@ export function main() {
     tree.addSiblingAfter(1)
     tree.addSiblingAfter(0)
     bind("tree", tree)
+}
+
+export function main(): void {
+    initializeBooks()
+    initializeTree()
 }

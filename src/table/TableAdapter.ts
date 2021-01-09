@@ -20,7 +20,7 @@ import { TableModel } from "./TableModel"
 import { TypedTableModel } from "./TypedTableModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 
-const modelToAdapter = new Map<new() => TableModel, Map<new()=> any, new()=> TableAdapter>>()
+const modelToAdapter = new Map<new(...args: any[]) => TableModel, Map<new(...args: any[])=> any, new()=> TableAdapter>>()
 
 export class TableAdapter {
     setModel(model: TableModel): void {}
@@ -30,8 +30,8 @@ export class TableAdapter {
     editCell(col: number, row: number): Node | undefined { return undefined }
 
     static register<T, A extends TypedTableAdapter<T>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
-    static register(adapter: new() => TableAdapter, model: new()=>TableModel): void
-    static register(adapter: new() => TableAdapter, model: new()=>TableModel, data?: any): void
+    static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel): void
+    static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel, data?: any): void
     {
         //  console.log("register ============")
         //  console.log(adapter)
