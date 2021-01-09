@@ -16,10 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model, TextModel, HtmlModel } from "../model"
+import { HtmlModel } from "../model"
 import { ActionView } from "../view"
-import { globalController } from "../controller"
-import { Action } from "../action"
 
 let buttonStyle = document.createElement("style")
 buttonStyle.textContent=`
@@ -58,7 +56,6 @@ export class ButtonView extends ActionView {
 
   constructor() {
     super()
-    let buttonView = this
     this.button = document.createElement("button") as HTMLButtonElement
     this.button.onclick = () => {
       if (this.action)

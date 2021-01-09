@@ -134,8 +134,8 @@ export class Controller {
     this.view2ModelIds.clear()
   }
   
-  bind(modelId: string, model: Model): void {
-    this.registerModel(modelId, model)
+  bind<T>(modelId: string, model: Model<T>): void {
+    this.registerModel(modelId, model as any)
   }
   
   action(actionId: string, callback: () => void): Action {
@@ -315,7 +315,7 @@ export class Dialog extends Controller {
 
 export let globalController = new Controller()
 
-export function bind(modelId: string, model: Model) {
+export function bind<T>(modelId: string, model: Model<T>): void {
   globalController.bind(modelId, model)
 }
 

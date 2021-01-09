@@ -44,18 +44,6 @@ export abstract class View extends HTMLElement {
     return "A:"+actionId
   }
 
-}
-
-export abstract class GenericView<T extends Model> extends View {
-  model?: T
-
-  constructor() {
-    super()
-  }
-
-  abstract updateModel(): void
-  abstract updateView(data?: any): void
-  
   connectedCallback() {
     if (this.controller)
       return
@@ -72,7 +60,18 @@ export abstract class GenericView<T extends Model> extends View {
     if (this.controller)
       this.controller.unregisterView(this)
   }
+}
 
+export abstract class GenericView<T extends Model> extends View {
+  model?: T
+
+  constructor() {
+    super()
+  }
+
+  abstract updateModel(): void
+  abstract updateView(): void
+  
   setModel(model?: T): void {
     if (model === this.model)
       return
@@ -83,7 +82,7 @@ export abstract class GenericView<T extends Model> extends View {
       this.model.modified.remove(view)
     
     if (model)
-      model.modified.add((data?: any) => { view.updateView(data) }, view)
+      model.modified.add(() => { view.updateView() }, view)
 
     this.model = model
     this.updateView()

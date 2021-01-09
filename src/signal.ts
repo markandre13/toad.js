@@ -26,14 +26,14 @@ export class SignalLink {
 }
 
 // TODO: specify the callback argument via generic
-export class Signal<T = any> {
+export class Signal<T = void> {
   locked?: boolean
   triggered?: any
   callbacks?: Array<SignalLink>
 
-  add(callback: (data?: T) => void): void
-  add(callback: (data?: T) => void, id: any): void
-  add(callback: (data?: T) => void, id?: any) {
+  add(callback: (data: T) => void): void
+  add(callback: (data: T) => void, id: any): void
+  add(callback: (data: T) => void, id?: any) {
     if (!this.callbacks)
       this.callbacks = new Array<SignalLink>()
     this.callbacks.push(new SignalLink(callback, id))
@@ -67,7 +67,7 @@ export class Signal<T = any> {
     }
   }
 
-  trigger(data?: T): void {
+  trigger(data: T): void {
     if (this.locked) {
       this.triggered = { data: data }
       return

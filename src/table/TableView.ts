@@ -18,7 +18,7 @@
 
 import * as dom from "../dom"
 import { Model, TextModel, HtmlModel } from "../model"
-import { GenericView } from "../view"
+import { View } from "../view"
 import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"
 import { TableEditMode, TablePos } from "./table"
@@ -218,7 +218,8 @@ div .t2d tr td.selected {
  *       inputDiv (div, focusin) ->
  */
 
-export class TableView extends GenericView<TableModel> {
+export class TableView extends View {
+  model?: TableModel
 
   adapter?: TableAdapter
   selectionModel?: SelectionModel

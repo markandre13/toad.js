@@ -18,7 +18,7 @@
 
 import { Signal } from "./signal"
 
-export abstract class Model<T = any> {
+export abstract class Model<T = void> {
   modified: Signal<T>
   
   constructor() {
@@ -26,7 +26,7 @@ export abstract class Model<T = any> {
   }
 }
 
-export class GenericModel<T, P = any> extends Model<P> {
+export class GenericModel<T> extends Model {
   _value: T
 
   constructor(value: T) {
