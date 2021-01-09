@@ -16,10 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model, TextModel } from "../model"
+import { Model } from "../model"
+import { TableEvent } from "./TableEvent"
 
 // TODO: API for insert, delete and move rows and columns
-export abstract class TableModel extends Model {
+export abstract class TableModel extends Model<TableEvent> {
   abstract get colCount(): number
   abstract get rowCount(): number
   isEmpty() { return this.colCount === 0 && this.rowCount === 0 }

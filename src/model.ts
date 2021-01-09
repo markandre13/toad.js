@@ -18,18 +18,15 @@
 
 import { Signal } from "./signal"
 
-export abstract class Model {
-  modified: Signal
+export abstract class Model<T = any> {
+  modified: Signal<T>
   
   constructor() {
-    this.modified = new Signal()
+    this.modified = new Signal<T>()
   }
-  
-//  abstract set value(value: any)
-//  abstract get value(): any
 }
 
-export class GenericModel<T> extends Model {
+export class GenericModel<T, P = any> extends Model<P> {
   _value: T
 
   constructor(value: T) {
