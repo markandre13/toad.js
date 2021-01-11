@@ -18,7 +18,7 @@
 
 import { Model } from "../model"
 import { GenericView } from "../view"
-import { textareaStyle } from "./TextArea"
+import { textAreaStyle } from "./textAreaStyle"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
@@ -240,7 +240,7 @@ export class TextTool extends GenericView<Model> {
         toolbar.appendChild(this.buttonOrderedList)
 
         this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(document.importNode(textareaStyle, true))
+        this.shadowRoot!.appendChild(document.importNode(textAreaStyle, true))
         this.shadowRoot!.appendChild(toolbar)
     }
 

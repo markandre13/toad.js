@@ -17,7 +17,7 @@
  */
 
 import * as dom from "../dom"
-import { Model, TextModel, HtmlModel } from "../model"
+import { Model } from "../model"
 import { View } from "../view"
 import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"
@@ -475,11 +475,6 @@ export class TableView extends View {
         continue
       }
       cell.appendChild(content)
-      // if (text instanceof HtmlModel)
-      //   cell.innerHTML = text.value
-
-      // else
-      //   cell.innerText = text.value
     }
 
     let fillerForMissingScrollbar
@@ -740,87 +735,85 @@ export class TableView extends View {
       }
     }
 
-    let fieldView = this.adapter.editCell(pos.col, pos.row)
+    let fieldView = this.adapter.editCell(pos.col, pos.row) as View // as HTMLElement
     if (!fieldView)
       return
-    // this.fieldView = fieldView
-    // fieldView.classList.add("embedded")
+    this.fieldView = fieldView
+    fieldView.classList.add("embedded")
 
-    // let fieldModel = this.model!.getFieldModel(pos.col, pos.row)
-    // fieldView.setModel(fieldModel)
+    /*
+        // adjust table size while editing (cursor handling is ugly)
+        fieldModel.modified.add( () => {
+          element.innerText = fieldModel.value
+          setTimeout( () => {
+            // apply element size to fieldView
+            this.adjustInputToElement(element)
+            this.adjustInternalTables()
+          }, 0)
+        })
+    */
 
-    // /*
-    //     // adjust table size while editing (cursor handling is ugly)
-    //     fieldModel.modified.add( () => {
-    //       element.innerText = fieldModel.value
-    //       setTimeout( () => {
-    //         // apply element size to fieldView
-    //         this.adjustInputToElement(element)
-    //         this.adjustInternalTables()
-    //       }, 0)
-    //     })
-    // */
-    // fieldView.onblur = () => {
-    //   if (element.innerText == fieldModel.value)
-    //     return
-    //   element.innerText = fieldModel.value
-    //   this.unadjustInternalTables(pos)
-    //   setTimeout(() => {
-    //     this.adjustInternalTables()
-    //   }, 0)
-    // }
+    fieldView.onblur = () => {
+      const content = this.adapter!.displayCell(pos.col, pos.row)!
+      const cell = this.getElementAt(pos.col, pos.row)
+      cell.replaceChild(content, cell.childNodes[0])
 
-    // fieldView.onkeydown = (event: KeyboardEvent) => {
-    //   switch (event.key) {
-    //     case "ArrowDown":
-    //       if (pos.row + 1 >= this.model!.rowCount)
-    //         break
-    //       event.preventDefault()
-    //       this.goTo(pos.col, pos.row + 1)
-    //       break
-    //     case "ArrowUp":
-    //       if (pos.row === 0)
-    //         break
-    //       event.preventDefault()
-    //       this.goTo(pos.col, pos.row - 1)
-    //       break
-    //     case "Tab":
-    //       if (event.shiftKey) {
-    //         if (pos.col > 0) {
-    //           event.preventDefault()
-    //           this.goTo(pos.col - 1, pos.row)
-    //         } else {
-    //           if (pos.row > 0) {
-    //             event.preventDefault()
-    //             this.goTo(this.model!.colCount - 1, pos.row - 1)
-    //           }
-    //         }
-    //       } else {
-    //         if (pos.col + 1 < this.model!.colCount) {
-    //           event.preventDefault()
-    //           this.goTo(pos.col + 1, pos.row)
-    //         } else {
-    //           if (pos.row + 1 < this.model!.rowCount) {
-    //             event.preventDefault()
-    //             this.goTo(0, pos.row + 1)
-    //           }
-    //         }
-    //       }
-    //       break
-    //   }
+      this.unadjustInternalTables(pos)
+      setTimeout(() => {
+        this.adjustInternalTables()
+      }, 0)
+    }
 
-  //   }
+    fieldView.onkeydown = (event: KeyboardEvent) => {
+      switch (event.key) {
+        case "ArrowDown":
+          if (pos.row + 1 >= this.model!.rowCount)
+            break
+          event.preventDefault()
+          this.goTo(pos.col, pos.row + 1)
+          break
+        case "ArrowUp":
+          if (pos.row === 0)
+            break
+          event.preventDefault()
+          this.goTo(pos.col, pos.row - 1)
+          break
+        case "Tab":
+          if (event.shiftKey) {
+            if (pos.col > 0) {
+              event.preventDefault()
+              this.goTo(pos.col - 1, pos.row)
+            } else {
+              if (pos.row > 0) {
+                event.preventDefault()
+                this.goTo(this.model!.colCount - 1, pos.row - 1)
+              }
+            }
+          } else {
+            if (pos.col + 1 < this.model!.colCount) {
+              event.preventDefault()
+              this.goTo(pos.col + 1, pos.row)
+            } else {
+              if (pos.row + 1 < this.model!.rowCount) {
+                event.preventDefault()
+                this.goTo(0, pos.row + 1)
+              }
+            }
+          }
+          break
+      }
+    }
 
-  //   if (this.inputDiv.children.length === 0) {
-  //     this.inputDiv.appendChild(fieldView)
-  //   } else {
-  //     if (document.hasFocus() && document.activeElement === this) {
-  //       this.inputDiv.children[0].dispatchEvent(new FocusEvent("blur"))
-  //     }
-  //     this.inputDiv.replaceChild(fieldView, this.inputDiv.children[0])
-  //   }
+    if (this.inputDiv.children.length === 0) {
+      this.inputDiv.appendChild(fieldView)
+    } else {
+      if (document.hasFocus() && document.activeElement === this) {
+        this.inputDiv.children[0].dispatchEvent(new FocusEvent("blur"))
+      }
+      this.inputDiv.replaceChild(fieldView, this.inputDiv.children[0])
+    }
 
-  //   this.adjustInputToElement(element)
+    this.adjustInputToElement(element)
   }
 
   positionOfField(element: HTMLElement): TablePos {

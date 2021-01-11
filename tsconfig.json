@@ -8,6 +8,7 @@
     "lib": [ "es6", "dom", "dom.iterable" ],
     "outDir": "lib",
     "strict": true,
+    "strictNullChecks": true,
     "allowJs": false,
     "noImplicitAny": true,
     "sourceMap": true

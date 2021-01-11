@@ -4,7 +4,7 @@ use(require('chai-subset'))
 import { 
     View, TableView, TableModel, TableEditMode, 
     SelectionModel, TextView, TextModel, 
-    bind, unbind, 
+    bind, unbind, TableAdapter, 
 } from "../../src/toad"
 
 describe("toad.js", function() {
@@ -33,25 +33,39 @@ describe("toad.js", function() {
                 }
                 get colCount(): number { return this.data[0].length }
                 get rowCount(): number { return this.data.length }
-                getColumnHead(column: number): TextModel {
-                    switch(column) {
-                        case 0: return new TextModel("Title")
-                        case 1: return new TextModel("Author")
-                        case 2: return new TextModel("Year")
+            }
+            class MyTableAdapter extends TableAdapter {
+                model?: MyTableModel
+                setModel(model: TableModel): void {
+                    this.model = model as MyTableModel
+                }
+                getColumnHead(col: number): Node | undefined { 
+                    switch(col) {
+                        case 0: return document.createTextNode("Title")
+                        case 1: return document.createTextNode("Author")
+                        case 2: return document.createTextNode("Year")
                     }
-                    throw Error("fuck")
+                    return undefined
+                }              
+                displayCell(col: number, row: number): Node | undefined {
+                    if (!this.model)
+                        return undefined
+                    return document.createTextNode(this.model.data[row][col])
                 }
-                getFieldModel(col: number, row: number): TextModel {
-                    let model = new TextModel(this.data[row][col])
+                editCell(col: number, row: number): Node | undefined {
+                    if (!this.model)
+                        return undefined
+                    const model = new TextModel(this.model.data[row][col])
                     model.modified.add( () => {
-                        this.data[row][col] = model.value
+                        if (this.model)
+                            this.model.data[row][col] = model.value
                     })
-                    return model
-                }
-                getFieldView(col: number, row: number): View {
-                    return new TextView()
+                    const view = new TextView()
+                    view.setModel(model)
+                    return view
                 }
             }
+            TableAdapter.register(MyTableAdapter, MyTableModel)
 
             describe("initialize view from model", function() {
                 it("does so when the model is defined before the view", function() {

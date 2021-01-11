@@ -19,7 +19,9 @@
 import { 
     TableModel, TableAdapter,
     TreeNode, TreeNodeModel, TreeAdapter,
-    bind
+    TextModel, TextView,
+    bind,
+    TableEvent, TableEventType
 } from '..'
 
 //
@@ -65,14 +67,48 @@ class BookTableAdapter extends TableAdapter {
     }
 
     displayCell(col: number, row: number): Node | undefined {       
+        const text = this.getField(col, row)
+        if (!text)
+            return undefined
+        return document.createTextNode(text)
+    }
+
+    editCell(col: number, row: number): Node | undefined {
+        const text = this.getField(col, row)
+        if (!text)
+            return undefined
+        const model = new TextModel(text)
+        model.modified.add( () => {
+            this.setField(col, row, model.value)
+        })
+        const view = new TextView()
+        view.setModel(model)
+        return view
+    }
+
+    private getField(col: number, row: number): string | undefined {
         if (!this.model)
             return undefined
         switch(col) {
-            case 0: return document.createTextNode(this.model.data[row].title)
-            case 1: return document.createTextNode(this.model.data[row].author)
-            case 2: return document.createTextNode(`${this.model.data[row].year}`)
+            case 0: return this.model.data[row].title
+            case 1: return this.model.data[row].author
+            case 2: return `${this.model.data[row].year}`
         }
         return undefined
+    }
+
+    private setField(col: number, row: number, text: string): void {
+        console.log(`BookTableAdapter.setField(${col}, ${row}, "${text}")`)
+        if (!this.model)
+            return
+        // FIXME: hide data and let the model itself generate the trigger
+        switch(col) {
+            case 0: this.model.data[row].title = text
+            case 1: this.model.data[row].author = text
+            case 2: this.model.data[row].year = Number.parseInt(text)
+        }
+        // FIXME: let table handle this event and maybe also provide (col, row)
+        this.model.modified.trigger(new TableEvent(TableEventType.CHANGED, 0, 0))
     }
 }
 TableAdapter.register(BookTableAdapter, BookTableModel)

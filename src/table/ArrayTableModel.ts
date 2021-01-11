@@ -16,9 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TextModel } from "../model"
-import { View } from "../view"
-import { TextView } from "../view/text"
 import { TableModel } from "./TableModel"
 
 export class ArrayTableModel extends TableModel {

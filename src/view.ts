@@ -16,9 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model, TextModel, HtmlModel, BooleanModel, NumberModel } from "./model"
+import { Model, TextModel, HtmlModel } from "./model"
 import { Controller, globalController } from "./controller"
-
 import { Action } from "./action"
 
 export abstract class View extends HTMLElement {

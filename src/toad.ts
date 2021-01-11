@@ -30,6 +30,7 @@ export { SliderView } from "./view/slider"
 export { TextView } from "./view/text"
 export { TextArea } from "./view/TextArea"
 export { TextTool } from "./view/TextTool"
+export { ToadIf } from "./view/ToadIf"
 
 export { TableView } from "./table/TableView"
 export { TableAdapter } from "./table/TableAdapter"
@@ -46,21 +47,3 @@ export { TreeNode } from "./table/TreeNode"
 export { TreeNodeModel } from "./table/TreeNodeModel"
 
 export { Controller, Template, Dialog, bind, action, unbind, globalController, boolean } from "./controller"
-
-import { BooleanModel } from "./model"
-import { GenericView } from "./view"
-
-// <toad-if> requires correct HTML otherwise <toad-if> and it's content might
-// be separated by stuff like an </p> inserted automatically by the browser
-// so one should use stuff like htmltidy or htmlhint
-class ToadIf extends GenericView<BooleanModel> {
-  updateModel() {
-  }
-
-  updateView() {
-    if (this.model) {
-      this.style.display = this.model.value ? "" : "none"
-    }
-  }
-}
-customElements.define('toad-if', ToadIf)

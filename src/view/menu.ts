@@ -17,11 +17,10 @@
  */
 
 import * as dom from "../dom"
-import { Signal } from "../signal"
 import { Action } from "../action"
 import { Model, TextModel, HtmlModel } from "../model"
 import { GenericView } from "../view"
-import { Controller, globalController } from "../controller"
+import { globalController } from "../controller"
 
 let menuStyle = document.createElement("style")
 menuStyle.textContent=`
