@@ -89,23 +89,26 @@ class BookTableAdapter extends TableAdapter {
     private getField(col: number, row: number): string | undefined {
         if (!this.model)
             return undefined
+        let text: string | undefined
         switch(col) {
-            case 0: return this.model.data[row].title
-            case 1: return this.model.data[row].author
-            case 2: return `${this.model.data[row].year}`
+            case 0: text = this.model.data[row].title; break
+            case 1: text = this.model.data[row].author; break
+            case 2: text = `${this.model.data[row].year}`; break
         }
-        return undefined
+        // console.log(`BookTableAdapter.getField(${col}, ${row}) -> "${text}"`)
+        // console.log(this.model.data[row])
+        return text
     }
 
     private setField(col: number, row: number, text: string): void {
-        console.log(`BookTableAdapter.setField(${col}, ${row}, "${text}")`)
+        // console.log(`BookTableAdapter.setField(${col}, ${row}, "${text}")`)
         if (!this.model)
             return
         // FIXME: hide data and let the model itself generate the trigger
         switch(col) {
-            case 0: this.model.data[row].title = text
-            case 1: this.model.data[row].author = text
-            case 2: this.model.data[row].year = Number.parseInt(text)
+            case 0: this.model.data[row].title = text; break
+            case 1: this.model.data[row].author = text; break
+            case 2: this.model.data[row].year = Number.parseInt(text); break
         }
         // FIXME: let table handle this event and maybe also provide (col, row)
         this.model.modified.trigger(new TableEvent(TableEventType.CHANGED, 0, 0))
