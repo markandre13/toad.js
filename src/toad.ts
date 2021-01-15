@@ -25,7 +25,7 @@ export { View, GenericView, ActionView, SlotView } from "./view"
 export { ButtonView } from "./view/ButtonView"
 export { ToolButton } from "./view/ToolButton"	// FIXME: no View in name?
 export { CheckboxView } from "./view/CheckboxView"
-export { MenuButton } from "./view/menu"	// FIXME: no View in name?
+export { MenuButton } from "./menu/MenuButton"	// FIXME: no View in name?
 export { SliderView } from "./view/SliderView"
 export { TextView } from "./view/TextView"
 export { TextArea } from "./view/TextArea"

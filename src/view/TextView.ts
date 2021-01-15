@@ -22,21 +22,6 @@ import { GenericView } from "../view"
 let textStyle = document.createElement("style")
 textStyle.textContent=`
 input {
-/*
-  height: 2.14285714em;
-  line-height: 1.4285714285714;
-  padding: 4px 5px;
-  border: 1px #ccc solid;
-  border-radius: 3px;
-  box-sizing: border-box;
-  margin: 2px;
-  max-width: 250px;
-  vertical-align: baseline;
-  width: 100%;
-  background-color: #fff;
-  color: #333;
-  font-size: 14px;
-*/
   font-family: var(--toad-font-family, sans-serif);
   font-size: var(--toad-font-size, 12px);
   border: 1px #ccc solid;
