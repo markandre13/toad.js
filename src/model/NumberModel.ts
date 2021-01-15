@@ -16,20 +16,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
-import { GenericView } from "../view"
+import { GenericModel } from "./GenericModel"
 
-// <toad-if> requires correct HTML otherwise <toad-if> and it's content might
-// be separated by stuff like an </p> inserted automatically by the browser
-// so one should use stuff like htmltidy or htmlhint
-export class ToadIf extends GenericView<BooleanModel> {
-  updateModel() {
-  }
+export class NumberModel extends GenericModel<number> {
+  min?: number
+  max?: number
+  step?: number
 
-  updateView() {
-    if (this.model) {
-      this.style.display = this.model.value ? "" : "none"
+  constructor(value: number, options: any) {
+    super(value)
+    if (options) {
+      this.min = options.min
+      this.max = options.max
+      this.step = options.step
     }
   }
 }
-customElements.define('toad-if', ToadIf)

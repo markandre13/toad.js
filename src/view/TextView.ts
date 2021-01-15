@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TextModel } from "../model"
+import { TextModel } from "../model/TextModel"
 import { GenericView } from "../view"
 
 let textStyle = document.createElement("style")

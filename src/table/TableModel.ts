@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model } from "../model"
+import { Model } from "../model/Model"
 import { TableEvent } from "./TableEvent"
 
 // TODO: API for insert, delete and move rows and columns

@@ -17,7 +17,11 @@
  */
 
 import * as dom from "./dom"
-import { Model, TextModel, HtmlModel, BooleanModel, NumberModel } from "./model"
+import { BooleanModel } from "./model/BooleanModel"
+import { NumberModel } from "./model/NumberModel"
+import { HtmlModel } from "./model/HtmlModel"
+import { TextModel } from "./model/TextModel"
+import { Model } from "./model/Model"
 import { View } from "./view"
 import { Action } from "./action"
 import { Signal } from "./signal"

@@ -19,7 +19,15 @@
 export { Point, MatrixStruct, Matrix } from "./matrix"
 export { Signal } from "./signal"
 export { Action } from "./action"
-export { Model, GenericModel, TextModel, HtmlModel, NumberModel, BooleanModel, OptionModel, OptionModelBase } from "./model"
+
+export { Model } from "./model/Model"
+export { GenericModel } from "./model/GenericModel"
+export { TextModel } from "./model/TextModel"
+export { HtmlModel } from "./model/HtmlModel"
+export { NumberModel } from "./model/NumberModel"
+export { BooleanModel } from "./model/BooleanModel"
+export { OptionModel } from "./model/OptionModel"
+export { OptionModelBase } from "./model/OptionModelBase"
 
 export { View, GenericView, ActionView, SlotView } from "./view"
 export { ButtonView } from "./view/ButtonView"

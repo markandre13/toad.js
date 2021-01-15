@@ -16,20 +16,44 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
-import { GenericView } from "../view"
+import { Model } from "./Model"
 
-// <toad-if> requires correct HTML otherwise <toad-if> and it's content might
-// be separated by stuff like an </p> inserted automatically by the browser
-// so one should use stuff like htmltidy or htmlhint
-export class ToadIf extends GenericView<BooleanModel> {
-  updateModel() {
+export class TextModel extends Model {
+  _value: string | Function
+
+  constructor(value: string) {
+    super()
+    this._value = value
   }
 
-  updateView() {
-    if (this.model) {
-      this.style.display = this.model.value ? "" : "none"
+  set promise(promise: Function) {
+    this._value = promise
+    this.modified.trigger()
+  }
+
+  get promise(): Function {
+    if (typeof this._value === "string") {
+      return () => {
+        return this._value
+      }
     }
+    return this._value
+  }
+
+  set value(value: string) {
+    if (this._value == value)
+      return
+    this._value = value
+    this.modified.trigger()
+  }
+
+  get value(): string {
+    if (typeof this._value === "number") {
+      this._value = String(this._value)
+    }
+    else if (typeof this._value !== "string") {
+      this._value = this._value() as string
+    }
+    return this._value
   }
 }
-customElements.define('toad-if', ToadIf)

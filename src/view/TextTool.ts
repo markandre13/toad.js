@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model } from "../model"
+import { Model } from "../model/Model"
 import { GenericView } from "../view"
 import { textAreaStyle } from "./textAreaStyle"
 

@@ -16,7 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TextModel, HtmlModel } from "../model"
+import { HtmlModel } from "../model/HtmlModel"
+import { TextModel } from "../model/TextModel"
 import { GenericView } from "../view"
 import { TextTool } from "./TextTool"
 import { textAreaStyle } from "./textAreaStyle"

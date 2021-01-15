@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { OptionModelBase } from "../model"
+import { OptionModelBase } from "../model/OptionModelBase"
 import { GenericView } from "../view"
 
 let toolbuttonStyle = document.createElement("style")

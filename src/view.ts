@@ -16,7 +16,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model, TextModel, HtmlModel } from "./model"
+import { HtmlModel } from "./model/HtmlModel"
+import { TextModel } from "./model/TextModel"
+import { Model } from "./model/Model"
 import { Controller, globalController } from "./controller"
 import { Action } from "./action"
 

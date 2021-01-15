@@ -16,20 +16,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
-import { GenericView } from "../view"
+import { OptionModelBase } from "./OptionModelBase"
 
-// <toad-if> requires correct HTML otherwise <toad-if> and it's content might
-// be separated by stuff like an </p> inserted automatically by the browser
-// so one should use stuff like htmltidy or htmlhint
-export class ToadIf extends GenericView<BooleanModel> {
-  updateModel() {
+export class OptionModel<T> extends OptionModelBase {
+  private _map: Map<string, T>
+
+  constructor() {
+    super()
+    this._map = new Map<string, T>()
   }
 
-  updateView() {
-    if (this.model) {
-      this.style.display = this.model.value ? "" : "none"
-    }
+  add(id: string, value: T) {
+    this._map.set(id, value)
   }
+
+  isValidStringValue(stringValue: string): boolean {
+    return this._map.has(stringValue)
+  }
+
+  get value(): T {
+    return this._map.get(this.stringValue)!
+  }
+
 }
-customElements.define('toad-if', ToadIf)

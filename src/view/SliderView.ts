@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { NumberModel } from "../model"
+import { NumberModel } from "../model/NumberModel"
 import { GenericView } from "../view"
 
 export class SliderView extends GenericView<NumberModel> {

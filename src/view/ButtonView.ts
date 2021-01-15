@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { HtmlModel } from "../model"
+import { HtmlModel } from "../model/HtmlModel"
 import { ActionView } from "../view"
 
 let buttonStyle = document.createElement("style")

@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model"
+import { BooleanModel } from "../model/BooleanModel"
 import { GenericView } from "../view"
 
 /* Safari & Chrome can do this and we want this */

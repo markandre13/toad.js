@@ -17,7 +17,7 @@
  */
 
 import * as dom from "../dom"
-import { Model } from "../model"
+import { Model } from "../model/Model"
 import { View } from "../view"
 import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"

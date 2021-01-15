@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model } from "../model"
+import { Model } from "../model/Model"
 import { TableEditMode, TablePos } from "./table"
 
 // FIXME: also needed is a model for range and 'random' selections

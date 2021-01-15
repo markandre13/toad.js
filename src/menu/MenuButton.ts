@@ -17,7 +17,9 @@
  */
 
 import { Action } from "../action"
-import { Model, TextModel, HtmlModel } from "../model"
+import { HtmlModel } from "../model/HtmlModel"
+import { TextModel } from "../model/TextModel"
+import { Model } from "../model/Model"
 import { GenericView } from "../view"
 import { globalController } from "../controller"
 import { menuStyle } from "./menuStyle"
