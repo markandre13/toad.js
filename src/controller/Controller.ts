@@ -22,8 +22,8 @@ import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
 import { Model } from "../model/Model"
 import { View } from "../view/View"
-import { Action } from "../action"
-import { Signal } from "../signal"
+import { Action } from "../model/Action"
+import { Signal } from "../Signal"
 
 export class Controller {
   modelId2Models: Map<string, Set<Model>>

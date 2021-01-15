@@ -19,7 +19,7 @@
 import { TextModel } from "../model/TextModel"
 import { Model } from "../model/Model"
 import { globalController } from "../controller/globalController"
-import { Action } from "../action"
+import { Action } from "../model/Action"
 import { GenericView } from "./GenericView"
 
 // FIXME: ActionView should also be a template instead of having a fixed TextModel

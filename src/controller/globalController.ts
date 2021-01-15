@@ -19,7 +19,7 @@
 import { BooleanModel } from "../model/BooleanModel"
 import { TextModel } from "../model/TextModel"
 import { Model } from "../model/Model"
-import { Action } from "../action"
+import { Action } from "../model/Action"
 import { Controller } from "./Controller"
 
 export let globalController = new Controller()

@@ -16,9 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export { Point, MatrixStruct, Matrix } from "./matrix"
-export { Signal } from "./signal"
-export { Action } from "./action"
+export { Point, MatrixStruct, Matrix } from "./Matrix"
+export { Signal } from "./Signal"
 
 export { Controller } from "./controller/Controller"
 export { Template } from "./controller/Template"
@@ -26,6 +25,7 @@ export { Dialog } from "./controller/Dialog"
 export { bind, action, unbind, globalController, boolean } from "./controller/globalController"
 
 export { Model } from "./model/Model"
+export { Action } from "./model/Action"
 export { GenericModel } from "./model/GenericModel"
 export { TextModel } from "./model/TextModel"
 export { HtmlModel } from "./model/HtmlModel"

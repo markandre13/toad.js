@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Signal } from "../signal"
+import { Signal } from "../Signal"
 
 export abstract class Model<T = void> {
   modified: Signal<T>

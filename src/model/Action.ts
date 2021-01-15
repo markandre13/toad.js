@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Model } from "./model/Model"
-import { Signal } from "./signal"
+import { Model } from "./Model"
+import { Signal } from "../Signal"
 
 export class Action extends Model {
   signal: Signal
