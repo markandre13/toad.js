@@ -17,7 +17,7 @@
  */
 
 import { HtmlModel } from "../model/HtmlModel"
-import { ActionView } from "../view"
+import { ActionView } from "./ActionView"
 
 let buttonStyle = document.createElement("style")
 buttonStyle.textContent=`

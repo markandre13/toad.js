@@ -18,7 +18,7 @@
 
 import * as dom from "../dom"
 import { Model } from "../model/Model"
-import { View } from "../view"
+import { View } from "../view/View"
 import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"
 import { TableEditMode, TablePos } from "./table"

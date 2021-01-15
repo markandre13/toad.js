@@ -17,7 +17,7 @@
  */
 
 import { NumberModel } from "../model/NumberModel"
-import { GenericView } from "../view"
+import { GenericView } from "./GenericView"
 
 export class SliderView extends GenericView<NumberModel> {
   input: HTMLInputElement

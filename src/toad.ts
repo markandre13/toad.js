@@ -29,16 +29,20 @@ export { BooleanModel } from "./model/BooleanModel"
 export { OptionModel } from "./model/OptionModel"
 export { OptionModelBase } from "./model/OptionModelBase"
 
-export { View, GenericView, ActionView, SlotView } from "./view"
+export { View } from "./view/View"
+export { GenericView } from "./view/GenericView"
+export { ActionView } from "./view/ActionView"
+export { SlotView } from "./view/SlotView"
 export { ButtonView } from "./view/ButtonView"
-export { ToolButton } from "./view/ToolButton"	// FIXME: no View in name?
+export { ToolButton } from "./view/ToolButton"
 export { CheckboxView } from "./view/CheckboxView"
-export { MenuButton } from "./menu/MenuButton"	// FIXME: no View in name?
 export { SliderView } from "./view/SliderView"
 export { TextView } from "./view/TextView"
 export { TextArea } from "./view/TextArea"
 export { TextTool } from "./view/TextTool"
 export { ToadIf } from "./view/ToadIf"
+
+export { MenuButton } from "./menu/MenuButton"
 
 export { TableView } from "./table/TableView"
 export { TableAdapter } from "./table/TableAdapter"

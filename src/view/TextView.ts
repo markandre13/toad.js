@@ -17,7 +17,7 @@
  */
 
 import { TextModel } from "../model/TextModel"
-import { GenericView } from "../view"
+import { GenericView } from "./GenericView"
 
 let textStyle = document.createElement("style")
 textStyle.textContent=`

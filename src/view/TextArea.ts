@@ -18,7 +18,7 @@
 
 import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
-import { GenericView } from "../view"
+import { GenericView } from "./GenericView"
 import { TextTool } from "./TextTool"
 import { textAreaStyle } from "./textAreaStyle"
 

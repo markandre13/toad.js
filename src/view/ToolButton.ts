@@ -17,7 +17,7 @@
  */
 
 import { OptionModelBase } from "../model/OptionModelBase"
-import { GenericView } from "../view"
+import { GenericView } from "./GenericView"
 
 let toolbuttonStyle = document.createElement("style")
 toolbuttonStyle.textContent=`

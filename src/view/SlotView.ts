@@ -16,20 +16,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
+import { HtmlModel } from "../model/HtmlModel"
+import { TextModel } from "../model/TextModel"
 import { GenericView } from "./GenericView"
 
-// <toad-if> requires correct HTML otherwise <toad-if> and it's content might
-// be separated by stuff like an </p> inserted automatically by the browser
-// so one should use stuff like htmltidy or htmlhint
-export class ToadIf extends GenericView<BooleanModel> {
-  updateModel() {
-  }
-
+export class SlotView extends GenericView<TextModel> {
+  constructor() { super() }
+  updateModel() { }
   updateView() {
-    if (this.model) {
-      this.style.display = this.model.value ? "" : "none"
-    }
+    if (!this.model)
+      return
+
+    let value = this.model.value === undefined ? "" : this.model.value
+    if (this.model instanceof HtmlModel)
+      this.innerHTML = value
+
+    else
+      this.innerText = value
   }
 }
-customElements.define('toad-if', ToadIf)
+window.customElements.define("toad-slot", SlotView)

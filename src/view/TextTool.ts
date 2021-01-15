@@ -17,7 +17,7 @@
  */
 
 import { Model } from "../model/Model"
-import { GenericView } from "../view"
+import { GenericView } from "./GenericView"
 import { textAreaStyle } from "./textAreaStyle"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions

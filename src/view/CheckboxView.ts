@@ -17,7 +17,7 @@
  */
 
 import { BooleanModel } from "../model/BooleanModel"
-import { GenericView } from "../view"
+import { GenericView } from "./GenericView"
 
 /* Safari & Chrome can do this and we want this */
 declare global {
