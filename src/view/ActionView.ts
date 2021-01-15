@@ -18,7 +18,7 @@
 
 import { TextModel } from "../model/TextModel"
 import { Model } from "../model/Model"
-import { globalController } from "../controller"
+import { globalController } from "../controller/globalController"
 import { Action } from "../action"
 import { GenericView } from "./GenericView"
 

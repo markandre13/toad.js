@@ -17,7 +17,8 @@
  */
 
 import { Model } from "../model/Model"
-import { Controller, globalController } from "../controller"
+import { globalController } from "../controller/globalController"
+import { Controller } from "../controller/Controller"
 
 export abstract class View extends HTMLElement {
   controller?: Controller

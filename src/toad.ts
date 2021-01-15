@@ -20,6 +20,11 @@ export { Point, MatrixStruct, Matrix } from "./matrix"
 export { Signal } from "./signal"
 export { Action } from "./action"
 
+export { Controller } from "./controller/Controller"
+export { Template } from "./controller/Template"
+export { Dialog } from "./controller/Dialog"
+export { bind, action, unbind, globalController, boolean } from "./controller/globalController"
+
 export { Model } from "./model/Model"
 export { GenericModel } from "./model/GenericModel"
 export { TextModel } from "./model/TextModel"
@@ -57,5 +62,3 @@ export { TreeModel } from "./table/TreeModel"
 export { TreeAdapter } from "./table/TreeAdapter"
 export { TreeNode } from "./table/TreeNode"
 export { TreeNodeModel } from "./table/TreeNodeModel"
-
-export { Controller, Template, Dialog, bind, action, unbind, globalController, boolean } from "./controller"
