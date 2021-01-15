@@ -19,7 +19,7 @@
 // TODO list table
 // [X] get rid of webpack now that we have rollup
 // [ ] adjust all lowercase *.ts file names
-// [ ] one internal style sheet for <table>, TreeAdapter chooses a layout via class
+// [X] one internal style sheet for <table>, TreeAdapter chooses a layout via class
 // [ ] row headers
 // [ ] fold/unfold tree
 // [ ] table/tree toolbox

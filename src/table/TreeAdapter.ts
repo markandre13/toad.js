@@ -31,6 +31,8 @@ const item_h = 20 // height of row
 export class TreeAdapter<T> extends TypedTableAdapter<T> {
     model?: TreeModel<T>
 
+    isViewCompact(): boolean { return true }
+
     // TODO: the adapter might want to override the number of columns and rows
     // ie. in case a column has different representations, ie. text field, slider, graphic, etc.
 

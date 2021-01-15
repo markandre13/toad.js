@@ -29,6 +29,8 @@ export class TableAdapter {
     displayCell(col: number, row: number): Node | undefined { return undefined }
     editCell(col: number, row: number): Node | undefined { return undefined }
 
+    isViewCompact(): boolean { return false }
+
     static register<T, A extends TypedTableAdapter<T>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
     static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel): void
     static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel, data?: any): void

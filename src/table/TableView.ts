@@ -23,6 +23,7 @@ import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"
 import { TableEditMode, TablePos } from "./table"
 import { TableAdapter } from "./TableAdapter"
+import { TreeAdapter } from "./TreeAdapter"
 
 declare global {
     interface Element {
@@ -122,83 +123,19 @@ div .t2d tr td.selected {
   background: #0069d4;
   color: #fff;
 }
-`
 
-export let treeStyle = document.createElement("style")
-treeStyle.textContent=`
-.t2 {
-  /* border: 1px inset; */
-  border: 1px #ccc solid;
-  border-radius: 3px;
-  outline-offset: -2px;
-  font-family: var(--toad-font-family, sans-serif);
-  font-size: var(--toad-font-size, 12px);
-}
-
-.t2h, .t2d {
-  border-color: #ccc #fff #fff #ccc;
-  border-width: 2px 0px 0px 2px;
-  border-style: solid none none solid;
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-/* FIXME: there is no re-evaluation after the table view was resized */
-/*
-th:last-child, td:last-child {
-  width: 100%;
-}
-*/
-
-.t2h tr {
-  background: #e0e0e0;
-}
-
-.t2h * th {
+.t2.compact .t2h * th {
   border-color: none;
   border-style: none;
   border-width: 0;
-  z-index: 1;
-  letter-spacing: 0;  
-  overflow: hidden;   
   padding: 0px;
-  margin: 0px; 
-  white-space: nowrap;
 }
 
-.t2d * td {
+.t2.compact .t2d * td {
   border-color: none;
   border-style: none;
   border-width: 0;
-  letter-spacing: 0;
-  overflow: hidden; 
   padding: 0px;
-  margin: 0px; 
-  white-space: nowrap;
-  /* background: #fff; */
-}
-
-.t2d tr:nth-child(even) {
-  background: var(--toad-table-even-row, #f5f5f5);
-}
-.t2d tr:nth-child(odd) {
-  background: var(--toad-table-odd-row, #ffffff);
-}
-
-div .t2d tr.selected,
-div .t2d tr td.selected {
-/*
-  background: #dcdcdc;
-  color: #000;
-*/
-  background: #808080;
-  color: #fff;
-}
-
-.t2:focus .t2d tr.selected,
-.t2:focus .t2d tr td.selected {
-  background: #0069d4;
-  color: #fff;
 }
 `
 
@@ -386,7 +323,7 @@ export class TableView extends View {
     this.rootDiv.appendChild(bodyDiv)
 
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot!.appendChild(document.importNode(treeStyle, true))
+    this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
     this.shadowRoot!.appendChild(this.rootDiv)
   }
 
@@ -418,6 +355,13 @@ export class TableView extends View {
       if (adapter) {
         this.adapter = new adapter()
         this.adapter.setModel(model)
+
+        if (this.adapter.isViewCompact()) {
+          this.rootDiv.classList.add("compact")
+        } else {
+          this.rootDiv.classList.remove("compact")
+        }
+
         this.updateView()
       } else {
         throw Error("did not find an adapter for model of type " + model.constructor.name)
