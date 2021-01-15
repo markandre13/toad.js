@@ -16,6 +16,21 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// TODO list table
+// [X] get rid of webpack now that we have rollup
+// [ ] adjust all lowercase *.ts file names
+// [ ] one internal style sheet for <table>, TreeAdapter chooses a layout via class
+// [ ] row headers
+// [ ] fold/unfold tree
+// [ ] table/tree toolbox
+// [ ] select whole column/row
+// [ ] select rectangular area
+// [ ] resize columns
+// [ ] rearrange columns
+// [ ] sort rows
+// [ ] filter rows
+// [ ] simple spreadsheet demo
+
 import { 
     TableModel, TableAdapter,
     TreeNode, TreeNodeModel, TreeAdapter,

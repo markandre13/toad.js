@@ -22,12 +22,12 @@ export { Action } from "./action"
 export { Model, GenericModel, TextModel, HtmlModel, NumberModel, BooleanModel, OptionModel, OptionModelBase } from "./model"
 
 export { View, GenericView, ActionView, SlotView } from "./view"
-export { ButtonView } from "./view/button"
-export { ToolButton } from "./view/toolbutton"	// FIXME: no View in name?
-export { CheckboxView } from "./view/checkbox"
+export { ButtonView } from "./view/ButtonView"
+export { ToolButton } from "./view/ToolButton"	// FIXME: no View in name?
+export { CheckboxView } from "./view/CheckboxView"
 export { MenuButton } from "./view/menu"	// FIXME: no View in name?
-export { SliderView } from "./view/slider"
-export { TextView } from "./view/text"
+export { SliderView } from "./view/SliderView"
+export { TextView } from "./view/TextView"
 export { TextArea } from "./view/TextArea"
 export { TextTool } from "./view/TextTool"
 export { ToadIf } from "./view/ToadIf"
