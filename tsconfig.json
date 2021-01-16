@@ -4,7 +4,7 @@
 //    "module": "commonjs",
     "moduleResolution": "node",
     "traceResolution": false,
-    "declaration": true,
+    "declaration": false,
     "lib": [ "es6", "dom", "dom.iterable" ],
     "outDir": "lib",
     "strict": true,

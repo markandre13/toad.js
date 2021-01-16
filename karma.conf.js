@@ -3,8 +3,8 @@ module.exports = (config) => {
     basePath: '.',
     frameworks: ["mocha", "chai", "karma-typescript", "source-map-support"],
     files: [ 
-      { pattern: "test/**/*.spec.ts" },
-      { pattern: "src/**/*.ts" }
+      "test/**/*.spec.ts",
+      "src/**/*.ts"
     ],
     preprocessors: {
       "**/*.ts": ["karma-typescript"]
@@ -14,7 +14,6 @@ module.exports = (config) => {
       compilerOptions: {
         "target": "es6",
         "module": "commonjs",
-        "moduleResolution": "node",
         "traceResolution": false,
         "baseUrl": ".",
         "paths": {
@@ -25,20 +24,15 @@ module.exports = (config) => {
         "allowJs": false,
         "noImplicitAny": true,
         "sourceMap": true
-      }
+      },
+      "exclude": [
+        "lib"
+      ]
     },
-    // client: {
-    //   mocha: {
-    //     // timeout: 6000,
-    //     reporter: "karma",
-    //     debug: true
-    //   }
-    // },
     port: 9876,
     colors: true,
     browsers: ['ChromeHeadless'],
     autoWatch: false,
     singleRun: true
-    // browserNoActivityTimeout: 0
   })
 }
