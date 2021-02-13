@@ -3,7 +3,7 @@
   "version": "0.0.11",
   "description": "The TOAD JavaScript/TypeScript GUI Library",
   "author": "Mark-André Hopf <mhopf@mark13.org>",
-  "license": "GPL-3.0",
+  "license": "AGPL-3.0",
   "main": "lib/toad.js",
   "types": "lib/toad.d.ts",
   "repository": {
