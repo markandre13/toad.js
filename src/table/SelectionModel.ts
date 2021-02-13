@@ -25,9 +25,9 @@ export class SelectionModel extends Model {
   mode: TableEditMode // FIXME: there might be a way to do without, just by the behaviour of a common API towards TableView
   _value: TablePos
 
-  constructor() {
+  constructor(mode = TableEditMode.EDIT_CELL) {
     super()
-    this.mode = TableEditMode.SELECT_ROW
+    this.mode = mode
     this._value = new TablePos(0, 0)
   }
 

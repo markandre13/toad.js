@@ -4,16 +4,18 @@ use(require('chai-subset'))
 import { 
     View, TableView, TableModel, TableEditMode, 
     SelectionModel, TextView, TextModel, 
-    bind, unbind, TableAdapter, 
+    bind, unbind, TableAdapter
 } from "../../src/toad"
+
+import { setAnimationFrameCount } from "../../src/scrollIntoView"
 
 describe("toad.js", function() {
     describe("table", function() {
         describe("class TableView", function() {
 
             beforeEach(function() {
-            unbind()
-            document.body.innerHTML = ""
+                unbind()
+                document.body.innerHTML = ""
             })
 
             class MyTableModel extends TableModel {
@@ -66,6 +68,7 @@ describe("toad.js", function() {
                 }
             }
             TableAdapter.register(MyTableAdapter, MyTableModel)
+            setAnimationFrameCount(0)
 
             describe("initialize view from model", function() {
                 it("does so when the model is defined before the view", function() {
@@ -76,7 +79,7 @@ describe("toad.js", function() {
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell = table.getElementAt(0, 0)
+                    let cell = table.getCellAt(0, 0)
                     expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
                 })
                 it("does so when the view is defined before the model", function() {
@@ -87,7 +90,7 @@ describe("toad.js", function() {
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell = table.getElementAt(0, 0)
+                    let cell = table.getCellAt(0, 0)
                     expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
                 })
             })
@@ -97,14 +100,14 @@ describe("toad.js", function() {
                     let dataModel = new MyTableModel()
                     bind("books", dataModel)
                     let selectionModel = new SelectionModel()
-                    selectionModel.mode = TableEditMode.EDIT_CELL
+                    expect(selectionModel.mode).to.equal(TableEditMode.EDIT_CELL)
                     bind("books", selectionModel)
                     document.body.innerHTML = "<toad-table model='books'></toad-table>"
                     
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell = table.getElementAt(0, 0)
+                    let cell = table.getCellAt(0, 0)
                     expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
 
                     let row = cell.parentElement as HTMLTableRowElement
@@ -112,18 +115,17 @@ describe("toad.js", function() {
                     
                     expect(row.classList.contains("selected")).to.equal(false)
                     
-                    let text = table.inputDiv.children[0] as TextView
+                    let text = table.inputOverlay.children[0] as TextView
                     expect(text.tagName).to.equal("TOAD-TEXT")
                     expect(text.value).to.equal("The Moon Is A Harsh Mistress")
                     
-                    selectionModel.row = 1
-                    
-                    text = table.inputDiv.children[0] as TextView
+                    selectionModel.row = 1                   
+                    text = table.inputOverlay.children[0] as TextView
                     expect(text.tagName).to.equal("TOAD-TEXT")
                     expect(text.value).to.equal("Stranger In A Strange Land")
                     
                     selectionModel.col = 1
-                    text = table.inputDiv.children[0] as TextView
+                    text = table.inputOverlay.children[0] as TextView
                     expect(text.tagName).to.equal("TOAD-TEXT")
                     expect(text.value).to.equal("Robert A. Heinlein")
                 })
@@ -139,8 +141,8 @@ describe("toad.js", function() {
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell0 = table.getElementAt(0, 0)
-                    let cell1 = table.getElementAt(0, 1)
+                    let cell0 = table.getCellAt(0, 0)
+                    let cell1 = table.getCellAt(0, 1)
                     expect(cell0.innerText).to.equal("The Moon Is A Harsh Mistress")
 
                     let row0 = cell0.parentElement as HTMLTableRowElement

@@ -7,6 +7,12 @@ textAreaStyle.textContent=`
     border-style: solid solid solid none;
     padding: 5;
     margin: 0;
+    vertical-align: middle;
+    height: 22px;
+}
+
+.toolbar button:active:hover {
+  background: linear-gradient(to bottom, #7abcff 0%,#0052cc 100%,#4096ee 100%);
 }
 
 .toolbar button.left {

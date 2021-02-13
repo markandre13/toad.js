@@ -16,17 +16,36 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { TableModel } from "./TableModel"
+import { TableEvent } from "./TableEvent"
+import { TableEventType } from "./TableEventType"
+import { TypedTableModel } from "./TypedTableModel"
 
-export class ArrayTableModel extends TableModel {
+export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
 
-  data: any
+  data: Array<T>
 
-  constructor(data: any) {
-    super()
+  constructor(data: Array<T>, nodeClass: new () => T) {
+    super(nodeClass)
     this.data = data
   }
 
-  get colCount(): number { return this.data ? this.data[0].length : 0 }
+  // get colCount(): number { return this.data ? this.data[0].length : 0 }
   get rowCount(): number { return this.data ? this.data.length : 0 }
+
+  createRow(): T { return new this.nodeClass() }
+
+  addRowAbove(row: number): number {
+    console.log(`add row above ${row}`)
+    const n = this.createRow()
+    this.data.splice(row, 0, n)
+    this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, 1))
+    return row
+  }
+
+  deleteRow(row: number): number {
+    console.log(`delete row ${row}`)
+    this.data.splice(row, 1)
+    this.modified.trigger(new TableEvent(TableEventType.REMOVED_ROW, row, 1))
+    return row
+  }
 }

@@ -10,6 +10,9 @@ module.exports = (config) => {
       "**/*.ts": ["karma-typescript"]
     },
     reporters: ["mocha", "karma-typescript"],
+    coverageOptions: {
+      instrumentation: false,
+    },
     karmaTypescriptConfig: {
       compilerOptions: {
         "target": "es6",

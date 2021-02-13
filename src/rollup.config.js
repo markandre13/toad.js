@@ -21,6 +21,6 @@ export default {
             },
             "useTsconfigDeclarationDir": true,
         }),
-        terser()
+        // terser()
     ]
 }

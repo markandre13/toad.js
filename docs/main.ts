@@ -17,13 +17,20 @@
  */
 
 // TODO list table
+// [ ] start writing unit tests, doing it manually is getting out of hands...
 // [X] get rid of webpack now that we have rollup
 // [ ] adjust all lowercase *.ts file names
 // [X] one internal style sheet for <table>, TreeAdapter chooses a layout via class
-// [ ] row headers
+// [X] row headers
+// [ ] don't scroll left & right when clicking on a 1st field (same issue for up'n down)
+// [ ] don't add scrollbars when editing OR always add scrollbars when editing is possible OR resize
+// [ ] restore table focus after toolbutton usage
+// [ ] don't default to row selection mode when there's a selection mode
+// [ ] keyboard for row selection mode
+// [ ] resize table
 // [ ] fold/unfold tree
-// [ ] table/tree toolbox
-// [ ] select whole column/row
+// [X] table/tree toolbox
+// [X] select whole column/row
 // [ ] select rectangular area
 // [ ] resize columns
 // [ ] rearrange columns
@@ -31,8 +38,8 @@
 // [ ] filter rows
 // [ ] simple spreadsheet demo
 
-import { 
-    TableModel, TableAdapter,
+import {
+    ArrayTableModel, TableAdapter,
     TreeNode, TreeNodeModel, TreeAdapter,
     TextModel, TextView,
     bind,
@@ -47,29 +54,25 @@ class Book {
     title: string
     author: string
     year: number
-    constructor(title: string, author: string, year: number) {
+    constructor(title: string = "", author: string = "", year: number = 1970) {
         this.title = title
         this.author = author
         this.year = year
     }
 }
 
-// TODO: use ArrayTableModel for this
-class BookTableModel extends TableModel {
-    data: Array<Book>
+class BookTableModel extends ArrayTableModel<Book> {
     constructor(data: Array<Book>) {
-        super()
-        this.data = data
-    }
-    get colCount(): number { return 3 }
-    get rowCount(): number { return this.data.length }
+        super(data, Book)
+     }
+    get colCount(): number { return 10 }
 }
 
 class BookTableAdapter extends TableAdapter {
     model?: BookTableModel
 
-    setModel(model: TableModel) {
-        this.model = model as BookTableModel
+    setModel(model: BookTableModel) {
+        this.model = model
     }
 
     getColumnHead(col: number): Node | undefined {
@@ -78,19 +81,23 @@ class BookTableAdapter extends TableAdapter {
             case 1: return document.createTextNode("Author")
             case 2: return document.createTextNode("Year")
         }
-        return undefined
+        return document.createTextNode("x")
+    }
+
+    getRowHead(row: number) {
+        return document.createTextNode(`${row}`)
     }
 
     displayCell(col: number, row: number): Node | undefined {       
         const text = this.getField(col, row)
-        if (!text)
+        if (text === undefined)
             return undefined
         return document.createTextNode(text)
     }
 
     editCell(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
-        if (!text)
+        if (text === undefined)
             return undefined
         const model = new TextModel(text)
         model.modified.add( () => {
@@ -109,6 +116,7 @@ class BookTableAdapter extends TableAdapter {
             case 0: text = this.model.data[row].title; break
             case 1: text = this.model.data[row].author; break
             case 2: text = `${this.model.data[row].year}`; break
+            default: text = `dummy${col}:${row}`
         }
         // console.log(`BookTableAdapter.getField(${col}, ${row}) -> "${text}"`)
         // console.log(this.model.data[row])
@@ -129,7 +137,7 @@ class BookTableAdapter extends TableAdapter {
         this.model.modified.trigger(new TableEvent(TableEventType.CHANGED, 0, 0))
     }
 }
-TableAdapter.register(BookTableAdapter, BookTableModel)
+TableAdapter.register(BookTableAdapter, BookTableModel, Book)
 
 function initializeBooks() {
     const data = new Array<Book>()

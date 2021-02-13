@@ -206,7 +206,7 @@ export class TextTool extends GenericView<Model> {
 
         this.buttonUnorderedList = document.createElement("button")
         this.buttonUnorderedList.classList.add("left")
-        this.buttonUnorderedList.innerHTML = `<svg viewBox="0 0 17 10.5" width="17" height="10.5">
+        this.buttonUnorderedList.innerHTML = `<svg style="display: block;" viewBox="0 0 17 11.5" width="17" height="11.5">
             <circle cx="4.5" cy="1.5" r="0.8" stroke="#000" fill="#000"/>
             <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000"/>
             <circle cx="4.5" cy="5.5" r="0.8" stroke="#000" fill="#000"/>
@@ -222,7 +222,7 @@ export class TextTool extends GenericView<Model> {
 
         this.buttonOrderedList = document.createElement("button")
         this.buttonOrderedList.classList.add("right")
-        this.buttonOrderedList.innerHTML = `<svg viewBox="0 0 17 10.5" width="17" height="10.5">
+        this.buttonOrderedList.innerHTML = `<svg style="display: block;" viewBox="0 0 17 11.5" width="17" height="11.5">
             <line x1="4.5" y1="0" x2="4.5" y2="3" stroke="#000" />
             <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000"/>
             <line x1="2.5" y1="4" x2="2.5" y2="7" stroke="#000" />

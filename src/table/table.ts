@@ -53,37 +53,37 @@ export class TablePos {
  * the following is most likely to become obsolete
  */
 
-let tableModelLocators = new Array<(data: any) => TableModel|undefined>()
+// let tableModelLocators = new Array<(data: any) => TableModel|undefined>()
 
-export function registerTableModelLocator( locator: (data: any) => TableModel|undefined ): void {
-  tableModelLocators.push(locator)
-}
+// export function registerTableModelLocator( locator: (data: any) => TableModel|undefined ): void {
+//   tableModelLocators.push(locator)
+// }
 
-export function createTableModel(data: any): TableModel {
-  for(let locator of tableModelLocators) {
-    let model = locator(data)
-    if (model)
-      return model
-  }
-  throw new Error("findTableModel() failed to locate a table model")
-}
+// export function createTableModel(data: any): TableModel {
+//   for(let locator of tableModelLocators) {
+//     let model = locator(data)
+//     if (model)
+//       return model
+//   }
+//   throw new Error("findTableModel() failed to locate a table model")
+// }
 
-registerTableModelLocator( function(data: any): TableModel | undefined {
-  if (!(data instanceof Array)) {
-    return undefined
-  }
-  if (data.length===0) {
-    return undefined
-  }
-  if (!(data[0] instanceof Array)) {
-    return undefined
-  }
-  for(let field of data[0]) {
-    if ( typeof field !== "string" &&
-         typeof field !== "number" )
-    {
-      return undefined
-    }
-  }
-  return new ArrayTableModel(data)
-})
+// registerTableModelLocator( function(data: any): TableModel | undefined {
+//   if (!(data instanceof Array)) {
+//     return undefined
+//   }
+//   if (data.length===0) {
+//     return undefined
+//   }
+//   if (!(data[0] instanceof Array)) {
+//     return undefined
+//   }
+//   for(let field of data[0]) {
+//     if ( typeof field !== "string" &&
+//          typeof field !== "number" )
+//     {
+//       return undefined
+//     }
+//   }
+//   return new ArrayTableModel(data)
+// })
