@@ -26,7 +26,8 @@ module.exports = (config) => {
         "sourceMap": true
       },
       "exclude": [
-        "lib"
+        "lib",
+        "docs"
       ]
     },
     port: 9876,
