@@ -1,27 +1,26 @@
 import typescript from 'rollup-plugin-typescript2';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
 import { terser } from "rollup-plugin-terser";
  
 export default {
-    input: 'docs/main.ts',
+    input: 'src/toad.ts',
     output: {
-      name: 'example',
-      file: 'docs/main.js',
-      format: 'iife',
+      name: 'toad',
+      format: 'umd',
+      file: 'lib/toad.js',
       sourcemap: true
     },
     plugins: [
         typescript({
             tsconfigOverride: {
                 compilerOptions: {
-                    outDir: "docs"
+                    declaration: true,
+                    outDir: "lib",
+                    declarationDir: "lib",
                 },
-                include: [ "docs", "lib" ]
+                include: [ "src" ]
             },
+            "useTsconfigDeclarationDir": true,
         }),
-        nodeResolve(),
-        commonjs(),
         terser()
     ]
 }

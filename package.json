@@ -11,7 +11,7 @@
     "url": "git+https://github.com/markandre13/toad.js.git"
   },
   "scripts": {
-    "build": "tsc --declaration --emitDeclarationOnly && rollup --config rollup.config.js",
+    "build": "rollup --config src/rollup.config.js",
     "build-docs": "rollup --config docs/rollup.config.js",
     "test": "karma start",
     "ui-test": "webpack ; mocha ui-test/bootstrap.js -t 100000 --recursive ui-test",
