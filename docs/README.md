@@ -7,13 +7,11 @@
 
 Welcome to the TOAD GUI Library.
 
-* toad.js utilizes ***WebComponents*** and hence doesn't need all the infrastructure code burdening
+ * toad.js utilizes ***WebComponents*** and hence doesn't need all the infrastructure code burdening
   React or Angular and therefore fits nicely into 71KB (2KB gzipped).
 
-* toad.js provides ***Model-View-Controller (MVC)*** to WebComponents, encouraging a clear
-  separation of view, data (state, model) and code (controller). React's JSX, most likely
-  being inspired by Facebook's former usage of PHP, on the other hand encourages mixing of
-  view (HTML) and code (Controller & Model), usually resulting in code which is hard to maintain.
+* toad.js provides ***Model-View-Controller (MVC)*** for WebComponents, encouraging a clear
+  separation of view (user interface), model (business data and logic) and controller (code connecting model and view). React's JSX, most likely being inspired by Facebook's former usage of PHP, on the other hand encourages mixing of view (HTML) and code  (Controller & Model), usually resulting in code which is hard to maintain.
 
 * ***MVC Doesn't Scale?*** When Facebook's React team presented Flux as an alternative to "*MVC*",
   they were referring to *JSP Model 2*, a webserver based architecture which has nothing in
@@ -24,7 +22,7 @@ Welcome to the TOAD GUI Library.
   many desktop ui frameworks. *MVC* can furthermore be extended by the *DCI*
   (data, context, interaction) pattern to structure complex applications.
 
-  That said, React/Flux basically *is* an *MVC* variant, with React Components providing
+  That said, React/Flux basically *is* a *MVC* variant, with React Components providing
   the *View* and Flux's state the *Model*, solving all the issues Facebook struggled to
   fix in their chat implementation.
 
@@ -41,7 +39,7 @@ Welcome to the TOAD GUI Library.
 
 * Support for table and tree views is in active development.
 
-* Support for Routing, Undo/Redo, Dialogs, etc. is on the roadmap.
+* Support for Routing, Undo/Redo, Dialogs, Copy'n Paste, Drag'n Drop, etc. is on the roadmap.
 
 Please see the <a href="https://markandre13.github.io/toad-demo/">introduction</a> for further
 information.
