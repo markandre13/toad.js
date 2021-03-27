@@ -31,8 +31,9 @@ describe("toad.js", function() {
                     expect(rows[3].clientHeight-5).equals(scene.data[2].height)
                 })
                 // row with fields of different heights
+                // row header as different height from row
                 describe("the heights for animation and their display are correct", function() {
-                    it.only("insert single row", async function() {
+                    it("insert single row", async function() {
                         scene.model.addRowAbove(2, new VariableHeightThingy(128))
                         await scene.sleep()
 
@@ -48,13 +49,17 @@ describe("toad.js", function() {
                         expect(rows[3].clientHeight-5).equals(scene.data[2].height)
                         expect(rows[4].clientHeight-5).equals(scene.data[3].height)
 
-                        expect(scene.table.rowAnimationHeight).to.equal(133)
+                        expect(scene.table.rowAnimationHeight).to.equal(128 + 5)
                     })
-                    it("remove single row", function() {
+                    it("remove single row", async function() {
+                        scene.model.deleteRow(1)
+                        await scene.sleep()
+
+                        expect(scene.table.rowAnimationHeight).to.equal(32 + 5)
                     })
-                    it("insert multiple rows", function() {
+                    xit("insert multiple rows", function() {
                     })
-                    it("remove multiple rows", function() {
+                    xit("remove multiple rows", function() {
                     })
                 })
             })

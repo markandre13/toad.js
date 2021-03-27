@@ -518,7 +518,8 @@ export class TableView extends View {
         const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
         const trBody = this.bodyBody.children[event.index+1] as HTMLTableRowElement
 
-        const rowAnimationHeight = 19
+        const rowAnimationHeight = trBody.clientHeight
+        this.rowAnimationHeight = rowAnimationHeight
 
         trHead.style.minHeight = trHead.style.maxHeight = ""
         trBody.style.minHeight = trBody.style.maxHeight = ""
