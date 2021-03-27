@@ -19,7 +19,7 @@ describe("toad.js", function() {
                 // await scene.sleep()                
             })
 
-            describe.only("variable row heights", function() {
+            describe("variable row heights", function() {
                 it("initial heights of a new table is correct", function() {
                     describe("the heights for animation and their display are correct", function() {
                         it("insert single row", function() {
@@ -51,7 +51,7 @@ class VariableRowHeightScene {
         TableAdapter.register(VHTTableAdapter, VHTModel, VariableHeightThingy)
 
         const data = new Array<VariableHeightThingy>()
-        const init = [
+        const _init = [
             16,
             32,
             64
