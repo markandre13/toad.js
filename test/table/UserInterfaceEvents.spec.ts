@@ -185,8 +185,8 @@ class BookTableScene {
         this.selectionModel = new SelectionModel()
         bind("books", this.selectionModel)
 
-        document.body.innerHTML = `<div style="width: 480px"><toad-table model='books'></toad-table></div>`
-        this.table = document.body.children[0].children[0] as TableView
+        document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='books'></toad-table></div>`
+        this.table = document.body.children[1].children[0] as TableView
         expect(this.table.tagName).to.equal("TOAD-TABLE")
 
         setAnimationFrameCount(400)
