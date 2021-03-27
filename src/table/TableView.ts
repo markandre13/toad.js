@@ -163,6 +163,11 @@ tableStyle.textContent=`
   border: none;
   opacity: 0;
 }
+
+.hiddenSizeCheck {
+  position: absolute;
+  opacity: 0;
+}
 `
 
 /*
@@ -312,17 +317,18 @@ export class TableView extends View {
     this.inputOverlay.addEventListener("focusout", () => {
       this.inputOverlay.style.opacity = "0"
     })
-
     zeroSize.appendChild(this.inputOverlay)
-    bodyDiv.appendChild(zeroSize)
-
+  
     const hiddenSizeCheckTable = document.createElement("table")
-    // hiddenSizeCheckTable.style.display
+    hiddenSizeCheckTable.classList.add("hiddenSizeCheck")
     this.hiddenSizeCheckBody = document.createElement("tbody")
     hiddenSizeCheckTable.appendChild(this.hiddenSizeCheckBody)
-    bodyDiv.appendChild(hiddenSizeCheckTable)
+    // zeroSize.appendChild(hiddenSizeCheckTable)
 
+    bodyDiv.appendChild(zeroSize)
     this.rootDiv.appendChild(bodyDiv)
+    this.rootDiv.appendChild(hiddenSizeCheckTable)
+
 
     this.attachShadow({ mode: 'open' })
     this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
@@ -473,7 +479,6 @@ export class TableView extends View {
         
         let rowAnimationHeight = 0
         // TODO: also include the row header in the row height calculation
-        // TODO: what about the visibility of hiddenSizeCheckBody? the scrollbar already makes a jump in size at the end
         const trBody = this.createDOMBodyRow(event.index)
         this.hiddenSizeCheckBody.appendChild(trBody)
 
@@ -482,7 +487,7 @@ export class TableView extends View {
         
         animate( (value: number): boolean => {
           if (value === 0) {
-            rowAnimationHeight = trBody.clientHeight
+            rowAnimationHeight = trBody.clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
             // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
             this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index+1])
             this.rowHeadHead.insertBefore(trHead, this.rowHeadHead.children[event.index])
