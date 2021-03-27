@@ -181,6 +181,8 @@ tableStyle.textContent=`
  *         bodyRow (tr, hidden, controls the width of all cells)
  *     zeroSize (div)
  *       inputDiv (div, focusin)
+ *     hiddenSizeCheckTable (table, hidden)
+ *       hiddenSizeCheckBody (tbody)
  */
 export class TableView extends View {
   model?: TableModel
@@ -208,6 +210,10 @@ export class TableView extends View {
   fieldModel?: Model
   cellBeingEdited?: HTMLElement
   insideGoTo: boolean
+
+  hiddenSizeCheckBody: HTMLTableSectionElement
+
+  rowAnimationHeight = 19
 
   static lastActiveTable?: TableView
 
@@ -309,6 +315,13 @@ export class TableView extends View {
 
     zeroSize.appendChild(this.inputOverlay)
     bodyDiv.appendChild(zeroSize)
+
+    const hiddenSizeCheckTable = document.createElement("table")
+    // hiddenSizeCheckTable.style.display
+    this.hiddenSizeCheckBody = document.createElement("tbody")
+    hiddenSizeCheckTable.appendChild(this.hiddenSizeCheckBody)
+    bodyDiv.appendChild(hiddenSizeCheckTable)
+
     this.rootDiv.appendChild(bodyDiv)
 
     this.attachShadow({ mode: 'open' })
@@ -447,44 +460,65 @@ export class TableView extends View {
 
   modelChanged(event: TableEvent) {
     switch(event.type) {
+
       case TableEventType.INSERT_ROW: {
         console.log(`TableView.modelChanged(): insert row ${event.index}`)
-
         const rowHeaderContent = this.adapter?.getRowHead(event.index)
-        
         const th = document.createElement("th")
         if (rowHeaderContent)
           th.appendChild(rowHeaderContent)
 
         const trHead = document.createElement("tr")
-        this.rowHeadHead.insertBefore(trHead, this.rowHeadHead.children[event.index])
+        trHead.style.height = "0px" 
+        
+        let rowAnimationHeight = 0
+        // TODO: also include the row header in the row height calculation
+        // TODO: what about the visibility of hiddenSizeCheckBody? the scrollbar already makes a jump in size at the end
+        const trBody = this.createDOMBodyRow(event.index)
+        this.hiddenSizeCheckBody.appendChild(trBody)
 
-        const trBody = document.createElement("tr")
-        trBody.style.height = "0px"
-        trHead.style.height = "0px"
-        this.bodyBody.insertBefore(trBody, this.bodyBody.children[event.index+1])
+        const trAnimationBody = document.createElement("tr")
+        trAnimationBody.style.height = "0px"
+        
         animate( (value: number): boolean => {
+          if (value === 0) {
+            rowAnimationHeight = trBody.clientHeight
+            // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
+            this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index+1])
+            this.rowHeadHead.insertBefore(trHead, this.rowHeadHead.children[event.index])
+            this.rowAnimationHeight = rowAnimationHeight // TODO: this.testAPI.... ??
+          }
+
+          const rowHeight = `${value * rowAnimationHeight}px`
+          // console.log(`value=${value}, rowHeight=${rowHeight}, rowAnimationHeight=${rowAnimationHeight}`)
           if (value < 1) {
-            trBody.style.height = `${value * 19}px`
-            trHead.style.height = `${value * 19}px`  
+            // intermediate step
+            trAnimationBody.style.height = rowHeight
+            trHead.style.height = rowHeight
+            // console.log(trAnimationBody)
           } else {
-            trBody.style.height = trBody.style.minHeight = trBody.style.maxHeight = `${value * 19}px`
-            trHead.style.height = trBody.style.minHeight = trBody.style.maxHeight = `${value * 19}px`
-            this.bodyBody.replaceChild(this.createDOMBodyRow(event.index), trBody)
+            // console.log("=========> finished animation")
+            // final step
+            trBody.style.height = trBody.style.minHeight = trBody.style.maxHeight = rowHeight
+            trHead.style.height = trBody.style.minHeight = trBody.style.maxHeight = rowHeight
+            this.bodyBody.replaceChild(trBody, trAnimationBody)
             trHead.appendChild(th)
           }
           return true
         })
       } break
+
       case TableEventType.REMOVED_ROW: {
         console.log(`TableView.modelChanged(): removed row ${event.index}`)
         const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
         const trBody = this.bodyBody.children[event.index+1] as HTMLTableRowElement
 
+        const rowAnimationHeight = 19
+
         trHead.style.minHeight = trHead.style.maxHeight = ""
         trBody.style.minHeight = trBody.style.maxHeight = ""
-        trHead.style.height = "19px"
-        trBody.style.height = "19px"
+        trHead.style.height = `${rowAnimationHeight}px`
+        trBody.style.height = `${rowAnimationHeight}px`
         while(trHead.children.length > 0)
           trHead.removeChild(trHead.children[0])
         while(trBody.children.length > 0)
@@ -492,8 +526,9 @@ export class TableView extends View {
 
         animate( (value: number): boolean => {
           value = 1 - value
-          trBody.style.height = `${value * 19}px`
-          trHead.style.height = `${value * 19}px`  
+          const rowHeight = `${value * rowAnimationHeight}px`
+          trBody.style.height = rowHeight
+          trHead.style.height = rowHeight  
           if (value === 0) {
             this.rowHeadHead.deleteRow(event.index)
             this.bodyBody.deleteRow(event.index+1)   

@@ -150,7 +150,11 @@ function smoothScroll(scrollable: Element, x: number, y: number): void {
 
 let idSource = 0
 
-export function animate(callback: (value: number) => boolean, startTime?: number, id?: number) {
+export function animate(callback: (value: number) => boolean) {
+    setTimeout( ()=> { window.requestAnimationFrame(animateStep.bind(window, callback, undefined, undefined)) } , 0)
+}
+
+function animateStep(callback: (value: number) => boolean, startTime?: number, id?: number) {
     if (startTime === undefined) {
         startTime = Date.now()
         id = ++idSource
@@ -166,7 +170,7 @@ export function animate(callback: (value: number) => boolean, startTime?: number
     if (callback(value) === false)
         return
     if (value < 1.0) {
-        window.requestAnimationFrame(animate.bind(window, callback, startTime, id))
+        window.requestAnimationFrame(animateStep.bind(window, callback, startTime, id))
     }
 }
 

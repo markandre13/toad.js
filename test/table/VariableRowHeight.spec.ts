@@ -21,15 +21,40 @@ describe("toad.js", function() {
 
             describe("variable row heights", function() {
                 it("initial heights of a new table is correct", function() {
-                    describe("the heights for animation and their display are correct", function() {
-                        it("insert single row", function() {
-                        })
-                        it("remove single row", function() {
-                        })
-                        it("insert multiple rows", function() {
-                        })
-                        it("remove multiple rows", function() {
-                        })
+                    const rows = scene.table.bodyBody.children
+                    expect(rows.length).to.equal(3+1)
+                    // for(let i=1; i<4; ++i) {
+                    //     console.log(`height: dom=${rows[i].clientHeight}, data=${scene.data[i-1].height}`)
+                    // }
+                    expect(rows[1].clientHeight-4).equals(scene.data[0].height)
+                    expect(rows[2].clientHeight-5).equals(scene.data[1].height) // + 1 row separator
+                    expect(rows[3].clientHeight-5).equals(scene.data[2].height)
+                })
+                // row with fields of different heights
+                describe("the heights for animation and their display are correct", function() {
+                    it.only("insert single row", async function() {
+                        scene.model.addRowAbove(2, new VariableHeightThingy(128))
+                        await scene.sleep()
+
+                        const rows = scene.table.bodyBody.children
+                        expect(rows.length).to.equal(4+1)
+
+                        for(let i=1; i<5; ++i) {
+                            console.log(`height: dom=${rows[i].clientHeight}, data=${scene.data[i-1].height}`)
+                        }
+
+                        expect(rows[1].clientHeight-4).equals(scene.data[0].height)
+                        expect(rows[2].clientHeight-5).equals(scene.data[1].height) // + 1 row separator
+                        expect(rows[3].clientHeight-5).equals(scene.data[2].height)
+                        expect(rows[4].clientHeight-5).equals(scene.data[3].height)
+
+                        expect(scene.table.rowAnimationHeight).to.equal(133)
+                    })
+                    it("remove single row", function() {
+                    })
+                    it("insert multiple rows", function() {
+                    })
+                    it("remove multiple rows", function() {
                     })
                 })
             })
@@ -41,6 +66,8 @@ class VariableRowHeightScene {
 
     table: TableView
     selectionModel: SelectionModel
+    data: Array<VariableHeightThingy>
+    model: VHTModel
 
     constructor() {
         try {
@@ -50,21 +77,21 @@ class VariableRowHeightScene {
 
         TableAdapter.register(VHTTableAdapter, VHTModel, VariableHeightThingy)
 
-        const data = new Array<VariableHeightThingy>()
+        this.data = new Array<VariableHeightThingy>()
         const _init = [
             16,
             32,
             64
         ].forEach( (e) => {
-            data.push(new VariableHeightThingy(e as number))
+            this.data.push(new VariableHeightThingy(e as number))
         })
-        const books = new VHTModel(data)
-        bind("books", books)
+        this.model = new VHTModel(this.data)
+        bind("model", this.model)
 
         this.selectionModel = new SelectionModel()
-        bind("books", this.selectionModel)
+        bind("model", this.selectionModel)
 
-        document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='books'></toad-table></div>`
+        document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='model'></toad-table></div>`
         this.table = document.body.children[1].children[0] as TableView
         expect(this.table.tagName).to.equal("TOAD-TABLE")
 
@@ -167,11 +194,16 @@ class VHTTableAdapter extends TableAdapter {
         return document.createTextNode("Thing")
     }
 
-    displayCell(col: number, row: number): Node | undefined {       
-        const text = this.getField(col, row)
-        if (text === undefined)
+    displayCell(col: number, row: number): Node | undefined { 
+        if (!this.model)
             return undefined
-        return document.createTextNode(text)
+        const height = this.model.data[row].height
+        const text = `${height}`
+
+        const div = document.createElement("div")
+        div.appendChild(document.createTextNode(text))
+        div.style.height = text + "px"
+        return div
     }
 
     editCell(col: number, row: number): Node | undefined {

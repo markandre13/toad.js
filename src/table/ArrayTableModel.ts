@@ -24,8 +24,8 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
 
   data: Array<T>
 
-  constructor(data: Array<T>, nodeClass: new () => T) {
-    super(nodeClass)
+  constructor(data: Array<T>, rowClass: new () => T) {
+    super(rowClass)
     this.data = data
   }
 
@@ -34,10 +34,11 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
 
   createRow(): T { return new this.nodeClass() }
 
-  addRowAbove(row: number): number {
+  addRowAbove(row: number, rowData?: T): number {
     console.log(`add row above ${row}`)
-    const n = this.createRow()
-    this.data.splice(row, 0, n)
+    if (rowData === undefined)
+      rowData = this.createRow()
+    this.data.splice(row, 0, rowData)
     this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, 1))
     return row
   }
