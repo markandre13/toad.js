@@ -1,22 +1,71 @@
 import { expect, use } from "chai"
 use(require('chai-subset'))
 
-import { 
-    TableView, 
-    SelectionModel, TextView, TextModel, TableEvent, TableEventType,
-    bind, unbind, TableAdapter, ArrayTableModel
-} from "../../src/toad"
-
-import { setAnimationFrameCount } from "../../src/scrollIntoView"
+import { BookTableScene, Book } from "./BookTableScene"
 
 describe("toad.js", function() {
     describe("table", function() {
         describe("class TableView", function() {
             let scene: BookTableScene
 
-            this.beforeAll( async function() {
+            this.beforeEach( async function() {
                 scene = new BookTableScene()
                 // await scene.sleep()                
+            })
+
+            describe.only("update view when model changes", function() {
+                describe("single row", function() {
+                    it("insert", async function() {
+                        const rows = scene.table.bodyBody.children
+
+                        expect(scene.model.data.length).to.equal(8)
+                        expect(rows.length).to.equal(8+1)
+
+                        const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
+                        scene.model.addRowAbove(3, newBook)
+                        await scene.sleep()
+
+                        // TODO: this test should be in ArrayTableModel
+                        expect(scene.model.data.length).to.equal(9)
+                        expect(scene.model.data[3]).to.equal(newBook)
+
+                        expect(rows.length).to.equal(9+1)
+                        expect((rows[3+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook.title)
+                        expect((rows[3+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook.author)
+                        expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
+                    })
+                    xit("delete", function(){})
+                })
+                describe("two rows", function() {
+                    it.only("insert", async function() {
+                        const rows = scene.table.bodyBody.children
+
+                        expect(scene.model.data.length).to.equal(8)
+                        expect(rows.length).to.equal(8+1)
+
+                        const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
+                        const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
+                        scene.model.addRowAbove(3, [newBook0, newBook1])
+                        await scene.sleep()
+
+                        // TODO: this test should be in ArrayTableModel
+                        // scene.model.data.forEach( (row, index)=> {
+                        //     console.log(`${index}: ${row}`)
+                        // })
+                        expect(scene.model.data.length).to.equal(10)
+                        expect(scene.model.data[3]).to.equal(newBook0)
+                        expect(scene.model.data[4]).to.equal(newBook1)
+
+                        expect(rows.length).to.equal(10+1)
+                        expect((rows[3+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook0.title)
+                        expect((rows[3+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook0.author)
+                        expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook0.year}`)
+                        expect((rows[4+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook1.title)
+                        expect((rows[4+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook1.author)
+                        expect((rows[4+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook1.year}`)
+                    })
+                    xit("delete", function(){})
+                })
             })
 
             describe("user interface events", function() {
@@ -153,198 +202,4 @@ describe("toad.js", function() {
     })
 })
 
-class BookTableScene {
-
-    table: TableView
-    selectionModel: SelectionModel
-
-    constructor() {
-        try {
-        setAnimationFrameCount(0)
-        unbind()
-        document.body.innerHTML = ""
-
-        TableAdapter.register(BookTableAdapter, BookTableModel, Book)
-
-        const data = new Array<Book>()
-        const init = [
-            [ "The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966 ],
-            [ "Stranger In A Strange Land", "Robert A. Heinlein", 1961 ],
-            [ "The Fountains of Paradise", "Arthur C. Clarke", 1979],
-            [ "Rendezvous with Rama", "Arthur C. Clarke", 1973 ],
-            [ "2001: A Space Odyssey", "Arthur C. Clarke", 1968 ],
-            [ "Do Androids Dream of Electric Sheep?", "Philip K. Dick", 1968],
-            [ "A Scanner Darkly", "Philip K. Dick", 1977],
-            [ "Second Variety", "Philip K. Dick", 1953]
-        ].forEach( (e) => {
-            data.push(new Book(e[0] as string, e[1] as string, e[2] as number))
-        })
-        const books = new BookTableModel(data)
-        bind("books", books)
-
-        this.selectionModel = new SelectionModel()
-        bind("books", this.selectionModel)
-
-        document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='books'></toad-table></div>`
-        this.table = document.body.children[1].children[0] as TableView
-        expect(this.table.tagName).to.equal("TOAD-TABLE")
-
-        setAnimationFrameCount(400)
-        }
-        catch(e) {
-            console.log("============================================")
-            console.log(e.trace)
-            throw e
-        }
-    }
-
-    sleep(milliseconds: number = 500) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve('success')
-            }, milliseconds)
-        })
-    }
-
-    mouseDownAtCell(col: number, row: number) {
-        let cell = this.table.getCellAt(col, row)
-        const e = new MouseEvent("mousedown", {
-            bubbles: true,
-            relatedTarget: cell
-        })
-        cell.dispatchEvent(e)
-    }
-
-    sendTab() {
-        const inp = this.table.inputOverlay.children[0]
-        const e = new KeyboardEvent("keydown", {
-            bubbles: true,
-            key: "Tab"
-        })
-        inp.dispatchEvent(e)
-    }
-
-    sendShiftTab() {
-        const inp = this.table.inputOverlay.children[0]
-        const e = new KeyboardEvent("keydown", {
-            bubbles: true,
-            shiftKey: true,
-            key: "Tab"
-        })
-        inp.dispatchEvent(e)
-    }
-
-    sendArrowUp() {
-        const inp = this.table.inputOverlay.children[0]
-        const e = new KeyboardEvent("keydown", {
-            bubbles: true,
-            key: "ArrowUp"
-        })
-        inp.dispatchEvent(e)
-    }
-
-    sendArrowDown() {
-        const inp = this.table.inputOverlay.children[0]
-        const e = new KeyboardEvent("keydown", {
-            bubbles: true,
-            key: "ArrowDown"
-        })
-        inp.dispatchEvent(e)
-    }
-
-    expectInputOverlayToEqual(text: string) {
-        // @ts-ignore
-        expect(this.table.inputOverlay.children[0].value).equals(text)
-    }
-
-    expectScrollAt(x: number, y: number) {
-        expect(this.table.bodyDiv.scrollLeft, "x").equals(x)
-        expect(this.table.bodyDiv.scrollTop, "y").equals(y)
-    }
-}
-
-class Book {
-    title: string
-    author: string
-    year: number
-    constructor(title: string = "", author: string = "", year: number = 1970) {
-        this.title = title
-        this.author = author
-        this.year = year
-    }
-}
-
-class BookTableModel extends ArrayTableModel<Book> {
-    constructor(data: Array<Book>) {
-        super(data, Book)
-     }
-    get colCount(): number { return 10 }
-}
-
-class BookTableAdapter extends TableAdapter {
-    model?: BookTableModel
-
-    setModel(model: BookTableModel) {
-        this.model = model
-    }
-
-    getColumnHead(col: number): Node | undefined {
-        switch(col) {
-            case 0: return document.createTextNode("Title")
-            case 1: return document.createTextNode("Author")
-            case 2: return document.createTextNode("Year")
-        }
-        return document.createTextNode("x")
-    }
-
-    getRowHead(row: number) {
-        return document.createTextNode(`${row}`)
-    }
-
-    displayCell(col: number, row: number): Node | undefined {       
-        const text = this.getField(col, row)
-        if (text === undefined)
-            return undefined
-        return document.createTextNode(text)
-    }
-
-    editCell(col: number, row: number): Node | undefined {
-        const text = this.getField(col, row)
-        if (text === undefined)
-            return undefined
-        const model = new TextModel(text)
-        model.modified.add( () => {
-            this.setField(col, row, model.value)
-        })
-        const view = new TextView()
-        view.setModel(model)
-        return view
-    }
-
-    private getField(col: number, row: number): string | undefined {
-        if (!this.model)
-            return undefined
-        let text: string | undefined
-        switch(col) {
-            case 0: text = this.model.data[row].title; break
-            case 1: text = this.model.data[row].author; break
-            case 2: text = `${this.model.data[row].year}`; break
-            default: text = `dummy${col}:${row}`
-        }
-        return text
-    }
-
-    private setField(col: number, row: number, text: string): void {
-        // console.log(`BookTableAdapter.setField(${col}, ${row}, "${text}")`)
-        if (!this.model)
-            return
-        switch(col) {
-            case 0: this.model.data[row].title = text; break
-            case 1: this.model.data[row].author = text; break
-            case 2: this.model.data[row].year = Number.parseInt(text); break
-        }
-        // FIXME: let table handle this event and maybe also provide (col, row)
-        this.model.modified.trigger(new TableEvent(TableEventType.CHANGED, 0, 0))
-    }
-}
 

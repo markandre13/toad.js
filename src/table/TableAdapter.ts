@@ -50,6 +50,10 @@ export class TableAdapter {
         typeToModel.set(data, adapter)
     }
 
+    static unbind() {
+        modelToAdapter.clear()
+    }
+
     static lookup(model: TableModel): (new() => TableAdapter) | undefined {
         let nodeClass: any
         if(model instanceof TypedTableModel) {

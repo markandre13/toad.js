@@ -34,12 +34,17 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
 
   createRow(): T { return new this.nodeClass() }
 
-  addRowAbove(row: number, rowData?: T): number {
+  addRowAbove(row: number, rowData?: T | Array<T>): number {
     console.log(`add row above ${row}`)
     if (rowData === undefined)
       rowData = this.createRow()
-    this.data.splice(row, 0, rowData)
-    this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, 1))
+    let rowArray
+    if (rowData instanceof Array)
+      rowArray = rowData
+    else
+      rowArray = [rowData]
+    this.data.splice(row, 0, ...rowArray)
+    this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, rowArray.length))
     return row
   }
 

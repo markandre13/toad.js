@@ -3,7 +3,7 @@ module.exports = (config) => {
     basePath: '.',
     frameworks: ["mocha", "chai", "karma-typescript", "source-map-support"],
     files: [ 
-      "test/**/*.spec.ts",
+      "test/**/*.ts",
       "src/**/*.ts"
     ],
     preprocessors: {

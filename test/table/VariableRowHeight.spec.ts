@@ -40,9 +40,9 @@ describe("toad.js", function() {
                         const rows = scene.table.bodyBody.children
                         expect(rows.length).to.equal(4+1)
 
-                        for(let i=1; i<5; ++i) {
-                            console.log(`height: dom=${rows[i].clientHeight}, data=${scene.data[i-1].height}`)
-                        }
+                        // for(let i=1; i<5; ++i) {
+                        //     console.log(`height: dom=${rows[i].clientHeight}, data=${scene.data[i-1].height}`)
+                        // }
 
                         expect(rows[1].clientHeight-4).equals(scene.data[0].height)
                         expect(rows[2].clientHeight-5).equals(scene.data[1].height) // + 1 row separator
@@ -58,6 +58,9 @@ describe("toad.js", function() {
                         expect(scene.table.rowAnimationHeight).to.equal(32 + 5)
                     })
                     xit("insert multiple rows", function() {
+                        scene.model.addRowAbove(2, [
+                            new VariableHeightThingy(256),
+                            new VariableHeightThingy(128)] )
                     })
                     xit("remove multiple rows", function() {
                     })
