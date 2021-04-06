@@ -14,6 +14,7 @@
     "build": "rollup --config src/rollup.config.js",
     "build-docs": "rollup --config docs/rollup.config.js",
     "test": "karma start",
+    "test:watch": "karma start --singleRun=false --autoWatch=true",
     "ui-test": "webpack ; mocha ui-test/bootstrap.js -t 100000 --recursive ui-test",
     "update": "npx npm-check-updates -u && npm install"
   },
@@ -31,7 +32,7 @@
     "karma-chrome-launcher": "^3.1.0",
     "karma-mocha": "^2.0.1",
     "karma-mocha-reporter": "^2.2.5",
-    "karma-source-map-support": "^1.4.0",
+    "karma-sourcemap-loader": "^0.3.8",
     "karma-typescript": "^5.5.1",
     "mocha": "^8.3.2",
     "puppeteer": "^8.0.0",

@@ -1,13 +1,14 @@
 module.exports = (config) => {
   config.set({
     basePath: '.',
-    frameworks: ["mocha", "chai", "karma-typescript", "source-map-support"],
+    frameworks: ["mocha", "chai", "karma-typescript"],
     files: [ 
       "test/**/*.ts",
-      "src/**/*.ts"
+      "src/**/*.ts",
+      { pattern: 'node_modules/**/*.js.map', included: false, served: true, watched: false, nocache: true }
     ],
     preprocessors: {
-      "**/*.ts": ["karma-typescript"]
+      "**/*.ts": ["karma-typescript", "sourcemap"]
     },
     reporters: ["mocha", "karma-typescript"],
     coverageOptions: {

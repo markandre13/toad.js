@@ -469,45 +469,68 @@ export class TableView extends View {
 
       case TableEventType.INSERT_ROW: {
         console.log(`TableView.modelChanged(): insert row ${event.index}`)
+
+        // ????
         const rowHeaderContent = this.adapter?.getRowHead(event.index)
         const th = document.createElement("th")
         if (rowHeaderContent)
           th.appendChild(rowHeaderContent)
 
-        const trHead = document.createElement("tr")
-        trHead.style.height = "0px" 
-        
-        let rowAnimationHeight = 0
-        // TODO: also include the row header in the row height calculation
-        const trBody = this.createDOMBodyRow(event.index)
-        this.hiddenSizeCheckBody.appendChild(trBody)
+        const trHead:Array<HTMLTableRowElement> = []
+        const trBody:Array<HTMLTableRowElement> = []
 
+        for(let i=0; i<event.size; ++i) {
+
+          const trH = document.createElement("tr")
+          trH.style.height = "0px" 
+          trHead.push(trH)
+
+          const trB = this.createDOMBodyRow(event.index + i)
+          this.hiddenSizeCheckBody.appendChild(trB)
+          trBody.push(trB)
+
+          // TODO: also include the row header in the row height calculation
+        }
+
+        const trAnimationHead = document.createElement("tr")
+        trAnimationHead.style.height = "0px"
         const trAnimationBody = document.createElement("tr")
         trAnimationBody.style.height = "0px"
         
+        let rowAnimationHeight = 0
         animate( (value: number): boolean => {
           if (value === 0) {
-            rowAnimationHeight = trBody.clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
+            for(let i=0; i<event.size; ++i) {
+              rowAnimationHeight += trBody[i].clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
+            }
+            
             // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
+            this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
             this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index+1])
-            this.rowHeadHead.insertBefore(trHead, this.rowHeadHead.children[event.index])
             this.rowAnimationHeight = rowAnimationHeight // TODO: this.testAPI.... ??
           }
 
-          const rowHeight = `${value * rowAnimationHeight}px`
           // console.log(`value=${value}, rowHeight=${rowHeight}, rowAnimationHeight=${rowAnimationHeight}`)
           if (value < 1) {
             // intermediate step
+            const rowHeight = `${value * rowAnimationHeight}px`
+            trAnimationHead.style.height = rowHeight
             trAnimationBody.style.height = rowHeight
-            trHead.style.height = rowHeight
             // console.log(trAnimationBody)
           } else {
             // console.log("=========> finished animation")
             // final step
-            trBody.style.height = trBody.style.minHeight = trBody.style.maxHeight = rowHeight
-            trHead.style.height = trBody.style.minHeight = trBody.style.maxHeight = rowHeight
-            this.bodyBody.replaceChild(trBody, trAnimationBody)
-            trHead.appendChild(th)
+            for(let i=0; i<event.size; ++i) {
+              const rowHeight = `${trBody[i].clientHeight + 3}px`
+              const bodyStyle = trHead[i].style
+              bodyStyle.height = bodyStyle.minHeight = bodyStyle.maxHeight = rowHeight
+              const headStyle = trHead[i].style
+              headStyle.height = headStyle.minHeight = headStyle.maxHeight = rowHeight
+            }
+            this.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
+            this.bodyBody.replaceChild(trBody[0], trAnimationBody)
+            // FIXME: insert the rest!!!
+            // trHead.appendChild(th)
           }
           return true
         })

@@ -55,7 +55,12 @@ export function remove(n: Node): void {
     throw Error("element has no parent");
   n.parentNode.removeChild(n);
 }
-export function erase(n: Element): void { while(n.firstChild) n.removeChild(n.firstChild); }
+export function erase(n: Element): void { 
+  // if ('replaceChildren' in n && typeof n["replaceChildren"] === "function")
+  //   (n as any).replaceChildren()
+  // else
+    while(n.firstChild) n.removeChild(n.firstChild);
+}
 
 export function grabMouse(event: MouseEvent) {
   let target = event.target as HTMLElement
