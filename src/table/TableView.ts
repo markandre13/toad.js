@@ -329,7 +329,6 @@ export class TableView extends View {
     this.rootDiv.appendChild(bodyDiv)
     this.rootDiv.appendChild(hiddenSizeCheckTable)
 
-
     this.attachShadow({ mode: 'open' })
     this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
     this.shadowRoot!.appendChild(this.rootDiv)
@@ -468,7 +467,7 @@ export class TableView extends View {
     switch(event.type) {
 
       case TableEventType.INSERT_ROW: {
-        console.log(`TableView.modelChanged(): insert row ${event.index}`)
+        // console.log(`TableView.modelChanged(): insert row ${event.index}`)
 
         // ????
         const rowHeaderContent = this.adapter?.getRowHead(event.index)
@@ -476,48 +475,49 @@ export class TableView extends View {
         if (rowHeaderContent)
           th.appendChild(rowHeaderContent)
 
+        // create new rows and add them to the hiddenSizeCheckTable for measuring
         const trHead:Array<HTMLTableRowElement> = []
         const trBody:Array<HTMLTableRowElement> = []
-
         for(let i=0; i<event.size; ++i) {
-
           const trH = document.createElement("tr")
-          trH.style.height = "0px" 
+          trH.style.height = "0px" // height not yet measured for row header
           trHead.push(trH)
-
           const trB = this.createDOMBodyRow(event.index + i)
           this.hiddenSizeCheckBody.appendChild(trB)
           trBody.push(trB)
-
-          // TODO: also include the row header in the row height calculation
         }
 
+        // prepare temporary rows used for animation
         const trAnimationHead = document.createElement("tr")
         trAnimationHead.style.height = "0px"
         const trAnimationBody = document.createElement("tr")
         trAnimationBody.style.height = "0px"
-        
+        this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
+        this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index+1])
+    
         let rowAnimationHeight = 0
-        animate( (value: number): boolean => {
-          if (value === 0) {
+        animate( (animationTime: number): boolean => {
+          if (animationTime === 0) { // animation begins
+
+            // get the height needed for all rows from the hiddenSizeCheckTable
             for(let i=0; i<event.size; ++i) {
               rowAnimationHeight += trBody[i].clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
-            }
-            
+            }          
             // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
-            this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
-            this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index+1])
+
+            // this is to support the tests, letting 'em know which height we've calculated
             this.rowAnimationHeight = rowAnimationHeight // TODO: this.testAPI.... ??
           }
 
           // console.log(`value=${value}, rowHeight=${rowHeight}, rowAnimationHeight=${rowAnimationHeight}`)
-          if (value < 1) {
+          if (animationTime < 1) {
             // intermediate step
-            const rowHeight = `${value * rowAnimationHeight}px`
+            const rowHeight = `${animationTime * rowAnimationHeight}px`
             trAnimationHead.style.height = rowHeight
             trAnimationBody.style.height = rowHeight
             // console.log(trAnimationBody)
           } else {
+            // animation ends
             // console.log("=========> finished animation")
             // final step
             for(let i=0; i<event.size; ++i) {
@@ -529,15 +529,17 @@ export class TableView extends View {
             }
             this.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
             this.bodyBody.replaceChild(trBody[0], trAnimationBody)
-            // FIXME: insert the rest!!!
-            // trHead.appendChild(th)
+            for(let i=1; i<event.size; ++i) {
+              this.rowHeadHead.insertBefore(trHead[i], trHead[i-1].nextSibling)
+              this.bodyBody.insertBefore(trBody[i], trBody[i-1].nextSibling)
+            }
           }
           return true
         })
       } break
 
       case TableEventType.REMOVED_ROW: {
-        console.log(`TableView.modelChanged(): removed row ${event.index}`)
+        // console.log(`TableView.modelChanged(): removed row ${event.index}`)
         const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
         const trBody = this.bodyBody.children[event.index+1] as HTMLTableRowElement
 

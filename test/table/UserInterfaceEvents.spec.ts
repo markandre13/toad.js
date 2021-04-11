@@ -13,9 +13,9 @@ describe("toad.js", function() {
                 // await scene.sleep()                
             })
 
-            describe.only("update view when model changes", function() {
+            describe("update view when model changes", function() {
                 describe("single row", function() {
-                    xit("insert", async function() {
+                    it("insert", async function() {
                         const rows = scene.table.bodyBody.children
 
                         expect(scene.model.data.length).to.equal(8)
@@ -37,7 +37,7 @@ describe("toad.js", function() {
                     xit("delete", function(){})
                 })
                 describe("two rows", function() {
-                    it.only("insert", async function() {
+                    it("insert", async function() {
                         const rows = scene.table.bodyBody.children
 
                         expect(scene.model.data.length).to.equal(8)
@@ -55,8 +55,6 @@ describe("toad.js", function() {
                         expect(scene.model.data.length).to.equal(10)
                         expect(scene.model.data[3]).to.equal(newBook0)
                         expect(scene.model.data[4]).to.equal(newBook1)
-
-                        console.log(rows)
 
                         expect(rows.length).to.equal(10+1)
                         expect((rows[3+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook0.title)
