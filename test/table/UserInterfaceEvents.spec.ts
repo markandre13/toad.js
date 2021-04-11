@@ -34,7 +34,21 @@ describe("toad.js", function() {
                         expect((rows[3+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook.author)
                         expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
                     })
-                    xit("delete", function(){})
+                    it.only("delete", async function(){
+                        const rows = scene.table.bodyBody.children
+
+                        scene.model.deleteRow(2)
+                        await scene.sleep()
+
+                        // TODO: this test should be in ArrayTableModel
+                        expect(scene.model.data.length).to.equal(7)
+                        expect(scene.model.data[1].title).to.equal("Stranger In A Strange Land")
+                        expect(scene.model.data[2].title).to.equal("Rendezvous with Rama")
+
+                        expect(rows.length).to.equal(7+1)
+                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
+                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("Rendezvous with Rama")
+                    })
                 })
                 describe("two rows", function() {
                     it("insert", async function() {
