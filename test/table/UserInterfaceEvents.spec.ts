@@ -9,8 +9,7 @@ describe("toad.js", function() {
             let scene: BookTableScene
 
             this.beforeEach( async function() {
-                scene = new BookTableScene()
-                // await scene.sleep()                
+                scene = new BookTableScene()  
             })
 
             describe("update view when model changes", function() {
@@ -34,7 +33,7 @@ describe("toad.js", function() {
                         expect((rows[3+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook.author)
                         expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
                     })
-                    it.only("delete", async function(){
+                    it("delete", async function(){
                         const rows = scene.table.bodyBody.children
 
                         scene.model.deleteRow(2)
@@ -78,7 +77,25 @@ describe("toad.js", function() {
                         expect((rows[4+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook1.author)
                         expect((rows[4+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook1.year}`)
                     })
-                    xit("delete", function(){})
+                    it("delete", async function(){
+
+                        // FIXME!!! rowAnimationHeight isn't checked by any of the tests anymore...
+                        // or... VariableRowHeight.spec.ts covers that...
+
+                        const rows = scene.table.bodyBody.children
+
+                        scene.model.deleteRow(2, 2)
+                        await scene.sleep()
+
+                        // TODO: this test should be in ArrayTableModel
+                        expect(scene.model.data.length).to.equal(6)
+                        expect(scene.model.data[1].title).to.equal("Stranger In A Strange Land")
+                        expect(scene.model.data[2].title).to.equal("2001: A Space Odyssey")
+
+                        expect(rows.length).to.equal(6+1)
+                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
+                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("2001: A Space Odyssey")
+                    })
                 })
             })
 

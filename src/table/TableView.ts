@@ -561,8 +561,10 @@ export class TableView extends View {
           trBody.style.height = rowHeight
           trHead.style.height = rowHeight  
           if (value === 0) {
-            this.rowHeadHead.deleteRow(event.index)
-            this.bodyBody.deleteRow(event.index+1)   
+            for(let i=0; i<event.size; ++i) {
+              this.rowHeadHead.deleteRow(event.index)
+              this.bodyBody.deleteRow(event.index+1)
+            }
           }
           return true
         })

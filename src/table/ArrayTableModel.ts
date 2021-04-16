@@ -48,10 +48,10 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
     return row
   }
 
-  deleteRow(row: number): number {
+  deleteRow(row: number, count: number = 1): number {
     // console.log(`delete row ${row}`)
-    this.data.splice(row, 1)
-    this.modified.trigger(new TableEvent(TableEventType.REMOVED_ROW, row, 1))
+    this.data.splice(row, count)
+    this.modified.trigger(new TableEvent(TableEventType.REMOVED_ROW, row, count))
     return row
   }
 }
