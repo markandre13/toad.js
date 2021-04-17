@@ -21,6 +21,20 @@ export class BookTableScene {
 
         TableAdapter.register(BookTableAdapter, BookTableModel, Book)
 
+        this.model = BookTableScene.createBookModel()
+        bind("books", this.model)
+
+        this.selectionModel = new SelectionModel()
+        bind("books", this.selectionModel)
+
+        document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='books'></toad-table></div>`
+        this.table = document.body.children[1].children[0] as TableView
+        expect(this.table.tagName).to.equal("TOAD-TABLE")
+
+        setAnimationFrameCount(400)
+    }
+
+    static createBookModel() {
         const data = new Array<Book>()
         const init = [
             ["The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966],
@@ -34,17 +48,7 @@ export class BookTableScene {
         ].forEach((e) => {
             data.push(new Book(e[0] as string, e[1] as string, e[2] as number))
         })
-        this.model = new BookTableModel(data)
-        bind("books", this.model)
-
-        this.selectionModel = new SelectionModel()
-        bind("books", this.selectionModel)
-
-        document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='books'></toad-table></div>`
-        this.table = document.body.children[1].children[0] as TableView
-        expect(this.table.tagName).to.equal("TOAD-TABLE")
-
-        setAnimationFrameCount(400)
+        return new BookTableModel(data)
     }
 
     sleep(milliseconds: number = 500) {

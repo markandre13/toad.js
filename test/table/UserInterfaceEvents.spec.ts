@@ -7,26 +7,20 @@ describe("toad.js", function() {
     describe("table", function() {
         describe("class TableView", function() {
             let scene: BookTableScene
+            let rows: HTMLCollection
 
             this.beforeEach( async function() {
-                scene = new BookTableScene()  
+                scene = new BookTableScene()
+                rows = scene.table.bodyBody.children
+                expect(rows.length).to.equal(8+1)
             })
 
             describe("update view when model changes", function() {
                 describe("single row", function() {
                     it("insert", async function() {
-                        const rows = scene.table.bodyBody.children
-
-                        expect(scene.model.data.length).to.equal(8)
-                        expect(rows.length).to.equal(8+1)
-
                         const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                         scene.model.addRowAbove(3, newBook)
                         await scene.sleep()
-
-                        // TODO: this test should be in ArrayTableModel
-                        expect(scene.model.data.length).to.equal(9)
-                        expect(scene.model.data[3]).to.equal(newBook)
 
                         expect(rows.length).to.equal(9+1)
                         expect((rows[3+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook.title)
@@ -34,15 +28,8 @@ describe("toad.js", function() {
                         expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
                     })
                     it("delete", async function(){
-                        const rows = scene.table.bodyBody.children
-
                         scene.model.deleteRow(2)
                         await scene.sleep()
-
-                        // TODO: this test should be in ArrayTableModel
-                        expect(scene.model.data.length).to.equal(7)
-                        expect(scene.model.data[1].title).to.equal("Stranger In A Strange Land")
-                        expect(scene.model.data[2].title).to.equal("Rendezvous with Rama")
 
                         expect(rows.length).to.equal(7+1)
                         expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
@@ -51,23 +38,10 @@ describe("toad.js", function() {
                 })
                 describe("two rows", function() {
                     it("insert", async function() {
-                        const rows = scene.table.bodyBody.children
-
-                        expect(scene.model.data.length).to.equal(8)
-                        expect(rows.length).to.equal(8+1)
-
                         const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                         const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
                         scene.model.addRowAbove(3, [newBook0, newBook1])
                         await scene.sleep()
-
-                        // TODO: this test should be in ArrayTableModel
-                        // scene.model.data.forEach( (row, index)=> {
-                        //     console.log(`${index}: ${row}`)
-                        // })
-                        expect(scene.model.data.length).to.equal(10)
-                        expect(scene.model.data[3]).to.equal(newBook0)
-                        expect(scene.model.data[4]).to.equal(newBook1)
 
                         expect(rows.length).to.equal(10+1)
                         expect((rows[3+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook0.title)
@@ -78,19 +52,10 @@ describe("toad.js", function() {
                         expect((rows[4+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook1.year}`)
                     })
                     it("delete", async function(){
-
                         // FIXME!!! rowAnimationHeight isn't checked by any of the tests anymore...
                         // or... VariableRowHeight.spec.ts covers that...
-
-                        const rows = scene.table.bodyBody.children
-
                         scene.model.deleteRow(2, 2)
                         await scene.sleep()
-
-                        // TODO: this test should be in ArrayTableModel
-                        expect(scene.model.data.length).to.equal(6)
-                        expect(scene.model.data[1].title).to.equal("Stranger In A Strange Land")
-                        expect(scene.model.data[2].title).to.equal("2001: A Space Odyssey")
 
                         expect(rows.length).to.equal(6+1)
                         expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
