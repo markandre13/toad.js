@@ -538,7 +538,7 @@ export class TableView extends View {
         })
       } break
 
-      case TableEventType.REMOVED_ROW: {
+      case TableEventType.REMOVE_ROW: {
         // console.log(`TableView.modelChanged(): removed row ${event.index}`)
         const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
         const trBody = this.bodyBody.children[event.index+1] as HTMLTableRowElement

@@ -67,7 +67,7 @@ export class TableTool extends GenericView<Model> {
             const model = TableView.lastActiveTable?.model
             const selection = TableView.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
-                model.addRowAbove(selection.row) // table selectionmodel provides the row?
+                model.insert(selection.row) // table selectionmodel provides the row?
             }
         }
         toolbar.appendChild(this.buttonAddRowAbove)
@@ -82,10 +82,13 @@ export class TableTool extends GenericView<Model> {
             <line x1="6.5" y1="6" x2="6.5" y2="11" stroke="#000"/>
             <line x1="4" y1="8.5" x2="9" y2="8.5" stroke="#000"/>
         </svg>`
-        // this.buttonAddRowBelow.onclick = () => {
-        //     document.execCommand("formatBlock", false, "<h2>")
-        //     this.update()
-        // }
+        this.buttonAddRowBelow.onclick = () => {
+            const model = TableView.lastActiveTable?.model
+            const selection = TableView.lastActiveTable?.selectionModel
+            if (selection && model && model instanceof ArrayTableModel) {
+                model.insert(selection.row+1) // table selectionmodel provides the row?
+            }
+        }
         toolbar.appendChild(this.buttonAddRowBelow)
 
         this.buttonDeleteRow = document.createElement("button")
@@ -102,7 +105,7 @@ export class TableTool extends GenericView<Model> {
             const model = TableView.lastActiveTable?.model
             const selection = TableView.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
-                model.deleteRow(selection.row)
+                model.remove(selection.row)
             }
         }
         toolbar.appendChild(this.buttonDeleteRow)

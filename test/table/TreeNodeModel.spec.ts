@@ -419,7 +419,7 @@ describe("toad.js", function() {
                         tree.deleteAt(0)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVED_ROW, 0, 1))
+                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 0, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -447,7 +447,7 @@ describe("toad.js", function() {
                         // dump(this, "after")
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVED_ROW, 1, 1))
+                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 1, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -472,7 +472,7 @@ describe("toad.js", function() {
                         tree.deleteAt(0)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVED_ROW, 0, 1))
+                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 0, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -494,7 +494,7 @@ describe("toad.js", function() {
                         tree.deleteAt(1)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVED_ROW, 1, 1))
+                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 1, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -517,7 +517,7 @@ describe("toad.js", function() {
                         tree.deleteAt(1)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVED_ROW, 1, 1))
+                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 1, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(

@@ -34,7 +34,7 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
 
   createRow(): T { return new this.nodeClass() }
 
-  addRowAbove(row: number, rowData?: T | Array<T>): number {
+  insert(row: number, rowData?: T | Array<T>): number {
     // console.log(`add row above ${row}`)
     if (rowData === undefined)
       rowData = this.createRow()
@@ -48,10 +48,10 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
     return row
   }
 
-  deleteRow(row: number, count: number = 1): number {
+  remove(row: number, count: number = 1): number {
     // console.log(`delete row ${row}`)
     this.data.splice(row, count)
-    this.modified.trigger(new TableEvent(TableEventType.REMOVED_ROW, row, count))
+    this.modified.trigger(new TableEvent(TableEventType.REMOVE_ROW, row, count))
     return row
   }
 }

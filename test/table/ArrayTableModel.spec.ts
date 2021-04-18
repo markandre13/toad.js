@@ -14,14 +14,14 @@ describe("toad.js", function() {
                 })
             })
 
-            describe("addRowAbove()", function() {
-                it("addRowAbove(index, object)", async function() {
+            describe("insert()", function() {
+                it("insert(index, object)", async function() {
                     const model = BookTableScene.createBookModel()
                     let event: TableEvent | undefined
                     model.modified.add( (data: TableEvent) => { event = data })
 
                     const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
-                    model.addRowAbove(3, newBook)
+                    model.insert(3, newBook)
 
                     expect(model.data.length).to.equal(9)
                     expect(model.data[3]).to.equal(newBook)
@@ -29,14 +29,14 @@ describe("toad.js", function() {
                     expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 3, 1))
                 })
 
-                it("addRowAbove(index, [object, ...])", async function() {
+                it("insert(index, [object, ...])", async function() {
                     const model = BookTableScene.createBookModel()
                     let event: TableEvent | undefined
                     model.modified.add( (data: TableEvent) => { event = data })
 
                     const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                     const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
-                    model.addRowAbove(3, [newBook0, newBook1])
+                    model.insert(3, [newBook0, newBook1])
 
                     expect(model.data.length).to.equal(10)
                     expect(model.data[3]).to.equal(newBook0)
@@ -45,31 +45,31 @@ describe("toad.js", function() {
                     expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 3, 2))
                 })
             })
-            describe("deleteRow()", function() {
-                it("deleteRow(index)", function() {
+            describe("remove()", function() {
+                it("remove(index)", function() {
                     const model = BookTableScene.createBookModel()
                     let event: TableEvent | undefined
                     model.modified.add( (data: TableEvent) => { event = data })
 
-                    model.deleteRow(2)
+                    model.remove(2)
 
                     expect(model.data.length).to.equal(7)
                     expect(model.data[1].title).to.equal("Stranger In A Strange Land")
                     expect(model.data[2].title).to.equal("Rendezvous with Rama")
 
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVED_ROW, 2, 1))
+                    expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 2, 1))
                 })
-                it("deleteRow(startIndex, deleteCount)", async function() {
+                it("remove(startIndex, deleteCount)", async function() {
                     const model = BookTableScene.createBookModel()
                     let event: TableEvent | undefined
                     model.modified.add( (data: TableEvent) => { event = data })
-                    model.deleteRow(2, 2)
+                    model.remove(2, 2)
 
                     expect(model.data.length).to.equal(6)
                     expect(model.data[1].title).to.equal("Stranger In A Strange Land")
                     expect(model.data[2].title).to.equal("2001: A Space Odyssey")
 
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVED_ROW, 2, 2))
+                    expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 2, 2))
                 })
             })
         })

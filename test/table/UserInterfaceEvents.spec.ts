@@ -19,7 +19,7 @@ describe("toad.js", function() {
                 describe("single row", function() {
                     it("insert", async function() {
                         const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
-                        scene.model.addRowAbove(3, newBook)
+                        scene.model.insert(3, newBook)
                         await scene.sleep()
 
                         expect(rows.length).to.equal(9+1)
@@ -28,7 +28,7 @@ describe("toad.js", function() {
                         expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
                     })
                     it("delete", async function(){
-                        scene.model.deleteRow(2)
+                        scene.model.remove(2)
                         await scene.sleep()
 
                         expect(rows.length).to.equal(7+1)
@@ -40,7 +40,7 @@ describe("toad.js", function() {
                     it("insert", async function() {
                         const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                         const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
-                        scene.model.addRowAbove(3, [newBook0, newBook1])
+                        scene.model.insert(3, [newBook0, newBook1])
                         await scene.sleep()
 
                         expect(rows.length).to.equal(10+1)
@@ -54,7 +54,7 @@ describe("toad.js", function() {
                     it("delete", async function(){
                         // FIXME!!! rowAnimationHeight isn't checked by any of the tests anymore...
                         // or... VariableRowHeight.spec.ts covers that...
-                        scene.model.deleteRow(2, 2)
+                        scene.model.remove(2, 2)
                         await scene.sleep()
 
                         expect(rows.length).to.equal(6+1)

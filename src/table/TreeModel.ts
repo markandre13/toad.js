@@ -176,7 +176,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             }
         }
         this.rows.splice(row, 1)
-        this.modified.trigger(new TableEvent(TableEventType.REMOVED_ROW, row, 1))
+        this.modified.trigger(new TableEvent(TableEventType.REMOVE_ROW, row, 1))
         return row
     }
 

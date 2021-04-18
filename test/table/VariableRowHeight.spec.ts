@@ -34,7 +34,7 @@ describe("toad.js", function() {
                 // row header as different height from row
                 describe("the heights for animation and their display are correct", function() {
                     it("insert single row", async function() {
-                        scene.model.addRowAbove(2, new VariableHeightThingy(128))
+                        scene.model.insert(2, new VariableHeightThingy(128))
                         await scene.sleep()
 
                         const rows = scene.table.bodyBody.children
@@ -52,13 +52,13 @@ describe("toad.js", function() {
                         expect(scene.table.rowAnimationHeight).to.equal(128 + 5)
                     })
                     it("remove single row", async function() {
-                        scene.model.deleteRow(1)
+                        scene.model.remove(1)
                         await scene.sleep()
 
                         expect(scene.table.rowAnimationHeight).to.equal(32 + 5)
                     })
                     xit("insert multiple rows", function() {
-                        scene.model.addRowAbove(2, [
+                        scene.model.insert(2, [
                             new VariableHeightThingy(256),
                             new VariableHeightThingy(128)] )
                     })
