@@ -17,7 +17,8 @@
  */
 
 import { Model } from "../model/Model"
-import { GenericView } from "../view/GenericView"
+import { View } from "../view/View"
+import { GenericTool } from "../view/GenericTool"
 import { textAreaStyle } from "../view/textAreaStyle"
 
 import { TableView } from "./TableView"
@@ -25,11 +26,7 @@ import { ArrayTableModel } from "./ArrayTableModel"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
-export class TableTool extends GenericView<Model> {
-    // FIXME: make this a list where all texttools register/unregister via connectedCallback()/disconnectedCallback()
-    // FIXME: disable texttool when it is not above an active textarea in the view hierachy
-    static tabletool?: TableTool
-
+export class TableTool extends GenericTool<Model> {
     buttonAddRowAbove: HTMLElement
     buttonAddRowBelow: HTMLElement
     buttonDeleteRow: HTMLElement
@@ -44,10 +41,10 @@ export class TableTool extends GenericView<Model> {
     buttonAddNodeChild: HTMLElement
     buttonDeleteNode: HTMLElement
 
+    lastActiveTable: TableView | undefined
+
     constructor() {
         super()
-
-        TableTool.tabletool = this
 
         let toolbar = document.createElement("div")
         toolbar.classList.add("toolbar")
@@ -64,8 +61,8 @@ export class TableTool extends GenericView<Model> {
             <line x1="4" y1="4.5" x2="9" y2="4.5" stroke="#000"/>
         </svg>`
         this.buttonAddRowAbove.onclick = () => {
-            const model = TableView.lastActiveTable?.model
-            const selection = TableView.lastActiveTable?.selectionModel
+            const model = this.lastActiveTable?.model
+            const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
                 model.insert(selection.row) // table selectionmodel provides the row?
             }
@@ -83,8 +80,8 @@ export class TableTool extends GenericView<Model> {
             <line x1="4" y1="8.5" x2="9" y2="8.5" stroke="#000"/>
         </svg>`
         this.buttonAddRowBelow.onclick = () => {
-            const model = TableView.lastActiveTable?.model
-            const selection = TableView.lastActiveTable?.selectionModel
+            const model = this.lastActiveTable?.model
+            const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
                 model.insert(selection.row+1) // table selectionmodel provides the row?
             }
@@ -102,8 +99,8 @@ export class TableTool extends GenericView<Model> {
             <line x1="11.5" y1="3.5" x2="5.5" y2="9.5" stroke="#000" stroke-width="1.5"/>
         </svg>`
         this.buttonDeleteRow.onclick = () => {
-            const model = TableView.lastActiveTable?.model
-            const selection = TableView.lastActiveTable?.selectionModel
+            const model = this.lastActiveTable?.model
+            const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
                 model.remove(selection.row)
             }
@@ -247,6 +244,16 @@ export class TableTool extends GenericView<Model> {
         this.shadowRoot!.appendChild(toolbar)
     }
 
+    canHandle(view: View): boolean {
+        return view instanceof TableView
+    }
+    activate(): void {
+        this.lastActiveTable = TableTool.activeView as TableView
+    }
+    deactivate(): void {
+        this.lastActiveTable = undefined
+    }
+
     // update() {
     //     this.buttonAddRowAbove.classList.toggle("active", document.queryCommandValue("formatBlock") === "h1")
     //     this.buttonAddRowBelow.classList.toggle("active", document.queryCommandValue("formatBlock") === "h2")
@@ -265,16 +272,5 @@ export class TableTool extends GenericView<Model> {
     //     this.buttonJustifyRight.classList.toggle("active", document.queryCommandState("justifyRight"))
     //     //        this.buttonJustifyFull.classList.toggle("active", document.queryCommandState("justifyFull"))
     // }
-
-    updateModel() {
-        if (this.model) {
-        }
-    }
-
-    updateView() {
-        if (!this.model) {
-            return
-        }
-    }
 }
 window.customElements.define("toad-tabletool", TableTool)

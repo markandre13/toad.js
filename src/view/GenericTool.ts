@@ -24,7 +24,12 @@ export abstract class GenericTool<T extends Model> extends View {
     static activeTool: GenericTool<any> | undefined
     static activeView: View | undefined
 
-    // this doesn't handle the tool type yet
+    abstract canHandle(view: View): boolean
+    abstract activate(): void
+    abstract deactivate(): void
+
+    setModel(model?: Model): void { }
+
     static focusIn(view: View) {
         // console.log(`focusIn ${view.nodeName}`)
         const viewParents = new Map<Element, number>()
@@ -32,8 +37,10 @@ export abstract class GenericTool<T extends Model> extends View {
             viewParents.set(parent, distance)
         }
         let closestToolDistance = Number.MAX_SAFE_INTEGER
-        let closetTool: GenericTool<any> | undefined
+        let closestTool: GenericTool<any> | undefined
         for(const tool of this.allTools.values()) {
+            if (!tool.canHandle(view))
+                continue
             for(let toolParent = tool.parentElement, depth=0; toolParent !== null; toolParent = toolParent.parentElement, ++depth) {
                 const toolDistance = viewParents.get(toolParent)
                 // console.log(`focusIn: view has a tool parent ${toolParent.nodeName} at ${toolDistance}`)
@@ -43,20 +50,27 @@ export abstract class GenericTool<T extends Model> extends View {
                     continue
                 // console.log(`update tool distance to ${toolDistance}`)
                 closestToolDistance = toolDistance
-                closetTool = tool
+                closestTool = tool
             } 
         }
         // console.log(`found closest tool ${closetTool?.nodeName}`)
-        if (closetTool === undefined)
+        if (closestTool === undefined)
             return
-        this.activeTool = closetTool
+        this.setActive(closestTool, view)
+    }
+
+    static setActive(tool?: GenericTool<any>, view?: View) {
+        if (this.activeTool)
+            this.activeTool.deactivate()
+        this.activeTool = tool
         this.activeView = view
+        if (tool)
+            tool.activate()
     }
 
     static focusOut(view: View) {
         if (this.activeView === view) {
-            this.activeTool = undefined
-            this.activeView = undefined
+            this.setActive(undefined, undefined)
         }
     }
 
@@ -68,8 +82,7 @@ export abstract class GenericTool<T extends Model> extends View {
 
     disconnectedCallback() {
         if (GenericTool.activeTool === this) {
-            GenericTool.activeTool = undefined
-            GenericTool.activeView = undefined
+            GenericTool.setActive(undefined, undefined)
         }
         GenericTool.allTools.delete(this)
         super.disconnectedCallback()

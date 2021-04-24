@@ -26,7 +26,6 @@ import { TableEditMode, TablePos } from "./table"
 import { TableAdapter } from "./TableAdapter"
 import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
-import { trace } from "console"
 
 function pixelToNumber(pixel: string): number {
     if (pixel === "")
@@ -218,9 +217,7 @@ export class TableView extends View {
 
   hiddenSizeCheckBody: HTMLTableSectionElement
 
-  rowAnimationHeight = 19
-
-  static lastActiveTable?: TableView
+  rowAnimationHeight = 19 // ??
 
   constructor() {
     super()
@@ -973,7 +970,6 @@ export class TableView extends View {
   }
 
   focus() {
-    TableView.lastActiveTable = this
     const {x ,y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
     if (this.fieldView) {
       this.fieldView.focus({preventScroll: true})
