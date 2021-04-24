@@ -36,6 +36,7 @@ export { OptionModelBase } from "./model/OptionModelBase"
 
 export { View } from "./view/View"
 export { GenericView } from "./view/GenericView"
+export { GenericTool } from "./view/GenericTool"
 export { ActionView } from "./view/ActionView"
 export { SlotView } from "./view/SlotView"
 export { ButtonView } from "./view/ButtonView"

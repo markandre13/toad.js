@@ -299,13 +299,13 @@ export class TableView extends View {
     this.inputOverlay = document.createElement("div")
     this.inputOverlay.classList.add("inputDiv")
 
-    this.inputOverlay.addEventListener("focusin", (genericEvent: Event) => {
+    this.inputOverlay.addEventListener("focusin", (focusEvent: FocusEvent) => {
       this.inputOverlay.style.opacity = "1"
       if (this.insideGoTo)
         return
       if (!this.model)
         return
-      let event = genericEvent as FocusEvent
+      let event = focusEvent
       if (event.target && event.relatedTarget) {
         if (dom.order(event.relatedTarget as Node, this)) {
           this.goTo(0, 0)
