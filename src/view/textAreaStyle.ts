@@ -1,5 +1,11 @@
 export let textAreaStyle = document.createElement("style")
 textAreaStyle.textContent=`
+
+/* try to follow material ui: when active render button labels in black, otherwise in gray */
+.toolbar.active {
+  background: #080;
+}
+
 .toolbar button {
     background: #fff;
     color: #000;

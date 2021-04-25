@@ -27,6 +27,7 @@ import { ArrayTableModel } from "./ArrayTableModel"
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
 export class TableTool extends GenericTool<Model> {
+    toolbar: HTMLDivElement
     buttonAddRowAbove: HTMLElement
     buttonAddRowBelow: HTMLElement
     buttonDeleteRow: HTMLElement
@@ -46,8 +47,8 @@ export class TableTool extends GenericTool<Model> {
     constructor() {
         super()
 
-        let toolbar = document.createElement("div")
-        toolbar.classList.add("toolbar")
+        this.toolbar = document.createElement("div")
+        this.toolbar.classList.add("toolbar")
 
         this.buttonAddRowAbove = document.createElement("button")
         this.buttonAddRowAbove.title = "add row above"
@@ -67,7 +68,7 @@ export class TableTool extends GenericTool<Model> {
                 model.insert(selection.row) // table selectionmodel provides the row?
             }
         }
-        toolbar.appendChild(this.buttonAddRowAbove)
+        this.toolbar.appendChild(this.buttonAddRowAbove)
 
         this.buttonAddRowBelow = document.createElement("button")
         this.buttonAddRowBelow.title = "add row below"
@@ -86,7 +87,7 @@ export class TableTool extends GenericTool<Model> {
                 model.insert(selection.row+1) // table selectionmodel provides the row?
             }
         }
-        toolbar.appendChild(this.buttonAddRowBelow)
+        this.toolbar.appendChild(this.buttonAddRowBelow)
 
         this.buttonDeleteRow = document.createElement("button")
         this.buttonDeleteRow.title = "delete row"
@@ -105,9 +106,9 @@ export class TableTool extends GenericTool<Model> {
                 model.remove(selection.row)
             }
         }
-        toolbar.appendChild(this.buttonDeleteRow)
+        this.toolbar.appendChild(this.buttonDeleteRow)
 
-        toolbar.appendChild(document.createTextNode(" "))
+        this.toolbar.appendChild(document.createTextNode(" "))
 
         this.buttonAddColumnLeft = document.createElement("button")
         this.buttonAddColumnLeft.title = "add column left"
@@ -124,7 +125,7 @@ export class TableTool extends GenericTool<Model> {
         //     document.execCommand("formatBlock", false, "<h4>")
         //     this.update()
         // }
-        toolbar.appendChild(this.buttonAddColumnLeft)
+        this.toolbar.appendChild(this.buttonAddColumnLeft)
 
         this.buttonAddColumnRight = document.createElement("button")
         this.buttonAddColumnRight.title = "add column right"
@@ -140,7 +141,7 @@ export class TableTool extends GenericTool<Model> {
         //     document.execCommand("insertUnorderedList", false)
         //     this.update()
         // }
-        toolbar.appendChild(this.buttonAddColumnRight)
+        this.toolbar.appendChild(this.buttonAddColumnRight)
 
         this.buttonDeleteColumn = document.createElement("button")
         this.buttonDeleteColumn.title = "delete column"
@@ -156,9 +157,9 @@ export class TableTool extends GenericTool<Model> {
         //     document.execCommand("insertOrderedList", false)
         //     this.update()
         // }
-        toolbar.appendChild(this.buttonDeleteColumn)
+        this.toolbar.appendChild(this.buttonDeleteColumn)
 
-        toolbar.appendChild(document.createTextNode(" "))
+        this.toolbar.appendChild(document.createTextNode(" "))
 
         this.buttonAddNodeAbove = document.createElement("button")
         this.buttonAddNodeAbove.classList.add("left")
@@ -174,7 +175,7 @@ export class TableTool extends GenericTool<Model> {
         //     document.execCommand("bold", false)
         //     this.update()
         // }
-        toolbar.appendChild(this.buttonAddNodeAbove)
+        this.toolbar.appendChild(this.buttonAddNodeAbove)
 
         this.buttonAddNodeBelow = document.createElement("button")
         this.buttonAddNodeBelow.innerHTML = `<svg style="display: block; border: none;" viewBox="0 0 8 17" width="8" height="17">
@@ -189,7 +190,7 @@ export class TableTool extends GenericTool<Model> {
         //     document.execCommand("italic", false)
         //     this.update()
         // }
-        toolbar.appendChild(this.buttonAddNodeBelow)
+        this.toolbar.appendChild(this.buttonAddNodeBelow)
 
         this.buttonAddNodeParent = document.createElement("button")
         this.buttonAddNodeParent.innerHTML = `<svg viewBox="0 0 13 17" width="13" height="17">
@@ -206,7 +207,7 @@ export class TableTool extends GenericTool<Model> {
             // document.execCommand("underline", false)
             // this.update()
         }
-        toolbar.appendChild(this.buttonAddNodeParent)
+        this.toolbar.appendChild(this.buttonAddNodeParent)
 
         this.buttonAddNodeChild = document.createElement("button")
         this.buttonAddNodeChild.innerHTML = `<svg viewBox="0 0 13 17" width="13" height="17">
@@ -222,7 +223,7 @@ export class TableTool extends GenericTool<Model> {
         //     document.execCommand("strikeThrough", false)
         //     this.update()
         // }
-        toolbar.appendChild(this.buttonAddNodeChild)
+        this.toolbar.appendChild(this.buttonAddNodeChild)
 
         this.buttonDeleteNode = document.createElement("button")
         this.buttonDeleteNode.classList.add("right")
@@ -237,11 +238,11 @@ export class TableTool extends GenericTool<Model> {
         //     document.execCommand("subscript", false)
         //     this.update()
         // }
-        toolbar.appendChild(this.buttonDeleteNode)
+        this.toolbar.appendChild(this.buttonDeleteNode)
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.appendChild(document.importNode(textAreaStyle, true))
-        this.shadowRoot!.appendChild(toolbar)
+        this.shadowRoot!.appendChild(this.toolbar)
     }
 
     canHandle(view: View): boolean {
@@ -249,9 +250,11 @@ export class TableTool extends GenericTool<Model> {
     }
     activate(): void {
         this.lastActiveTable = TableTool.activeView as TableView
+        this.toolbar.classList.add("active")
     }
     deactivate(): void {
         this.lastActiveTable = undefined
+        this.toolbar.classList.remove("active")
     }
 
     // update() {

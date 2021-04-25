@@ -36,8 +36,11 @@ export abstract class GenericTool<T extends Model> extends View {
         for(let parent = view.parentElement, distance=0; parent !== null; parent = parent.parentElement, ++distance) {
             viewParents.set(parent, distance)
         }
+
+        // find view's closest parent that has tool children
         let closestToolDistance = Number.MAX_SAFE_INTEGER
-        let closestTool: GenericTool<any> | undefined
+        let closestParent: Element | undefined
+        let closestToolList = new Array<GenericTool<any>>()
         for(const tool of this.allTools.values()) {
             if (!tool.canHandle(view))
                 continue
@@ -48,15 +51,39 @@ export abstract class GenericTool<T extends Model> extends View {
                     continue
                 if (closestToolDistance < toolDistance)
                     continue
+                if (closestToolDistance > toolDistance) {
+                    closestToolList.length = 0
+                }
                 // console.log(`update tool distance to ${toolDistance}`)
                 closestToolDistance = toolDistance
-                closestTool = tool
+                closestParent = toolParent
+                closestToolList.push(tool)
             } 
         }
-        // console.log(`found closest tool ${closetTool?.nodeName}`)
-        if (closestTool === undefined)
-            return
+
+        // within that parent find the tool which follows after the view
+        let closestTool: GenericTool<any> | undefined
+        const viewIndex = GenericTool.getIndex(view, closestParent!)
+        // console.log(`view has index ${viewIndex}`)
+        let closestNextSiblingIndex = Number.MIN_SAFE_INTEGER
+        for(let tool of closestToolList) {
+            const toolIndex = GenericTool.getIndex(tool, closestParent!)
+            // console.log(`tool ${tool?.nodeName} ${tool?.id} has index ${toolIndex}`)
+            if (toolIndex < viewIndex && toolIndex > closestNextSiblingIndex) {
+                closestNextSiblingIndex = toolIndex
+                closestTool = tool
+            }
+        }
+
+        // console.log(`found closest tool ${closestTool?.nodeName} ${closestTool?.id} out of ${closestToolList.length}`)
         this.setActive(closestTool, view)
+    }
+
+    static getIndex(view: Element, parent: Element): number {
+        let element = view
+        while(element.parentElement !== parent)
+            element = element.parentElement!
+        return Array.from(parent.childNodes).indexOf(element)
     }
 
     static setActive(tool?: GenericTool<any>, view?: View) {
@@ -64,6 +91,8 @@ export abstract class GenericTool<T extends Model> extends View {
             this.activeTool.deactivate()
         this.activeTool = tool
         this.activeView = view
+        // console.log(`setActiveTool`)
+        // console.log(tool)
         if (tool)
             tool.activate()
     }
@@ -92,9 +121,13 @@ export abstract class GenericTool<T extends Model> extends View {
 
 window.addEventListener("focusin", (event: FocusEvent) => {
     if (event.relatedTarget instanceof View) {
+        // console.log(`focus out`)
+        // console.log(event.relatedTarget)
         GenericTool.focusOut(event.relatedTarget)
     }
     if (event.target instanceof View) {
+        // console.log(`focus in`)
+        // console.log(event.target)
         GenericTool.focusIn(event.target)
     }
 })
