@@ -2,8 +2,30 @@ export let textAreaStyle = document.createElement("style")
 textAreaStyle.textContent=`
 
 /* try to follow material ui: when active render button labels in black, otherwise in gray */
-.toolbar.active {
-  background: #080;
+svg .fill {
+  fill: #ccc;
+  stroke: #ccc;
+}
+svg .stroke {
+  fill: none;
+  stroke: #ccc;
+}
+svg .strokeFill {
+  fill: #fff;
+  stroke: #ccc;
+}
+
+.toolbar.active svg .fill {
+  fill: #000;
+  stroke: #000;
+}
+.toolbar.active svg .stroke {
+  fill: none;
+  stroke: #000;
+}
+.toolbar.active svg .strokeFill {
+  fill: #fff;
+  stroke: #000;
 }
 
 .toolbar button {

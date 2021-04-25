@@ -54,12 +54,12 @@ export class TableTool extends GenericTool<Model> {
         this.buttonAddRowAbove.title = "add row above"
         this.buttonAddRowAbove.classList.add("left")
         this.buttonAddRowAbove.innerHTML = this.buttonAddRowAbove.innerHTML = `<svg style="display: block;" viewBox="0 0 13 13" width="13" height="13">
-            <rect x="0.5" y="0.5" width="12" height="12" stroke="#000" fill="#fff"/>
-            <line x1="0.5" y1="8.5" x2="12.5" y2="8.5" stroke="#000"/>
-            <line x1="4.5" y1="8.5" x2="4.5" y2="13.5" stroke="#000"/>
-            <line x1="8.5" y1="8.5" x2="8.5" y2="13.5" stroke="#000"/>
-            <line x1="6.5" y1="2" x2="6.5" y2="7" stroke="#000"/>
-            <line x1="4" y1="4.5" x2="9" y2="4.5" stroke="#000"/>
+            <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill"/>
+            <line x1="0.5" y1="8.5" x2="12.5" y2="8.5" class="stroke"/>
+            <line x1="4.5" y1="8.5" x2="4.5" y2="13.5" class="stroke"/>
+            <line x1="8.5" y1="8.5" x2="8.5" y2="13.5" class="stroke"/>
+            <line x1="6.5" y1="2" x2="6.5" y2="7" class="stroke"/>
+            <line x1="4" y1="4.5" x2="9" y2="4.5" class="stroke"/>
         </svg>`
         this.buttonAddRowAbove.onclick = () => {
             const model = this.lastActiveTable?.model
@@ -73,12 +73,12 @@ export class TableTool extends GenericTool<Model> {
         this.buttonAddRowBelow = document.createElement("button")
         this.buttonAddRowBelow.title = "add row below"
         this.buttonAddRowBelow.innerHTML = `<svg viewBox="0 0 13 13" width="13" height="13">
-            <rect x="0.5" y="0.5" width="12" height="12" stroke="#000" fill="#fff"/>
-            <line x1="0.5" y1="4.5" x2="12.5" y2="4.5" stroke="#000"/>
-            <line x1="4.5" y1="0.5" x2="4.5" y2="4.5" stroke="#000"/>
-            <line x1="8.5" y1="0.5" x2="8.5" y2="4.5" stroke="#000"/>
-            <line x1="6.5" y1="6" x2="6.5" y2="11" stroke="#000"/>
-            <line x1="4" y1="8.5" x2="9" y2="8.5" stroke="#000"/>
+            <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill"/>
+            <line x1="0.5" y1="4.5" x2="12.5" y2="4.5" class="stroke"/>
+            <line x1="4.5" y1="0.5" x2="4.5" y2="4.5" class="stroke"/>
+            <line x1="8.5" y1="0.5" x2="8.5" y2="4.5" class="stroke"/>
+            <line x1="6.5" y1="6" x2="6.5" y2="11" class="stroke"/>
+            <line x1="4" y1="8.5" x2="9" y2="8.5" class="stroke"/>
         </svg>`
         this.buttonAddRowBelow.onclick = () => {
             const model = this.lastActiveTable?.model
@@ -93,11 +93,11 @@ export class TableTool extends GenericTool<Model> {
         this.buttonDeleteRow.title = "delete row"
         this.buttonDeleteRow.classList.add("right")
         this.buttonDeleteRow.innerHTML = `<svg viewBox="0 0 13 13" width="13" height="13">
-            <rect x="0.5" y="0.5" width="12" height="12" stroke="#000" fill="#fff"/>
-            <line x1="0.5" y1="4.5" x2="12.5" y2="4.5" stroke="#000"/>
-            <line x1="0.5" y1="8.5" x2="12.5" y2="8.5" stroke="#000"/>
-            <line x1="5.5" y1="3.5" x2="11.5" y2="9.5" stroke="#000" stroke-width="1.5"/>
-            <line x1="11.5" y1="3.5" x2="5.5" y2="9.5" stroke="#000" stroke-width="1.5"/>
+            <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill"/>
+            <line x1="0.5" y1="4.5" x2="12.5" y2="4.5" class="stroke"/>
+            <line x1="0.5" y1="8.5" x2="12.5" y2="8.5" class="stroke"/>
+            <line x1="5.5" y1="3.5" x2="11.5" y2="9.5" class="stroke" stroke-width="1.5"/>
+            <line x1="11.5" y1="3.5" x2="5.5" y2="9.5" class="stroke" stroke-width="1.5"/>
         </svg>`
         this.buttonDeleteRow.onclick = () => {
             const model = this.lastActiveTable?.model
@@ -114,12 +114,12 @@ export class TableTool extends GenericTool<Model> {
         this.buttonAddColumnLeft.title = "add column left"
         this.buttonAddColumnLeft.classList.add("left")
         this.buttonAddColumnLeft.innerHTML = `<svg viewBox="0 0 13 13" width="13" height="13">
-            <rect x="0.5" y="0.5" width="12" height="12" stroke="#000" fill="#fff"/>
-            <line x1="8.5" y1="0.5" x2="8.5" y2="12.5" stroke="#000"/>
-            <line x1="8.5" y1="4.5" x2="12.5" y2="4.5" stroke="#000"/>
-            <line x1="8.5" y1="8.5" x2="12.5" y2="8.5" stroke="#000"/>
-            <line x1="2" y1="6.5" x2="7" y2="6.5" stroke="#000"/>
-            <line x1="4.5" y1="4" x2="4.5" y2="9" stroke="#000"/>
+            <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill"/>
+            <line x1="8.5" y1="0.5" x2="8.5" y2="12.5" class="stroke"/>
+            <line x1="8.5" y1="4.5" x2="12.5" y2="4.5" class="stroke"/>
+            <line x1="8.5" y1="8.5" x2="12.5" y2="8.5" class="stroke"/>
+            <line x1="2" y1="6.5" x2="7" y2="6.5" class="stroke"/>
+            <line x1="4.5" y1="4" x2="4.5" y2="9" class="stroke"/>
         </svg>`
         // this.buttonAddColumnLeft.onclick = () => {
         //     document.execCommand("formatBlock", false, "<h4>")
@@ -130,12 +130,12 @@ export class TableTool extends GenericTool<Model> {
         this.buttonAddColumnRight = document.createElement("button")
         this.buttonAddColumnRight.title = "add column right"
         this.buttonAddColumnRight.innerHTML = `<svg viewBox="0 0 13 13" width="13" height="13">
-            <rect x="0.5" y="0.5" width="12" height="12" stroke="#000" fill="#fff"/>
-            <line x1="4.5" y1="0.5" x2="4.5" y2="12.5" stroke="#000"/>
-            <line x1="0.5" y1="4.5" x2="4.5" y2="4.5" stroke="#000"/>
-            <line x1="0.5" y1="8.5" x2="4.5" y2="8.5" stroke="#000"/>
-            <line x1="6" y1="6.5" x2="11" y2="6.5" stroke="#000"/>
-            <line x1="8.5" y1="4" x2="8.5" y2="9" stroke="#000"/>
+            <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill"/>
+            <line x1="4.5" y1="0.5" x2="4.5" y2="12.5" class="stroke"/>
+            <line x1="0.5" y1="4.5" x2="4.5" y2="4.5" class="stroke"/>
+            <line x1="0.5" y1="8.5" x2="4.5" y2="8.5" class="stroke"/>
+            <line x1="6" y1="6.5" x2="11" y2="6.5" class="stroke"/>
+            <line x1="8.5" y1="4" x2="8.5" y2="9" class="stroke"/>
         </svg>`
         // this.buttonAddColumnRight.onclick = (event) => {
         //     document.execCommand("insertUnorderedList", false)
@@ -147,11 +147,11 @@ export class TableTool extends GenericTool<Model> {
         this.buttonDeleteColumn.title = "delete column"
         this.buttonDeleteColumn.classList.add("right")
         this.buttonDeleteColumn.innerHTML = `<svg viewBox="0 0 13 13" width="13" height="13">
-            <rect x="0.5" y="0.5" width="12" height="12" stroke="#000" fill="#fff"/>
-            <line x1="4.5" y1="0.5" x2="4.5" y2="12.5" stroke="#000"/>
-            <line x1="8.5" y1="0.5" x2="8.5" y2="12.5" stroke="#000"/>
-            <line x1="3.5" y1="5.5" x2="9.5" y2="11.5" stroke="#000" stroke-width="1.5"/>
-            <line x1="3.5" y1="11.5" x2="9.5" y2="5.5" stroke="#000" stroke-width="1.5"/>
+            <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill"/>
+            <line x1="4.5" y1="0.5" x2="4.5" y2="12.5" class="stroke"/>
+            <line x1="8.5" y1="0.5" x2="8.5" y2="12.5" class="stroke"/>
+            <line x1="3.5" y1="5.5" x2="9.5" y2="11.5" class="stroke" stroke-width="1.5"/>
+            <line x1="3.5" y1="11.5" x2="9.5" y2="5.5" class="stroke" stroke-width="1.5"/>
         </svg>`
         // this.buttonDeleteColumn.onclick = () => {
         //     document.execCommand("insertOrderedList", false)
@@ -162,14 +162,15 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(document.createTextNode(" "))
 
         this.buttonAddNodeAbove = document.createElement("button")
+        this.buttonAddNodeAbove.title = "add node above"
         this.buttonAddNodeAbove.classList.add("left")
         this.buttonAddNodeAbove.innerHTML = `<svg style="display: block; border: none;" viewBox="0 0 8 17" width="8" height="17">
-            <rect x="0.5" y="1.5" width="6" height="6" stroke="#000" fill="#fff"/>
-            <rect x="0.5" y="9.5" width="6" height="6" stroke="#000" fill="#000"/>
-            <line x1="3.5" y1="3" x2="3.5" y2="6" stroke="#000"/>
-            <line x1="2" y1="4.5" x2="5" y2="4.5" stroke="#000"/>
-            <line x1="3.5" y1="0" x2="3.5" y2="1" stroke="#000"/>
-            <line x1="3.5" y1="8" x2="3.5" y2="17" stroke="#000"/>
+            <rect x="0.5" y="1.5" width="6" height="6" class="strokeFill"/>
+            <rect x="0.5" y="9.5" width="6" height="6" class="fill"/>
+            <line x1="3.5" y1="3" x2="3.5" y2="6" class="stroke"/>
+            <line x1="2" y1="4.5" x2="5" y2="4.5" class="stroke"/>
+            <line x1="3.5" y1="0" x2="3.5" y2="1" class="stroke"/>
+            <line x1="3.5" y1="8" x2="3.5" y2="17" class="stroke"/>
         </svg>`
         // this.buttonAddNodeAbove.onclick = () => {
         //     document.execCommand("bold", false)
@@ -178,13 +179,14 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddNodeAbove)
 
         this.buttonAddNodeBelow = document.createElement("button")
+        this.buttonAddNodeBelow.title = "add node below"
         this.buttonAddNodeBelow.innerHTML = `<svg style="display: block; border: none;" viewBox="0 0 8 17" width="8" height="17">
-            <rect x="0.5" y="1.5" width="6" height="6" stroke="#000" fill="#000"/>
-            <rect x="0.5" y="9.5" width="6" height="6" stroke="#000" fill="#fff"/>
-            <line x1="3.5" y1="11" x2="3.5" y2="14" stroke="#000"/>
-            <line x1="2" y1="12.5" x2="5" y2="12.5" stroke="#000"/>     
-            <line x1="3.5" y1="0" x2="3.5" y2="9" stroke="#000"/>      
-            <line x1="3.5" y1="16" x2="3.5" y2="17" stroke="#000"/>
+            <rect x="0.5" y="1.5" width="6" height="6" class="fill"/>
+            <rect x="0.5" y="9.5" width="6" height="6" class="strokeFill"/>
+            <line x1="3.5" y1="11" x2="3.5" y2="14" class="stroke"/>
+            <line x1="2" y1="12.5" x2="5" y2="12.5" class="stroke"/>     
+            <line x1="3.5" y1="0" x2="3.5" y2="9" class="stroke"/>      
+            <line x1="3.5" y1="16" x2="3.5" y2="17" class="stroke"/>
         </svg>`
         // this.buttonAddNodeBelow.onclick = () => {
         //     document.execCommand("italic", false)
@@ -193,15 +195,16 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddNodeBelow)
 
         this.buttonAddNodeParent = document.createElement("button")
+        this.buttonAddNodeParent.title = "add node parent"
         this.buttonAddNodeParent.innerHTML = `<svg viewBox="0 0 13 17" width="13" height="17">
-            <rect x="0.5" y="1.5" width="6" height="6" stroke="#000" fill="#fff"/>
-            <rect x="6.5" y="9.5" width="6" height="6" stroke="#000" fill="#000"/>
-            <line x1="7" y1="4.5" x2="10" y2="4.5" stroke="#000"/>
-            <line x1="9.5" y1="4" x2="9.5" y2="9" stroke="#000"/>
-            <line x1="3.5" y1="3" x2="3.5" y2="6" stroke="#000"/>
-            <line x1="2" y1="4.5" x2="5" y2="4.5" stroke="#000"/>
-            <line x1="3.5" y1="0" x2="3.5" y2="1" stroke="#000"/>
-            <line x1="3.5" y1="8" x2="3.5" y2="17" stroke="#000"/>
+            <rect x="0.5" y="1.5" width="6" height="6" class="strokeFill"/>
+            <rect x="6.5" y="9.5" width="6" height="6" class="fill"/>
+            <line x1="7" y1="4.5" x2="10" y2="4.5" class="stroke"/>
+            <line x1="9.5" y1="4" x2="9.5" y2="9" class="stroke"/>
+            <line x1="3.5" y1="3" x2="3.5" y2="6" class="stroke"/>
+            <line x1="2" y1="4.5" x2="5" y2="4.5" class="stroke"/>
+            <line x1="3.5" y1="0" x2="3.5" y2="1" class="stroke"/>
+            <line x1="3.5" y1="8" x2="3.5" y2="17" class="stroke"/>
         </svg>`
         this.buttonAddNodeParent.onclick = () => {
             // document.execCommand("underline", false)
@@ -210,14 +213,15 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddNodeParent)
 
         this.buttonAddNodeChild = document.createElement("button")
+        this.buttonAddNodeChild.title = "add node child"
         this.buttonAddNodeChild.innerHTML = `<svg viewBox="0 0 13 17" width="13" height="17">
-            <rect x="0.5" y="1.5" width="6" height="6" stroke="#000" fill="#000"/>
-            <rect x="6.5" y="9.5" width="6" height="6" stroke="#000" fill="#fff"/>
-            <line x1="7" y1="4.5" x2="10" y2="4.5" stroke="#000"/>
-            <line x1="9.5" y1="4" x2="9.5" y2="9" stroke="#000"/>
-            <line x1="9.5" y1="11" x2="9.5" y2="14" stroke="#000"/>
-            <line x1="8" y1="12.5" x2="11" y2="12.5" stroke="#000"/>    
-            <line x1="3.5" y1="0" x2="3.5" y2="17" stroke="#000"/>
+            <rect x="0.5" y="1.5" width="6" height="6" class="fill"/>
+            <rect x="6.5" y="9.5" width="6" height="6" class="strokeFill"/>
+            <line x1="7" y1="4.5" x2="10" y2="4.5" class="stroke"/>
+            <line x1="9.5" y1="4" x2="9.5" y2="9" class="stroke"/>
+            <line x1="9.5" y1="11" x2="9.5" y2="14" class="stroke"/>
+            <line x1="8" y1="12.5" x2="11" y2="12.5" class="stroke"/>    
+            <line x1="3.5" y1="0" x2="3.5" y2="17" class="stroke"/>
         </svg>`
         // this.buttonAddNodeChild.onclick = () => {
         //     document.execCommand("strikeThrough", false)
@@ -228,11 +232,11 @@ export class TableTool extends GenericTool<Model> {
         this.buttonDeleteNode = document.createElement("button")
         this.buttonDeleteNode.classList.add("right")
         this.buttonDeleteNode.innerHTML = `<svg viewBox="0 0 10 17" width="10" height="17">
-            <rect x="1.5" y="5.5" width="6" height="6" stroke="#000" fill="#fff"/>
-            <line x1="4.5" y1="2" x2="4.5" y2="5" stroke="#000"/>
-            <line x1="4.5" y1="12" x2="4.5" y2="15" stroke="#000"/>
-            <line x1="0.5" y1="4.5" x2="8.5" y2="12.5" stroke="#000" stroke-width="1.5"/>
-            <line x1="8.5" y1="4.5" x2="0.5" y2="12.5" stroke="#000" stroke-width="1.5"/>
+            <rect x="1.5" y="5.5" width="6" height="6" class="strokeFill"/>
+            <line x1="4.5" y1="2" x2="4.5" y2="5" class="stroke"/>
+            <line x1="4.5" y1="12" x2="4.5" y2="15" class="stroke"/>
+            <line x1="0.5" y1="4.5" x2="8.5" y2="12.5" sclass="stroke" stroke-width="1.5"/>
+            <line x1="8.5" y1="4.5" x2="0.5" y2="12.5" class="stroke" stroke-width="1.5"/>
         </svg>`
         // this.buttonDeleteNode.onclick = () => {
         //     document.execCommand("subscript", false)

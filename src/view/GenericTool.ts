@@ -19,6 +19,7 @@
 import { Model } from "../model/Model"
 import { View } from "./View"
 
+// TODO: GenericTool<T> doesn't use T yet, the is to activate not just the tool for the view with the focus, but all tools with those view's model
 export abstract class GenericTool<T extends Model> extends View {
     static allTools = new Set<GenericTool<any>>()
     static activeTool: GenericTool<any> | undefined
