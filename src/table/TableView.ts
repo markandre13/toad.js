@@ -76,6 +76,7 @@ tableStyle.textContent=`
 .cells {
   position: relative;
   overflow: auto;
+  cursor: default;
 }
 
 .root > div > table {
