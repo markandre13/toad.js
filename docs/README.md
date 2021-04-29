@@ -5,7 +5,9 @@
    WebComponent/TypeScript Edition
 </p>
 
-Welcome to the TOAD GUI Library.
+# Welcome to the TOAD GUI Library.
+
+### About
 
  * toad.js utilizes ***WebComponents*** and hence doesn't need all the infrastructure code burdening
   React or Angular and therefore fits nicely into 71KB (2KB gzipped).
@@ -45,3 +47,7 @@ Please see the <a href="https://markandre13.github.io/toad-demo/">introduction</
 information.
 
 toad.js is currently being written to develop <a href="https://github.com/markandre13/workflow">workflow - A collaborative real-time white- and kanban board</a>.
+
+## Previous versions of TOAD
+* [C++ X11](https://github.com/markandre13/toad-x11)
+* [C++ Cocoa](https://github.com/markandre13/toad-macosx)
