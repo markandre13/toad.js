@@ -28,6 +28,9 @@
   the *View* and Flux's state the *Model*, solving all the issues Facebook struggled to
   fix in their chat implementation.
 
+  Btw. checkout the [React.js with toad.js' models](https://github.com/markandre13/react-with-toad-models) experiment.
+
+
 * ***No Shadow DOM***: The Shadow DOM approach is fine if your WebApp resembles a document.
   toad.js on the other hand is aimed for highly interactive desktop style WebApps.
 
