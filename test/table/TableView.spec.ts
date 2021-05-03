@@ -2,7 +2,7 @@ import { expect, use } from "chai"
 use(require('chai-subset'))
 
 import { 
-    View, TableView, TableModel, TableEditMode, 
+    TableView, TableModel, TableEditMode, 
     SelectionModel, TextView, TextModel, 
     bind, unbind, TableAdapter
 } from "../../src/toad"

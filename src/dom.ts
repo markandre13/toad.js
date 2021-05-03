@@ -145,3 +145,25 @@ export function order(first: Node, second: Node): boolean {
   }
   throw Error("fuck")
 }
+
+export function pixelToNumber(pixel: string): number {
+  if (pixel === "")
+      return 0
+  if (pixel.substr(pixel.length - 2) !== "px")
+    throw Error(`TableView.pixelToNumber('${pixel}') expected 'px' suffix`)
+  return Number.parseFloat(pixel.substr(0, pixel.length - 2))
+}
+
+export function getPropertyValue(element: HTMLElement, propertyName: string): number {
+  let elementStyle = window.getComputedStyle(element, undefined)
+  let property = elementStyle.getPropertyValue(propertyName)
+  return pixelToNumber(property)
+}
+
+export function horizontalPadding(element: HTMLElement): number {
+  return getPropertyValue(element, "padding-left") + getPropertyValue(element, "padding-right")
+}
+
+export function verticalPadding(element: HTMLElement): number {
+  return getPropertyValue(element, "padding-top") + getPropertyValue(element, "padding-bottom")
+}

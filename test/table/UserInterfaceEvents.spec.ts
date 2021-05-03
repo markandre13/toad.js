@@ -1,6 +1,7 @@
 import { expect, use } from "chai"
 use(require('chai-subset'))
 
+import { TextView } from "../../src/toad"
 import { BookTableScene, Book } from "./BookTableScene"
 
 describe("toad.js", function() {
@@ -16,8 +17,11 @@ describe("toad.js", function() {
             })
 
             describe("update view when model changes", function() {
-                describe("single row", function() {
-                    it("insert", async function() {
+                xit("cell value changes", function() {
+                    // missing
+                })
+                describe("insert row", function() {
+                    it("single row", async function() {
                         const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                         scene.model.insert(3, newBook)
                         await scene.sleep()
@@ -27,17 +31,7 @@ describe("toad.js", function() {
                         expect((rows[3+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook.author)
                         expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
                     })
-                    it("delete", async function(){
-                        scene.model.remove(2)
-                        await scene.sleep()
-
-                        expect(rows.length).to.equal(7+1)
-                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
-                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("Rendezvous with Rama")
-                    })
-                })
-                describe("two rows", function() {
-                    it("insert", async function() {
+                    it("multiple rows", async function() {
                         const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                         const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
                         scene.model.insert(3, [newBook0, newBook1])
@@ -51,7 +45,9 @@ describe("toad.js", function() {
                         expect((rows[4+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook1.author)
                         expect((rows[4+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook1.year}`)
                     })
-                    it("delete", async function(){
+                })
+                describe("delete row", function() {                    
+                    it("single row", async function(){
                         // FIXME!!! rowAnimationHeight isn't checked by any of the tests anymore...
                         // or... VariableRowHeight.spec.ts covers that...
                         scene.model.remove(2, 2)
@@ -60,6 +56,14 @@ describe("toad.js", function() {
                         expect(rows.length).to.equal(6+1)
                         expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
                         expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("2001: A Space Odyssey")
+                    })
+                    it("multiple rows", async function(){
+                        scene.model.remove(2)
+                        await scene.sleep()
+
+                        expect(rows.length).to.equal(7+1)
+                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
+                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("Rendezvous with Rama")
                     })
                 })
             })
@@ -151,6 +155,50 @@ describe("toad.js", function() {
                     scene.sendArrowDown()
                     expect(scene.selectionModel.col).equals(1)
                     expect(scene.selectionModel.row).equals(2)
+                })
+
+                it.only("input field updates after adding row", async function() {
+                    scene.mouseDownAtCell(0, 3)
+
+                    const button = document.querySelector("toad-tabletool")!
+                        .shadowRoot!.querySelector("button[title='add row below']")!
+                    // console.log(button)
+
+                    console.log(scene.table.inputOverlay.clientTop);
+                    console.log(scene.table.inputOverlay.clientLeft);
+                    console.log(scene.table.inputOverlay.style.top);
+                    console.log(scene.table.inputOverlay.style.left);
+
+                    console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
+
+                    const e = new MouseEvent("click", {
+                        bubbles: true,
+                        relatedTarget: button
+                    })
+                    console.log("-------------------------- click -------------------------")
+                    button.dispatchEvent(e)
+                    await scene.sleep()
+                    console.log("-------------------------- clicked -------------------------")
+                    console.log(scene.table.inputOverlay.style.top);
+                    console.log(scene.table.inputOverlay.style.left);
+                    console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
+                    // console.log(scene.table.inputOverlay.children[0])
+
+                    console.log(scene.table.rowAnimationHeight)
+
+                    // scene.table.inputOverlay.style.top = `${-96 - scene.table.rowAnimationHeight}px`
+                    // scene.table.inputOverlay.style.top = `${-153 + 2 * scene.table.rowAnimationHeight}px`
+
+
+                    // issues
+                    // * the input overlay is scrolling down along with the inserted row
+                    //   if it stay there, it would be okay...
+
+                    // the trick is to update (or clear the input overlay when the model changes?)
+                    // or move the input overlay as if the model change was initiated by another user
+                    let text = scene.table.inputOverlay.children[0] as TextView
+                    expect(text.tagName).to.equal("TOAD-TEXT")
+                    // expect(text.value).to.equal("")
                 })
 
                 // keyboard and scroll

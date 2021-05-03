@@ -16,6 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+// 1st step: this class has gone completly out of control
+//           create a list of all methods plus who calls who
+//           try to move code outside by converting them into object of their own
+//           begin with the inputOverlay
+
 import * as dom from "../dom"
 import { scrollIntoView, animate } from "../scrollIntoView"
 import { Model } from "../model/Model"
@@ -26,149 +31,7 @@ import { TableEditMode, TablePos } from "./table"
 import { TableAdapter } from "./TableAdapter"
 import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
-
-function pixelToNumber(pixel: string): number {
-    if (pixel === "")
-        return 0
-    if (pixel.substr(pixel.length - 2) !== "px")
-      throw Error(`TableView.pixelToNumber('${pixel}') expected 'px' suffix`)
-    return Number.parseFloat(pixel.substr(0, pixel.length - 2))
-}
-
-function getPropertyValue(element: HTMLElement, propertyName: string): number {
-    let elementStyle = window.getComputedStyle(element, undefined)
-    let property = elementStyle.getPropertyValue(propertyName)
-    return pixelToNumber(property)
-}
-
-function horizontalPadding(element: HTMLElement): number {
-    return getPropertyValue(element, "padding-left") + getPropertyValue(element, "padding-right")
-}
-
-function verticalPadding(element: HTMLElement): number {
-  return getPropertyValue(element, "padding-top") + getPropertyValue(element, "padding-bottom")
-}
-
-let tableStyle = document.createElement("style")
-
-// NOTE
-// * when .root is using display: inline-grid, the browser doesn't render inputDiv
-//   correctly in the intended position unless the window is resized.
-
-tableStyle.textContent=`
-
-.root {
-  border: 1px #ccc solid;
-  border-radius: 3px;
-  outline-offset: -2px;
-  font-family: var(--toad-font-family, sans-serif);
-  font-size: var(--toad-font-size, 12px);
-  background: #e0e0e0;
-}
-.rowhead {
-  position: relative;
-  overflow: hidden;
-}
-.colhead {
-  position: relative;
-  overflow: hidden;
-}
-.cells {
-  position: relative;
-  overflow: auto;
-  cursor: default;
-}
-
-.root > div > table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  border: none 0px;
-}
-.colhead > table, .rowhead > table {
-  background: #e0e0e0;
-}
-
-.colhead th, .rowhead th, .cells td {
-  letter-spacing: 0;  
-  overflow: hidden;   
-  padding: 2px;
-  margin: 0px;
-  white-space: nowrap;
-  border: solid 1px #ccc;
-}
-
-.colhead th, .rowhead th {
-  z-index: 1;
-}
-
-.bodyrow td {
-  padding-top: 0px;
-  padding-bottom: 0px;
-  border-top: none 0px;
-  border-bottom: none 0px;
-}
-
-.cells tr:nth-child(even) {
-  background: var(--toad-table-even-row, #f5f5f5);
-}
-.cells tr:nth-child(odd) {
-  background: var(--toad-table-odd-row, #ffffff);
-}
-
-.cells td:nth-child(1) {
-  border-left: none;
-}
-.cells tr:nth-child(2) td {
-  border-top: none;
-}
-
-.cells tr.selected,
-.cells tr td.selected {
-  background: #808080;
-  color: #fff;
-}
-
-.root:focus .cells tr.selected,
-.root:focus .cells td.selected {
-  background: #0069d4;
-  color: #fff;
-}
-
-.root.compact .colhead th,
-.root.compact .rowhead th {
-  border-color: none;
-  border-style: none;
-  border-width: 0;
-  padding: 0px;
-}
-
-.root.compact .cells * td {
-  border-color: none;
-  border-style: none;
-  border-width: 0;
-  padding: 0px;
-}
-
-.zeroSize {
-  width: 0px;
-  height: 0px;
-  margin: 0;
-  padding: 0;
-  border: none;
-}
-
-.inputDiv { 
-  position: relative;
-  background: #fff;
-  border: none;
-  opacity: 0;
-}
-
-.hiddenSizeCheck {
-  position: absolute;
-  opacity: 0;
-}
-`
+import { tableStyle } from "./tableStyle"
 
 /*
  * rootDiv (div.root, onkeydown)
@@ -176,16 +39,16 @@ tableStyle.textContent=`
  *     rowHeadTable (table)
  *       rowHeadHead (thead)
  *         rowHeadRow (tr)
-  *   colHeadDiv (div.colhead, hidden)
+ *   colHeadDiv (div.colhead, hidden)
  *     colHeadTable (table)
  *       colHeadHead (thead)
  *         colHeadRow (tr)
  *   bodyDiv (div.cells, onscroll)
- *     bodyTable (table)
+ *     bodyTable (table, onmousedown)
  *       bodyBody (tbody)
  *         bodyRow (tr, hidden, controls the width of all cells)
  *     zeroSize (div)
- *       inputDiv (div, focusin)
+ *       inputOverlay (div, focusin & focusout)
  *     hiddenSizeCheckTable (table, hidden)
  *       hiddenSizeCheckBody (tbody)
  */
@@ -218,7 +81,7 @@ export class TableView extends View {
 
   hiddenSizeCheckBody: HTMLTableSectionElement
 
-  rowAnimationHeight = 19 // ??
+  rowAnimationHeight = 0 // TODO: put in testAPI object
 
   constructor() {
     super()
@@ -227,7 +90,7 @@ export class TableView extends View {
 
     this.rootDiv = document.createElement("div")
     this.rootDiv.classList.add("root")
-    this.rootDiv.onkeydown = this.rootKeyDown
+    this.rootDiv.onkeydown = this.onRootDivKeyDown
 
     // row head
     const rowHeadDiv = document.createElement("div")
@@ -332,7 +195,7 @@ export class TableView extends View {
     this.shadowRoot!.appendChild(this.rootDiv)
   }
 
-  rootKeyDown(event: KeyboardEvent) {
+  onRootDivKeyDown(event: KeyboardEvent) {
     if (!this.selectionModel)
       return
     // FIXME: based on the selection model we could plug in a behaviour class
@@ -819,8 +682,8 @@ export class TableView extends View {
       const body = bodyRow[col] as HTMLElement
 
       if (head.style.width === "") {
-        const headWidth = head.getBoundingClientRect().width - horizontalPadding(head)
-        const bodyWidth = body.getBoundingClientRect().width - horizontalPadding(body)
+        const headWidth = head.getBoundingClientRect().width - dom.horizontalPadding(head)
+        const bodyWidth = body.getBoundingClientRect().width - dom.horizontalPadding(body)
         const width = Math.max(headWidth, bodyWidth)
         head.style.width = head.style.minWidth = head.style.maxWidth = `${width}px`
         body.style.width = body.style.minWidth = body.style.maxWidth = `${width}px`
@@ -832,8 +695,8 @@ export class TableView extends View {
       const head = rowHeadHead[row] as HTMLElement
       const body = this.bodyBody.children[row+1] as HTMLElement
 
-      const headHeight = head.clientHeight - verticalPadding(head)
-      const bodyHeight = body.clientHeight - verticalPadding(body)
+      const headHeight = head.clientHeight - dom.verticalPadding(head)
+      const bodyHeight = body.clientHeight - dom.verticalPadding(body)
 
       head.style.height = head.style.minHeight = head.style.maxHeight =
       body.style.height = body.style.minHeight = body.style.maxHeight =
@@ -934,7 +797,7 @@ export class TableView extends View {
       top = `${td.offsetTop - tbody.clientHeight - 1}px`
     }
 
-    const width = `${element.clientWidth - horizontalPadding(element)}px`
+    const width = `${element.clientWidth - dom.horizontalPadding(element)}px`
     const height = `${boundary.height}px`
 
     // console.log(`adjustInputToCell() -> top=${top}, left=${left}, width=${width}, height=${height}`)

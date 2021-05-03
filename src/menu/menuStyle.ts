@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-export let menuStyle = document.createElement("style")
+export const menuStyle = document.createElement("style")
 menuStyle.textContent=`
   :host(.menu-button) {
     font-family: var(--toad-font-family, sans-serif);
