@@ -64,7 +64,19 @@ class InputOverlay extends HTMLDivElement {
   static create(): InputOverlay {
     const e = document.createElement("toad-table-inputoverlay") as InputOverlay
     e.setViewRect = InputOverlay.prototype.setViewRect
+    e.setChild = InputOverlay.prototype.setChild
     return e
+  }
+
+  setChild(fieldView: HTMLElement) {
+    if (this.children.length === 0) {
+      this.appendChild(fieldView)
+    } else {
+      if (document.hasFocus() && document.activeElement === this) {
+        this.children[0].dispatchEvent(new FocusEvent("blur"))
+      }
+      this.replaceChild(fieldView, this.children[0])
+    }
   }
 
   setViewRect(top: number, left: number, width: number, height: number) {
@@ -788,12 +800,6 @@ export class TableView extends View {
     // FIXME: row height
   }
 
-  prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
-    if (cell === undefined || cell.tagName !== "TD")
-      return
-    this.prepareInputOverlayForPosition(this.getCellPosition(cell))
-  }
-
   adjustInputOverlayToCell(element: HTMLTableDataCellElement) {
     // console.log(`adjustInputOverlayToCell(${element})`)
 
@@ -824,6 +830,12 @@ export class TableView extends View {
 
     // FIXME: add two new functions: lockElement(), unlockElement() and invoke the accordingly
     // element.style.width = element.style.minWidth = element.style.maxWidth = width
+  }
+
+  prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
+    if (cell === undefined || cell.tagName !== "TD")
+      return
+    this.prepareInputOverlayForPosition(this.getCellPosition(cell))
   }
 
   prepareInputOverlayForPosition(pos: TablePos) {
@@ -926,14 +938,8 @@ export class TableView extends View {
 
     const {x ,y} = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
 
-    if (this.inputOverlay.children.length === 0) {
-      this.inputOverlay.appendChild(fieldView)
-    } else {
-      if (document.hasFocus() && document.activeElement === this) {
-        this.inputOverlay.children[0].dispatchEvent(new FocusEvent("blur"))
-      }
-      this.inputOverlay.replaceChild(fieldView, this.inputOverlay.children[0])
-    }
+    this.inputOverlay.setChild(fieldView)
+
     this.bodyDiv.scrollLeft = x
     this.bodyDiv.scrollTop = y
 
