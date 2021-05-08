@@ -106,7 +106,7 @@ export function attributeOrUndefined(element: Element, name: string): string|und
 }
 
 // return true when first appears before second within the dom hierachy
-export function order(first: Node, second: Node): boolean {
+export function isNodeBeforNode(first: Node, second: Node): boolean {
   let parentsOfFirstNode = new Map<Node, Node>()
   let node: Node|null
   

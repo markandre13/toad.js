@@ -157,34 +157,34 @@ describe("toad.js", function() {
                     expect(scene.selectionModel.row).equals(2)
                 })
 
-                it.only("input field updates after adding row", async function() {
+                it("input field updates after adding row", async function() {
                     scene.mouseDownAtCell(0, 3)
 
                     const button = document.querySelector("toad-tabletool")!
                         .shadowRoot!.querySelector("button[title='add row below']")!
                     // console.log(button)
 
-                    console.log(scene.table.inputOverlay.clientTop);
-                    console.log(scene.table.inputOverlay.clientLeft);
-                    console.log(scene.table.inputOverlay.style.top);
-                    console.log(scene.table.inputOverlay.style.left);
+                    // console.log(scene.table.inputOverlay.clientTop);
+                    // console.log(scene.table.inputOverlay.clientLeft);
+                    // console.log(scene.table.inputOverlay.style.top);
+                    // console.log(scene.table.inputOverlay.style.left);
 
-                    console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
+                    // console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
 
                     const e = new MouseEvent("click", {
                         bubbles: true,
                         relatedTarget: button
                     })
-                    console.log("-------------------------- click -------------------------")
+                    // console.log("-------------------------- click -------------------------")
                     button.dispatchEvent(e)
                     await scene.sleep()
-                    console.log("-------------------------- clicked -------------------------")
-                    console.log(scene.table.inputOverlay.style.top);
-                    console.log(scene.table.inputOverlay.style.left);
-                    console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
+                    // console.log("-------------------------- clicked -------------------------")
+                    // console.log(scene.table.inputOverlay.style.top);
+                    // console.log(scene.table.inputOverlay.style.left);
+                    // console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
                     // console.log(scene.table.inputOverlay.children[0])
 
-                    console.log(scene.table.rowAnimationHeight)
+                    // console.log(scene.table.rowAnimationHeight)
 
                     // scene.table.inputOverlay.style.top = `${-96 - scene.table.rowAnimationHeight}px`
                     // scene.table.inputOverlay.style.top = `${-153 + 2 * scene.table.rowAnimationHeight}px`

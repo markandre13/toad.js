@@ -366,8 +366,8 @@ describe("toad.js", function() {
                 let bravo = document.getElementById("bravo")
                 
                 if (alfa && bravo) {
-                  expect(dom.order(alfa, bravo)).to.equal(true)
-                  expect(dom.order(bravo, alfa)).to.equal(false)
+                  expect(dom.isNodeBeforNode(alfa, bravo)).to.equal(true)
+                  expect(dom.isNodeBeforNode(bravo, alfa)).to.equal(false)
                 }
             })
         })

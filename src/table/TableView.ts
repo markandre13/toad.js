@@ -33,6 +33,37 @@ import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 import { tableStyle } from "./tableStyle"
 
+class InputOverlay extends HTMLDivElement {
+
+  focusInFromLeft?: () => void
+  focusInFromRight?: () => void
+
+  constructor() {
+    super()
+  
+    this.classList.add("inputDiv")
+
+    this.addEventListener("focusin", (event: FocusEvent) => {
+      this.style.opacity = "1"
+      if (event.target && event.relatedTarget) {
+        if (dom.isNodeBeforNode(event.relatedTarget as Node, this)) {
+          if (this.focusInFromLeft)
+            this.focusInFromLeft()
+        } else {
+          if (this.focusInFromRight)
+            this.focusInFromRight()
+        }
+      }
+    })
+
+    this.addEventListener("focusout", () => {
+      this.style.opacity = "0"
+    })
+  }
+}
+
+window.customElements.define("toad-table-inputoverlay", InputOverlay, { extends: 'div'})
+
 /*
  * rootDiv (div.root, onkeydown)
  *   rowHeadDiv (div.rowhead, hidden)
@@ -73,7 +104,7 @@ export class TableView extends View {
   bodyBody: HTMLTableSectionElement
   bodyRow: HTMLTableRowElement
 
-  inputOverlay: HTMLElement
+  inputOverlay: InputOverlay
   fieldView?: HTMLElement
   fieldModel?: Model
   cellBeingEdited?: HTMLElement
@@ -157,27 +188,15 @@ export class TableView extends View {
     const zeroSize = document.createElement("div")
     zeroSize.classList.add("zeroSize")
 
-    this.inputOverlay = document.createElement("div")
-    this.inputOverlay.classList.add("inputDiv")
-
-    this.inputOverlay.addEventListener("focusin", (focusEvent: FocusEvent) => {
-      this.inputOverlay.style.opacity = "1"
-      if (this.insideGoTo)
-        return
-      if (!this.model)
-        return
-      let event = focusEvent
-      if (event.target && event.relatedTarget) {
-        if (dom.order(event.relatedTarget as Node, this)) {
-          this.goTo(0, 0)
-        } else {
-          this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
-        }
-      }
-    })
-    this.inputOverlay.addEventListener("focusout", () => {
-      this.inputOverlay.style.opacity = "0"
-    })
+    this.inputOverlay = document.createElement("toad-table-inputoverlay") as InputOverlay
+    this.inputOverlay.focusInFromLeft = () => {
+      if (!this.insideGoTo)
+        this.goToFirstCell()
+    }
+    this.inputOverlay.focusInFromRight = () => {
+      if (!this.insideGoTo)
+        this.goToLastCell()
+    }
     zeroSize.appendChild(this.inputOverlay)
   
     const hiddenSizeCheckTable = document.createElement("table")
@@ -831,6 +850,15 @@ export class TableView extends View {
     // console.log(`goToCell(${element.nodeName}) -> scrollIntoView()`)
     scrollIntoView(element)
     this.insideGoTo = false
+  }
+  
+  goToFirstCell() {
+    this.goTo(0, 0)
+  }
+
+  goToLastCell() {
+    if (this.model)
+      this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
   }
 
   focus() {
