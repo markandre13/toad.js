@@ -168,7 +168,7 @@ export class TableView extends View {
         this.goToLastCell()
     }
     zeroSize.appendChild(this.inputOverlay)
-  
+
     const hiddenSizeCheckTable = document.createElement("table")
     hiddenSizeCheckTable.classList.add("hiddenSizeCheck")
     this.hiddenSizeCheckBody = document.createElement("tbody")
@@ -184,59 +184,7 @@ export class TableView extends View {
     this.shadowRoot!.appendChild(this.rootDiv)
   }
 
-  onRootDivKeyDown(event: KeyboardEvent) {
-    if (!this.selectionModel)
-      return
-    // FIXME: based on the selection model we could plug in a behaviour class
-    switch (this.selectionModel.mode) {
-      case TableEditMode.SELECT_ROW: {
-        let row = this.selectionModel.value.row
-        switch (event.key) {
-          case "ArrowDown":
-            if (row + 1 < this.model!.rowCount)
-              ++row
-            break
-          case "ArrowUp":
-            if (row > 0)
-              --row
-            break
-        }
-        if (row != this.selectionModel.value.row) {
-          this.toggleRowSelection(this.selectionModel.value.row, false)
-          this.selectionModel.row = row
-          this.toggleRowSelection(this.selectionModel.value.row, true)
-        }
-      } break
-      case TableEditMode.SELECT_CELL: {
-        let pos = { col: this.selectionModel.col, row: this.selectionModel.row }
-        switch (event.key) {
-          case "ArrowRight":
-            if (pos.col + 1 < this.model!.colCount) {
-              ++pos.col
-            }
-            break
-          case "ArrowLeft":
-            if (pos.col > 0) {
-              --pos.col
-            }
-            break
-          case "ArrowDown":
-            if (pos.row + 1 < this.model!.rowCount)
-              ++pos.row
-            break
-          case "ArrowUp":
-            if (pos.row > 0)
-              --pos.row
-            break
-        }
-        if (pos.col != this.selectionModel.col ||
-          pos.row != this.selectionModel.row) {
-          this.toggleCellSelection(this.selectionModel.value, false)
-          this.selectionModel.value = pos
-          this.toggleCellSelection(this.selectionModel.value, true)
-        }
-      } break
-    }
+  updateModel() {
   }
 
   setModel(model?: Model): void {
@@ -265,7 +213,7 @@ export class TableView extends View {
     }
     if (model instanceof TableModel) {
       this.model = model
-      this.model.modified.add( (event: TableEvent)=> { this.modelChanged(event) }, this)
+      this.model.modified.add((event: TableEvent) => { this.modelChanged(event) }, this)
 
       const adapter = TableAdapter.lookup(model)
       if (adapter) {
@@ -287,7 +235,7 @@ export class TableView extends View {
   }
 
   modelChanged(event: TableEvent) {
-    switch(event.type) {
+    switch (event.type) {
 
       case TableEventType.INSERT_ROW: {
         // console.log(`TableView.modelChanged(): insert row ${event.index}`)
@@ -299,9 +247,9 @@ export class TableView extends View {
           th.appendChild(rowHeaderContent)
 
         // create new rows and add them to the hiddenSizeCheckTable for measuring
-        const trHead:Array<HTMLTableRowElement> = []
-        const trBody:Array<HTMLTableRowElement> = []
-        for(let i=0; i<event.size; ++i) {
+        const trHead: Array<HTMLTableRowElement> = []
+        const trBody: Array<HTMLTableRowElement> = []
+        for (let i = 0; i < event.size; ++i) {
           const trH = document.createElement("tr")
           trH.style.height = "0px" // height not yet measured for row header
           trHead.push(trH)
@@ -316,16 +264,16 @@ export class TableView extends View {
         const trAnimationBody = document.createElement("tr")
         trAnimationBody.style.height = "0px"
         this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
-        this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index+1])
-    
+        this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
+
         let rowAnimationHeight = 0
-        animate( (animationTime: number): boolean => {
+        animate((animationTime: number): boolean => {
           if (animationTime === 0) { // animation begins
 
             // get the height needed for all rows from the hiddenSizeCheckTable
-            for(let i=0; i<event.size; ++i) {
+            for (let i = 0; i < event.size; ++i) {
               rowAnimationHeight += trBody[i].clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
-            }          
+            }
             // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
 
             // this is to support the tests, letting 'em know which height we've calculated
@@ -343,7 +291,7 @@ export class TableView extends View {
             // animation ends
             // console.log("=========> finished animation")
             // final step
-            for(let i=0; i<event.size; ++i) {
+            for (let i = 0; i < event.size; ++i) {
               const rowHeight = `${trBody[i].clientHeight + 3}px`
               const bodyStyle = trHead[i].style
               bodyStyle.height = bodyStyle.minHeight = bodyStyle.maxHeight = rowHeight
@@ -352,9 +300,9 @@ export class TableView extends View {
             }
             this.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
             this.bodyBody.replaceChild(trBody[0], trAnimationBody)
-            for(let i=1; i<event.size; ++i) {
-              this.rowHeadHead.insertBefore(trHead[i], trHead[i-1].nextSibling)
-              this.bodyBody.insertBefore(trBody[i], trBody[i-1].nextSibling)
+            for (let i = 1; i < event.size; ++i) {
+              this.rowHeadHead.insertBefore(trHead[i], trHead[i - 1].nextSibling)
+              this.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
             }
           }
           return true
@@ -364,7 +312,7 @@ export class TableView extends View {
       case TableEventType.REMOVE_ROW: {
         // console.log(`TableView.modelChanged(): removed row ${event.index}`)
         const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
-        const trBody = this.bodyBody.children[event.index+1] as HTMLTableRowElement
+        const trBody = this.bodyBody.children[event.index + 1] as HTMLTableRowElement
 
         const rowAnimationHeight = trBody.clientHeight
         this.rowAnimationHeight = rowAnimationHeight
@@ -373,20 +321,20 @@ export class TableView extends View {
         trBody.style.minHeight = trBody.style.maxHeight = ""
         trHead.style.height = `${rowAnimationHeight}px`
         trBody.style.height = `${rowAnimationHeight}px`
-        while(trHead.children.length > 0)
+        while (trHead.children.length > 0)
           trHead.removeChild(trHead.children[0])
-        while(trBody.children.length > 0)
+        while (trBody.children.length > 0)
           trBody.removeChild(trBody.children[0])
 
-        animate( (value: number): boolean => {
+        animate((value: number): boolean => {
           value = 1 - value
           const rowHeight = `${value * rowAnimationHeight}px`
           trBody.style.height = rowHeight
-          trHead.style.height = rowHeight  
+          trHead.style.height = rowHeight
           if (value === 0) {
-            for(let i=0; i<event.size; ++i) {
+            for (let i = 0; i < event.size; ++i) {
               this.rowHeadHead.deleteRow(event.index)
-              this.bodyBody.deleteRow(event.index+1)
+              this.bodyBody.deleteRow(event.index + 1)
             }
           }
           return true
@@ -395,11 +343,9 @@ export class TableView extends View {
     }
   }
 
-  updateModel() {
-    //console.log("TableView.updateModel()")
-    //    if (this.model)
-    //      this.model.value = this.input.value
-  }
+  /*
+   * Update View For New Model
+   */
 
   updateView() {
     try {
@@ -418,22 +364,22 @@ export class TableView extends View {
           this.adjustLayoutAfterRender()
       }, 0)
     }
-    catch(e) {
+    catch (e) {
       console.log("caught exception in updateView")
       console.log(e.stack)
       throw e
     }
   }
 
-  updateColumnHeader() {
+  protected updateColumnHeader() {
     this.updateHeader(true)
   }
 
-  updateRowHeader() {
+  protected updateRowHeader() {
     this.updateHeader(false)
   }
 
-  updateHeader(column: boolean) {
+  protected updateHeader(column: boolean) {
     if (!this.model)
       throw Error("TableView.updateHeader(): no model")
     if (!this.adapter)
@@ -500,7 +446,7 @@ export class TableView extends View {
       if (column)
         fillerForMissingScrollbar = headRow.children[headRow.children.length - 1] as HTMLTableHeaderCellElement
       else
-      fillerForMissingScrollbar = headRow.children[headRow.children.length - 1].children[0] as HTMLTableHeaderCellElement
+        fillerForMissingScrollbar = headRow.children[headRow.children.length - 1].children[0] as HTMLTableHeaderCellElement
     }
     if (column) {
       fillerForMissingScrollbar.innerText = ""
@@ -514,7 +460,7 @@ export class TableView extends View {
     headTable.style.display = noHeader ? "none" : ""
   }
 
-  updateBody() {
+  protected updateBody() {
     if (!this.model)
       throw Error("TableView.updateBody(): no model")
     if (!this.adapter)
@@ -602,7 +548,7 @@ export class TableView extends View {
     return bodyRow
   }
 
-  updateSelection() {
+  protected updateSelection() {
     if (this.selectionModel === undefined)
       return
 
@@ -630,7 +576,7 @@ export class TableView extends View {
     }
   }
 
-  adjustLayoutAfterRender() {
+  protected adjustLayoutAfterRender() {
     if (!this.model)
       throw Error("TableView.adjustLayoutAfterRender(): no model")
 
@@ -639,7 +585,7 @@ export class TableView extends View {
     const bodyRow = this.bodyRow.children
 
     // set width
-    for(let col = 0; col < this.model.colCount; ++col) {
+    for (let col = 0; col < this.model.colCount; ++col) {
       const head = colHeadRow[col] as HTMLElement
       const body = bodyRow[col] as HTMLElement
 
@@ -653,15 +599,15 @@ export class TableView extends View {
     }
 
     // set height
-    for(let row = 0; row < this.model.rowCount; ++row) {
+    for (let row = 0; row < this.model.rowCount; ++row) {
       const head = rowHeadHead[row] as HTMLElement
-      const body = this.bodyBody.children[row+1] as HTMLElement
+      const body = this.bodyBody.children[row + 1] as HTMLElement
 
       const headHeight = head.clientHeight - dom.verticalPadding(head)
       const bodyHeight = body.clientHeight - dom.verticalPadding(body)
 
       head.style.height = head.style.minHeight = head.style.maxHeight =
-      body.style.height = body.style.minHeight = body.style.maxHeight =
+        body.style.height = body.style.minHeight = body.style.maxHeight =
         ((headHeight > bodyHeight ? headHeight : bodyHeight)) + "px"
     }
 
@@ -685,9 +631,9 @@ export class TableView extends View {
 
     const width = this.parentElement!.clientWidth
     const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-    if (w0+w1 > width)
+    if (w0 + w1 > width)
       w1 = width - w0
-    if (h0+h1 > height)
+    if (h0 + h1 > height)
       h1 = height - h0
 
     // console.log(`w0=${w0}, w1=${w1}, h0=${h0}, h1=${h1}`)
@@ -696,12 +642,12 @@ export class TableView extends View {
     this.rowHeadDiv.style.width = `${w0}px`
     this.rowHeadDiv.style.height = `${h1}px`
 
-    this.colHeadDiv.style.left = `${w0-1}px`
+    this.colHeadDiv.style.left = `${w0 - 1}px`
     this.colHeadDiv.style.top = `${-h1}px`
     this.colHeadDiv.style.width = `${w1}px`
 
     this.bodyDiv.style.left = `${w0}px`
-    this.bodyDiv.style.top = `-${h1}px` 
+    this.bodyDiv.style.top = `-${h1}px`
     this.bodyDiv.style.width = `${w1}px`
     this.bodyDiv.style.height = `${h1}px`
 
@@ -709,22 +655,22 @@ export class TableView extends View {
     this.rootDiv.style.height = `${h0 + h1}px`
   }
 
-  unadjustLayoutBeforeRender(pos: TablePos) {
+  protected unadjustLayoutBeforeRender(pos: TablePos) {
     let head = this.colHeadRow.children[pos.col] as HTMLElement
     let body = this.bodyRow.children[pos.col] as HTMLElement
     head.style.width = head.style.minWidth = head.style.maxWidth =
-    body.style.width = body.style.minWidth = body.style.maxWidth = ""
+      body.style.width = body.style.minWidth = body.style.maxWidth = ""
 
     // FIXME: row height
   }
 
-  prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
+  protected prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
     if (cell === undefined || cell.tagName !== "TD")
       return
     this.prepareInputOverlayForPosition(this.getCellPosition(cell))
   }
 
-  prepareInputOverlayForPosition(pos: TablePos) {
+  protected prepareInputOverlayForPosition(pos: TablePos) {
     if (!this.adapter)
       return
 
@@ -732,7 +678,7 @@ export class TableView extends View {
 
     let editView = this.adapter.createEditor(pos.col, pos.row) as View // as HTMLElement
     if (!editView)
-      return     
+      return
     this.editView = editView
     editView.classList.add("embedded")
     editView.onblur = () => {
@@ -770,26 +716,158 @@ export class TableView extends View {
     }
   }
 
-  onFieldViewBlur(pos: TablePos) {
-    // refresh cell after loosing focus
-    const cell = this.getCellAt(pos.col, pos.row)
-
-    const content = this.adapter!.displayCell(pos.col, pos.row)!
-
-    const tmp = document.createElement("div")
-    tmp.appendChild(content)
-    if (tmp.innerHTML == cell.innerHTML)
-      return
-
-    cell.replaceChild(content, cell.childNodes[0])
-
-    this.unadjustLayoutBeforeRender(pos)
-    setTimeout(() => {
-      this.adjustLayoutAfterRender()
-    }, 0)
+  /*
+   * set focus
+   */
+  focus() {
+    const { x, y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
+    if (this.editView) {
+      this.editView.focus({ preventScroll: true })
+    } else {
+      this.rootDiv.focus({ preventScroll: true })
+    }
+    this.bodyDiv.scrollLeft = x
+    this.bodyDiv.scrollTop = y
   }
-  
-  onFieldViewKeyDown(event: KeyboardEvent, pos: TablePos) {
+
+  /*
+   * Selection
+   */
+  protected toggleCellSelection(pos: TablePos, flag: boolean): void {
+    if (pos.col >= this.model!.colCount || pos.row >= this.model!.rowCount)
+      return
+    let element = this.bodyBody.children[pos.row + 1].children[pos.col]
+    element.classList.toggle("selected", flag)
+    if (flag) {
+      // console.log(`toggleCellSelection() -> scrollIntoView()`)
+      scrollIntoView(element)
+    }
+  }
+
+  protected toggleRowSelection(row: number, flag: boolean): void {
+    if (row >= this.model!.rowCount)
+      return
+    let rowElement = this.bodyBody.children[1 + this.selectionModel!.value.row]
+    rowElement.classList.toggle("selected", flag)
+    if (flag) {
+      // console.log(`toggleRowSelection() -> scrollIntoView()`)
+      scrollIntoView(rowElement)
+    }
+  }
+
+  /*
+   * Navigate Cells
+   */
+  goTo(column: number, row: number) {
+    this.insideGoTo = true
+    this.prepareInputOverlayForPosition(new TablePos(column, row))
+    this.focus()
+    // console.log(`TableView.goTo(${column}, ${row}) -> scrollIntoView()`)
+    scrollIntoView(this.getCellAt(column, row))
+    this.insideGoTo = false
+  }
+
+  goToCell(element: HTMLTableDataCellElement | undefined) {
+    if (!element)
+      return
+    this.insideGoTo = true
+    this.prepareInputOverlayForCell(element)
+    this.focus()
+    // console.log(`goToCell(${element.nodeName}) -> scrollIntoView()`)
+    scrollIntoView(element)
+    this.insideGoTo = false
+  }
+
+  goToFirstCell() {
+    this.goTo(0, 0)
+  }
+
+  goToLastCell() {
+    if (this.model)
+      this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
+  }
+
+  getCellAt(column: number, row: number): HTMLTableDataCellElement {
+    let element = this.bodyBody.children[row + 1].children[column] as HTMLTableDataCellElement
+    if (!element)
+      throw Error(`TableView.getCellAt(${column}, ${row}): no such cell`)
+    return element
+  }
+
+  getCellPosition(element: HTMLElement): TablePos {
+    let col: number, row: number
+    for (col = 0; col < this.model!.colCount; ++col) {
+      if (element.parentElement!.children[col] === element)
+        break
+    }
+    for (row = 1; row < this.model!.rowCount + 1; ++row) {
+      if (element.parentElement!.parentElement!.children[row] === element.parentElement)
+        break
+    }
+    --row
+    return new TablePos(col, row)
+  }
+
+  /*
+   * Event Handler For Children
+   */
+
+  protected onRootDivKeyDown(event: KeyboardEvent) {
+    if (!this.selectionModel)
+      return
+    // FIXME: based on the selection model we could plug in a behaviour class
+    switch (this.selectionModel.mode) {
+      case TableEditMode.SELECT_ROW: {
+        let row = this.selectionModel.value.row
+        switch (event.key) {
+          case "ArrowDown":
+            if (row + 1 < this.model!.rowCount)
+              ++row
+            break
+          case "ArrowUp":
+            if (row > 0)
+              --row
+            break
+        }
+        if (row != this.selectionModel.value.row) {
+          this.toggleRowSelection(this.selectionModel.value.row, false)
+          this.selectionModel.row = row
+          this.toggleRowSelection(this.selectionModel.value.row, true)
+        }
+      } break
+      case TableEditMode.SELECT_CELL: {
+        let pos = { col: this.selectionModel.col, row: this.selectionModel.row }
+        switch (event.key) {
+          case "ArrowRight":
+            if (pos.col + 1 < this.model!.colCount) {
+              ++pos.col
+            }
+            break
+          case "ArrowLeft":
+            if (pos.col > 0) {
+              --pos.col
+            }
+            break
+          case "ArrowDown":
+            if (pos.row + 1 < this.model!.rowCount)
+              ++pos.row
+            break
+          case "ArrowUp":
+            if (pos.row > 0)
+              --pos.row
+            break
+        }
+        if (pos.col != this.selectionModel.col ||
+          pos.row != this.selectionModel.row) {
+          this.toggleCellSelection(this.selectionModel.value, false)
+          this.selectionModel.value = pos
+          this.toggleCellSelection(this.selectionModel.value, true)
+        }
+      } break
+    }
+  }
+
+  protected onFieldViewKeyDown(event: KeyboardEvent, pos: TablePos) {
     switch (event.key) {
       case "ArrowDown":
         if (pos.row + 1 >= this.model!.rowCount)
@@ -829,128 +907,55 @@ export class TableView extends View {
     }
   }
 
-  /*
-   * set focus
-   */
-  focus() {
-    const {x ,y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
-    if (this.editView) {
-      this.editView.focus({preventScroll: true})
-    } else {
-      this.rootDiv.focus({preventScroll: true})
-    }
-    this.bodyDiv.scrollLeft = x
-    this.bodyDiv.scrollTop = y
-  }
+  protected onFieldViewBlur(pos: TablePos) {
+    // refresh cell after loosing focus
+    const cell = this.getCellAt(pos.col, pos.row)
 
-  /*
-   * Selection
-   */
-  toggleCellSelection(pos: TablePos, flag: boolean): void {
-    if (pos.col >= this.model!.colCount || pos.row >= this.model!.rowCount)
+    const content = this.adapter!.displayCell(pos.col, pos.row)!
+
+    const tmp = document.createElement("div")
+    tmp.appendChild(content)
+    if (tmp.innerHTML == cell.innerHTML)
       return
-    let element = this.bodyBody.children[pos.row + 1].children[pos.col]
-    element.classList.toggle("selected", flag)
-    if (flag) {
-      // console.log(`toggleCellSelection() -> scrollIntoView()`)
-      scrollIntoView(element)
-    }
-  }
 
-  toggleRowSelection(row: number, flag: boolean): void {
-    if (row >= this.model!.rowCount)
-      return
-    let rowElement = this.bodyBody.children[1 + this.selectionModel!.value.row]
-    rowElement.classList.toggle("selected", flag)
-    if (flag) {
-      // console.log(`toggleRowSelection() -> scrollIntoView()`)
-      scrollIntoView(rowElement)
-    }
-  }
+    cell.replaceChild(content, cell.childNodes[0])
 
-  /*
-   * Navigate Cells
-   */
-  goTo(column: number, row: number) {
-    this.insideGoTo = true
-    this.prepareInputOverlayForPosition(new TablePos(column, row))
-    this.focus()
-    // console.log(`TableView.goTo(${column}, ${row}) -> scrollIntoView()`)
-    scrollIntoView(this.getCellAt(column, row))
-    this.insideGoTo = false
-  }
-
-  goToCell(element: HTMLTableDataCellElement | undefined) {
-    if (!element)
-      return
-    this.insideGoTo = true
-    this.prepareInputOverlayForCell(element)
-    this.focus()
-    // console.log(`goToCell(${element.nodeName}) -> scrollIntoView()`)
-    scrollIntoView(element)
-    this.insideGoTo = false
-  }
-  
-  goToFirstCell() {
-    this.goTo(0, 0)
-  }
-
-  goToLastCell() {
-    if (this.model)
-      this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
-  }
-
-  getCellAt(column: number, row: number): HTMLTableDataCellElement {
-      let element = this.bodyBody.children[row + 1].children[column] as HTMLTableDataCellElement
-      if (!element)
-          throw Error(`TableView.getCellAt(${column}, ${row}): no such cell`)
-      return element
-  }
-
-  getCellPosition(element: HTMLElement): TablePos {
-    let col: number, row: number
-    for (col = 0; col < this.model!.colCount; ++col) {
-      if (element.parentElement!.children[col] === element)
-        break
-    }
-    for (row = 1; row < this.model!.rowCount + 1; ++row) {
-      if (element.parentElement!.parentElement!.children[row] === element.parentElement)
-        break
-    }
-    --row
-    return new TablePos(col, row)
+    this.unadjustLayoutBeforeRender(pos)
+    setTimeout(() => {
+      this.adjustLayoutAfterRender()
+    }, 0)
   }
 
   /*
    * Window Resize Event Handler
    */
 
-    private resizeEventListener?: EventListener
+  private resizeEventListener?: EventListener
 
-    connectedCallback() {
-      super.connectedCallback()
-      this.resizeEventListener = ()=> {
-        try {
-          this.adjustLayoutAfterRender()
-        }
-        catch(e) {
-          console.log("resizeEventListener caught exception in adjustLayoutAfterRender()")
-          throw e
-        }
+  connectedCallback() {
+    super.connectedCallback()
+    this.resizeEventListener = () => {
+      try {
+        this.adjustLayoutAfterRender()
       }
-      window.addEventListener("resize", this.resizeEventListener)
-  
-      if (this.selectionModel === undefined) {
-        this.selectionModel = new SelectionModel();
-        this.selectionModel.modified.add(() => {
-          this.updateSelection()
-        }, this)
+      catch (e) {
+        console.log("resizeEventListener caught exception in adjustLayoutAfterRender()")
+        throw e
       }
     }
-  
-    disconnectedCallback() {
-      window.removeEventListener("resize", this.resizeEventListener!)
+    window.addEventListener("resize", this.resizeEventListener)
+
+    if (this.selectionModel === undefined) {
+      this.selectionModel = new SelectionModel()
+      this.selectionModel.modified.add(() => {
+        this.updateSelection()
+      }, this)
     }
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener("resize", this.resizeEventListener!)
+  }
 }
 
 window.customElements.define("toad-table", TableView)
