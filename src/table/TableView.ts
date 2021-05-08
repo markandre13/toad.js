@@ -40,7 +40,6 @@ class InputOverlay extends HTMLDivElement {
 
   constructor() {
     super()
-  
     this.classList.add("inputDiv")
 
     this.addEventListener("focusin", (event: FocusEvent) => {
@@ -59,6 +58,20 @@ class InputOverlay extends HTMLDivElement {
     this.addEventListener("focusout", () => {
       this.style.opacity = "0"
     })
+  }
+
+  // workaround
+  static create(): InputOverlay {
+    const e = document.createElement("toad-table-inputoverlay") as InputOverlay
+    e.setViewRect = InputOverlay.prototype.setViewRect
+    return e
+  }
+
+  setViewRect(top: number, left: number, width: number, height: number) {
+    this.style.top = `${top}px`
+    this.style.left = `${left}px`
+    this.style.width = `${width}px`
+    this.style.height = `${height}px`
   }
 }
 
@@ -188,7 +201,7 @@ export class TableView extends View {
     const zeroSize = document.createElement("div")
     zeroSize.classList.add("zeroSize")
 
-    this.inputOverlay = document.createElement("toad-table-inputoverlay") as InputOverlay
+    this.inputOverlay = InputOverlay.create()
     this.inputOverlay.focusInFromLeft = () => {
       if (!this.insideGoTo)
         this.goToFirstCell()
@@ -775,26 +788,10 @@ export class TableView extends View {
     // FIXME: row height
   }
 
-  toggleCellSelection(pos: TablePos, flag: boolean): void {
-    if (pos.col >= this.model!.colCount || pos.row >= this.model!.rowCount)
+  prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
+    if (cell === undefined || cell.tagName !== "TD")
       return
-    let element = this.bodyBody.children[pos.row + 1].children[pos.col]
-    element.classList.toggle("selected", flag)
-    if (flag) {
-      // console.log(`toggleCellSelection() -> scrollIntoView()`)
-      scrollIntoView(element)
-    }
-  }
-
-  toggleRowSelection(row: number, flag: boolean): void {
-    if (row >= this.model!.rowCount)
-      return
-    let rowElement = this.bodyBody.children[1 + this.selectionModel!.value.row]
-    rowElement.classList.toggle("selected", flag)
-    if (flag) {
-      // console.log(`toggleRowSelection() -> scrollIntoView()`)
-      scrollIntoView(rowElement)
-    }
+    this.prepareInputOverlayForPosition(this.getCellPosition(cell))
   }
 
   adjustInputOverlayToCell(element: HTMLTableDataCellElement) {
@@ -808,74 +805,25 @@ export class TableView extends View {
     let top, left
     if (navigator.userAgent.indexOf("Chrome") > -1) {
       // Chrome
-      left = `${td.offsetLeft + 2}px`
-      top = `${td.offsetTop - tbody.clientHeight}px`
+      left = td.offsetLeft + 2
+      top = td.offsetTop - tbody.clientHeight
     } else {
       // Safari & Opera
-      left = `${td.offsetLeft + 1}px`
-      top = `${td.offsetTop - tbody.clientHeight - 1}px`
+      left = td.offsetLeft + 1
+      top = td.offsetTop - tbody.clientHeight - 1
     }
 
-    const width = `${element.clientWidth - dom.horizontalPadding(element)}px`
-    const height = `${boundary.height}px`
+    const width = element.clientWidth - dom.horizontalPadding(element)
+    const height = boundary.height
 
     // console.log(`adjustInputToCell() -> top=${top}, left=${left}, width=${width}, height=${height}`)
     // console.log(element)
     // console.log(boundary)
 
-    this.inputOverlay.style.top = top
-    this.inputOverlay.style.left = left
-    this.inputOverlay.style.width = width
-    this.inputOverlay.style.height = height
+    this.inputOverlay.setViewRect(top, left, width, height)
 
     // FIXME: add two new functions: lockElement(), unlockElement() and invoke the accordingly
     // element.style.width = element.style.minWidth = element.style.maxWidth = width
-  }
-
-  goTo(column: number, row: number) {
-    this.insideGoTo = true
-    this.prepareInputOverlayForPosition(new TablePos(column, row))
-    this.focus()
-    // console.log(`TableView.goTo(${column}, ${row}) -> scrollIntoView()`)
-    scrollIntoView(this.getCellAt(column, row))
-    this.insideGoTo = false
-  }
-
-  goToCell(element: HTMLTableDataCellElement | undefined) {
-    if (!element)
-      return
-    this.insideGoTo = true
-    this.prepareInputOverlayForCell(element)
-    this.focus()
-    // console.log(`goToCell(${element.nodeName}) -> scrollIntoView()`)
-    scrollIntoView(element)
-    this.insideGoTo = false
-  }
-  
-  goToFirstCell() {
-    this.goTo(0, 0)
-  }
-
-  goToLastCell() {
-    if (this.model)
-      this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
-  }
-
-  focus() {
-    const {x ,y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
-    if (this.fieldView) {
-      this.fieldView.focus({preventScroll: true})
-    } else {
-      this.rootDiv.focus({preventScroll: true})
-    }
-    this.bodyDiv.scrollLeft = x
-    this.bodyDiv.scrollTop = y
-  }
-
-  prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
-    if (cell === undefined || cell.tagName !== "TD")
-      return
-    this.prepareInputOverlayForPosition(this.getCellPosition(cell))
   }
 
   prepareInputOverlayForPosition(pos: TablePos) {
@@ -993,6 +941,77 @@ export class TableView extends View {
     setTimeout(() => {
       this.adjustInputOverlayToCell(cell)
     }, 0)
+  }
+  
+  /*
+   * set focus
+   */
+  focus() {
+    const {x ,y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
+    if (this.fieldView) {
+      this.fieldView.focus({preventScroll: true})
+    } else {
+      this.rootDiv.focus({preventScroll: true})
+    }
+    this.bodyDiv.scrollLeft = x
+    this.bodyDiv.scrollTop = y
+  }
+
+  /*
+   * Selection
+   */
+  toggleCellSelection(pos: TablePos, flag: boolean): void {
+    if (pos.col >= this.model!.colCount || pos.row >= this.model!.rowCount)
+      return
+    let element = this.bodyBody.children[pos.row + 1].children[pos.col]
+    element.classList.toggle("selected", flag)
+    if (flag) {
+      // console.log(`toggleCellSelection() -> scrollIntoView()`)
+      scrollIntoView(element)
+    }
+  }
+
+  toggleRowSelection(row: number, flag: boolean): void {
+    if (row >= this.model!.rowCount)
+      return
+    let rowElement = this.bodyBody.children[1 + this.selectionModel!.value.row]
+    rowElement.classList.toggle("selected", flag)
+    if (flag) {
+      // console.log(`toggleRowSelection() -> scrollIntoView()`)
+      scrollIntoView(rowElement)
+    }
+  }
+
+  /*
+   * Navigate Cells
+   */
+  goTo(column: number, row: number) {
+    this.insideGoTo = true
+    this.prepareInputOverlayForPosition(new TablePos(column, row))
+    this.focus()
+    // console.log(`TableView.goTo(${column}, ${row}) -> scrollIntoView()`)
+    scrollIntoView(this.getCellAt(column, row))
+    this.insideGoTo = false
+  }
+
+  goToCell(element: HTMLTableDataCellElement | undefined) {
+    if (!element)
+      return
+    this.insideGoTo = true
+    this.prepareInputOverlayForCell(element)
+    this.focus()
+    // console.log(`goToCell(${element.nodeName}) -> scrollIntoView()`)
+    scrollIntoView(element)
+    this.insideGoTo = false
+  }
+  
+  goToFirstCell() {
+    this.goTo(0, 0)
+  }
+
+  goToLastCell() {
+    if (this.model)
+      this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
   }
 
   getCellAt(column: number, row: number): HTMLTableDataCellElement {
