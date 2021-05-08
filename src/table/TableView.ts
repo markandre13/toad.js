@@ -65,10 +65,16 @@ class InputOverlay extends HTMLDivElement {
     const e = document.createElement("toad-table-inputoverlay") as InputOverlay
     e.setViewRect = InputOverlay.prototype.setViewRect
     e.setChild = InputOverlay.prototype.setChild
+    e.adjustToCell = InputOverlay.prototype.adjustToCell
     return e
   }
 
-  setChild(fieldView: HTMLElement) {
+  setChild(td: HTMLTableDataCellElement, fieldView: HTMLElement) {
+    let tr = td.parentElement
+    let tbody = tr!.parentElement!
+
+    const {x ,y} = { x: tbody.scrollLeft, y: tbody.scrollTop }
+
     if (this.children.length === 0) {
       this.appendChild(fieldView)
     } else {
@@ -77,6 +83,33 @@ class InputOverlay extends HTMLDivElement {
       }
       this.replaceChild(fieldView, this.children[0])
     }
+
+    tbody.scrollLeft = x
+    tbody.scrollTop = y
+  }
+
+  adjustToCell(td: HTMLTableDataCellElement) {
+    // console.log(`adjustInputOverlayToCell(${element})`)
+
+    let boundary = td.getBoundingClientRect()
+    let tr = td.parentElement
+    let tbody = tr!.parentElement!
+
+    let top, left
+    if (navigator.userAgent.indexOf("Chrome") > -1) {
+      // Chrome
+      left = td.offsetLeft + 2
+      top = td.offsetTop - tbody.clientHeight
+    } else {
+      // Safari & Opera
+      left = td.offsetLeft + 1
+      top = td.offsetTop - tbody.clientHeight - 1
+    }
+
+    const width = td.clientWidth - dom.horizontalPadding(td)
+    const height = boundary.height
+
+    this.setViewRect(top, left, width, height)
   }
 
   setViewRect(top: number, left: number, width: number, height: number) {
@@ -825,41 +858,13 @@ export class TableView extends View {
       this.onFieldViewKeyDown(event, pos)
     }
 
-    const {x ,y} = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
-    this.inputOverlay.setChild(fieldView)
-    this.bodyDiv.scrollLeft = x
-    this.bodyDiv.scrollTop = y
-
     const cell = this.getCellAt(pos.col, pos.row)
+    this.inputOverlay.setChild(cell, fieldView)
+
     setTimeout(() => {
-      this.adjustInputOverlayToCell(cell)
+      this.inputOverlay.adjustToCell(cell)
     }, 0)
   }
-
-  adjustInputOverlayToCell(td: HTMLTableDataCellElement) {
-    // console.log(`adjustInputOverlayToCell(${element})`)
-
-    let boundary = td.getBoundingClientRect()
-    let tr = td.parentElement
-    let tbody = tr!.parentElement!
-
-    let top, left
-    if (navigator.userAgent.indexOf("Chrome") > -1) {
-      // Chrome
-      left = td.offsetLeft + 2
-      top = td.offsetTop - tbody.clientHeight
-    } else {
-      // Safari & Opera
-      left = td.offsetLeft + 1
-      top = td.offsetTop - tbody.clientHeight - 1
-    }
-
-    const width = td.clientWidth - dom.horizontalPadding(td)
-    const height = boundary.height
-
-    this.inputOverlay.setViewRect(top, left, width, height)
-  }
-
 
   setSelectionTo(pos: TablePos) {
     if (!this.selectionModel)
