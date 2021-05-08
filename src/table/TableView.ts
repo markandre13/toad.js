@@ -800,11 +800,46 @@ export class TableView extends View {
     // FIXME: row height
   }
 
-  adjustInputOverlayToCell(element: HTMLTableDataCellElement) {
+  prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
+    if (cell === undefined || cell.tagName !== "TD")
+      return
+    this.prepareInputOverlayForPosition(this.getCellPosition(cell))
+  }
+
+  prepareInputOverlayForPosition(pos: TablePos) {
+    if (!this.adapter)
+      return
+
+    this.setSelectionTo(pos)
+
+    let fieldView = this.adapter.editCell(pos.col, pos.row) as View // as HTMLElement
+    if (!fieldView)
+      return
+      
+    this.fieldView = fieldView
+    fieldView.classList.add("embedded")
+    fieldView.onblur = () => {
+      this.onFieldViewBlur(pos)
+    }
+    fieldView.onkeydown = (event: KeyboardEvent) => {
+      this.onFieldViewKeyDown(event, pos)
+    }
+
+    const {x ,y} = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
+    this.inputOverlay.setChild(fieldView)
+    this.bodyDiv.scrollLeft = x
+    this.bodyDiv.scrollTop = y
+
+    const cell = this.getCellAt(pos.col, pos.row)
+    setTimeout(() => {
+      this.adjustInputOverlayToCell(cell)
+    }, 0)
+  }
+
+  adjustInputOverlayToCell(td: HTMLTableDataCellElement) {
     // console.log(`adjustInputOverlayToCell(${element})`)
 
-    let boundary = element.getBoundingClientRect()
-    let td = element
+    let boundary = td.getBoundingClientRect()
     let tr = td.parentElement
     let tbody = tr!.parentElement!
 
@@ -819,136 +854,92 @@ export class TableView extends View {
       top = td.offsetTop - tbody.clientHeight - 1
     }
 
-    const width = element.clientWidth - dom.horizontalPadding(element)
+    const width = td.clientWidth - dom.horizontalPadding(td)
     const height = boundary.height
 
-    // console.log(`adjustInputToCell() -> top=${top}, left=${left}, width=${width}, height=${height}`)
-    // console.log(element)
-    // console.log(boundary)
-
     this.inputOverlay.setViewRect(top, left, width, height)
-
-    // FIXME: add two new functions: lockElement(), unlockElement() and invoke the accordingly
-    // element.style.width = element.style.minWidth = element.style.maxWidth = width
   }
 
-  prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {
-    if (cell === undefined || cell.tagName !== "TD")
+
+  setSelectionTo(pos: TablePos) {
+    if (!this.selectionModel)
       return
-    this.prepareInputOverlayForPosition(this.getCellPosition(cell))
-  }
-
-  prepareInputOverlayForPosition(pos: TablePos) {
-    if (!this.adapter)
-      return
-    if (this.selectionModel) {
-      switch (this.selectionModel.mode) {
-        case TableEditMode.EDIT_CELL:
-          this.selectionModel.value = pos
-          break
-        case TableEditMode.SELECT_CELL:
-          this.toggleCellSelection(this.selectionModel.value, false)
-          this.selectionModel.value = pos
-          this.toggleCellSelection(this.selectionModel.value, true)
-          return
-        case TableEditMode.SELECT_ROW:
-          this.toggleRowSelection(this.selectionModel!.value.row, false)
-          this.selectionModel.value.row = pos.row
-          this.toggleRowSelection(this.selectionModel!.value.row, true)
-          return
-      }
-    }
-
-    let fieldView = this.adapter.editCell(pos.col, pos.row) as View // as HTMLElement
-    if (!fieldView)
-      return
-    this.fieldView = fieldView
-    fieldView.classList.add("embedded")
-
-    /*
-        // adjust table size while editing (cursor handling is ugly)
-        fieldModel.modified.add( () => {
-          element.innerText = fieldModel.value
-          setTimeout( () => {
-            // apply element size to fieldView
-            this.adjustInputToElement(element)
-            this.adjustInternalTables()
-          }, 0)
-        })
-    */
-
-    fieldView.onblur = () => {
-      // refresh cell after loosing focus
-      const cell = this.getCellAt(pos.col, pos.row)
-
-      const content = this.adapter!.displayCell(pos.col, pos.row)!
-
-      const tmp = document.createElement("div")
-      tmp.appendChild(content)
-      if (tmp.innerHTML == cell.innerHTML)
+    switch (this.selectionModel.mode) {
+      case TableEditMode.EDIT_CELL:
+        this.selectionModel.value = pos
+        break
+      case TableEditMode.SELECT_CELL:
+        this.toggleCellSelection(this.selectionModel.value, false)
+        this.selectionModel.value = pos
+        this.toggleCellSelection(this.selectionModel.value, true)
         return
-
-      cell.replaceChild(content, cell.childNodes[0])
-
-      this.unadjustLayoutBeforeRender(pos)
-      setTimeout(() => {
-        this.adjustLayoutAfterRender()
-      }, 0)
+      case TableEditMode.SELECT_ROW:
+        this.toggleRowSelection(this.selectionModel!.value.row, false)
+        this.selectionModel.value.row = pos.row
+        this.toggleRowSelection(this.selectionModel!.value.row, true)
+        return
     }
+  }
 
-    fieldView.onkeydown = (event: KeyboardEvent) => {
-      switch (event.key) {
-        case "ArrowDown":
-          if (pos.row + 1 >= this.model!.rowCount)
-            break
-          event.preventDefault()
-          this.goTo(pos.col, pos.row + 1)
-          break
-        case "ArrowUp":
-          if (pos.row === 0)
-            break
-          event.preventDefault()
-          this.goTo(pos.col, pos.row - 1)
-          break
-        case "Tab":
-          if (event.shiftKey) {
-            if (pos.col > 0) {
-              event.preventDefault()
-              this.goTo(pos.col - 1, pos.row)
-            } else {
-              if (pos.row > 0) {
-                event.preventDefault()
-                this.goTo(this.model!.colCount - 1, pos.row - 1)
-              }
-            }
-          } else {
-            if (pos.col + 1 < this.model!.colCount) {
-              event.preventDefault()
-              this.goTo(pos.col + 1, pos.row)
-            } else {
-              if (pos.row + 1 < this.model!.rowCount) {
-                event.preventDefault()
-                this.goTo(0, pos.row + 1)
-              }
-            }
-          }
-          break
-      }
-    }
-
-    const {x ,y} = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
-
-    this.inputOverlay.setChild(fieldView)
-
-    this.bodyDiv.scrollLeft = x
-    this.bodyDiv.scrollTop = y
-
+  onFieldViewBlur(pos: TablePos) {
+    // refresh cell after loosing focus
     const cell = this.getCellAt(pos.col, pos.row)
+
+    const content = this.adapter!.displayCell(pos.col, pos.row)!
+
+    const tmp = document.createElement("div")
+    tmp.appendChild(content)
+    if (tmp.innerHTML == cell.innerHTML)
+      return
+
+    cell.replaceChild(content, cell.childNodes[0])
+
+    this.unadjustLayoutBeforeRender(pos)
     setTimeout(() => {
-      this.adjustInputOverlayToCell(cell)
+      this.adjustLayoutAfterRender()
     }, 0)
   }
   
+  onFieldViewKeyDown(event: KeyboardEvent, pos: TablePos) {
+    switch (event.key) {
+      case "ArrowDown":
+        if (pos.row + 1 >= this.model!.rowCount)
+          break
+        event.preventDefault()
+        this.goTo(pos.col, pos.row + 1)
+        break
+      case "ArrowUp":
+        if (pos.row === 0)
+          break
+        event.preventDefault()
+        this.goTo(pos.col, pos.row - 1)
+        break
+      case "Tab":
+        if (event.shiftKey) {
+          if (pos.col > 0) {
+            event.preventDefault()
+            this.goTo(pos.col - 1, pos.row)
+          } else {
+            if (pos.row > 0) {
+              event.preventDefault()
+              this.goTo(this.model!.colCount - 1, pos.row - 1)
+            }
+          }
+        } else {
+          if (pos.col + 1 < this.model!.colCount) {
+            event.preventDefault()
+            this.goTo(pos.col + 1, pos.row)
+          } else {
+            if (pos.row + 1 < this.model!.rowCount) {
+              event.preventDefault()
+              this.goTo(0, pos.row + 1)
+            }
+          }
+        }
+        break
+    }
+  }
+
   /*
    * set focus
    */
