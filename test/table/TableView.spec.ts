@@ -54,7 +54,7 @@ describe("toad.js", function() {
                         return undefined
                     return document.createTextNode(this.model.data[row][col])
                 }
-                editCell(col: number, row: number): Node | undefined {
+                createEditor(col: number, row: number): Node | undefined {
                     if (!this.model)
                         return undefined
                     const model = new TextModel(this.model.data[row][col])

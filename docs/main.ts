@@ -95,7 +95,7 @@ class BookTableAdapter extends TableAdapter {
         return document.createTextNode(text)
     }
 
-    editCell(col: number, row: number): Node | undefined {
+    createEditor(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined

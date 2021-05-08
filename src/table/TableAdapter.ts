@@ -27,7 +27,7 @@ export class TableAdapter {
     getColumnHead(col: number): Node | undefined { return undefined }
     getRowHead(row: number): Node | undefined { return undefined }
     displayCell(col: number, row: number): Node | undefined { return undefined }
-    editCell(col: number, row: number): Node | undefined { return undefined }
+    createEditor(col: number, row: number): Node | undefined { return undefined }
 
     isViewCompact(): boolean { return false }
 

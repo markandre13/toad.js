@@ -163,7 +163,7 @@ export class TableView extends View {
   bodyRow: HTMLTableRowElement
 
   inputOverlay: InputOverlay
-  fieldView?: HTMLElement
+  editView?: HTMLElement
   fieldModel?: Model
   cellBeingEdited?: HTMLElement
   insideGoTo: boolean
@@ -845,21 +845,20 @@ export class TableView extends View {
 
     this.setSelectionTo(pos)
 
-    let fieldView = this.adapter.editCell(pos.col, pos.row) as View // as HTMLElement
-    if (!fieldView)
-      return
-      
-    this.fieldView = fieldView
-    fieldView.classList.add("embedded")
-    fieldView.onblur = () => {
+    let editView = this.adapter.createEditor(pos.col, pos.row) as View // as HTMLElement
+    if (!editView)
+      return     
+    this.editView = editView
+    editView.classList.add("embedded")
+    editView.onblur = () => {
       this.onFieldViewBlur(pos)
     }
-    fieldView.onkeydown = (event: KeyboardEvent) => {
+    editView.onkeydown = (event: KeyboardEvent) => {
       this.onFieldViewKeyDown(event, pos)
     }
 
     const cell = this.getCellAt(pos.col, pos.row)
-    this.inputOverlay.setChild(cell, fieldView)
+    this.inputOverlay.setChild(cell, editView)
 
     setTimeout(() => {
       this.inputOverlay.adjustToCell(cell)
@@ -950,8 +949,8 @@ export class TableView extends View {
    */
   focus() {
     const {x ,y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
-    if (this.fieldView) {
-      this.fieldView.focus({preventScroll: true})
+    if (this.editView) {
+      this.editView.focus({preventScroll: true})
     } else {
       this.rootDiv.focus({preventScroll: true})
     }
