@@ -35,11 +35,6 @@ export class InputOverlay extends HTMLDivElement {
   }
 
   setChild(td: HTMLTableDataCellElement, fieldView: HTMLElement) {
-    let tr = td.parentElement
-    let tbody = tr!.parentElement!
-
-    const { x, y } = { x: tbody.scrollLeft, y: tbody.scrollTop }
-
     if (this.children.length === 0) {
       this.appendChild(fieldView)
     } else {
@@ -48,9 +43,6 @@ export class InputOverlay extends HTMLDivElement {
       }
       this.replaceChild(fieldView, this.children[0])
     }
-
-    tbody.scrollLeft = x
-    tbody.scrollTop = y
   }
 
   adjustToCell(td: HTMLTableDataCellElement) {

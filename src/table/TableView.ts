@@ -771,8 +771,16 @@ export class TableView extends View {
     if (!element)
       return
     this.insideGoTo = true
+
+    const { x, y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
+
     this.prepareInputOverlayForCell(element)
+
+    this.bodyDiv.scrollLeft = x
+    this.bodyDiv.scrollTop = y
+
     this.focus()
+
     // console.log(`goToCell(${element.nodeName}) -> scrollIntoView()`)
     scrollIntoView(element)
     this.insideGoTo = false

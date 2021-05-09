@@ -24,14 +24,16 @@ export function setAnimationFrameCount(frames: number) {
 
 // FIXME: handle concurrent smoothScroll within the same scrollableParent
 export function scrollIntoView(element: Element): void {
-    var scrollableParent = findScrollableParent(element)
+    // console.log(`scrollIntoView(${element})`)
+    const scrollableParent = findScrollableParent(element)
     if (scrollableParent === undefined)
         return
-    var parentRect = scrollableParent.getBoundingClientRect()
-    var clientRect = element.getBoundingClientRect()
+    const parentRect = scrollableParent.getBoundingClientRect()
+    const clientRect = element.getBoundingClientRect()
 
     if (scrollableParent !== document.body) {       
         const {x, y} = calculateScrollGoal(scrollableParent, parentRect, clientRect)
+        // console.log(`  scroll from (${scrollableParent.scrollLeft}, ${scrollableParent.scrollTop}) to (${x}, ${y})`)
         smoothScroll(scrollableParent, x, y)
         if (window.getComputedStyle(scrollableParent).position !== 'fixed') {
             window.scrollBy({
@@ -185,7 +187,7 @@ function isMicrosoftBrowser(userAgent: string): boolean {
     return new RegExp(userAgentPatterns.join('|')).test(userAgent)
 }
 
-function findScrollableParent(el: Element): Element | undefined {
+export function findScrollableParent(el: Element): Element | undefined {
     while (el !== document.body && isScrollable(el) === false) {
         if (el.parentElement === null)
             return undefined
@@ -194,7 +196,7 @@ function findScrollableParent(el: Element): Element | undefined {
     return el
 }
 
-function isScrollable(el: Element): boolean {
+export function isScrollable(el: Element): boolean {
     const isScrollableY = hasScrollableSpace(el, "Y") && canOverflow(el, "Y")
     const isScrollableX = hasScrollableSpace(el, "X") && canOverflow(el, "X")
     return isScrollableY || isScrollableX

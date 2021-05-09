@@ -2,6 +2,7 @@ import { expect, use } from "chai"
 use(require('chai-subset'))
 
 import { TextView } from "../../src/toad"
+import { findScrollableParent, isScrollable } from "../../src/scrollIntoView"
 import { BookTableScene, Book } from "./BookTableScene"
 
 describe("toad.js", function() {
@@ -156,8 +157,37 @@ describe("toad.js", function() {
                     expect(scene.selectionModel.col).equals(1)
                     expect(scene.selectionModel.row).equals(2)
                 })
+            })
 
-                it("input field updates after adding row", async function() {
+            describe("UX finetuning", function() {
+
+                // ON SAFARI, WHEN
+                //   TableView.goToCell(element: HTMLTableDataCellElement | undefined)
+                // calls
+                //   this.prepareInputOverlayForCell(element)
+                // then
+                //   TableView.bodyDiv.scroll[Left|Top]
+                // is modified
+                // THEREFORE
+                //   goToCell must save and restore bodyDiv's scroll position
+                xit("GIVEN 2nd row selected, 1st row visible WHEN 1st row click THEN do not scroll", async function() {
+
+                    const cell00 = scene.table.getCellAt(0, 0)
+                    const body = findScrollableParent(cell00)!
+
+                    console.log(`#0 bodyDiv @ (${body.scrollLeft}, ${body.scrollTop})`)
+                    scene.mouseDownAtCell(0, 1)
+                    await scene.sleep()
+
+                    expect(isScrollable(body)).to.be.true        
+                    console.log(`#1 bodyDiv @ (${body.scrollLeft}, ${body.scrollTop})`)
+
+                    scene.mouseDownAtCell(0, 0)
+                    await scene.sleep()
+                    console.log(`#2 bodyDiv @ (${body.scrollLeft}, ${body.scrollTop})`)
+                })
+
+                xit("input field updates after adding row", async function() {
                     scene.mouseDownAtCell(0, 3)
 
                     const button = document.querySelector("toad-tabletool")!
@@ -204,11 +234,12 @@ describe("toad.js", function() {
                 // keyboard and scroll
                 // fast sequence and scroll
 
-                it("overlapping scrolls", async function() {
+                it("handle horizontal scrolling when tab is pressed before scroll animation is finished", async function() {
                     this.timeout(15000)
 
+                    // send tab keys in an interval slower than the scroll animation
+                    // and remember the horizontal scroll position
                     const expectedScrollX = new Array<number>()
-                    
                     for(let i=0; i<10; ++i) {
                         if (i===0)
                             scene.mouseDownAtCell(0, 0)
@@ -219,14 +250,14 @@ describe("toad.js", function() {
                         // console.log(`${i}: ${scene.table.bodyDiv.scrollLeft}`)
                     }
 
+                    // select last visible cell on the right in the 1st row
                     scene.mouseDownAtCell(0, 0)
                     await scene.sleep()
                     scene.mouseDownAtCell(3, 0)
                     await scene.sleep()
                     scene.expectScrollAt(expectedScrollX[3], 0)
 
-                    // console.log("---------------------------------------------------------------------------------------")
-
+                    // send 4 tab keys in an interval faster than the scroll animation
                     scene.sendTab()
                     await scene.sleep(50)
                     scene.sendTab()
@@ -236,9 +267,11 @@ describe("toad.js", function() {
                     scene.sendTab()
                     await scene.sleep(5000)
 
+                    // expect the correct cell being selected
                     expect(scene.selectionModel.col).equals(7)
                     expect(scene.selectionModel.row).equals(0)
 
+                    // expect scroll x to be at that field
                     scene.expectScrollAt(expectedScrollX[7], 0)
                 })
             })
