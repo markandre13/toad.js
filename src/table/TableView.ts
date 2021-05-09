@@ -94,43 +94,35 @@ export class TableView extends View {
     this.rootDiv.onkeydown = this.onRootDivKeyDown
 
     // row head
-    const rowHeadDiv = document.createElement("div")
-    this.rowHeadDiv = rowHeadDiv
-    rowHeadDiv.classList.add("rowhead")
-    const rowHeadTable = document.createElement("table")
-    this.rowHeadTable = rowHeadTable
-    const rowHeadHead = document.createElement("thead")
-    this.rowHeadHead = rowHeadHead
-    rowHeadTable.appendChild(rowHeadHead)
-    rowHeadDiv.appendChild(rowHeadTable)
-    this.rootDiv.appendChild(rowHeadDiv)
+    this.rowHeadDiv = document.createElement("div")
+    this.rowHeadDiv.classList.add("rowhead")
+    this.rowHeadTable = document.createElement("table")
+    this.rowHeadHead = document.createElement("thead")
+    this.rowHeadTable.appendChild(this.rowHeadHead)
+    this.rowHeadDiv.appendChild(this.rowHeadTable)
+    this.rootDiv.appendChild(this.rowHeadDiv)
 
     // column head
-    const colHeadDiv = document.createElement("div")
-    this.colHeadDiv = colHeadDiv
-    colHeadDiv.classList.add("colhead")
-    const colHeadTable = document.createElement("table")
-    this.colHeadTable = colHeadTable
+    this.colHeadDiv = document.createElement("div")
+    this.colHeadDiv.classList.add("colhead")
+    this.colHeadTable = document.createElement("table")
     const colHeadHead = document.createElement("thead")
-    const colHeadRow = document.createElement("tr")
-    this.colHeadRow = colHeadRow
-    colHeadHead.appendChild(colHeadRow)
-    colHeadTable.appendChild(colHeadHead)
-    colHeadDiv.appendChild(colHeadTable)
-    this.rootDiv.appendChild(colHeadDiv)
+    this.colHeadRow = document.createElement("tr")
+    colHeadHead.appendChild(this.colHeadRow)
+    this.colHeadTable.appendChild(colHeadHead)
+    this.colHeadDiv.appendChild(this.colHeadTable)
+    this.rootDiv.appendChild(this.colHeadDiv)
 
     // body
-    const bodyDiv = document.createElement("div")
-    bodyDiv.classList.add("cells")
-    bodyDiv.onscroll = () => {
-      rowHeadDiv.scrollTop = bodyDiv.scrollTop
-      colHeadDiv.scrollLeft = bodyDiv.scrollLeft
+    this.bodyDiv = document.createElement("div")
+    this.bodyDiv.classList.add("cells")
+    this.bodyDiv.onscroll = () => {
+      this.rowHeadDiv.scrollTop = this.bodyDiv.scrollTop
+      this.colHeadDiv.scrollLeft = this.bodyDiv.scrollLeft
     }
-    this.bodyDiv = bodyDiv
 
-    const bodyTable = document.createElement("table")
-    this.bodyTable = bodyTable
-    bodyTable.onmousedown = (event: MouseEvent) => {
+    this.bodyTable = document.createElement("table")
+    this.bodyTable.onmousedown = (event: MouseEvent) => {
       if (!event.target) {
         console.log("bodyTable.onmousedown() -> no target")
         return
@@ -144,16 +136,14 @@ export class TableView extends View {
       this.goToCell(event.target as HTMLTableDataCellElement)
     }
 
-    const bodyBody = document.createElement("tbody")
-    this.bodyBody = bodyBody
+    this.bodyBody = document.createElement("tbody")
 
-    const bodyRow = document.createElement("tr")
-    bodyRow.classList.add("bodyrow")
-    this.bodyRow = bodyRow
+    this.bodyRow = document.createElement("tr")
+    this.bodyRow.classList.add("bodyrow")
 
-    bodyBody.appendChild(bodyRow)
-    bodyTable.appendChild(bodyBody)
-    bodyDiv.appendChild(bodyTable)
+    this.bodyBody.appendChild(this.bodyRow)
+    this.bodyTable.appendChild(this.bodyBody)
+    this.bodyDiv.appendChild(this.bodyTable)
 
     const zeroSize = document.createElement("div")
     zeroSize.classList.add("zeroSize")
@@ -173,10 +163,9 @@ export class TableView extends View {
     hiddenSizeCheckTable.classList.add("hiddenSizeCheck")
     this.hiddenSizeCheckBody = document.createElement("tbody")
     hiddenSizeCheckTable.appendChild(this.hiddenSizeCheckBody)
-    // zeroSize.appendChild(hiddenSizeCheckTable)
 
-    bodyDiv.appendChild(zeroSize)
-    this.rootDiv.appendChild(bodyDiv)
+    this.bodyDiv.appendChild(zeroSize)
+    this.rootDiv.appendChild(this.bodyDiv)
     this.rootDiv.appendChild(hiddenSizeCheckTable)
 
     this.attachShadow({ mode: 'open' })
