@@ -102,7 +102,7 @@ export class TableView extends View {
         </div>
         <div set={ref(this, 'colHeadDiv')} class="colhead">
           <table set={ref(this, 'colHeadTable')}>
-            <thead set={ref(this, 'colHeadHead')}>
+            <thead>
               <tr set={ref(this, 'colHeadRow')}></tr>
             </thead>
           </table>

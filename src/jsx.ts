@@ -53,6 +53,6 @@ export function createElement(name: string, props: JSX.DefaultProps, ...children
     return tag
 }
 
-export function ref(object: Object, attribute: string): JSX.Reference {
-    return { object: object, attribute: attribute }
+export function ref<T>(object: T, attribute: keyof T): JSX.Reference {
+    return { object: object, attribute: attribute.toString() }
 }
