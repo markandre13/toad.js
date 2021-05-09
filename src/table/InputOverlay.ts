@@ -5,35 +5,33 @@ export class InputOverlay extends HTMLDivElement {
   focusInFromLeft?: () => void
   focusInFromRight?: () => void
 
-  constructor() {
-    super()
-    this.classList.add("inputDiv")
+  // workaround
+  static create(): InputOverlay {
+    const div = document.createElement("div") as InputOverlay
 
-    this.addEventListener("focusin", (event: FocusEvent) => {
-      this.style.opacity = "1"
+    div.classList.add("inputDiv")
+
+    div.addEventListener("focusin", (event: FocusEvent) => {
+      div.style.opacity = "1"
       if (event.target && event.relatedTarget) {
-        if (dom.isNodeBeforNode(event.relatedTarget as Node, this)) {
-          if (this.focusInFromLeft)
-            this.focusInFromLeft()
+        if (dom.isNodeBeforNode(event.relatedTarget as Node, div)) {
+          if (div.focusInFromLeft)
+            div.focusInFromLeft()
         } else {
-          if (this.focusInFromRight)
-            this.focusInFromRight()
+          if (div.focusInFromRight)
+            div.focusInFromRight()
         }
       }
     })
 
-    this.addEventListener("focusout", () => {
-      this.style.opacity = "0"
+    div.addEventListener("focusout", () => {
+      div.style.opacity = "0"
     })
-  }
 
-  // workaround
-  static create(): InputOverlay {
-    const e = document.createElement("toad-table-inputoverlay") as InputOverlay
-    e.setViewRect = InputOverlay.prototype.setViewRect
-    e.setChild = InputOverlay.prototype.setChild
-    e.adjustToCell = InputOverlay.prototype.adjustToCell
-    return e
+    div.setViewRect = InputOverlay.prototype.setViewRect
+    div.setChild = InputOverlay.prototype.setChild
+    div.adjustToCell = InputOverlay.prototype.adjustToCell
+    return div
   }
 
   setChild(td: HTMLTableDataCellElement, fieldView: HTMLElement) {
@@ -85,4 +83,4 @@ export class InputOverlay extends HTMLDivElement {
     this.style.height = `${height}px`
   }
 }
-window.customElements.define("toad-table-inputoverlay", InputOverlay, { extends: 'div' })
+// window.customElements.define("toad-table-inputoverlay", InputOverlay, { extends: 'div' })
