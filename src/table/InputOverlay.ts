@@ -1,4 +1,5 @@
 import * as dom from "../dom"
+import { findScrollableParent } from "../scrollIntoView" 
 
 export class InputOverlay extends HTMLDivElement {
 
@@ -34,7 +35,12 @@ export class InputOverlay extends HTMLDivElement {
     return div
   }
 
-  setChild(td: HTMLTableDataCellElement, fieldView: HTMLElement) {
+  setChild(fieldView: HTMLElement) {
+    const scrollableParent = findScrollableParent(this)
+    let savedScrollLeft = 0, savedScrollTop = 0 
+    if (scrollableParent !== undefined)
+      [ savedScrollLeft, savedScrollTop ] = [ scrollableParent.scrollLeft, scrollableParent.scrollTop ]
+ 
     if (this.children.length === 0) {
       this.appendChild(fieldView)
     } else {
@@ -42,6 +48,11 @@ export class InputOverlay extends HTMLDivElement {
         this.children[0].dispatchEvent(new FocusEvent("blur"))
       }
       this.replaceChild(fieldView, this.children[0])
+    }
+
+    if (scrollableParent !== undefined) {
+      scrollableParent.scrollLeft = savedScrollLeft
+      scrollableParent.scrollTop = savedScrollTop
     }
   }
 

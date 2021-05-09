@@ -688,9 +688,9 @@ export class TableView extends View {
       this.onFieldViewKeyDown(event, pos)
     }
 
-    const cell = this.getCellAt(pos.col, pos.row)
-    this.inputOverlay.setChild(cell, editView)
+    this.inputOverlay.setChild(editView)
 
+    const cell = this.getCellAt(pos.col, pos.row)
     setTimeout(() => {
       this.inputOverlay.adjustToCell(cell)
     }, 0)
@@ -771,17 +771,8 @@ export class TableView extends View {
     if (!element)
       return
     this.insideGoTo = true
-
-    const { x, y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
-
     this.prepareInputOverlayForCell(element)
-
-    this.bodyDiv.scrollLeft = x
-    this.bodyDiv.scrollTop = y
-
     this.focus()
-
-    // console.log(`goToCell(${element.nodeName}) -> scrollIntoView()`)
     scrollIntoView(element)
     this.insideGoTo = false
   }
