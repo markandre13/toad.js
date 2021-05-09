@@ -4,17 +4,21 @@ module.exports = (config) => {
     frameworks: ["mocha", "chai", "karma-typescript"],
     files: [ 
       "test/**/*.ts",
+      "test/**/*.tsx",
       "src/**/*.ts",
+      "src/**/*.tsx",
       { pattern: 'node_modules/**/*.js.map', included: false, served: true, watched: false, nocache: true }
     ],
     preprocessors: {
-      "**/*.ts": ["karma-typescript", "sourcemap"]
+      "**/*.ts": ["karma-typescript", "sourcemap"],
+      "**/*.tsx": ["karma-typescript", "sourcemap"]
     },
     reporters: ["mocha", "karma-typescript"],
     coverageOptions: {
       instrumentation: false,
     },
     karmaTypescriptConfig: {
+      extends: "./tsconfig.json",
       compilerOptions: {
         "target": "es6",
         "module": "commonjs",

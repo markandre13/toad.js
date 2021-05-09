@@ -5,6 +5,7 @@
     "traceResolution": false,
     "declaration": false,
     "lib": [ "es6", "dom", "dom.iterable" ],
+    "jsx": "react",
     "strict": true,
     "strictNullChecks": true,
     "allowJs": false,

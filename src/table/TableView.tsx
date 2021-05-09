@@ -21,6 +21,10 @@
 //           try to move code outside by converting them into object of their own
 //           begin with the inputOverlay
 
+/** @jsx toadJSX.createElement */
+import * as toadJSX from '../jsx'
+import { ref } from '../jsx'
+
 import * as dom from "../dom"
 import { scrollIntoView, animate } from "../scrollIntoView"
 import { Model } from "../model/Model"
@@ -61,26 +65,26 @@ export class TableView extends View {
 
   rootDiv: HTMLElement
 
-  rowHeadDiv: HTMLElement
-  rowHeadTable: HTMLTableElement
-  rowHeadHead: HTMLTableSectionElement
+  rowHeadDiv!: HTMLElement
+  rowHeadTable!: HTMLTableElement
+  rowHeadHead!: HTMLTableSectionElement
 
-  colHeadDiv: HTMLElement
-  colHeadTable: HTMLTableElement
-  colHeadRow: HTMLTableRowElement
+  colHeadDiv!: HTMLElement
+  colHeadTable!: HTMLTableElement
+  colHeadRow!: HTMLTableRowElement
 
-  bodyDiv: HTMLElement
-  bodyTable: HTMLTableElement
-  bodyBody: HTMLTableSectionElement
-  bodyRow: HTMLTableRowElement
+  bodyDiv!: HTMLElement
+  bodyTable!: HTMLTableElement
+  bodyBody!: HTMLTableSectionElement
+  bodyRow!: HTMLTableRowElement
 
-  inputOverlay: InputOverlay
+  inputOverlay!: InputOverlay
   editView?: HTMLElement
   fieldModel?: Model
   cellBeingEdited?: HTMLElement
   insideGoTo: boolean
 
-  hiddenSizeCheckBody: HTMLTableSectionElement
+  hiddenSizeCheckBody!: HTMLTableSectionElement
 
   rowAnimationHeight = 0 // TODO: put in testAPI object
 
@@ -89,39 +93,42 @@ export class TableView extends View {
 
     this.insideGoTo = false
 
-    this.rootDiv = document.createElement("div")
-    this.rootDiv.classList.add("root")
+    this.rootDiv =
+      <div class="root">
+        <div set={ref(this, 'rowHeadDiv')} class="rowhead">
+          <table set={ref(this, 'rowHeadTable')}>
+            <thead set={ref(this, 'rowHeadHead')}></thead>
+          </table>
+        </div>
+        <div set={ref(this, 'colHeadDiv')} class="colhead">
+          <table set={ref(this, 'colHeadTable')}>
+            <thead set={ref(this, 'colHeadHead')}>
+              <tr set={ref(this, 'colHeadRow')}></tr>
+            </thead>
+          </table>
+        </div>
+        <div set={ref(this, 'bodyDiv')} class="cells">
+          <table set={ref(this, 'bodyTable')}>
+            <tbody set={ref(this, 'bodyBody')}>
+              <tr set={ref(this, 'bodyRow')} class="bodyrow"></tr>
+            </tbody>
+          </table>
+          <div class="zerosize">
+            <div set={ref(this, 'inputOverlay')} class="inputDiv"></div>
+          </div>
+        </div>
+        <table class="hiddenSizeCheck">
+          <tbody set={ref(this, 'hiddenSizeCheckBody')}></tbody>
+        </table>
+      </div>
+
     this.rootDiv.onkeydown = this.onRootDivKeyDown
 
-    // row head
-    this.rowHeadDiv = document.createElement("div")
-    this.rowHeadDiv.classList.add("rowhead")
-    this.rowHeadTable = document.createElement("table")
-    this.rowHeadHead = document.createElement("thead")
-    this.rowHeadTable.appendChild(this.rowHeadHead)
-    this.rowHeadDiv.appendChild(this.rowHeadTable)
-    this.rootDiv.appendChild(this.rowHeadDiv)
-
-    // column head
-    this.colHeadDiv = document.createElement("div")
-    this.colHeadDiv.classList.add("colhead")
-    this.colHeadTable = document.createElement("table")
-    const colHeadHead = document.createElement("thead")
-    this.colHeadRow = document.createElement("tr")
-    colHeadHead.appendChild(this.colHeadRow)
-    this.colHeadTable.appendChild(colHeadHead)
-    this.colHeadDiv.appendChild(this.colHeadTable)
-    this.rootDiv.appendChild(this.colHeadDiv)
-
-    // body
-    this.bodyDiv = document.createElement("div")
-    this.bodyDiv.classList.add("cells")
     this.bodyDiv.onscroll = () => {
       this.rowHeadDiv.scrollTop = this.bodyDiv.scrollTop
       this.colHeadDiv.scrollLeft = this.bodyDiv.scrollLeft
     }
 
-    this.bodyTable = document.createElement("table")
     this.bodyTable.onmousedown = (event: MouseEvent) => {
       if (!event.target) {
         console.log("bodyTable.onmousedown() -> no target")
@@ -136,19 +143,7 @@ export class TableView extends View {
       this.goToCell(event.target as HTMLTableDataCellElement)
     }
 
-    this.bodyBody = document.createElement("tbody")
-
-    this.bodyRow = document.createElement("tr")
-    this.bodyRow.classList.add("bodyrow")
-
-    this.bodyBody.appendChild(this.bodyRow)
-    this.bodyTable.appendChild(this.bodyBody)
-    this.bodyDiv.appendChild(this.bodyTable)
-
-    const zeroSize = document.createElement("div")
-    zeroSize.classList.add("zeroSize")
-
-    this.inputOverlay = InputOverlay.create()
+    InputOverlay.init(this.inputOverlay)
     this.inputOverlay.focusInFromLeft = () => {
       if (!this.insideGoTo)
         this.goToFirstCell()
@@ -157,16 +152,6 @@ export class TableView extends View {
       if (!this.insideGoTo)
         this.goToLastCell()
     }
-    zeroSize.appendChild(this.inputOverlay)
-
-    const hiddenSizeCheckTable = document.createElement("table")
-    hiddenSizeCheckTable.classList.add("hiddenSizeCheck")
-    this.hiddenSizeCheckBody = document.createElement("tbody")
-    hiddenSizeCheckTable.appendChild(this.hiddenSizeCheckBody)
-
-    this.bodyDiv.appendChild(zeroSize)
-    this.rootDiv.appendChild(this.bodyDiv)
-    this.rootDiv.appendChild(hiddenSizeCheckTable)
 
     this.attachShadow({ mode: 'open' })
     this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
