@@ -168,7 +168,7 @@ export class TableView extends View {
       this.model = undefined
       this.selectionModel = new SelectionModel()
       this.selectionModel.modified.add(() => {
-        this.updateSelection()
+        this.createSelection()
       }, this)
       this.updateView()
       return
@@ -179,9 +179,9 @@ export class TableView extends View {
         this.selectionModel.modified.remove(this)
       }
       this.selectionModel = model
-      this.updateSelection()
+      this.createSelection()
       this.selectionModel.modified.add(() => {
-        this.updateSelection()
+        this.createSelection()
       }, this)
       return
     }
@@ -210,116 +210,114 @@ export class TableView extends View {
 
   modelChanged(event: TableEvent) {
     switch (event.type) {
-
-      case TableEventType.INSERT_ROW: {
-        // console.log(`TableView.modelChanged(): insert row ${event.index}`)
-
-        // ????
-        const rowHeaderContent = this.adapter?.getRowHead(event.index)
-        const th = <th/>
-        if (rowHeaderContent)
-          th.appendChild(rowHeaderContent)
-
-        // const th = <th>{rowHeaderContent}</th> // this would be cute!!!
-
-        // create new rows and add them to the hiddenSizeCheckTable for measuring
-        const trHead: Array<HTMLTableRowElement> = []
-        const trBody: Array<HTMLTableRowElement> = []
-        for (let i = 0; i < event.size; ++i) {
-          // const trH = <tr style={{height: '0px'}}/>
-
-          const trH = <tr/>
-          trH.style.height = "0px" // height not yet measured for row header
-
-          trHead.push(trH)
-          const trB = this.createDOMBodyRow(event.index + i)
-          this.hiddenSizeCheckBody.appendChild(trB)
-          trBody.push(trB)
-        }
-
-        // prepare temporary rows used for animation
-        const trAnimationHead = <tr/>
-        trAnimationHead.style.height = "0px"
-        const trAnimationBody = <tr/>
-        trAnimationBody.style.height = "0px"
-        this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
-        this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
-
-        let rowAnimationHeight = 0
-        animate((animationTime: number): boolean => {
-          if (animationTime === 0) { // animation begins
-
-            // get the height needed for all rows from the hiddenSizeCheckTable
-            for (let i = 0; i < event.size; ++i) {
-              rowAnimationHeight += trBody[i].clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
-            }
-            // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
-
-            // this is to support the tests, letting 'em know which height we've calculated
-            this.rowAnimationHeight = rowAnimationHeight // TODO: this.testAPI.... ??
-          }
-
-          // console.log(`value=${value}, rowHeight=${rowHeight}, rowAnimationHeight=${rowAnimationHeight}`)
-          if (animationTime < 1) {
-            // intermediate step
-            const rowHeight = `${animationTime * rowAnimationHeight}px`
-            trAnimationHead.style.height = rowHeight
-            trAnimationBody.style.height = rowHeight
-            // console.log(trAnimationBody)
-          } else {
-            // animation ends
-            // console.log("=========> finished animation")
-            // final step
-            for (let i = 0; i < event.size; ++i) {
-              const rowHeight = `${trBody[i].clientHeight + 3}px`
-              const bodyStyle = trHead[i].style
-              bodyStyle.height = bodyStyle.minHeight = bodyStyle.maxHeight = rowHeight
-              const headStyle = trHead[i].style
-              headStyle.height = headStyle.minHeight = headStyle.maxHeight = rowHeight
-            }
-            this.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
-            this.bodyBody.replaceChild(trBody[0], trAnimationBody)
-            for (let i = 1; i < event.size; ++i) {
-              this.rowHeadHead.insertBefore(trHead[i], trHead[i - 1].nextSibling)
-              this.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
-            }
-          }
-          return true
-        })
-      } break
-
-      case TableEventType.REMOVE_ROW: {
-        // console.log(`TableView.modelChanged(): removed row ${event.index}`)
-        const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
-        const trBody = this.bodyBody.children[event.index + 1] as HTMLTableRowElement
-
-        const rowAnimationHeight = trBody.clientHeight
-        this.rowAnimationHeight = rowAnimationHeight
-
-        trHead.style.minHeight = trHead.style.maxHeight = ""
-        trBody.style.minHeight = trBody.style.maxHeight = ""
-        trHead.style.height = `${rowAnimationHeight}px`
-        trBody.style.height = `${rowAnimationHeight}px`
-        while (trHead.children.length > 0)
-          trHead.removeChild(trHead.children[0])
-        while (trBody.children.length > 0)
-          trBody.removeChild(trBody.children[0])
-
-        animate((value: number): boolean => {
-          value = 1 - value
-          const rowHeight = `${value * rowAnimationHeight}px`
-          trBody.style.height = rowHeight
-          trHead.style.height = rowHeight
-          if (value === 0) {
-            for (let i = 0; i < event.size; ++i) {
-              this.rowHeadHead.deleteRow(event.index)
-              this.bodyBody.deleteRow(event.index + 1)
-            }
-          }
-          return true
-        })
-      } break
+      case TableEventType.INSERT_ROW:
+        this.updateViewAfterInsertRow(event)
+        break
+      case TableEventType.REMOVE_ROW:
+        this.updateViewAfterRemoveRow(event)        
+        break
     }
+  }
+
+  updateViewAfterInsertRow(event: TableEvent) {
+    // console.log(`TableView.updateViewAfterInsertRow(): insert row ${event.index}`)
+
+    // create new rows and add them to the hiddenSizeCheckTable for measuring
+    const trHead: Array<HTMLTableRowElement> = []
+    const trBody: Array<HTMLTableRowElement> = []
+    for (let i = 0; i < event.size; ++i) {
+      // const trH = <tr style={{height: '0px'}}/>
+
+      const trH = <tr/>
+      trH.style.height = "0px" // height not yet measured for row header
+
+      trHead.push(trH)
+      const trB = this.createDOMBodyRow(event.index + i)
+      this.hiddenSizeCheckBody.appendChild(trB)
+      trBody.push(trB)
+    }
+
+    // prepare temporary rows used for animation
+    const trAnimationHead = <tr/>
+    trAnimationHead.style.height = "0px"
+    const trAnimationBody = <tr/>
+    trAnimationBody.style.height = "0px"
+    this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
+    this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
+
+    let rowAnimationHeight = 0
+    animate((animationTime: number): boolean => {
+      if (animationTime === 0) { // animation begins
+
+        // get the height needed for all rows from the hiddenSizeCheckTable
+        for (let i = 0; i < event.size; ++i) {
+          rowAnimationHeight += trBody[i].clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
+        }
+        // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
+
+        // this is to support the tests, letting 'em know which height we've calculated
+        this.rowAnimationHeight = rowAnimationHeight // TODO: this.testAPI.... ??
+      }
+
+      // console.log(`value=${value}, rowHeight=${rowHeight}, rowAnimationHeight=${rowAnimationHeight}`)
+      if (animationTime < 1) {
+        // intermediate step
+        const rowHeight = `${animationTime * rowAnimationHeight}px`
+        trAnimationHead.style.height = rowHeight
+        trAnimationBody.style.height = rowHeight
+        // console.log(trAnimationBody)
+      } else {
+        // animation ends
+        // console.log("=========> finished animation")
+        // final step
+        for (let i = 0; i < event.size; ++i) {
+          const rowHeight = `${trBody[i].clientHeight + 3}px`
+          const bodyStyle = trHead[i].style
+          bodyStyle.height = bodyStyle.minHeight = bodyStyle.maxHeight = rowHeight
+          const headStyle = trHead[i].style
+          headStyle.height = headStyle.minHeight = headStyle.maxHeight = rowHeight
+        }
+        this.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
+        this.bodyBody.replaceChild(trBody[0], trAnimationBody)
+        for (let i = 1; i < event.size; ++i) {
+          this.rowHeadHead.insertBefore(trHead[i], trHead[i - 1].nextSibling)
+          this.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
+        }
+      }
+      return true
+    })
+  }
+
+  updateViewAfterRemoveRow(event: TableEvent) {
+    // console.log(`TableView.updateViewAfterRemoveRow(): removed row ${event.index}`)
+    const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
+    const trBody = this.bodyBody.children[event.index + 1] as HTMLTableRowElement
+
+    const rowAnimationHeight = trBody.clientHeight
+    this.rowAnimationHeight = rowAnimationHeight
+
+    trHead.style.minHeight = trHead.style.maxHeight = ""
+    trBody.style.minHeight = trBody.style.maxHeight = ""
+    trHead.style.height = `${rowAnimationHeight}px`
+    trBody.style.height = `${rowAnimationHeight}px`
+    while (trHead.children.length > 0)
+      trHead.removeChild(trHead.children[0])
+    while (trBody.children.length > 0)
+      trBody.removeChild(trBody.children[0])
+
+    animate((value: number): boolean => {
+      value = 1 - value
+      const rowHeight = `${value * rowAnimationHeight}px`
+      trBody.style.height = rowHeight
+      trHead.style.height = rowHeight
+      if (value === 0) {
+        for (let i = 0; i < event.size; ++i) {
+          this.rowHeadHead.deleteRow(event.index)
+          this.bodyBody.deleteRow(event.index + 1)
+        }
+      }
+      return true
+    })
   }
 
   /*
@@ -334,10 +332,10 @@ export class TableView extends View {
       }
 
       //console.log("updateHeader, updateBody")
-      this.updateColumnHeader()
-      this.updateRowHeader()
-      this.updateBody()
-      this.updateSelection()
+      this.createColumnHeader()
+      this.createRowHeader()
+      this.createBody()
+      this.createSelection()
       setTimeout(() => {
         if (this.model)
           this.adjustLayoutAfterRender()
@@ -350,11 +348,11 @@ export class TableView extends View {
     }
   }
 
-  protected updateColumnHeader() {
+  protected createColumnHeader() {
     this.updateHeader(true)
   }
 
-  protected updateRowHeader() {
+  protected createRowHeader() {
     this.updateHeader(false)
   }
 
@@ -435,7 +433,7 @@ export class TableView extends View {
     headTable.style.display = noHeader ? "none" : ""
   }
 
-  protected updateBody() {
+  protected createBody() {
     if (!this.model)
       throw Error("TableView.updateBody(): no model")
     if (!this.adapter)
@@ -522,7 +520,7 @@ export class TableView extends View {
     return bodyRow
   }
 
-  protected updateSelection() {
+  protected createSelection() {
     if (this.selectionModel === undefined)
       return
 
@@ -921,7 +919,7 @@ export class TableView extends View {
     if (this.selectionModel === undefined) {
       this.selectionModel = new SelectionModel()
       this.selectionModel.modified.add(() => {
-        this.updateSelection()
+        this.createSelection()
       }, this)
     }
   }
