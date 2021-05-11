@@ -26,6 +26,8 @@ export namespace JSX {
         thead: DefaultProps
         tbody: DefaultProps
         tr: DefaultProps
+        th: DefaultProps
+        td: DefaultProps
     }
     export interface Reference {
         object: Object

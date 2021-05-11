@@ -216,16 +216,21 @@ export class TableView extends View {
 
         // ????
         const rowHeaderContent = this.adapter?.getRowHead(event.index)
-        const th = document.createElement("th")
+        const th = <th/>
         if (rowHeaderContent)
           th.appendChild(rowHeaderContent)
+
+        // const th = <th>{rowHeaderContent}</th> // this would be cute!!!
 
         // create new rows and add them to the hiddenSizeCheckTable for measuring
         const trHead: Array<HTMLTableRowElement> = []
         const trBody: Array<HTMLTableRowElement> = []
         for (let i = 0; i < event.size; ++i) {
-          const trH = document.createElement("tr")
+          // const trH = <tr style={{height: '0px'}}/>
+
+          const trH = <tr/>
           trH.style.height = "0px" // height not yet measured for row header
+
           trHead.push(trH)
           const trB = this.createDOMBodyRow(event.index + i)
           this.hiddenSizeCheckBody.appendChild(trB)
@@ -233,9 +238,9 @@ export class TableView extends View {
         }
 
         // prepare temporary rows used for animation
-        const trAnimationHead = document.createElement("tr")
+        const trAnimationHead = <tr/>
         trAnimationHead.style.height = "0px"
-        const trAnimationBody = document.createElement("tr")
+        const trAnimationBody = <tr/>
         trAnimationBody.style.height = "0px"
         this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
         this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
@@ -378,11 +383,11 @@ export class TableView extends View {
     for (let i = 0; i < count; ++i) {
       let cell
       if (i >= headRow.children.length) {
-        cell = document.createElement("th")
+        cell = <th/>
         if (column) {
           headRow.appendChild(cell)
         } else {
-          const row = document.createElement("tr")
+          const row = <tr/>
           row.appendChild(cell)
           headRow.appendChild(row)
         }
@@ -394,11 +399,7 @@ export class TableView extends View {
         cell.style.minWidth = ""
         cell.style.border = ""
       }
-      let content
-      if (column)
-        content = this.adapter.getColumnHead(i)
-      else
-        content = this.adapter.getRowHead(i)
+      const content = column ? this.adapter.getColumnHead(i) : this.adapter.getRowHead(i)
       if (content === undefined) {
         noHeader = true
         continue
@@ -408,11 +409,11 @@ export class TableView extends View {
 
     let fillerForMissingScrollbar
     if (headRow.children.length < count + 1) {
-      fillerForMissingScrollbar = document.createElement("th")
+      fillerForMissingScrollbar = <th/>
       if (column) {
         headRow.appendChild(fillerForMissingScrollbar)
       } else {
-        const row = document.createElement("tr")
+        const row = <tr/>
         row.appendChild(fillerForMissingScrollbar)
         headRow.appendChild(row)
       }
@@ -445,8 +446,7 @@ export class TableView extends View {
       this.bodyRow.removeChild(this.bodyRow.children[this.bodyRow.children.length - 1])
 
     while (this.bodyRow.children.length < this.model.colCount) {
-      let cell = dom.tag("td")
-      this.bodyRow.appendChild(cell)
+      this.bodyRow.appendChild(<td/>)
     }
 
     // cells
@@ -461,7 +461,7 @@ export class TableView extends View {
 
       let bodyRow: HTMLTableRowElement
       if (row + 1 >= this.bodyBody.children.length) {
-        bodyRow = document.createElement("tr")
+        bodyRow = <tr/>
         this.bodyBody.appendChild(bodyRow)
       } else {
         bodyRow = this.bodyBody.children[row + 1] as HTMLTableRowElement
@@ -473,7 +473,7 @@ export class TableView extends View {
       for (let col = 0; col < this.model.colCount; ++col) {
         let cell: HTMLTableDataCellElement
         if (col >= bodyRow.children.length) {
-          cell = document.createElement("td")
+          cell = <td/>
           bodyRow.appendChild(cell)
         } else {
           cell = bodyRow.children[col] as HTMLTableDataCellElement
@@ -498,11 +498,11 @@ export class TableView extends View {
     if (!this.model || !this.adapter)
       throw Error()
 
-    const bodyRow = document.createElement("tr")
+    const bodyRow = <tr/>
     for (let col = 0; col < this.model.colCount; ++col) {
       let cell: HTMLTableDataCellElement
       if (col >= bodyRow.children.length) {
-        cell = document.createElement("td")
+        cell = <td/>
         bodyRow.appendChild(cell)
       } else {
         cell = bodyRow.children[col] as HTMLTableDataCellElement
@@ -886,7 +886,7 @@ export class TableView extends View {
 
     const content = this.adapter!.displayCell(pos.col, pos.row)!
 
-    const tmp = document.createElement("div")
+    const tmp = <div/>
     tmp.appendChild(content)
     if (tmp.innerHTML == cell.innerHTML)
       return
