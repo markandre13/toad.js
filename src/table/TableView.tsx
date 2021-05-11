@@ -226,50 +226,41 @@ export class TableView extends View {
     const trHead: Array<HTMLTableRowElement> = []
     const trBody: Array<HTMLTableRowElement> = []
     for (let i = 0; i < event.size; ++i) {
-      // const trH = <tr style={{height: '0px'}}/>
-
-      const trH = <tr/>
-      trH.style.height = "0px" // height not yet measured for row header
-
+      // FIXME: height not yet measured for row header
+      const trH = <tr style={{height: '0px'}}/> 
       trHead.push(trH)
+
       const trB = this.createDOMBodyRow(event.index + i)
       this.hiddenSizeCheckBody.appendChild(trB)
       trBody.push(trB)
     }
 
-    // prepare temporary rows used for animation
-    const trAnimationHead = <tr/>
-    trAnimationHead.style.height = "0px"
-    const trAnimationBody = <tr/>
-    trAnimationBody.style.height = "0px"
+    // insert temporary rows used for animation
+    const trAnimationHead = <tr style={{height: '0px'}}/>
     this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
+    const trAnimationBody = <tr style={{height: '0px'}}/>
     this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
-
+    
     let rowAnimationHeight = 0
     animate((animationTime: number): boolean => {
-      if (animationTime === 0) { // animation begins
 
-        // get the height needed for all rows from the hiddenSizeCheckTable
+      // animation start: get the height needed for all rows from the hiddenSizeCheckTable
+      if (animationTime === 0) {
         for (let i = 0; i < event.size; ++i) {
-          rowAnimationHeight += trBody[i].clientHeight + 3 // TODO: this magic number is due to CSS and where hiddenSizeCheckBody is placed
+          rowAnimationHeight += trBody[i].clientHeight + 3
         }
-        // console.log(`=========> start animation with height of ${rowAnimationHeight}`)
+        this.rowAnimationHeight = rowAnimationHeight
+      } else
 
-        // this is to support the tests, letting 'em know which height we've calculated
-        this.rowAnimationHeight = rowAnimationHeight // TODO: this.testAPI.... ??
-      }
-
-      // console.log(`value=${value}, rowHeight=${rowHeight}, rowAnimationHeight=${rowAnimationHeight}`)
+      // animation: increase row height
       if (animationTime < 1) {
-        // intermediate step
         const rowHeight = `${animationTime * rowAnimationHeight}px`
         trAnimationHead.style.height = rowHeight
         trAnimationBody.style.height = rowHeight
-        // console.log(trAnimationBody)
-      } else {
-        // animation ends
-        // console.log("=========> finished animation")
-        // final step
+      } else 
+      
+      // animation end: replace animation row with final row
+      {
         for (let i = 0; i < event.size; ++i) {
           const rowHeight = `${trBody[i].clientHeight + 3}px`
           const bodyStyle = trHead[i].style

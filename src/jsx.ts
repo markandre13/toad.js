@@ -17,8 +17,13 @@
  */
 
 export namespace JSX {
+    interface JsxStyle {
+        height?: string
+    }
     export interface DefaultProps {
-        class?: string, set?: Reference
+        class?: string
+        style?: JsxStyle
+        set?: Reference
     }
     export interface IntrinsicElements {
         div: DefaultProps
@@ -40,6 +45,10 @@ export function createElement(name: string, props: JSX.DefaultProps, ...children
     if (props !== null) {
         if (props.class !== undefined) {
             tag.classList.add(props.class)
+        }
+        if (props.style !== undefined) {
+            if (props.style.height !== undefined)
+                tag.style.height = props.style.height
         }
         if (props.set !== undefined) {
             Object.defineProperty(props.set.object, props.set.attribute, { value: tag })
