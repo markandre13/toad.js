@@ -187,48 +187,23 @@ describe("toad.js", function() {
                     console.log(`#2 bodyDiv @ (${body.scrollLeft}, ${body.scrollTop})`)
                 })
 
-                xit("input field updates after adding row", async function() {
+                it("input overlay is at correct position after insert row", async function() {
                     scene.mouseDownAtCell(0, 3)
 
                     const button = document.querySelector("toad-tabletool")!
                         .shadowRoot!.querySelector("button[title='add row below']")!
-                    // console.log(button)
-
-                    // console.log(scene.table.inputOverlay.clientTop);
-                    // console.log(scene.table.inputOverlay.clientLeft);
-                    // console.log(scene.table.inputOverlay.style.top);
-                    // console.log(scene.table.inputOverlay.style.left);
-
-                    // console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
-
                     const e = new MouseEvent("click", {
                         bubbles: true,
                         relatedTarget: button
                     })
-                    // console.log("-------------------------- click -------------------------")
                     button.dispatchEvent(e)
                     await scene.sleep()
-                    // console.log("-------------------------- clicked -------------------------")
-                    // console.log(scene.table.inputOverlay.style.top);
-                    // console.log(scene.table.inputOverlay.style.left);
-                    // console.log(scene.table.inputOverlay.getBoundingClientRect().toJSON())
-                    // console.log(scene.table.inputOverlay.children[0])
 
-                    // console.log(scene.table.rowAnimationHeight)
-
-                    // scene.table.inputOverlay.style.top = `${-96 - scene.table.rowAnimationHeight}px`
-                    // scene.table.inputOverlay.style.top = `${-153 + 2 * scene.table.rowAnimationHeight}px`
-
-
-                    // issues
-                    // * the input overlay is scrolling down along with the inserted row
-                    //   if it stay there, it would be okay...
-
-                    // the trick is to update (or clear the input overlay when the model changes?)
-                    // or move the input overlay as if the model change was initiated by another user
-                    let text = scene.table.inputOverlay.children[0] as TextView
-                    expect(text.tagName).to.equal("TOAD-TEXT")
-                    // expect(text.value).to.equal("")
+                    const newOverlayTop = scene.table.inputOverlay.style.top
+                    const cell = scene.table.getCellAt(0, 3)
+                    scene.table.inputOverlay.adjustToCell(cell)
+                    const expectedOverlayTop = scene.table.inputOverlay.style.top
+                    expect(newOverlayTop).to.equal(expectedOverlayTop)
                 })
 
                 // keyboard and scroll

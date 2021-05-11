@@ -49,6 +49,7 @@ export class InputOverlay extends HTMLDivElement {
   }
 
   setChild(fieldView: HTMLElement) {
+    // avoid side effect of scrolling parent on safari
     const scrollableParent = findScrollableParent(this)
     let savedScrollLeft = 0, savedScrollTop = 0 
     if (scrollableParent !== undefined)
@@ -63,6 +64,7 @@ export class InputOverlay extends HTMLDivElement {
       this.replaceChild(fieldView, this.children[0])
     }
 
+    // restore scrollable parent
     if (scrollableParent !== undefined) {
       scrollableParent.scrollLeft = savedScrollLeft
       scrollableParent.scrollTop = savedScrollTop
@@ -92,7 +94,7 @@ export class InputOverlay extends HTMLDivElement {
     this.setViewRect(top, left, width, height)
   }
 
-  setViewRect(top: number, left: number, width: number, height: number) {
+  private setViewRect(top: number, left: number, width: number, height: number) {
     this.style.top = `${top}px`
     this.style.left = `${left}px`
     this.style.width = `${width}px`

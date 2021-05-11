@@ -81,7 +81,6 @@ export class TableView extends View {
   inputOverlay!: InputOverlay
   editView?: HTMLElement
   fieldModel?: Model
-  cellBeingEdited?: HTMLElement
   insideGoTo: boolean
 
   hiddenSizeCheckBody!: HTMLTableSectionElement
@@ -275,6 +274,12 @@ export class TableView extends View {
           this.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
         }
       }
+
+      if (this.selectionModel !== undefined) {
+        const cell = this.getCellAt(this.selectionModel.value.col, this.selectionModel.value.row)
+        this.inputOverlay.adjustToCell(cell)
+      }
+
       return true
     })
   }
