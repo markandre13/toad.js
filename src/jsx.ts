@@ -18,21 +18,47 @@
 
 export namespace JSX {
     interface JsxStyle {
+        width?: string
         height?: string
+        border?: string
+        display?: string
     }
     export interface DefaultProps {
         class?: string
         style?: JsxStyle
+        width?: string
+        height?: string
+        title?: string
         set?: Reference
+    }
+    export interface SVGProps extends DefaultProps {
+        viewBox?: string
+
     }
     export interface IntrinsicElements {
         div: DefaultProps
+        button: DefaultProps
         table: DefaultProps
         thead: DefaultProps
         tbody: DefaultProps
         tr: DefaultProps
         th: DefaultProps
         td: DefaultProps
+        svg: SVGProps
+        rect: {
+            x?: string
+            y?: string
+            width?: string
+            height?: string
+            class?: string
+        }
+        line: {
+            x1?: string
+            y1?: string
+            x2?: string
+            y2?: string
+            class?: string
+        }
     }
     export interface Reference {
         object: Object
@@ -40,18 +66,35 @@ export namespace JSX {
     }
 }
 
-export function createElement(name: string, props: JSX.DefaultProps, ...children: any): HTMLElement {
-    const tag = document.createElement(name)
+export function createElement(name: string, props: JSX.DefaultProps, ...children: any): Element {
+    let namespace
+    switch (name) {
+        case 'svg':
+        case 'line':
+        case 'rect':
+            namespace = "http://www.w3.org/2000/svg"
+            break
+        default:
+            namespace = "http://www.w3.org/1999/xhtml"
+    }
+    const tag = document.createElementNS(namespace, name) as HTMLElement | SVGSVGElement
     if (props !== null) {
-        if (props.class !== undefined) {
-            tag.classList.add(props.class)
-        }
-        if (props.style !== undefined) {
-            if (props.style.height !== undefined)
-                tag.style.height = props.style.height
-        }
-        if (props.set !== undefined) {
-            Object.defineProperty(props.set.object, props.set.attribute, { value: tag })
+        for (const [key, value] of Object.entries(props)) {
+            switch(key) {
+                case 'class':
+                    tag.classList.add(value) // FIXME: value is whitespace separated list
+                    break
+                case 'style':
+                    for (const [skey, svalue] of Object.entries(value)) {
+                        tag.style.setProperty(skey, svalue as string)
+                    }
+                    break
+                case 'set':
+                    Object.defineProperty(props.set!.object, props.set!.attribute, { value: tag })
+                    break
+                default:
+                    tag.setAttributeNS(null, key, value)
+            }
         }
     }
     for (let child of children) {
