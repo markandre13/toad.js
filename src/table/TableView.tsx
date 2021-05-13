@@ -239,7 +239,7 @@ export class TableView extends View {
     this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
     const trAnimationBody = <tr style={{height: '0px'}}/>
     this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
-    
+   
     let rowAnimationHeight = 0
     animate((animationTime: number): boolean => {
 
@@ -273,9 +273,13 @@ export class TableView extends View {
           this.rowHeadHead.insertBefore(trHead[i], trHead[i - 1].nextSibling)
           this.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
         }
+
+        if (this.selectionModel !== undefined && this.selectionModel.row >= event.index) {
+          this.selectionModel.row += event.size
+        }
       }
 
-      if (this.selectionModel !== undefined) {
+      if (this.selectionModel !== undefined && this.selectionModel.row < event.index) {
         const cell = this.getCellAt(this.selectionModel.value.col, this.selectionModel.value.row)
         this.inputOverlay.adjustToCell(cell)
       }

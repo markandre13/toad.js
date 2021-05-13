@@ -67,7 +67,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
-                model.insert(selection.row) // table selectionmodel provides the row?
+                model.insert(selection.row)
             }
             this.lastActiveTable?.focus()
         }
@@ -87,7 +87,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
-                model.insert(selection.row+1) // table selectionmodel provides the row?
+                model.insert(selection.row+1)
             }
             this.lastActiveTable?.focus()
         }
