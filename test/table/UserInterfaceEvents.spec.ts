@@ -190,43 +190,25 @@ describe("toad.js", function() {
                 it("input overlay is at correct position after insert row below selection", async function() {
                     scene.mouseDownAtCell(0, 3)
 
-                    const button = document.querySelector("toad-tabletool")!
-                        .shadowRoot!.querySelector("button[title='add row below']")!
-                    const e = new MouseEvent("click", {
-                        bubbles: true,
-                        relatedTarget: button
-                    })
-                    button.dispatchEvent(e)
+                    scene.clickTableToolAddRowBelow()
                     await scene.sleep()
 
+                    // selection hasn't changed
                     expect(scene.selectionModel.row).to.equal(3)
 
-                    const newOverlayTop = scene.table.inputOverlay.style.top
-                    const cell = scene.table.getCellAt(0, 3)
-                    scene.table.inputOverlay.adjustToCell(cell)
-                    const expectedOverlayTop = scene.table.inputOverlay.style.top
-                    expect(newOverlayTop).to.equal(expectedOverlayTop)
+                    scene.expectInputOverlayAt(0, 3)
                 })
 
                 it("input overlay is at correct position after insert row above selection", async function() {
                     scene.mouseDownAtCell(0, 3)
 
-                    const button = document.querySelector("toad-tabletool")!
-                        .shadowRoot!.querySelector("button[title='add row above']")!
-                    const e = new MouseEvent("click", {
-                        bubbles: true,
-                        relatedTarget: button
-                    })
-                    button.dispatchEvent(e)
+                    scene.clickTableToolAddRowAbove()
                     await scene.sleep()
 
+                    // selection moved downwards
                     expect(scene.selectionModel.row).to.equal(4)
 
-                    const newOverlayTop = scene.table.inputOverlay.style.top
-                    const cell = scene.table.getCellAt(0, 4)
-                    scene.table.inputOverlay.adjustToCell(cell)
-                    const expectedOverlayTop = scene.table.inputOverlay.style.top
-                    expect(newOverlayTop).to.equal(expectedOverlayTop)
+                    scene.expectInputOverlayAt(0, 4)
                 })
 
                 // keyboard and scroll

@@ -105,6 +105,26 @@ export class BookTableScene {
         inp.dispatchEvent(e)
     }
 
+    clickTableToolAddRowBelow() {
+        const button = document.querySelector("toad-tabletool")!
+            .shadowRoot!.querySelector("button[title='add row below']")!
+        const e = new MouseEvent("click", {
+            bubbles: true,
+            relatedTarget: button
+        })
+        button.dispatchEvent(e)
+    }
+
+    clickTableToolAddRowAbove() {
+        const button = document.querySelector("toad-tabletool")!
+            .shadowRoot!.querySelector("button[title='add row above']")!
+        const e = new MouseEvent("click", {
+            bubbles: true,
+            relatedTarget: button
+        })
+        button.dispatchEvent(e)
+    }
+
     expectInputOverlayToEqual(text: string) {
         // @ts-ignore
         expect(this.table.inputOverlay.children[0].value).equals(text)
@@ -113,6 +133,24 @@ export class BookTableScene {
     expectScrollAt(x: number, y: number) {
         expect(this.table.bodyDiv.scrollLeft, "x").equals(x)
         expect(this.table.bodyDiv.scrollTop, "y").equals(y)
+    }
+
+    expectInputOverlayAt(col: number, row: number) {
+        const currentOverlayRect = {
+            top: this.table.inputOverlay.style.top,
+            left: this.table.inputOverlay.style.left,
+            width: this.table.inputOverlay.style.width,
+            height: this.table.inputOverlay.style.height
+        }
+        const cell = this.table.getCellAt(col, row)
+        this.table.inputOverlay.adjustToCell(cell)
+        const expectedOverlayRect = {
+            top: this.table.inputOverlay.style.top,
+            left: this.table.inputOverlay.style.left,
+            width: this.table.inputOverlay.style.width,
+            height: this.table.inputOverlay.style.height
+        }
+        expect(currentOverlayRect).to.deep.equal(expectedOverlayRect)
     }
 }
 
