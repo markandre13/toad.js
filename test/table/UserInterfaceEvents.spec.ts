@@ -187,28 +187,35 @@ describe("toad.js", function() {
                     console.log(`#2 bodyDiv @ (${body.scrollLeft}, ${body.scrollTop})`)
                 })
 
-                it("input overlay is at correct position after insert row below selection", async function() {
+                it("input overlay is at correct position after inserting row below selection", async function() {
                     scene.mouseDownAtCell(0, 3)
 
                     scene.clickTableToolAddRowBelow()
                     await scene.sleep()
 
                     // selection hasn't changed
-                    expect(scene.selectionModel.row).to.equal(3)
+                    expect(scene.selectionModel.row).to.equal(3) // // FIXME: separate test
 
                     scene.expectInputOverlayAt(0, 3)
                 })
 
-                it("input overlay is at correct position after insert row above selection", async function() {
+                it("input overlay is at correct position after inserting row above selection", async function() {
                     scene.mouseDownAtCell(0, 3)
 
                     scene.clickTableToolAddRowAbove()
                     await scene.sleep()
 
                     // selection moved downwards
-                    expect(scene.selectionModel.row).to.equal(4)
+                    expect(scene.selectionModel.row).to.equal(4) // FIXME: separate test
 
                     scene.expectInputOverlayAt(0, 4)
+                })
+
+                it("changing selection updates view", function() {
+                    scene.mouseDownAtCell(0, 0)
+                    scene.selectionModel.row = 2
+
+                    scene.expectInputOverlayAt(0, 2)
                 })
 
                 // keyboard and scroll
