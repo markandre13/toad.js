@@ -16,6 +16,9 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @jsx toadJSX.createElement */
+import * as toadJSX from '../jsx'
+
 import { Model } from "../model/Model"
 import { GenericView } from "./GenericView"
 import { textAreaStyle } from "./textAreaStyle"
@@ -50,37 +53,30 @@ export class TextTool extends GenericView<Model> {
 
         TextTool.texttool = this
 
-        let toolbar = document.createElement("div")
-        toolbar.classList.add("toolbar")
+        let toolbar = <div class="toolbar"/>
 
-        this.buttonH1 = document.createElement("button")
-        this.buttonH1.classList.add("left")
-        this.buttonH1.innerHTML = "H1"
+        this.buttonH1 = <button class="left">H1</button>
         this.buttonH1.onclick = () => {
             document.execCommand("formatBlock", false, "<h1>")
             this.update()
         }
         toolbar.appendChild(this.buttonH1)
 
-        this.buttonH2 = document.createElement("button")
-        this.buttonH2.innerHTML = "H2"
+        this.buttonH2 = <button>H2</button>
         this.buttonH2.onclick = () => {
             document.execCommand("formatBlock", false, "<h2>")
             this.update()
         }
         toolbar.appendChild(this.buttonH2)
 
-        this.buttonH3 = document.createElement("button")
-        this.buttonH3.innerHTML = "H3"
+        this.buttonH3 = <button>H3</button>
         this.buttonH3.onclick = () => {
             document.execCommand("formatBlock", false, "<h3>")
             this.update()
         }
         toolbar.appendChild(this.buttonH3)
 
-        this.buttonH4 = document.createElement("button")
-        this.buttonH4.classList.add("right")
-        this.buttonH4.innerHTML = "H4"
+        this.buttonH4 = <button class="right">H4</button>
         this.buttonH4.onclick = () => {
             document.execCommand("formatBlock", false, "<h4>")
             this.update()
@@ -89,50 +85,42 @@ export class TextTool extends GenericView<Model> {
 
         toolbar.appendChild(document.createTextNode(" "))
 
-        this.buttonBold = document.createElement("button")
-        this.buttonBold.classList.add("left")
-        this.buttonBold.innerHTML = "<b>B</b>"
+        this.buttonBold = <button class="left"><b>B</b></button>
         this.buttonBold.onclick = () => {
             document.execCommand("bold", false)
             this.update()
         }
         toolbar.appendChild(this.buttonBold)
 
-        this.buttonItalic = document.createElement("button")
-        this.buttonItalic.innerHTML = "<i>I</i>"
+        this.buttonItalic = <button><i>I</i></button>
         this.buttonItalic.onclick = () => {
             document.execCommand("italic", false)
             this.update()
         }
         toolbar.appendChild(this.buttonItalic)
 
-        this.buttonUnderline = document.createElement("button")
-        this.buttonUnderline.innerHTML = "<u>U</u>"
+        this.buttonUnderline = <button><u>U</u></button>
         this.buttonUnderline.onclick = () => {
             document.execCommand("underline", false)
             this.update()
         }
         toolbar.appendChild(this.buttonUnderline)
 
-        this.buttonStrikeThrough = document.createElement("button")
-        this.buttonStrikeThrough.innerHTML = "<strike>S</strike>"
+        this.buttonStrikeThrough = <button><strike>S</strike></button>
         this.buttonStrikeThrough.onclick = () => {
             document.execCommand("strikeThrough", false)
             this.update()
         }
         toolbar.appendChild(this.buttonStrikeThrough)
 
-        this.buttonSubscript = document.createElement("button")
-        this.buttonSubscript.innerHTML = "x₂"
+        this.buttonSubscript = <button>x₂</button>
         this.buttonSubscript.onclick = () => {
             document.execCommand("subscript", false)
             this.update()
         }
         toolbar.appendChild(this.buttonSubscript)
 
-        this.buttonSuperscript = document.createElement("button")
-        this.buttonSuperscript.classList.add("right")
-        this.buttonSuperscript.innerHTML = "x²"
+        this.buttonSuperscript = <button class="right">x²</button>
         this.buttonSuperscript.onclick = () => {
             document.execCommand("superscript", false)
             this.update()
@@ -142,97 +130,96 @@ export class TextTool extends GenericView<Model> {
 
         toolbar.appendChild(document.createTextNode(" "))
 
-        this.buttonJustifyLeft = document.createElement("button")
-        this.buttonJustifyLeft.classList.add("left")
-        this.buttonJustifyLeft.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
-            <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-            <line x1="0" y1="2.5" x2="6" y2="2.5" stroke="#000" />
-            <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-            <line x1="0" y1="6.5" x2="6" y2="6.5" stroke="#000" />
-            <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
-            </svg>`
+        this.buttonJustifyLeft = <button class="left">
+            <svg viewBox="0 0 10 9" width="10" height="9">
+                <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
+                <line x1="0" y1="2.5" x2="6" y2="2.5" stroke="#000" />
+                <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
+                <line x1="0" y1="6.5" x2="6" y2="6.5" stroke="#000" />
+                <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+            </svg>
+        </button>
         this.buttonJustifyLeft.onclick = () => {
             document.execCommand("justifyLeft", false)
             this.update()
         }
         toolbar.appendChild(this.buttonJustifyLeft)
 
-        this.buttonJustifyCenter = document.createElement("button")
-        this.buttonJustifyCenter.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
-            <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-            <line x1="2" y1="2.5" x2="8" y2="2.5" stroke="#000" />
-            <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-            <line x1="2" y1="6.5" x2="8" y2="6.5" stroke="#000" />
-            <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
-            </svg>`
+        this.buttonJustifyCenter = <button>
+            <svg viewBox="0 0 10 9" width="10" height="9">
+                <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
+                <line x1="2" y1="2.5" x2="8" y2="2.5" stroke="#000" />
+                <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
+                <line x1="2" y1="6.5" x2="8" y2="6.5" stroke="#000" />
+                <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+            </svg>
+        </button>
         this.buttonJustifyCenter.onclick = () => {
             document.execCommand("justifyCenter", false)
             this.update()
         }
         toolbar.appendChild(this.buttonJustifyCenter)
 
-        this.buttonJustifyRight = document.createElement("button")
-        this.buttonJustifyRight.classList.add("right")
-        this.buttonJustifyRight.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
-            <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-            <line x1="4" y1="2.5" x2="10" y2="2.5" stroke="#000" />
-            <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-            <line x1="4" y1="6.5" x2="10" y2="6.5" stroke="#000" />
-            <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
-            </svg>`
+        this.buttonJustifyRight = <button class="right">
+            <svg viewBox="0 0 10 9" width="10" height="9">
+                <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
+                <line x1="4" y1="2.5" x2="10" y2="2.5" stroke="#000" />
+                <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
+                <line x1="4" y1="6.5" x2="10" y2="6.5" stroke="#000" />
+                <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+            </svg>
+        </button>
         this.buttonJustifyRight.onclick = () => {
             document.execCommand("justifyRight", false)
             this.update()
         }
         toolbar.appendChild(this.buttonJustifyRight)
 
-        /*
-                this.buttonJustifyFull = document.createElement("button")
-                this.buttonJustifyFull.classList.add("right")
-                this.buttonJustifyFull.innerHTML = `<svg viewBox="0 0 10 9" width="10" height="9">
-                    <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-                    <line x1="0" y1="2.5" x2="10" y2="2.5" stroke="#000" />
-                    <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-                    <line x1="0" y1="6.5" x2="10" y2="6.5" stroke="#000" />
-                    <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
-                    </svg>`
-                this.buttonJustifyFull.onclick = () => {
-                    document.execCommand("justifyFull", false)
-                    this.update()
-                }
-                toolbar.appendChild(this.buttonJustifyFull)
-        */
-        toolbar.appendChild(document.createTextNode(" "))
+        // this.buttonJustifyFull = <button class="right">
+        //     <svg viewBox="0 0 10 9" width="10" height="9">
+        //         <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
+        //         <line x1="0" y1="2.5" x2="10" y2="2.5" stroke="#000" />
+        //         <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
+        //         <line x1="0" y1="6.5" x2="10" y2="6.5" stroke="#000" />
+        //         <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+        //     </svg>
+        // </button>
+        // this.buttonJustifyFull.onclick = () => {
+        //     document.execCommand("justifyFull", false)
+        //     this.update()
+        // }
+        // toolbar.appendChild(this.buttonJustifyFull)
+        // toolbar.appendChild(document.createTextNode(" "))
 
-        this.buttonUnorderedList = document.createElement("button")
-        this.buttonUnorderedList.classList.add("left")
-        this.buttonUnorderedList.innerHTML = `<svg style="display: block;" viewBox="0 0 17 11.5" width="17" height="11.5">
-            <circle cx="4.5" cy="1.5" r="0.8" stroke="#000" fill="#000"/>
-            <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000"/>
-            <circle cx="4.5" cy="5.5" r="0.8" stroke="#000" fill="#000"/>
-            <line x1="7" y1="5.5" x2="17" y2="5.5" stroke="#000"/>
-            <circle cx="4.5" cy="9.5" r="0.8" stroke="#000" fill="#000"/>
-            <line x1="7" y1="9.5" x2="17" y2="9.5" stroke="#000"/>
-            </svg>`
+        this.buttonUnorderedList = <button class="left">
+            <svg style={{display: "block"}} viewBox="0 0 17 11.5" width="17" height="11.5">
+                <circle cx="4.5" cy="1.5" r="0.8" stroke="#000" fill="#000" />
+                <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000" />
+                <circle cx="4.5" cy="5.5" r="0.8" stroke="#000" fill="#000" />
+                <line x1="7" y1="5.5" x2="17" y2="5.5" stroke="#000" />
+                <circle cx="4.5" cy="9.5" r="0.8" stroke="#000" fill="#000" />
+                <line x1="7" y1="9.5" x2="17" y2="9.5" stroke="#000" />
+            </svg>
+        </button>
         this.buttonUnorderedList.onclick = (event) => {
             document.execCommand("insertUnorderedList", false)
             this.update()
         }
         toolbar.appendChild(this.buttonUnorderedList)
 
-        this.buttonOrderedList = document.createElement("button")
-        this.buttonOrderedList.classList.add("right")
-        this.buttonOrderedList.innerHTML = `<svg style="display: block;" viewBox="0 0 17 11.5" width="17" height="11.5">
-            <line x1="4.5" y1="0" x2="4.5" y2="3" stroke="#000" />
-            <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000"/>
-            <line x1="2.5" y1="4" x2="2.5" y2="7" stroke="#000" />
-            <line x1="4.5" y1="4" x2="4.5" y2="7" stroke="#000" />
-            <line x1="7" y1="5.5" x2="17" y2="5.5" stroke="#000"/>
-            <line x1="0.5" y1="8" x2="0.5" y2="11" stroke="#000" />
-            <line x1="2.5" y1="8" x2="2.5" y2="11" stroke="#000" />
-            <line x1="4.5" y1="8" x2="4.5" y2="11" stroke="#000" />
-            <line x1="7" y1="9.5" x2="17" y2="9.5" stroke="#000"/>
-            </svg>`
+        this.buttonOrderedList = <button class="right">
+            <svg style={{ display: "block" }} viewBox="0 0 17 11.5" width="17" height="11.5">
+                <line x1="4.5" y1="0" x2="4.5" y2="3" stroke="#000" />
+                <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000" />
+                <line x1="2.5" y1="4" x2="2.5" y2="7" stroke="#000" />
+                <line x1="4.5" y1="4" x2="4.5" y2="7" stroke="#000" />
+                <line x1="7" y1="5.5" x2="17" y2="5.5" stroke="#000" />
+                <line x1="0.5" y1="8" x2="0.5" y2="11" stroke="#000" />
+                <line x1="2.5" y1="8" x2="2.5" y2="11" stroke="#000" />
+                <line x1="4.5" y1="8" x2="4.5" y2="11" stroke="#000" />
+                <line x1="7" y1="9.5" x2="17" y2="9.5" stroke="#000" />
+            </svg>
+        </button>
         this.buttonOrderedList.onclick = () => {
             document.execCommand("insertOrderedList", false)
             this.update()
@@ -260,7 +247,7 @@ export class TextTool extends GenericView<Model> {
         this.buttonJustifyLeft.classList.toggle("active", document.queryCommandState("justifyLeft"))
         this.buttonJustifyCenter.classList.toggle("active", document.queryCommandState("justifyCenter"))
         this.buttonJustifyRight.classList.toggle("active", document.queryCommandState("justifyRight"))
-        //        this.buttonJustifyFull.classList.toggle("active", document.queryCommandState("justifyFull"))
+        // this.buttonJustifyFull.classList.toggle("active", document.queryCommandState("justifyFull"))
     }
 
     updateModel() {

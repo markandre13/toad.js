@@ -18,7 +18,6 @@
 
 /** @jsx toadJSX.createElement */
 import * as toadJSX from '../jsx'
-import { ref } from '../jsx'
 
 import { Model } from "../model/Model"
 import { View } from "../view/View"

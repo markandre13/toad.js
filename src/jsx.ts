@@ -37,6 +37,10 @@ export namespace JSX {
     }
     export interface IntrinsicElements {
         div: DefaultProps
+        b: DefaultProps
+        i: DefaultProps
+        u: DefaultProps
+        strike: DefaultProps
         button: DefaultProps
         table: DefaultProps
         thead: DefaultProps
@@ -45,18 +49,31 @@ export namespace JSX {
         th: DefaultProps
         td: DefaultProps
         svg: SVGProps
-        rect: {
-            x?: string
-            y?: string
-            width?: string
-            height?: string
+        line: {
+            x1: string
+            y1: string
+            x2: string
+            y2: string
+            stroke?: string
             class?: string
         }
-        line: {
-            x1?: string
-            y1?: string
-            x2?: string
-            y2?: string
+        rect: {
+            x: string
+            y: string
+            width: string
+            height: string
+            rx?: string
+            ry?: string
+            stroke?: string
+            fill?: string
+            class?: string
+        }
+        circle: {
+            cx: string
+            cy: string
+            r: string
+            stroke?: string
+            fill?: string
             class?: string
         }
     }
