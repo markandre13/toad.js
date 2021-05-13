@@ -253,7 +253,7 @@ export class TableView extends View {
 
       // animation: increase row height
       if (animationTime < 1) {
-        const rowHeight = `${animationTime * rowAnimationHeight}px`
+        const rowHeight = `${Math.round(animationTime * rowAnimationHeight)}px`
         trAnimationHead.style.height = rowHeight
         trAnimationBody.style.height = rowHeight
       } else 
