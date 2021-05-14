@@ -23,7 +23,9 @@ export function setAnimationFrameCount(frames: number) {
 }
 
 // FIXME: handle concurrent smoothScroll within the same scrollableParent
-export function scrollIntoView(element: Element): void {
+export function scrollIntoView(element: Element | undefined): void {
+    if (element === undefined)
+        return
     // console.log(`scrollIntoView(${element})`)
     const scrollableParent = findScrollableParent(element)
     if (scrollableParent === undefined)

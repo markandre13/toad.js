@@ -115,8 +115,8 @@ tableStyle.textContent = `
 }
 
 .zeroSize {
-  width: 0px;
-  height: 0px;
+  width: 0;
+  height: 0;
   margin: 0;
   padding: 0;
   border: none;

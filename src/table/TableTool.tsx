@@ -107,6 +107,7 @@ export class TableTool extends GenericTool<Model> {
             if (selection && model && model instanceof ArrayTableModel) {
                 model.remove(selection.row)
             }
+            this.lastActiveTable?.focus()
         }
         this.toolbar.appendChild(this.buttonDeleteRow)
 

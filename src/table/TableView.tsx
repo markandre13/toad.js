@@ -112,7 +112,7 @@ export class TableView extends View {
               <tr set={ref(this, 'bodyRow')} class="bodyrow"></tr>
             </tbody>
           </table>
-          <div class="zerosize">
+          <div class="zeroSize">
             <div set={ref(this, 'inputOverlay')} class="inputDiv"></div>
           </div>
         </div>
@@ -289,7 +289,9 @@ export class TableView extends View {
   }
 
   updateViewAfterRemoveRow(event: TableEvent) {
-    // console.log(`TableView.updateViewAfterRemoveRow(): removed row ${event.index}`)
+    const hadFocus = this.hasFocus()
+    this.inputOverlay.style.display = "none"
+
     const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
     const trBody = this.bodyBody.children[event.index + 1] as HTMLTableRowElement
 
@@ -307,14 +309,25 @@ export class TableView extends View {
 
     animate((value: number): boolean => {
       value = 1 - value
-      const rowHeight = `${value * rowAnimationHeight}px`
-      trBody.style.height = rowHeight
-      trHead.style.height = rowHeight
+      trBody.style.height = trHead.style.height = `${value * rowAnimationHeight}px`
       if (value === 0) {
         for (let i = 0; i < event.size; ++i) {
           this.rowHeadHead.deleteRow(event.index)
           this.bodyBody.deleteRow(event.index + 1)
         }
+        // if (this.selectionModel !== undefined)
+        //   this.prepareInputOverlayForPosition(this.selectionModel.value)
+        if (this.selectionModel !== undefined && this.selectionModel.row > event.index) {
+          this.selectionModel.row -= event.size
+        }
+        if (this.selectionModel !== undefined)
+          this.prepareInputOverlayForPosition(this.selectionModel?.value)
+
+        setTimeout( () => {
+          this.inputOverlay.style.display = ""
+          if (hadFocus)
+            this.focus()
+        }, 0)
       }
       return true
     })
@@ -766,11 +779,8 @@ export class TableView extends View {
       this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
   }
 
-  getCellAt(column: number, row: number): HTMLTableDataCellElement {
-    let element = this.bodyBody.children[row + 1].children[column] as HTMLTableDataCellElement
-    if (!element)
-      throw Error(`TableView.getCellAt(${column}, ${row}): no such cell`)
-    return element
+  getCellAt(column: number, row: number): HTMLTableDataCellElement | undefined {
+    return this.bodyBody.children[row + 1].children[column] as HTMLTableDataCellElement
   }
 
   getCellPosition(element: HTMLElement): TablePos {
@@ -889,6 +899,8 @@ export class TableView extends View {
   protected onFieldViewBlur(pos: TablePos) {
     // refresh cell after loosing focus
     const cell = this.getCellAt(pos.col, pos.row)
+    if (cell === undefined)
+      return
 
     const content = this.adapter!.displayCell(pos.col, pos.row)!
 

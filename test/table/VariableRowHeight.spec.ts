@@ -121,7 +121,7 @@ class VariableRowHeightScene {
     }
 
     mouseDownAtCell(col: number, row: number) {
-        let cell = this.table.getCellAt(col, row)
+        let cell = this.table.getCellAt(col, row)!
         const e = new MouseEvent("mousedown", {
             bubbles: true,
             relatedTarget: cell

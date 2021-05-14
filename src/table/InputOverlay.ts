@@ -71,7 +71,9 @@ export class InputOverlay extends HTMLDivElement {
     }
   }
 
-  adjustToCell(td: HTMLTableDataCellElement) {
+  adjustToCell(td: HTMLTableDataCellElement | undefined) {
+    if (td === undefined)
+      return
     // console.log(`adjustInputOverlayToCell(${element})`)
     let boundary = td.getBoundingClientRect()
     let tr = td.parentElement

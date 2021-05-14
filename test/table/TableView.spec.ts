@@ -79,7 +79,7 @@ describe("toad.js", function() {
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell = table.getCellAt(0, 0)
+                    let cell = table.getCellAt(0, 0)!
                     expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
                 })
                 it("does so when the view is defined before the model", function() {
@@ -90,7 +90,7 @@ describe("toad.js", function() {
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell = table.getCellAt(0, 0)
+                    let cell = table.getCellAt(0, 0)!
                     expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
                 })
             })
@@ -107,7 +107,7 @@ describe("toad.js", function() {
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell = table.getCellAt(0, 0)
+                    let cell = table.getCellAt(0, 0)!
                     expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
 
                     let row = cell.parentElement as HTMLTableRowElement
@@ -141,8 +141,8 @@ describe("toad.js", function() {
                     let table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell0 = table.getCellAt(0, 0)
-                    let cell1 = table.getCellAt(0, 1)
+                    let cell0 = table.getCellAt(0, 0)!
+                    let cell1 = table.getCellAt(0, 1)!
                     expect(cell0.innerText).to.equal("The Moon Is A Harsh Mistress")
 
                     let row0 = cell0.parentElement as HTMLTableRowElement
