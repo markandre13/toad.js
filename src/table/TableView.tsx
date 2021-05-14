@@ -646,6 +646,8 @@ export class TableView extends View {
     if (!this.adapter)
       return
 
+    let hadFocus = this.hasFocus()
+
     this.setSelectionTo(pos)
 
     let editView = this.adapter.createEditor(pos.col, pos.row) as View // as HTMLElement
@@ -665,6 +667,8 @@ export class TableView extends View {
     const cell = this.getCellAt(pos.col, pos.row)
     setTimeout(() => {
       this.inputOverlay.adjustToCell(cell)
+      if (hadFocus)
+        this.focus()
     }, 0)
   }
 
@@ -700,6 +704,10 @@ export class TableView extends View {
     }
     this.bodyDiv.scrollLeft = x
     this.bodyDiv.scrollTop = y
+  }
+
+  hasFocus(): boolean {
+    return document.activeElement !== null && document.activeElement === this
   }
 
   /*

@@ -211,10 +211,13 @@ describe("toad.js", function() {
                     scene.expectInputOverlayAt(0, 4)
                 })
 
-                it("changing selection updates view", function() {
+                it("changing selection updates view", async function() {
                     scene.mouseDownAtCell(0, 0)
                     scene.selectionModel.row = 2
 
+                    await scene.sleep(1)
+                    expect(document.activeElement).to.equal(scene.table)
+                    expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)
                     scene.expectInputOverlayAt(0, 2)
                 })
 

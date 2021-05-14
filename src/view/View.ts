@@ -20,6 +20,7 @@ import { Model } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Controller } from "../controller/Controller"
 
+// TODO: do we use this directly or is GenericView it's only subclass?
 export abstract class View extends HTMLElement {
   controller?: Controller
 
