@@ -63,12 +63,12 @@ export class TableTool extends GenericTool<Model> {
             </svg>
         </button>
         this.buttonAddRowAbove.onclick = () => {
+            this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
                 model.insert(selection.row)
             }
-            this.lastActiveTable?.focus()
         }
         this.toolbar.appendChild(this.buttonAddRowAbove)
 
@@ -83,12 +83,12 @@ export class TableTool extends GenericTool<Model> {
             </svg>
         </button>
         this.buttonAddRowBelow.onclick = () => {
+            this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
                 model.insert(selection.row+1)
             }
-            this.lastActiveTable?.focus()
         }
         this.toolbar.appendChild(this.buttonAddRowBelow)
 
@@ -102,12 +102,13 @@ export class TableTool extends GenericTool<Model> {
             </svg>
         </button>
         this.buttonDeleteRow.onclick = () => {
+            this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selectionModel
             if (selection && model && model instanceof ArrayTableModel) {
                 model.remove(selection.row)
             }
-            this.lastActiveTable?.focus()
+            
         }
         this.toolbar.appendChild(this.buttonDeleteRow)
 

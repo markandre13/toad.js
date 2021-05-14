@@ -234,10 +234,23 @@ describe("toad.js", function() {
 
                 xit("after deleting multiple row, selection is at correct position")
 
-                xit("after deleting last row, selection moves up", function() {})
+                it("input overlay is at correct position after deleting row at selection in last row", async function() {
+                    scene.mouseDownAtCell(0, 6)
+                    scene.sendArrowDown()
+                    await scene.sleep(1)
+
+                    scene.clickTableToolDeleteRow()
+                    await scene.sleep()
+
+                    expect(scene.selectionModel.row).to.equal(6)
+                    scene.expectInputOverlayAt(0, 6)
+                    expect(document.activeElement).to.equal(scene.table)
+                    expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)  
+                })
 
                 it("changing selection updates view", async function() {
                     scene.mouseDownAtCell(0, 0)
+                    await scene.sleep(1)
                     scene.selectionModel.row = 2
 
                     await scene.sleep(1)

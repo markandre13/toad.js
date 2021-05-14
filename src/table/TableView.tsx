@@ -290,6 +290,7 @@ export class TableView extends View {
 
   updateViewAfterRemoveRow(event: TableEvent) {
     const hadFocus = this.hasFocus()
+    // const hadFocus = true
     this.inputOverlay.style.display = "none"
 
     const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
@@ -315,10 +316,20 @@ export class TableView extends View {
           this.rowHeadHead.deleteRow(event.index)
           this.bodyBody.deleteRow(event.index + 1)
         }
-        // if (this.selectionModel !== undefined)
-        //   this.prepareInputOverlayForPosition(this.selectionModel.value)
-        if (this.selectionModel !== undefined && this.selectionModel.row > event.index) {
-          this.selectionModel.row -= event.size
+
+        if (this.selectionModel !== undefined) {
+          if (event.index + event.size >= this.model!.rowCount + event.size) {
+            // TODO: do not do an animation for this
+            if (event.index > 0)
+              this.selectionModel.row = event.index - 1
+              // FIXME: else
+          } else {
+            this.selectionModel.row = event.index
+          }
+          // if (this.selectionModel.row > event.index) {
+          //   this.selectionModel.row -= event.size
+          // }
+          // if (this.model!.rowCount)
         }
         if (this.selectionModel !== undefined)
           this.prepareInputOverlayForPosition(this.selectionModel?.value)
