@@ -189,6 +189,7 @@ describe("toad.js", function() {
 
                 it("input overlay is at correct position after inserting row below selection", async function() {
                     scene.mouseDownAtCell(0, 3)
+                    await scene.sleep(1)
 
                     scene.clickTableToolAddRowBelow()
                     await scene.sleep()
@@ -197,10 +198,13 @@ describe("toad.js", function() {
                     expect(scene.selectionModel.row).to.equal(3) // // FIXME: separate test
 
                     scene.expectInputOverlayAt(0, 3)
+                    expect(document.activeElement).to.equal(scene.table)
+                    expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)
                 })
 
                 it("input overlay is at correct position after inserting row above selection", async function() {
                     scene.mouseDownAtCell(0, 3)
+                    await scene.sleep(1)
 
                     scene.clickTableToolAddRowAbove()
                     await scene.sleep()
@@ -209,6 +213,32 @@ describe("toad.js", function() {
                     expect(scene.selectionModel.row).to.equal(4) // FIXME: separate test
 
                     scene.expectInputOverlayAt(0, 4)
+                    expect(document.activeElement).to.equal(scene.table)
+                    expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)
+                })
+
+                // 0 ["The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966],
+                // 1 ["Stranger In A Strange Land", "Robert A. Heinlein", 1961],
+                // 2 ["The Fountains of Paradise", "Arthur C. Clarke", 1979],
+                // 3 ["Rendezvous with Rama", "Arthur C. Clarke", 1973],
+                // 4 ["2001: A Space Odyssey", "Arthur C. Clarke", 1968],
+                // 5 ["Do Androids Dream of Electric Sheep?", "Philip K. Dick", 1968],
+                // 6 ["A Scanner Darkly", "Philip K. Dick", 1977],
+                // 7 ["Second Variety", "Philip K. Dick", 1953]
+
+                xit("input overlay is at correct position after deleting row at selection", async function() {
+                    scene.mouseDownAtCell(0, 3)
+                    await scene.sleep(1)
+
+                    scene.clickTableToolDeleteRow()
+                    await scene.sleep()
+
+                    // selection hasn't changed
+                    expect(scene.selectionModel.row).to.equal(3) // // FIXME: separate test
+
+                    // scene.expectInputOverlayAt(0, 3)
+                    // expect(document.activeElement).to.equal(scene.table)
+                    // expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)
                 })
 
                 it("changing selection updates view", async function() {
@@ -216,9 +246,9 @@ describe("toad.js", function() {
                     scene.selectionModel.row = 2
 
                     await scene.sleep(1)
-                    expect(document.activeElement).to.equal(scene.table)
-                    expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)
                     scene.expectInputOverlayAt(0, 2)
+                    expect(document.activeElement).to.equal(scene.table)
+                    expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)  
                 })
 
                 // keyboard and scroll

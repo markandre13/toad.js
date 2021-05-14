@@ -16,10 +16,12 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/** @jsx toadJSX.createElement */
+import * as toadJSX from '../jsx'
+
 import { TableModel } from "./TableModel"
 import { TreeModel } from "./TreeModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
-import { text, line, rectangle } from "../svg"
 
 const sx = 12     // horizontal step width
 const dx = 3.5    // additional step before drawing the rectangle
@@ -54,37 +56,31 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
         const r = this.model.rows[row]
 
         // console.log("-------------------- TreeNodeView.create() -------------------------")
-
-        let svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-        svg.style.border = "none"
-        svg.style.display = "block"
-        svg.setAttributeNS("", "width", "70")
-        svg.setAttributeNS("", "height", `${item_h}`)
-
+        const svg = <svg style={{border: "none", display: "block"}} width={70} height={item_h} />
         const d = r.depth
 
-        svg.appendChild(text(d*sx+dx+sx+5, dy+8, label))
+        svg.appendChild(<text x={d*sx+dx+sx+5} y={dy+8} fill="#000">{label}</text>)
 
         if (this.model.getDown(r.node)) {
             // box
-            svg.appendChild(rectangle(d*sx+dx, dy, rs, rs))
+            svg.appendChild(<rect x={d*sx+dx} y={dy} width={rs} height={rs} stroke="#000" fill="none"/>)
             // minus
-            svg.appendChild(line(d*sx+dx+(rs>>2), dy+(rs>>1), d*sx+dx+rs-(rs>>2), dy+(rs>>1)))
+            svg.appendChild(<line x1={d*sx+dx+(rs>>2)} y1={dy+(rs>>1)} x2={d*sx+dx+rs-(rs>>2)} y2={dy+(rs>>1)} stroke="#000" />)
             if (!r.open) {
                 // plus
-                svg.appendChild(line(d*sx+dx+(rs>>1), dy+(rs>>2), d*sx+dx+(rs>>1), dy+rs-(rs>>2)))
+                svg.appendChild(<line x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)} stroke="#000" />)
             }
             // horizontal line to data
-            svg.appendChild(line(d*sx+dx+rs, dy+(rs>>1), d*sx+dx+rs+rx, dy+(rs>>1)))
+            svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#000" />)
         } else {
             // upper vertical line instead of box
-            svg.appendChild(line(d*sx+dx+(rs>>1), dy, d*sx+dx+(rs>>1), dy+(rs>>1)))
+            svg.appendChild(<line x1={d*sx+dx+(rs>>1)} y1={dy} x2={d*sx+dx+(rs>>1)} y2={dy+(rs>>1)} stroke="#000" />)
             // horizontal line to data
-            svg.appendChild(line(d*sx+dx+(rs>>1), dy+(rs>>1), d*sx+dx+rs+rx, dy+(rs>>1)))
+            svg.appendChild(<line x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#000" />)
         }
 
         // small line above box
-        svg.appendChild(line(d*sx+dx+(rs>>1),0, d*sx+dx+(rs>>1), dy))
+        svg.appendChild(<line x1={d*sx+dx+(rs>>1)} y1={0} x2={d*sx+dx+(rs>>1)} y2={dy} stroke="#000" />)
 
         // lines connecting nodes
         // console.log(`render tree graphic for row ${row} at depth ${d}`)
@@ -96,15 +92,15 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
                 if ( i === this.model.rows[j].depth) {
                     if ( i!== d) {
                         // long line without box
-                        svg.appendChild(line(i*sx+dx+(rs>>1),0,i*sx+dx+(rs>>1), item_h))
+                        svg.appendChild(<line x1={i*sx+dx+(rs>>1)} y1={0} x2={i*sx+dx+(rs>>1)} y2={item_h} stroke="#000" />)
                     } else {
                         // small line below box
                         if (row+1 < this.model.rows.length && this.model.rows[row+1].depth > r.depth) {
                             // has subtree => start below box
-                            svg.appendChild(line(i*sx+dx+(rs>>1),dy+rs,i*sx+dx+(rs>>1),item_h))
+                            svg.appendChild(<line x1={i*sx+dx+(rs>>1)} y1={dy+rs} x2={i*sx+dx+(rs>>1)} y2={item_h} stroke="#000" />)
                         } else {
                             // has no subtree => has no box => don't start below box
-                            svg.appendChild(line(i*sx+dx+(rs>>1),dy+(rs>>1),i*sx+dx+(rs>>1),item_h))
+                            svg.appendChild(<line x1={i*sx+dx+(rs>>1)} y1={dy+(rs>>1)} x2={i*sx+dx+(rs>>1)} y2={item_h} stroke="#000" />)
                         }
                     }
                     break

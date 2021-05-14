@@ -125,6 +125,16 @@ export class BookTableScene {
         button.dispatchEvent(e)
     }
 
+    clickTableToolDeleteRow() {
+        const button = document.querySelector("toad-tabletool")!
+            .shadowRoot!.querySelector("button[title='delete row']")!
+        const e = new MouseEvent("click", {
+            bubbles: true,
+            relatedTarget: button
+        })
+        button.dispatchEvent(e)
+    }
+
     expectInputOverlayToEqual(text: string) {
         // @ts-ignore
         expect(this.table.inputOverlay.children[0].value).equals(text)

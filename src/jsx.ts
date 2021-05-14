@@ -18,16 +18,16 @@
 
 export namespace JSX {
     interface JsxStyle {
-        width?: string
-        height?: string
+        width?: string | number
+        height?: string | number
         border?: string
         display?: string
     }
     export interface DefaultProps {
         class?: string
         style?: JsxStyle
-        width?: string
-        height?: string
+        width?: string | number
+        height?: string | number
         title?: string
         set?: Reference
     }
@@ -50,28 +50,35 @@ export namespace JSX {
         td: DefaultProps
         svg: SVGProps
         line: {
-            x1: string
-            y1: string
-            x2: string
-            y2: string
+            x1: string | number
+            y1: string | number
+            x2: string | number
+            y2: string | number
             stroke?: string
             class?: string
         }
         rect: {
-            x: string
-            y: string
-            width: string
-            height: string
-            rx?: string
-            ry?: string
+            x: string | number
+            y: string | number
+            width: string | number
+            height: string | number
+            rx?: string | number
+            ry?: string | number
             stroke?: string
             fill?: string
             class?: string
         }
         circle: {
-            cx: string
-            cy: string
-            r: string
+            cx: string | number
+            cy: string | number
+            r: string | number
+            stroke?: string
+            fill?: string
+            class?: string
+        }
+        text: {
+            x: string | number
+            y: string | number
             stroke?: string
             fill?: string
             class?: string
@@ -89,6 +96,7 @@ export function createElement(name: string, props: JSX.DefaultProps, ...children
         case 'svg':
         case 'line':
         case 'rect':
+        case 'text':
             namespace = "http://www.w3.org/2000/svg"
             break
         default:
