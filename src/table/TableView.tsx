@@ -308,40 +308,45 @@ export class TableView extends View {
     while (trBody.children.length > 0)
       trBody.removeChild(trBody.children[0])
 
-    animate((value: number): boolean => {
-      value = 1 - value
-      trBody.style.height = trHead.style.height = `${value * rowAnimationHeight}px`
-      if (value === 0) {
-        for (let i = 0; i < event.size; ++i) {
-          this.rowHeadHead.deleteRow(event.index)
-          this.bodyBody.deleteRow(event.index + 1)
-        }
-
-        if (this.selectionModel !== undefined) {
-          if (event.index + event.size >= this.model!.rowCount + event.size) {
-            // TODO: do not do an animation for this
-            if (event.index > 0)
-              this.selectionModel.row = event.index - 1
-              // FIXME: else
-          } else {
-            this.selectionModel.row = event.index
-          }
-          // if (this.selectionModel.row > event.index) {
-          //   this.selectionModel.row -= event.size
-          // }
-          // if (this.model!.rowCount)
-        }
-        if (this.selectionModel !== undefined)
-          this.prepareInputOverlayForPosition(this.selectionModel?.value)
-
-        setTimeout( () => {
-          this.inputOverlay.style.display = ""
-          if (hadFocus)
-            this.focus()
-        }, 0)
+    if (event.index + event.size >= this.model!.rowCount + event.size) {
+      // skip animation when deleting last rows
+      if (this.selectionModel && event.index > 0)
+        this.selectionModel.row = event.index - 1
+      
+      for (let i = 0; i < event.size; ++i) {
+        this.rowHeadHead.deleteRow(event.index)
+        this.bodyBody.deleteRow(event.index + 1)
       }
-      return true
-    })
+
+      this.inputOverlay.style.display = ""
+      if (hadFocus)
+        this.focus()
+
+    } else {
+      animate((value: number): boolean => {
+        value = 1 - value
+        trBody.style.height = trHead.style.height = `${value * rowAnimationHeight}px`
+        if (value === 0) {
+
+          for (let i = 0; i < event.size; ++i) {
+            this.rowHeadHead.deleteRow(event.index)
+            this.bodyBody.deleteRow(event.index + 1)
+          }
+
+          if (this.selectionModel !== undefined) {
+            this.selectionModel.row = event.index
+            this.prepareInputOverlayForPosition(this.selectionModel?.value)
+          }
+
+          setTimeout( () => {
+            this.inputOverlay.style.display = ""
+            if (hadFocus)
+              this.focus()
+          }, 0)
+        }
+        return true
+      })
+    }
   }
 
   /*

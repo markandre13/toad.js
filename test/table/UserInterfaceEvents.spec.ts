@@ -232,6 +232,7 @@ describe("toad.js", function() {
                     expect(scene.table.shadowRoot?.activeElement).to.equal(scene.table.editView)
                 })
 
+                xit("adding a row at the bottom has to be animated correctly")
                 xit("after deleting multiple row, selection is at correct position")
 
                 it("input overlay is at correct position after deleting row at selection in last row", async function() {
