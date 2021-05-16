@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018, 2021 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -60,6 +60,21 @@ export function erase(n: Element): void {
   //   (n as any).replaceChildren()
   // else
     while(n.firstChild) n.removeChild(n.firstChild);
+}
+
+export function hasFocus(element: Element): boolean {
+  if (!document.hasFocus())
+    return false
+  let active = document.activeElement
+  while(active !== null) {
+    if (active === element) {
+      return true
+    }
+    if (active.shadowRoot === null)
+      break
+    active = active.shadowRoot.activeElement         
+  }
+  return false
 }
 
 export function grabMouse(event: MouseEvent) {
