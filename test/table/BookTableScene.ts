@@ -9,6 +9,7 @@ import { setAnimationFrameCount } from "../../src/scrollIntoView"
 export class BookTableScene {
 
     table: TableView
+    data: Array<Book>
     model: BookTableModel
     selectionModel: SelectionModel
 
@@ -21,7 +22,9 @@ export class BookTableScene {
 
         TableAdapter.register(BookTableAdapter, BookTableModel, Book)
 
-        this.model = BookTableScene.createBookModel()
+        this.data =  BookTableScene.createBookArray()
+        this.model = new BookTableModel(this.data)
+        
         bind("books", this.model)
 
         this.selectionModel = new SelectionModel()
@@ -35,6 +38,11 @@ export class BookTableScene {
     }
 
     static createBookModel() {
+        const data =  BookTableScene.createBookArray()
+        return new BookTableModel(data)
+    }
+
+    static createBookArray() {
         const data = new Array<Book>()
         const init = [
             ["The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966],
@@ -48,7 +56,7 @@ export class BookTableScene {
         ].forEach((e) => {
             data.push(new Book(e[0] as string, e[1] as string, e[2] as number))
         })
-        return new BookTableModel(data)
+        return data
     }
 
     sleep(milliseconds: number = 500) {

@@ -58,7 +58,8 @@ export class InputOverlay extends HTMLDivElement {
     if (this.children.length === 0) {
       this.appendChild(fieldView)
     } else {
-      if (document.hasFocus() && document.activeElement === this) {
+      // FIXME: also check document.activeElement, shadowRoot.activeElement ?
+      if (document.hasFocus()) {
         this.children[0].dispatchEvent(new FocusEvent("blur"))
       }
       this.replaceChild(fieldView, this.children[0])

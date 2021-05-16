@@ -18,8 +18,35 @@ describe("toad.js", function() {
             })
 
             describe("update view when model changes", function() {
-                xit("cell value changes", function() {
-                    // missing
+                describe("update cell and model after input changes and focus changes via", function() {
+                    it("mouse", async function() {
+                        scene.table.focus()
+                        scene.mouseDownAtCell(0, 0)
+
+                        const textView = scene.table.editView as TextView
+                        textView.value = "XXX"
+                        await scene.sleep()
+
+                        scene.mouseDownAtCell(0, 1)
+
+                        expect(scene.data[0].title).to.equal("XXX")
+                        expect((rows[0 + 1].childNodes[0] as HTMLElement).innerText).to.equal("XXX")
+                    })
+                    it("keyboard", async function() {
+                        scene.table.focus()
+                        scene.mouseDownAtCell(0, 0)
+
+                        const textView = scene.table.editView as TextView
+                        textView.value = "XXX"
+                        await scene.sleep()
+
+                        scene.sendArrowDown()
+
+                        expect(scene.data[0].title).to.equal("XXX")
+                        expect((rows[0 + 1].childNodes[0] as HTMLElement).innerText).to.equal("XXX")
+                    })
+
+                    // TODO: test this with two table views
                 })
                 describe("insert row", function() {
                     it("single row", async function() {
@@ -225,7 +252,7 @@ describe("toad.js", function() {
                     await scene.sleep()
 
                     // selection hasn't changed
-                    expect(scene.selectionModel.row).to.equal(3) // // FIXME: separate test
+                    expect(scene.selectionModel.row).to.equal(3) // FIXME: separate test
 
                     scene.expectInputOverlayAt(0, 3)
                     expect(document.activeElement).to.equal(scene.table)
