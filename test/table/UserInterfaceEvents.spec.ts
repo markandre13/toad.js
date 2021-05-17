@@ -45,7 +45,7 @@ describe("toad.js", function() {
                         expect(scene.data[0].title).to.equal("XXX")
                         expect((rows[0 + 1].childNodes[0] as HTMLElement).innerText).to.equal("XXX")
                     })
-
+                    // TODO: test this when just a cell in the model changes
                     // TODO: test this with two table views
                 })
                 describe("insert row", function() {

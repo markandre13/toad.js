@@ -29,4 +29,12 @@ export class TableEvent {
         this.index = index
         this.size = size
     }
+
+    get col() {
+        return this.index
+    }
+
+    get row() {
+        return this.size
+    }
 }

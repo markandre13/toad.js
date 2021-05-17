@@ -215,6 +215,9 @@ export class TableView extends View {
       case TableEventType.REMOVE_ROW:
         this.updateViewAfterRemoveRow(event)        
         break
+      case TableEventType.CELL_CHANGED:
+        this.onFieldViewBlur(new TablePos(event.col, event.row))
+        break;
     }
   }
 
@@ -684,9 +687,6 @@ export class TableView extends View {
       return
     this.editView = editView
     editView.classList.add("embedded")
-    editView.onblur = () => {
-      this.onFieldViewBlur(pos)
-    }
     editView.onkeydown = (event: KeyboardEvent) => {
       this.onFieldViewKeyDown(event, pos)
     }

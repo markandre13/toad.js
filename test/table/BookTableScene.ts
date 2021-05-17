@@ -250,12 +250,13 @@ class BookTableAdapter extends TableAdapter {
         // console.log(`BookTableAdapter.setField(${col}, ${row}, "${text}")`)
         if (!this.model)
             return
+        // FIXME: hide data and let the model itself generate the trigger
         switch (col) {
             case 0: this.model.data[row].title = text; break
             case 1: this.model.data[row].author = text; break
             case 2: this.model.data[row].year = Number.parseInt(text); break
         }
         // FIXME: let table handle this event and maybe also provide (col, row)
-        this.model.modified.trigger(new TableEvent(TableEventType.CHANGED, 0, 0))
+        this.model.modified.trigger(new TableEvent(TableEventType.CELL_CHANGED, col, row))
     }
 }

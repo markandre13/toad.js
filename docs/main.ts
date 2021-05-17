@@ -133,8 +133,7 @@ class BookTableAdapter extends TableAdapter {
             case 1: this.model.data[row].author = text; break
             case 2: this.model.data[row].year = Number.parseInt(text); break
         }
-        // FIXME: let table handle this event and maybe also provide (col, row)
-        this.model.modified.trigger(new TableEvent(TableEventType.CHANGED, 0, 0))
+        this.model.modified.trigger(new TableEvent(TableEventType.CELL_CHANGED, col, row))
     }
 }
 TableAdapter.register(BookTableAdapter, BookTableModel, Book)
