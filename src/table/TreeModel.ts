@@ -180,6 +180,31 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         return row
     }
 
+    // initialize rows from an existing structure
+    init() {}
+
+    toggleAt(row: number) {
+        if (this.rows[row].open) {
+            this.closeAt(row)
+        } else {
+            this.openAt(row)
+        }
+    }
+
+    openAt(row: number) {
+        if (this.rows[row].open)
+            return
+        this.rows[row].open = true
+        console.log(`TreeModel.openAt(${row})`)
+    }
+
+    closeAt(row: number) {
+        if (!this.rows[row].open)
+            return
+        this.rows[row].open = false
+        console.log(`TreeModel.closeAt(${row})`)
+    }
+
     private append(chain: T, node?: T) {
         if (node === undefined)
             return

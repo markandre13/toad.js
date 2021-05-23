@@ -21,6 +21,7 @@ export namespace JSX {
         width?: string | number
         height?: string | number
         border?: string
+        cursor?: string
         display?: string
     }
     export interface DefaultProps {
@@ -33,7 +34,6 @@ export namespace JSX {
     }
     export interface SVGProps extends DefaultProps {
         viewBox?: string
-
     }
     export interface IntrinsicElements {
         div: DefaultProps
@@ -55,6 +55,7 @@ export namespace JSX {
             x2: string | number
             y2: string | number
             stroke?: string
+            cursor?: string
             class?: string
         }
         rect: {
@@ -66,6 +67,7 @@ export namespace JSX {
             ry?: string | number
             stroke?: string
             fill?: string
+            cursor?: string
             class?: string
         }
         circle: {
@@ -74,6 +76,7 @@ export namespace JSX {
             r: string | number
             stroke?: string
             fill?: string
+            cursor?: string
             class?: string
         }
         text: {
@@ -81,6 +84,7 @@ export namespace JSX {
             y: string | number
             stroke?: string
             fill?: string
+            cursor?: string
             class?: string
         }
     }

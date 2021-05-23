@@ -184,7 +184,9 @@ function initializeTree(): void {
     tree.addSiblingAfter(0)
     tree.addChildAfter(0)
     tree.addChildAfter(1)
+    tree.addSiblingAfter(2)
     tree.addSiblingAfter(1)
+    tree.addSiblingAfter(4)
     tree.addSiblingAfter(0)
     bind("tree", tree)
 }

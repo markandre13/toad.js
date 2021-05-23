@@ -56,19 +56,40 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
         const r = this.model.rows[row]
 
         // console.log("-------------------- TreeNodeView.create() -------------------------")
-        const svg = <svg style={{border: "none", display: "block"}} width={70} height={item_h} />
+        const svg = <svg style={{border: "none", display: "block"}} width={70} height={item_h} /> as SVGSVGElement
         const d = r.depth
 
         svg.appendChild(<text x={d*sx+dx+sx+5} y={dy+8} fill="#000">{label}</text>)
 
         if (this.model.getDown(r.node)) {
+            // TODO: port Rectangle from workflow to toad.js
+            const x0 = d*sx+dx
+            svg.onmousedown = (event: MouseEvent) => {
+                let r = svg.getBoundingClientRect()
+                const x = event.clientX-r.left
+                const y = event.clientY-r.top
+                event.preventDefault()
+                if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy+rs) {
+                    this.model?.toggleAt(row)
+                    event.stopPropagation()
+                }
+            }
+
             // box
-            svg.appendChild(<rect x={d*sx+dx} y={dy} width={rs} height={rs} stroke="#000" fill="none"/>)
+            const box = <rect
+                x={d*sx+dx} y={dy} width={rs} height={rs}
+                stroke="#000" fill="#fff" cursor="pointer"/>
+
+            svg.appendChild(box)
             // minus
-            svg.appendChild(<line x1={d*sx+dx+(rs>>2)} y1={dy+(rs>>1)} x2={d*sx+dx+rs-(rs>>2)} y2={dy+(rs>>1)} stroke="#000" />)
+            svg.appendChild(<line
+                x1={d*sx+dx+(rs>>2)} y1={dy+(rs>>1)} x2={d*sx+dx+rs-(rs>>2)} y2={dy+(rs>>1)}
+                stroke="#000" cursor="pointer"/>)
             if (!r.open) {
                 // plus
-                svg.appendChild(<line x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)} stroke="#000" />)
+                svg.appendChild(<line
+                    x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)}
+                    stroke="#000" cursor="pointer"/>)
             }
             // horizontal line to data
             svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#000" />)
