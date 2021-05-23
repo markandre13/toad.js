@@ -191,6 +191,10 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         }
     }
 
+    isOpen(row: number) {
+        return this.rows[row].open
+    }
+
     openAt(row: number) {
         if (this.rows[row].open)
             return
@@ -203,6 +207,45 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             return
         this.rows[row].open = false
         console.log(`TreeModel.closeAt(${row})`)
+
+        // determine size of row's sub tree (accounting for open/closed nodes)
+        // remove rows from array
+        // send event
+    }
+
+    getVisibleChildCount(row: number): number {
+        let r = this.rows[row]
+        let count = 1
+        // console.log(`row=${row}, count=${count}, open=${r.open}`)
+        if (r.open && this.getDown(r.node)) {
+            // console.log(`  go down`)
+            const rows = this.getVisibleChildCountHelper(row+1)
+            row += rows
+            count += rows
+            // console.log(`  down rows=${rows} row=${row}, count=${count}, open=${r.open}`)
+        }
+        return count - 1
+    }
+
+    private getVisibleChildCountHelper(row: number): number {
+        let r = this.rows[row]
+        let count = 1
+        // console.log(`row=${row}, count=${count}, open=${r.open}`)
+        if (r.open && this.getDown(r.node)) {
+            // console.log(`  go down`)
+            const rows = this.getVisibleChildCountHelper(row+1)
+            row += rows
+            count += rows
+            // console.log(`  down rows=${rows} row=${row}, count=${count}, open=${r.open}`)
+        }
+        if (this.getNext(r.node)) {
+            // console.log(`  next`)
+            const rows = this.getVisibleChildCountHelper(row+1)
+            row += rows
+            count += rows
+            // console.log(`  next rows=${rows} row=${row}, count=${count}, open=${r.open}`)
+        }
+        return count
     }
 
     private append(chain: T, node?: T) {

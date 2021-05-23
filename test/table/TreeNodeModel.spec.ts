@@ -531,6 +531,33 @@ describe("toad.js", function() {
                     })
                 })
             })
+
+            describe("toggleAt(row: number)", function() {
+                it.only("getVisibleChildCount(row: number)", function() {
+                    // ├─ 0
+                    // │  ├─ 1
+                    // │  │  ├─ 2
+                    // │  │  └─ 3
+                    // │  └─ 4
+                    // │     └─ 5
+                    // └─ 6
+                    tree.addSiblingAfter(0)
+                    tree.addChildAfter(0)
+                    tree.addChildAfter(1)
+                    tree.addSiblingAfter(2)
+                    tree.addSiblingAfter(1)
+                    tree.addChildAfter(4)
+                    tree.addSiblingAfter(0)
+
+                    expect(0).to.equal(tree.getVisibleChildCount(6))
+                    expect(0).to.equal(tree.getVisibleChildCount(5))
+                    expect(1).to.equal(tree.getVisibleChildCount(4))
+                    expect(0).to.equal(tree.getVisibleChildCount(3))
+                    expect(0).to.equal(tree.getVisibleChildCount(2))
+                    expect(2).to.equal(tree.getVisibleChildCount(1))
+                    expect(5).to.equal(tree.getVisibleChildCount(0))
+                })
+            })
         })
     })
 })

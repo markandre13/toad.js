@@ -71,6 +71,11 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
                 event.preventDefault()
                 if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy+rs) {
                     this.model?.toggleAt(row)
+                    if (this.model?.isOpen(row)) {
+                        // hide |
+                    } else {
+                        // show |
+                    }
                     event.stopPropagation()
                 }
             }

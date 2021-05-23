@@ -129,7 +129,6 @@ export class TableView extends View {
     }
 
     this.bodyTable.onmousedown = (event: MouseEvent) => {
-      console.log(`this.bodyTable.onmousedown`)
       if (!event.target) {
         console.log("bodyTable.onmousedown() -> no target")
         return
