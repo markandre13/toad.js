@@ -299,8 +299,19 @@ export class TableView extends View {
     const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
     const trBody = this.bodyBody.children[event.index + 1] as HTMLTableRowElement
 
-    const rowAnimationHeight = trBody.clientHeight
+    let rowAnimationHeight = 0
+    for(let i=0; i<event.size; ++i) {
+      const tr = this.bodyBody.children[event.index + i + 1] as HTMLTableRowElement
+      rowAnimationHeight += tr.clientHeight
+    }
+    // const rowAnimationHeight = trBody.clientHeight
     this.rowAnimationHeight = rowAnimationHeight
+
+
+    for (let i = 1; i < event.size; ++i) {
+      this.rowHeadHead.deleteRow(event.index + 1)
+      this.bodyBody.deleteRow(event.index + 2)
+    }
 
     trHead.style.minHeight = trHead.style.maxHeight = ""
     trBody.style.minHeight = trBody.style.maxHeight = ""
@@ -316,10 +327,10 @@ export class TableView extends View {
       if (this.selectionModel && event.index > 0)
         this.selectionModel.row = event.index - 1
       
-      for (let i = 0; i < event.size; ++i) {
+      // for (let i = 0; i < event.size; ++i) {
         this.rowHeadHead.deleteRow(event.index)
         this.bodyBody.deleteRow(event.index + 1)
-      }
+      // }
 
       this.inputOverlay.style.display = ""
       if (hadFocus)
@@ -331,10 +342,10 @@ export class TableView extends View {
         trBody.style.height = trHead.style.height = `${value * rowAnimationHeight}px`
         if (value === 0) {
 
-          for (let i = 0; i < event.size; ++i) {
+          // for (let i = 0; i < event.size; ++i) {
             this.rowHeadHead.deleteRow(event.index)
             this.bodyBody.deleteRow(event.index + 1)
-          }
+          // }
 
           if (this.selectionModel !== undefined) {
             this.selectionModel.row = event.index

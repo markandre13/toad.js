@@ -533,7 +533,7 @@ describe("toad.js", function() {
             })
 
             describe("toggleAt(row: number)", function() {
-                it.only("getVisibleChildCount(row: number)", function() {
+                it("getVisibleChildCount(row: number)", function() {
                     // ├─ 0
                     // │  ├─ 1
                     // │  │  ├─ 2
@@ -556,6 +556,8 @@ describe("toad.js", function() {
                     expect(0).to.equal(tree.getVisibleChildCount(2))
                     expect(2).to.equal(tree.getVisibleChildCount(1))
                     expect(5).to.equal(tree.getVisibleChildCount(0))
+
+                    // TO DO: close some sub trees and try again
                 })
             })
         })

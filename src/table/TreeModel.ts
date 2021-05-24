@@ -196,21 +196,23 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
     }
 
     openAt(row: number) {
-        if (this.rows[row].open)
+        let r = this.rows[row]
+        if (r.open || this.getDown(r.node) === undefined)
             return
-        this.rows[row].open = true
+        r.open = true
         console.log(`TreeModel.openAt(${row})`)
     }
 
     closeAt(row: number) {
-        if (!this.rows[row].open)
+        let r = this.rows[row]
+        if (!r.open || this.getDown(r.node) === undefined)
             return
-        this.rows[row].open = false
         console.log(`TreeModel.closeAt(${row})`)
-
-        // determine size of row's sub tree (accounting for open/closed nodes)
-        // remove rows from array
-        // send event
+        const count = this.getVisibleChildCount(row)
+        r.open = false
+        // console.log(`count = ${count}`)
+        this.rows.splice(row, count)
+        this.modified.trigger(new TableEvent(TableEventType.REMOVE_ROW, row+1, count))
     }
 
     getVisibleChildCount(row: number): number {

@@ -14,9 +14,9 @@ describe("toad.js", function() {
         describe("class TableView", function() {
             let scene: VariableRowHeightScene
 
-            this.beforeAll( async function() {
+            this.beforeEach(async function() {
                 scene = new VariableRowHeightScene()
-                // await scene.sleep()                
+                // await scene.sleep(0)           
             })
 
             describe("variable row heights", function() {
@@ -57,12 +57,22 @@ describe("toad.js", function() {
 
                         expect(scene.table.rowAnimationHeight).to.equal(32 + 5)
                     })
-                    xit("insert multiple rows", function() {
+                    it("insert multiple rows", async function() {
                         scene.model.insert(2, [
                             new VariableHeightThingy(256),
-                            new VariableHeightThingy(128)] )
+                            new VariableHeightThingy(128)]
+                        )
+
+                        await scene.sleep()
+
+                        expect(scene.table.rowAnimationHeight).to.equal(256 + 128 + 2 * 5)
                     })
-                    xit("remove multiple rows", function() {
+                    it("remove multiple rows", async function() {
+                        scene.model.remove(1, 2)
+
+                        await scene.sleep()
+
+                        expect(scene.table.rowAnimationHeight).to.equal(32 + 64 + 2 * 5)
                     })
                 })
             })
@@ -81,6 +91,7 @@ class VariableRowHeightScene {
         try {
         setAnimationFrameCount(0)
         unbind()
+        TableAdapter.unbind()
         document.body.innerHTML = ""
 
         TableAdapter.register(VHTTableAdapter, VHTModel, VariableHeightThingy)
