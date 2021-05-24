@@ -14,11 +14,14 @@ module.exports = (config) => {
       "**/*.tsx": ["karma-typescript", "sourcemap"]
     },
     reporters: ["mocha", "karma-typescript"],
-    coverageOptions: {
-      instrumentation: false,
-    },
     karmaTypescriptConfig: {
-      extends: "./tsconfig.json",
+      bundlerOptions: {
+        sourceMap: true
+      },
+      // we don't need coverage and it breaks sourcemap
+      coverageOptions: {
+        instrumentation: false,
+      },
       compilerOptions: {
         "target": "es6",
         "module": "commonjs",
