@@ -66,41 +66,45 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
             const x0 = d*sx+dx
 
             // box
-            const box = <rect
-                x={d*sx+dx} y={dy} width={rs} height={rs}
-                stroke="#000" fill="#fff" cursor="pointer"/>
-
+            const box = <rect x={d*sx+dx} y={dy} width={rs} height={rs} stroke="#000" fill="#fff" cursor="pointer"/>
             svg.appendChild(box)
+
             // minus
-            svg.appendChild(<line
-                x1={d*sx+dx+(rs>>2)} y1={dy+(rs>>1)} x2={d*sx+dx+rs-(rs>>2)} y2={dy+(rs>>1)}
-                stroke="#000" cursor="pointer"/>)
+            svg.appendChild(<line x1={d*sx+dx+(rs>>2)} y1={dy+(rs>>1)} x2={d*sx+dx+rs-(rs>>2)} y2={dy+(rs>>1)} stroke="#000" cursor="pointer"/>)
 
             const plus = <line
                 x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)}
-                stroke="#000" cursor="pointer"/> as SVGLineElement
+                stroke="#f00" cursor="pointer"/> as SVGLineElement
             plus.style.display =  r.open ? "none" : ""
             svg.appendChild(plus)
+
             // horizontal line to data
-            svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#000" />)
+            svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#f80" />)
 
             svg.onmousedown = (event: MouseEvent) => {
-                if (this.model === undefined)
+                console.log(`TreeAdapter: onmousedown`)
+                event.preventDefault()
+                if (this.model === undefined) {
+                    console.log("  ==> no model")
                     return
+                }
 
                 let rowNumber = this.model.getRow(r.node)
-                if (rowNumber === undefined)
+                if (rowNumber === undefined) {
+                    console.log("  ==> couldn't find row number for node")
                     return
+                }
                                 
                 let bounds = svg.getBoundingClientRect()
                 const x = event.clientX - bounds.left
                 const y = event.clientY - bounds.top
-                event.preventDefault()
                 if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy+rs) {
                     this.model?.toggleAt(rowNumber) // TODO: this row number varies!!!
                     // console.log(`toggled row ${row} to ${this.model!.isOpen(row)}`)
                     plus.style.display =  this.model.isOpen(rowNumber) ? "none" : ""
                     event.stopPropagation()
+                } else {
+                    console.log("==> mouse not inside open/close box")
                 }
             }
 
@@ -128,7 +132,7 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
                         svg.appendChild(<line x1={i*sx+dx+(rs>>1)} y1={0} x2={i*sx+dx+(rs>>1)} y2={item_h} stroke="#000" />)
                     } else {
                         // small line below box
-                        if (row+1 < this.model.rows.length && this.model.rows[row+1].depth > r.depth) {
+                        if (this.model.getDown(this.model.rows[row].node) !== undefined)    {
                             // has subtree => start below box
                             svg.appendChild(<line x1={i*sx+dx+(rs>>1)} y1={dy+rs} x2={i*sx+dx+(rs>>1)} y2={item_h} stroke="#000" />)
                         } else {

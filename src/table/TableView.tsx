@@ -285,6 +285,7 @@ export class TableView extends View {
 
       if (this.selectionModel !== undefined && this.selectionModel.row < event.index) {
         const cell = this.getCellAt(this.selectionModel.value.col, this.selectionModel.value.row)
+        console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
         this.inputOverlay.adjustToCell(cell)
       }
 
@@ -695,8 +696,11 @@ export class TableView extends View {
     this.setSelectionTo(pos)
 
     let editView = this.adapter.createEditor(pos.col, pos.row) as View // as HTMLElement
-    if (!editView)
+    // FIXME: call this.inputOverlay.setChild(editView) to hide inputOverlay?
+    if (!editView) {
+      this.inputOverlay.setChild(undefined)
       return
+    }
     this.editView = editView
     editView.classList.add("embedded")
     editView.onkeydown = (event: KeyboardEvent) => {
@@ -707,6 +711,7 @@ export class TableView extends View {
 
     const cell = this.getCellAt(pos.col, pos.row)
     setTimeout(() => {
+      console.log(`prepareInputOverlayForPosition: => this.inputOverlay.adjustToCell()`)
       this.inputOverlay.adjustToCell(cell)
       if (hadFocus)
         this.focus()

@@ -172,9 +172,7 @@ class MyNode implements TreeNode {
 
 class MyTreeAdapter extends TreeAdapter<MyNode> {
     displayCell(col: number, row: number): Node | undefined {       
-        if (!this.model)
-            return undefined
-        return this.treeCell(row, this.model.rows[row].node.label)
+        return this.model && this.treeCell(row, this.model.rows[row].node.label)
     }
 }
 TreeAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)

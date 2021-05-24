@@ -43,12 +43,14 @@ export class InputOverlay extends HTMLDivElement {
       div.style.opacity = "0"
     })
 
+    div.style.display = "none"
+
     div.setViewRect = InputOverlay.prototype.setViewRect
     div.setChild = InputOverlay.prototype.setChild
     div.adjustToCell = InputOverlay.prototype.adjustToCell
   }
 
-  setChild(fieldView: HTMLElement) {
+  setChild(fieldView: HTMLElement | undefined) {
     // avoid side effect of scrolling parent on safari
     const scrollableParent = findScrollableParent(this)
     let savedScrollLeft = 0, savedScrollTop = 0 
@@ -56,13 +58,19 @@ export class InputOverlay extends HTMLDivElement {
       [ savedScrollLeft, savedScrollTop ] = [ scrollableParent.scrollLeft, scrollableParent.scrollTop ]
  
     if (this.children.length === 0) {
-      this.appendChild(fieldView)
+      if (fieldView)
+        this.appendChild(fieldView)
     } else {
       if (dom.hasFocus(this.children[0])) {
         this.children[0].dispatchEvent(new FocusEvent("blur"))
       }
-      this.replaceChild(fieldView, this.children[0])
+      if (fieldView)
+        this.replaceChild(fieldView, this.children[0])
+      else
+        this.removeChild(this.children[0])
     }
+
+    this.style.display  = fieldView ? "" : "none"
 
     // restore scrollable parent
     if (scrollableParent !== undefined) {

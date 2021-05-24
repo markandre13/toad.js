@@ -612,6 +612,17 @@ describe("toad.js", function() {
                     expect(tree.rows[1].node.label).to.equal("#1")
                     expect(tree.rows[2].node.label).to.equal("#2")
                 })
+                xit("do not overlap tree cell with input div", function() {
+                    // 1st there's some list of events to reach this state
+                    // the input overlay should only be visible/placed when there is an editCell provided by the adapter
+                })
+                xit("fast open/close with mouse breaks table update", function() {
+                })
+
+                // close 0, open 0, 1 is drawn wrong
+                // the +/- is sometimes broken (looks like lower part of '+' leaves window)
+                // custom algorithm too scroll the whole table into view
+                // select tree row, followed by implementing TableTool tree buttons
             })
         })
     })
