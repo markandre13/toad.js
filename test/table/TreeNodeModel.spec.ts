@@ -48,7 +48,14 @@ describe("toad.js", function() {
                 console.log(`${ctx.test?.title}: ${reason} >>>>>>>>>>>`)
                 tree.root!.print()
                 for(let i in tree.rows) {
-                    console.log(`tree.rows[${i}]: depth = ${tree.rows[i].depth}, label='${tree.rows[i].node.label}'`)
+                    if (tree.rows[i] === undefined) {
+                        console.log(`tree.rows[${i}]: undefined`)
+                    } else
+                    if (tree.rows[i].node === undefined) {
+                        console.log(`tree.rows[${i}]: depth = ${tree.rows[i].depth}, node=undefined'`) 
+                    } else {
+                        console.log(`tree.rows[${i}]: depth = ${tree.rows[i].depth}, label='${tree.rows[i].node.label}'`)
+                    }
                 }
                 console.log(`${ctx.test?.title}: ${reason} <<<<<<<<<<<`)
             }
@@ -549,13 +556,13 @@ describe("toad.js", function() {
                     tree.addChildAfter(4)
                     tree.addSiblingAfter(0)
 
-                    expect(0).to.equal(tree.getVisibleChildCount(6))
-                    expect(0).to.equal(tree.getVisibleChildCount(5))
-                    expect(1).to.equal(tree.getVisibleChildCount(4))
-                    expect(0).to.equal(tree.getVisibleChildCount(3))
-                    expect(0).to.equal(tree.getVisibleChildCount(2))
-                    expect(2).to.equal(tree.getVisibleChildCount(1))
-                    expect(5).to.equal(tree.getVisibleChildCount(0))
+                    expect(tree.getVisibleChildCount(6)).to.equal(0)
+                    expect(tree.getVisibleChildCount(5)).to.equal(0)
+                    expect(tree.getVisibleChildCount(4)).to.equal(1)
+                    expect(tree.getVisibleChildCount(3)).to.equal(0)
+                    expect(tree.getVisibleChildCount(2)).to.equal(0)
+                    expect(tree.getVisibleChildCount(1)).to.equal(2)
+                    expect(tree.getVisibleChildCount(0)).to.equal(5)
 
                     // ├─ 0
                     // │  ├─ 1
@@ -563,11 +570,47 @@ describe("toad.js", function() {
                     // │     └─ 3
                     // └─ 4
                     tree.toggleAt(1)
-                    expect(0).to.equal(tree.getVisibleChildCount(4))
-                    expect(0).to.equal(tree.getVisibleChildCount(3))
-                    expect(1).to.equal(tree.getVisibleChildCount(2))
-                    expect(0).to.equal(tree.getVisibleChildCount(1))
-                    expect(3).to.equal(tree.getVisibleChildCount(0))
+                    expect(tree.getVisibleChildCount(4)).to.equal(0)
+                    expect(tree.getVisibleChildCount(3)).to.equal(0)
+                    expect(tree.getVisibleChildCount(2)).to.equal(1)
+                    expect(tree.getVisibleChildCount(1)).to.equal(0)
+                    expect(tree.getVisibleChildCount(0)).to.equal(3)
+                })
+                it("close removes rows, open adds rows", function() {
+                    // ├─ 0
+                    // │  ├─ 1
+                    // │  │  ├─ 2
+                    // │  │  └─ 3
+                    // │  └─ 4
+                    // │     └─ 5
+                    // └─ 6
+                    tree.addSiblingAfter(0)
+                    tree.addChildAfter(0)
+                    tree.addChildAfter(1)
+                    tree.addSiblingAfter(2)
+                    tree.addSiblingAfter(1)
+                    tree.addChildAfter(4)
+                    tree.addSiblingAfter(0)
+
+                    expect(tree.rows.length).to.equal(7)
+                    expect(tree.rows[1].open).to.equal(true)
+                    expect(tree.rows[1].node.label).to.equal("#1")
+                    expect(tree.rows[2].node.label).to.equal("#2")
+
+                    tree.toggleAt(1)
+
+                    expect(tree.rows.length).to.equal(5)
+                    expect(tree.rows[1].open).to.equal(false)
+                    expect(tree.rows[1].node.label).to.equal("#1")
+                    expect(tree.rows[2].node.label).to.equal("#4")
+
+                    tree.toggleAt(1)
+                    // dump(this, "xxx")
+
+                    expect(tree.rows.length).to.equal(7)
+                    expect(tree.rows[1].open).to.equal(true)
+                    expect(tree.rows[1].node.label).to.equal("#1")
+                    expect(tree.rows[2].node.label).to.equal("#2")
                 })
             })
         })

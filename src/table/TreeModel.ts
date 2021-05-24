@@ -20,24 +20,24 @@ import { TypedTableModel } from "./TypedTableModel"
 import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 
-class TreeModelRow<T> {
+class RowInfo<T> {
     node: T
     open: boolean
     depth: number
-    constructor(node: T, depth: number) {
+    constructor(node: T, depth: number, open = true) {
         this.node = node
         this.depth = depth
-        this.open = true
+        this.open = open
     }
 }
 
 export abstract class TreeModel<T> extends TypedTableModel<T> {
 
-    rows: Array<TreeModelRow<T>>
+    rows: Array<RowInfo<T>>
 
     constructor(nodeClass: new () => T) {
         super(nodeClass)
-        this.rows = new Array<TreeModelRow<T>>()
+        this.rows = new Array<RowInfo<T>>()
     }
 
     get colCount(): number { return 1 }
@@ -57,12 +57,12 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         if (this.rows.length === 0) { // TODO: can we remove this?
             row = 0
             this.setRoot(nn)
-            this.rows.push(new TreeModelRow(nn, 0))
+            this.rows.push(new RowInfo(nn, 0))
         } else {
             if (row === 0) {
                 this.setNext(nn, this.getRoot())
                 this.setRoot(nn)
-                this.rows.unshift(new TreeModelRow(nn, 0))
+                this.rows.unshift(new RowInfo(nn, 0))
             } else {
                 this.setNext(nn, this.rows[row].node)
                 if (this.getNext(this.rows[row - 1].node) === this.rows[row].node)
@@ -70,7 +70,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
 
                 else
                     this.setDown(this.rows[row - 1].node, nn)
-                this.rows.splice(row, 0, new TreeModelRow(nn, this.rows[row].depth))
+                this.rows.splice(row, 0, new RowInfo(nn, this.rows[row].depth))
             }
         }
         this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, 1))
@@ -82,7 +82,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         if (this.rows.length === 0) {
             row = 0
             this.setRoot(nn)
-            this.rows.push(new TreeModelRow(nn, 0))
+            this.rows.push(new RowInfo(nn, 0))
         } else {
             this.setNext(nn, this.getNext(this.rows[row].node))
             this.setNext(this.rows[row].node, nn)
@@ -91,7 +91,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             // console.log(`addSiblingAfter: subtree has ${count} nodes`)
             const depth = this.rows[row].depth
             row += count + 1
-            this.rows.splice(row, 0, new TreeModelRow(nn, depth))
+            this.rows.splice(row, 0, new RowInfo(nn, depth))
         }
         this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, 1))
         return row
@@ -101,7 +101,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         const nn = this.createNode()
         if (this.rows.length === 0) {
             this.setRoot(nn)
-            this.rows.push(new TreeModelRow(nn, 0))
+            this.rows.push(new RowInfo(nn, 0))
             this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, 0, 1))
         } else {
             const down = this.getDown(this.rows[row].node)
@@ -114,7 +114,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             this.setDown(nn, down)
             this.setDown(this.rows[row].node, nn)
 
-            this.rows.splice(row + 1, 0, new TreeModelRow(nn, this.rows[row].depth + 1))
+            this.rows.splice(row + 1, 0, new RowInfo(nn, this.rows[row].depth + 1))
             this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row + 1, 1))
         }
         return row
@@ -127,7 +127,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
                 ++this.rows[row + i].depth
             this.setDown(nn, this.getRoot())
             this.setRoot(nn)
-            this.rows.unshift(new TreeModelRow(nn, 0))
+            this.rows.unshift(new RowInfo(nn, 0))
         } else {
             const depth = this.rows[row].depth
             const subtreeSize = this.nodeCount(this.getDown(this.rows[row].node)) + 1
@@ -144,7 +144,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
 
             else
                 this.setDown(this.rows[row - 1].node, nn)
-            this.rows.splice(row, 0, new TreeModelRow(nn, depth))
+            this.rows.splice(row, 0, new RowInfo(nn, depth))
         }
         this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, 1))
         return row
@@ -209,6 +209,9 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         if (r.open || this.getDown(r.node) === undefined)
             return
         r.open = true
+        const newRows = this.createRowInfo(row)
+        this.rows.splice(row + 1, 0, ...newRows)
+        this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row+1, newRows.length))
         // console.log(`TreeModel.openAt(${row})`)
     }
 
@@ -221,6 +224,28 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         r.open = false
         this.rows.splice(row+1, count)
         this.modified.trigger(new TableEvent(TableEventType.REMOVE_ROW, row+1, count))
+    }
+
+    createRowInfo(row: number) {
+        const newRows = new Array<RowInfo<T>>()
+        // this.rows.splice(row, 0, new TreeModelRow(nn, depth))
+
+        let r = this.rows[row]
+        if (r.open && this.getDown(r.node)) {
+            this.createRowInfoHelper(newRows, this.getDown(r.node)!, r.depth + 1)
+        }
+
+        return newRows
+    }
+    private createRowInfoHelper(newRows: Array<RowInfo<T>>, node: T, depth: number) {
+        const rowInfo = new RowInfo(node, depth, false)
+        newRows.push(rowInfo)
+        if (rowInfo.open && this.getDown(node)) {
+            this.createRowInfoHelper(newRows, this.getDown(node)!, rowInfo.depth + 1)
+        }
+        if (this.getNext(node)) {
+            this.createRowInfoHelper(newRows, this.getNext(node)!, rowInfo.depth)
+        }
     }
 
     getVisibleChildCount(row: number): number {

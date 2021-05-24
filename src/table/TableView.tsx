@@ -247,6 +247,7 @@ export class TableView extends View {
     animate((animationTime: number): boolean => {
 
       // animation start: get the height needed for all rows from the hiddenSizeCheckTable
+      // FIXME: height is a little too much
       if (animationTime === 0) {
         for (let i = 0; i < event.size; ++i) {
           rowAnimationHeight += trBody[i].clientHeight + 3
