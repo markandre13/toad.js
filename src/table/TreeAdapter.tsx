@@ -64,21 +64,6 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
         if (this.model.getDown(r.node)) {
             // TODO: port Rectangle from workflow to toad.js
             const x0 = d*sx+dx
-            svg.onmousedown = (event: MouseEvent) => {
-                let r = svg.getBoundingClientRect()
-                const x = event.clientX-r.left
-                const y = event.clientY-r.top
-                event.preventDefault()
-                if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy+rs) {
-                    this.model?.toggleAt(row)
-                    if (this.model?.isOpen(row)) {
-                        // hide |
-                    } else {
-                        // show |
-                    }
-                    event.stopPropagation()
-                }
-            }
 
             // box
             const box = <rect
@@ -90,14 +75,33 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
             svg.appendChild(<line
                 x1={d*sx+dx+(rs>>2)} y1={dy+(rs>>1)} x2={d*sx+dx+rs-(rs>>2)} y2={dy+(rs>>1)}
                 stroke="#000" cursor="pointer"/>)
-            if (!r.open) {
-                // plus
-                svg.appendChild(<line
-                    x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)}
-                    stroke="#000" cursor="pointer"/>)
-            }
+
+            const plus = <line
+                x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)}
+                stroke="#000" cursor="pointer"/> as SVGLineElement
+            plus.style.display =  r.open ? "none" : ""
+            svg.appendChild(plus)
             // horizontal line to data
             svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#000" />)
+
+            svg.onmousedown = (event: MouseEvent) => {
+
+                // getCellPosition
+
+                let r = svg.getBoundingClientRect()
+                const x = event.clientX-r.left
+                const y = event.clientY-r.top
+                event.preventDefault()
+                if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy+rs) {
+                    this.model?.toggleAt(row) // TODO: this row number varies!!!
+                    // console.log(`toggled row ${row} to ${this.model!.isOpen(row)}`)
+                    if (this.model)
+                        plus.style.display =  this.model.isOpen(row) ? "none" : ""
+                    event.stopPropagation()
+                }
+            }
+
+
         } else {
             // upper vertical line instead of box
             svg.appendChild(<line x1={d*sx+dx+(rs>>1)} y1={dy} x2={d*sx+dx+(rs>>1)} y2={dy+(rs>>1)} stroke="#000" />)
