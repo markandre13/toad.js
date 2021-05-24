@@ -557,7 +557,17 @@ describe("toad.js", function() {
                     expect(2).to.equal(tree.getVisibleChildCount(1))
                     expect(5).to.equal(tree.getVisibleChildCount(0))
 
-                    // TO DO: close some sub trees and try again
+                    // ├─ 0
+                    // │  ├─ 1
+                    // │  └─ 2
+                    // │     └─ 3
+                    // └─ 4
+                    tree.toggleAt(1)
+                    expect(0).to.equal(tree.getVisibleChildCount(4))
+                    expect(0).to.equal(tree.getVisibleChildCount(3))
+                    expect(1).to.equal(tree.getVisibleChildCount(2))
+                    expect(0).to.equal(tree.getVisibleChildCount(1))
+                    expect(3).to.equal(tree.getVisibleChildCount(0))
                 })
             })
         })

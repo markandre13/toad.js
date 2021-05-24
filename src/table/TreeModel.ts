@@ -43,6 +43,15 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
     get colCount(): number { return 1 }
     get rowCount(): number { return this.rows.length }
 
+    getRow(node: T): number | undefined {
+        for (let i = 0; i < this.rows.length; ++i) {
+            if (this.rows[i].node === node) {
+                return i
+            }
+        }
+        return undefined
+    }
+
     addSiblingBefore(row: number): number {
         const nn = this.createNode()
         if (this.rows.length === 0) { // TODO: can we remove this?
