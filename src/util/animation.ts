@@ -12,11 +12,15 @@ export class AnimationBase {
 
     stop() {
         this._stop = true
+        if (this.animator?.current === this)
+            this.animator.current = undefined
     }
 
-    replace(animation: AnimationBase) { 
-        animation.prepare()
+    replace(animation: AnimationBase) {
         this.next = animation
+        this.animationFrame(1)
+        this.lastFrame()
+        animation.prepare()
     }
 
     prepare() { }
@@ -27,6 +31,7 @@ export class AnimationBase {
     protected _stop = false
     protected startTime!: number
     protected next?: AnimationBase
+    animator?: Animator
 
     protected requestAnimationFrame(callback: FrameRequestCallback): void {
         window.requestAnimationFrame(callback)
@@ -41,8 +46,6 @@ export class AnimationBase {
 
     @bind protected _animationFrame(time: number) {
         if (this.next) {
-            this.animationFrame(1)
-            this.lastFrame()
             this.next._firstFrame(time)
             return
         }
@@ -59,10 +62,28 @@ export class AnimationBase {
             this.requestAnimationFrame(this._animationFrame.bind(this))
         } else {
             this.lastFrame()
+            if (this.animator?.current === this)
+                this.animator.current = undefined
         }
     }
 
     protected ease(k: number): number {
         return 0.5 * (1 - Math.cos(Math.PI * k))
+    }
+}
+
+// FIXME: no tests
+export class Animator {
+    current?: AnimationBase
+    run(animation: AnimationBase) {
+        const current = this.current
+        this.current = animation
+        animation.animator = this
+        if (current) {
+            current.animator = undefined
+            current.replace(animation)
+        } else {
+            animation.start()
+        }
     }
 }

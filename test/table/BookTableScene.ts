@@ -154,7 +154,7 @@ export class BookTableScene {
     }
 
     expectInputOverlayAt(col: number, row: number) {
-        const currentOverlayRect = {
+        const c = {
             top: this.table.inputOverlay.style.top,
             left: this.table.inputOverlay.style.left,
             width: this.table.inputOverlay.style.width,
@@ -162,13 +162,13 @@ export class BookTableScene {
         }
         const cell = this.table.getCellAt(col, row)
         this.table.inputOverlay.adjustToCell(cell)
-        const expectedOverlayRect = {
+        const e = {
             top: this.table.inputOverlay.style.top,
             left: this.table.inputOverlay.style.left,
             width: this.table.inputOverlay.style.width,
             height: this.table.inputOverlay.style.height
         }
-        expect(currentOverlayRect).to.deep.equal(expectedOverlayRect)
+        expect(c, `expected (${e.left}, ${e.top}, ${e.width}, ${e.height}), got (${c.left}, ${c.top}, ${c.width}, ${c.height})`).to.deep.equal(e)
     }
 }
 

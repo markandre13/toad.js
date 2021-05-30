@@ -73,17 +73,17 @@ describe("toad.js", function () {
                 expect(b.trace.length).to.equal(0)
 
                 a.replace(b)
-                
-                expect(a.trace.length).to.equal(7)
-
-                expect(b.trace.length).to.equal(1)
-                expect(b.trace[0]).to.equal("prepare()")
-
-                a.callback(1000 + AnimationBase.animationFrameCount * 3/4)
 
                 expect(a.trace.length).to.equal(9)
                 expect(a.trace[7]).to.equal("animationFrame(1.00)")
                 expect(a.trace[8]).to.equal("lastFrame()")
+
+                // FIXME: need to check that prepare() is called after lastFrame()
+                expect(b.trace.length).to.equal(1)
+                expect(b.trace[0]).to.equal("prepare()")
+
+                a.callback(1000 + AnimationBase.animationFrameCount * 3/4)
+                expect(a.trace.length).to.equal(9)
 
                 expect(b.trace.length).to.equal(4)
                 expect(b.trace[1]).to.equal("firstFrame()")

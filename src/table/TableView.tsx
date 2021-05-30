@@ -37,7 +37,7 @@ import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 import { tableStyle } from "./tableStyle"
 import { InputOverlay } from "./InputOverlay"
-import { AnimationBase } from '@toad/util/animation'
+import { AnimationBase, Animator } from '@toad/util/animation'
 
 /*
  * rootDiv (div.root, onkeydown)
@@ -135,6 +135,7 @@ export class TableView extends View {
         return
       }
       if ((event.target as HTMLElement).tagName !== "TD") {
+        // FIXME: if the element is inside a TD, go up
         console.log(`bodyTable.onmousedown() -> target is not TD but ${(event.target as HTMLElement).tagName}`)
         return
       }
@@ -208,15 +209,15 @@ export class TableView extends View {
     throw Error("TableView.setModel(): unexpected model of type " + model.constructor.name)
   }
 
+  animator = new Animator()
+
   modelChanged(event: TableEvent) {
     switch (event.type) {
       case TableEventType.INSERT_ROW:
-        const insert = new InsertRowAnimation(this, event)
-        insert.start()
+        this.animator.run(new InsertRowAnimation(this, event))
         break
       case TableEventType.REMOVE_ROW:
-        const remove = new RemoveRowAnimation(this, event)
-        remove.start()
+        this.animator.run(new RemoveRowAnimation(this, event))
         break
       case TableEventType.CELL_CHANGED:
         this.onFieldViewBlur(new TablePos(event.col, event.row))
@@ -546,7 +547,7 @@ export class TableView extends View {
     this.prepareInputOverlayForPosition(this.getCellPosition(cell))
   }
 
-  protected prepareInputOverlayForPosition(pos: TablePos) {
+  prepareInputOverlayForPosition(pos: TablePos) {
     if (!this.adapter)
       return
 
@@ -909,7 +910,7 @@ class InsertRowAnimation extends AnimationBase {
       this.table.selectionModel.row += this.event.size
     }
 
-    if (this.table.selectionModel !== undefined && this.table.selectionModel.row < this.event.index) {
+    if (this.table.editView && this.table.selectionModel !== undefined && this.table.selectionModel.row < this.event.index) {
       const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
       // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
       this.table.inputOverlay.adjustToCell(cell)
@@ -961,15 +962,14 @@ class RemoveRowAnimation extends AnimationBase {
       this.trBody.removeChild(this.trBody.children[0])
 
     if (this.event.index + this.event.size >= this.table.model!.rowCount + this.event.size) {
-      this.stop()
       // skip animation when deleting last rows
+      this.stop()
+
       if (this.table.selectionModel && this.event.index > 0)
         this.table.selectionModel.row = this.event.index - 1
 
-      // for (let i = 0; i < event.size; ++i) {
       this.table.rowHeadHead.deleteRow(this.event.index)
       this.table.bodyBody.deleteRow(this.event.index + 1)
-      // }
 
       this.table.inputOverlay.style.display = ""
       if (this.hadFocus)
@@ -986,10 +986,14 @@ class RemoveRowAnimation extends AnimationBase {
     this.table.rowHeadHead.deleteRow(this.event.index)
     this.table.bodyBody.deleteRow(this.event.index + 1)
 
-    if (this.table.selectionModel !== undefined && this.table.selectionModel.row < this.event.index) {
-      const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
-      // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
-      this.table.inputOverlay.adjustToCell(cell)
+    if (this.table.editView && this.table.selectionModel !== undefined && this.table.selectionModel.row <= this.event.index) {
+      if (this.table.selectionModel.row >= this.event.index + this.event.size) {
+        // FIXME: there's no test for this branch
+        const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
+        this.table.inputOverlay.adjustToCell(cell)
+      } else {
+        this.table.prepareInputOverlayForPosition(this.table.selectionModel.value)
+      }
     }
 
     setTimeout(() => {

@@ -1,7 +1,7 @@
 import { expect, use } from "chai"
 use(require('chai-subset'))
 
-import { TextView } from "@toad"
+import { TextView, TableView, TableAdapter, TreeNode, TreeNodeModel, TreeAdapter, bind, unbind } from "@toad"
 import { findScrollableParent, isScrollable } from "@toad/scrollIntoView"
 import { BookTableScene, Book } from "./BookTableScene"
 
@@ -248,11 +248,17 @@ describe("toad.js", function() {
                     scene.mouseDownAtCell(0, 3)
                     await scene.sleep(1)
 
+                    let textView = scene.table.editView as TextView
+                    expect(textView.value).to.equal("Rendezvous with Rama")
+
                     scene.clickTableToolDeleteRow()
                     await scene.sleep()
 
                     // selection hasn't changed
                     expect(scene.selectionModel.row).to.equal(3) // FIXME: separate test
+
+                    textView = scene.table.editView as TextView
+                    expect(textView.value).to.equal("2001: A Space Odyssey")
 
                     scene.expectInputOverlayAt(0, 3)
                     expect(document.activeElement).to.equal(scene.table)
@@ -330,9 +336,88 @@ describe("toad.js", function() {
                     // expect scroll x to be at that field
                     scene.expectScrollAt(expectedScrollX[7], 0)
                 })
+
+                it("don't mess up when opening/closing a tree view very fast", async function() {
+                    const scene = new TreeViewScene()
+
+                    scene.mouseDownAtCell(0, 0)
+                    await scene.sleep(0)
+
+                    scene.mouseDownAtCell(0, 0)
+                    await scene.sleep()
+
+                    // this caused an exception earlier, additionally check the the numbers of visible rows
+                })
             })
+            
         })
     })
 })
 
+class MyNode implements TreeNode {
+    label: string
+    next?: MyNode
+    down?: MyNode
+    static counter = 0
+    constructor() {
+        this.label = `#${MyNode.counter++}`
+    }
+}
 
+class MyTreeAdapter extends TreeAdapter<MyNode> {
+    override displayCell(col: number, row: number): Node | undefined {       
+        return this.model && this.treeCell(row, this.model.rows[row].node.label)
+    }
+}
+
+class TreeViewScene {
+    table: TableView
+    tree: TreeNodeModel<MyNode>
+
+    constructor() {
+
+        // setAnimationFrameCount(0)
+        unbind()
+        TableAdapter.unbind()
+        document.body.innerHTML = ""
+
+        let tree = new TreeNodeModel(MyNode)
+        tree.addSiblingAfter(0)
+        tree.addChildAfter(0)
+        tree.addChildAfter(1)
+        tree.addSiblingAfter(2)
+        tree.addSiblingAfter(1)
+        tree.addChildAfter(4)
+        tree.addSiblingAfter(0)
+        bind("tree", tree)
+        this.tree = tree
+
+        TableAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
+
+        document.body.innerHTML = `<toad-tabletool></toad-tabletool><toad-table model="tree"></toad-table>`
+        this.table = document.body.children[1] as TableView
+        expect(this.table.tagName).to.equal("TOAD-TABLE")
+    }
+
+    sleep(milliseconds: number = 500) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve('success')
+            }, milliseconds)
+        })
+    }
+
+    mouseDownAtCell(col: number, row: number) {
+        const cell = this.table.getCellAt(col, row)!
+        const svg = cell.children[0] as SVGSVGElement
+        let bounds = svg.getBoundingClientRect()
+        const e = new MouseEvent("mousedown", {
+            bubbles: true,
+            clientX: bounds.left + 10,
+            clientY: bounds.top + 10,
+            relatedTarget: svg
+        })
+        // console.log("dispatch mousedown")
+        svg.dispatchEvent(e)
+    }
+}

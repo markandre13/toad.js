@@ -80,20 +80,19 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
             svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#000" />)
 
             svg.onmousedown = (event: MouseEvent) => {
-                console.log(`TreeAdapter: onmousedown`)
                 event.preventDefault()
                 if (this.model === undefined) {
                     console.log("  ==> no model")
                     return
                 }
 
-                let rowNumber = this.model.getRow(r.node)
+                const rowNumber = this.model.getRow(r.node)
                 if (rowNumber === undefined) {
                     console.log("  ==> couldn't find row number for node")
                     return
                 }
                                 
-                let bounds = svg.getBoundingClientRect()
+                const bounds = svg.getBoundingClientRect()
                 const x = event.clientX - bounds.left
                 const y = event.clientY - bounds.top
                 if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy+rs) {
@@ -101,8 +100,6 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
                     // console.log(`toggled row ${row} to ${this.model!.isOpen(row)}`)
                     plus.style.display =  this.model.isOpen(rowNumber) ? "none" : ""
                     event.stopPropagation()
-                } else {
-                    console.log("==> mouse not inside open/close box")
                 }
             }
 
