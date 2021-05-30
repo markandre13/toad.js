@@ -244,27 +244,25 @@ export class TableView extends View {
     const trAnimationBody = <tr style={{height: '0px'}}/>
     this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
    
-    let rowAnimationHeight = 0
-    animate((animationTime: number): boolean => {
-
-      // animation start: get the height needed for all rows from the hiddenSizeCheckTable
-      // FIXME: height is a little too much
-      if (animationTime === 0) {
+    const a = new (class extends AnimationBase {
+      table: TableView
+      rowAnimationHeight = 0
+      constructor(table: TableView) {
+        super()
+        this.table = table
+      }
+      override firstFrame() {
         for (let i = 0; i < event.size; ++i) {
-          rowAnimationHeight += trBody[i].clientHeight + 3
+          this.rowAnimationHeight += trBody[i].clientHeight + 3
         }
-        this.rowAnimationHeight = rowAnimationHeight
-      } else
-
-      // animation: increase row height
-      if (animationTime < 1) {
-        const rowHeight = `${Math.round(animationTime * rowAnimationHeight)}px`
+        this.table.rowAnimationHeight = this.rowAnimationHeight
+      }
+      override animationFrame(animationTime: number) {
+        const rowHeight = `${Math.round(animationTime * this.rowAnimationHeight)}px`
         trAnimationHead.style.height = rowHeight
         trAnimationBody.style.height = rowHeight
-      } else 
-      
-      // animation end: replace animation row with final row
-      {
+      }
+      override lastFrame() {
         for (let i = 0; i < event.size; ++i) {
           const rowHeight = `${trBody[i].clientHeight + 3}px`
           const bodyStyle = trHead[i].style
@@ -272,26 +270,25 @@ export class TableView extends View {
           const headStyle = trHead[i].style
           headStyle.height = headStyle.minHeight = headStyle.maxHeight = rowHeight
         }
-        this.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
-        this.bodyBody.replaceChild(trBody[0], trAnimationBody)
+        this.table.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
+        this.table.bodyBody.replaceChild(trBody[0], trAnimationBody)
         for (let i = 1; i < event.size; ++i) {
-          this.rowHeadHead.insertBefore(trHead[i], trHead[i - 1].nextSibling)
-          this.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
+          this.table.rowHeadHead.insertBefore(trHead[i], trHead[i - 1].nextSibling)
+          this.table.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
         }
 
-        if (this.selectionModel !== undefined && this.selectionModel.row >= event.index) {
-          this.selectionModel.row += event.size
+        if (this.table.selectionModel !== undefined && this.table.selectionModel.row >= event.index) {
+          this.table.selectionModel.row += event.size
+        }
+
+        if (this.table.selectionModel !== undefined && this.table.selectionModel.row < event.index) {
+          const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
+          // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
+          this.table.inputOverlay.adjustToCell(cell)
         }
       }
-
-      if (this.selectionModel !== undefined && this.selectionModel.row < event.index) {
-        const cell = this.getCellAt(this.selectionModel.value.col, this.selectionModel.value.row)
-        // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
-        this.inputOverlay.adjustToCell(cell)
-      }
-
-      return true
-    })
+    })(this)
+    a.start()
   }
 
   updateViewAfterRemoveRow(event: TableEvent) {
