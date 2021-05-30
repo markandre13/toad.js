@@ -17,7 +17,8 @@
  */
 
 import { Model } from "../model/Model"
-import { TableEditMode, TablePos } from "./table"
+import { TableEditMode } from "./TableEditMode"
+import { TablePos } from "./TablePos"
 
 // FIXME: also needed is a model for range and 'random' selections
 
