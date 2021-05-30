@@ -68,7 +68,7 @@ export class ButtonView extends ActionView {
     this.shadowRoot!.appendChild(this.button)
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback()
     if (this.children.length===0) {
       // Chrome, Opera invoke connectedCallback() before the children are conected

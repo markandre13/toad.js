@@ -38,10 +38,10 @@ describe("toad.js", function() {
             }
             class MyTableAdapter extends TableAdapter {
                 model?: MyTableModel
-                setModel(model: TableModel): void {
+                override setModel(model: TableModel): void {
                     this.model = model as MyTableModel
                 }
-                getColumnHead(col: number): Node | undefined { 
+                override getColumnHead(col: number): Node | undefined { 
                     switch(col) {
                         case 0: return document.createTextNode("Title")
                         case 1: return document.createTextNode("Author")
@@ -49,12 +49,12 @@ describe("toad.js", function() {
                     }
                     return undefined
                 }              
-                displayCell(col: number, row: number): Node | undefined {
+                override displayCell(col: number, row: number): Node | undefined {
                     if (!this.model)
                         return undefined
                     return document.createTextNode(this.model.data[row][col])
                 }
-                createEditor(col: number, row: number): Node | undefined {
+                override createEditor(col: number, row: number): Node | undefined {
                     if (!this.model)
                         return undefined
                     const model = new TextModel(this.model.data[row][col])

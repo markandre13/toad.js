@@ -31,7 +31,7 @@ export abstract class ActionView extends GenericView<TextModel> {
     super()
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     if (this.controller) {
       this.updateView()
       return
@@ -52,13 +52,13 @@ export abstract class ActionView extends GenericView<TextModel> {
     this.updateView()
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback()
     if (this.controller)
       this.controller.unregisterView(this)
   }
 
-  setModel(model?: Model): void {
+  override setModel(model?: Model): void {
     if (!model) {
       if (this.model)
         this.model.modified.remove(this)

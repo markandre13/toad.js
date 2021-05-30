@@ -30,7 +30,7 @@ export class OptionModel<T> extends OptionModelBase {
     this._map.set(id, value)
   }
 
-  isValidStringValue(stringValue: string): boolean {
+  override isValidStringValue(stringValue: string): boolean {
     return this._map.has(stringValue)
   }
 

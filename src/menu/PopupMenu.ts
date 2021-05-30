@@ -22,8 +22,8 @@ import { MenuButtonContainer } from "./MenuButtonContainer"
 
 export class PopupMenu extends MenuButtonContainer {
   root: MenuNode
-  vertical: boolean
-  parentButton: MenuButton
+  // vertical: boolean
+  // parentButton: MenuButton
   popup: HTMLElement
 
   constructor(root: MenuNode, parent: MenuButton) {
@@ -50,11 +50,11 @@ export class PopupMenu extends MenuButtonContainer {
 
 
   show() {
-    if (!this.parentButton.master!.vertical)
-      placePopupVertical(this.parentButton, this.popup)
+    if (!this.parentButton!.master!.vertical)
+      placePopupVertical(this.parentButton!, this.popup)
 
     else
-      placePopupHorizontal(this.parentButton, this.popup)
+      placePopupHorizontal(this.parentButton!, this.popup)
     this.style.display = ""
   }
 

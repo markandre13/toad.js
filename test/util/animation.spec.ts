@@ -6,12 +6,12 @@ class TestAnimation extends AnimationBase {
     callback!: FrameRequestCallback
     trace: string[] = []
 
-    prepare() { this.trace.push("prepare()") }
-    firstFrame() { this.trace.push("firstFrame()") }
-    animationFrame(value: number) {this.trace.push(`animationFrame(${value.toFixed(2)})`) }
-    lastFrame() { this.trace.push("lastFrame()") }
+    override prepare() { this.trace.push("prepare()") }
+    override firstFrame() { this.trace.push("firstFrame()") }
+    override animationFrame(value: number) {this.trace.push(`animationFrame(${value.toFixed(2)})`) }
+    override lastFrame() { this.trace.push("lastFrame()") }
 
-    requestAnimationFrame(callback: FrameRequestCallback): void {
+    override requestAnimationFrame(callback: FrameRequestCallback): void {
         this.trace.push("requestAnimationFrame()")
         this.callback = callback
     }

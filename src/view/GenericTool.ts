@@ -104,13 +104,13 @@ export abstract class GenericTool<T extends Model> extends View {
         }
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         super.connectedCallback()
         // console.log("GenericTool: connected")
         GenericTool.allTools.add(this)
     }
 
-    disconnectedCallback() {
+    override disconnectedCallback() {
         if (GenericTool.activeTool === this) {
             GenericTool.setActive(undefined, undefined)
         }

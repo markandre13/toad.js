@@ -33,7 +33,7 @@ const item_h = 20 // height of row
 export class TreeAdapter<T> extends TypedTableAdapter<T> {
     model?: TreeModel<T>
 
-    isViewCompact(): boolean { return true }
+    override isViewCompact(): boolean { return true }
 
     // TODO: the adapter might want to override the number of columns and rows
     // ie. in case a column has different representations, ie. text field, slider, graphic, etc.
@@ -41,7 +41,7 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
     // TODO: the adapter might want to tweak the table's style sheet
 
     // TODO: can we make this a strict runtime check for M and T???
-    setModel(model: TableModel): void {
+    override setModel(model: TableModel): void {
         if (!(model instanceof TreeModel))
             throw Error(`model is not of type TreeModel<T>`)
         // if (model.nodeClass instanceof T)

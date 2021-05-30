@@ -52,10 +52,10 @@ export class TextView extends GenericView<TextModel> {
     this.shadowRoot!.appendChild(this.input)
   }
   
-  focus() {
+  override focus() {
     this.input.focus()
   }
-  blur() {
+  override blur() {
     this.input.blur()
   }
   

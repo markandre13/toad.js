@@ -12,6 +12,7 @@
         "@toad/*": ["src/*"]
     },
     "experimentalDecorators": true,
+    "noImplicitOverride": true,
     "strict": true,
     "strictNullChecks": true,
     "allowJs": false,

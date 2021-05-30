@@ -204,7 +204,7 @@ export class MenuButton extends GenericView<TextModel> {
       this.shadowRoot.appendChild(document.createTextNode(node.label))
   }
 
-  connectedCallback() {
+  override connectedCallback() {
     if (this.controller)
       return
 
@@ -227,12 +227,12 @@ export class MenuButton extends GenericView<TextModel> {
 
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     if (this.controller)
       this.controller.unregisterView(this)
   }
 
-  setModel(model?: Model): void {
+  override setModel(model?: Model): void {
     if (!model) {
       if (this.action)
         this.action.modified.remove(this)

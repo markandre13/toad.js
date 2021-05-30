@@ -196,11 +196,11 @@ class BookTableModel extends ArrayTableModel<Book> {
 class BookTableAdapter extends TableAdapter {
     model?: BookTableModel
 
-    setModel(model: BookTableModel) {
+    override setModel(model: BookTableModel) {
         this.model = model
     }
 
-    getColumnHead(col: number): Node | undefined {
+    override getColumnHead(col: number): Node | undefined {
         switch (col) {
             case 0: return document.createTextNode("Title")
             case 1: return document.createTextNode("Author")
@@ -209,18 +209,18 @@ class BookTableAdapter extends TableAdapter {
         return document.createTextNode("x")
     }
 
-    getRowHead(row: number) {
+    override getRowHead(row: number) {
         return document.createTextNode(`${row}`)
     }
 
-    displayCell(col: number, row: number): Node | undefined {
+    override displayCell(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined
         return document.createTextNode(text)
     }
 
-    createEditor(col: number, row: number): Node | undefined {
+    override createEditor(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined

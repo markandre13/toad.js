@@ -31,6 +31,7 @@ module.exports = (config) => {
           "@toad": [ "src/toad" ],
           "@toad/*": [ "src/*" ]
         },
+        "noImplicitOverride": true,
         "strict": true,
         "allowJs": false,
         "noImplicitAny": true,

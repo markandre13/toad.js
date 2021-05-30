@@ -37,6 +37,7 @@ import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 import { tableStyle } from "./tableStyle"
 import { InputOverlay } from "./InputOverlay"
+import { AnimationBase } from '@toad/util/animation'
 
 /*
  * rootDiv (div.root, onkeydown)
@@ -741,7 +742,7 @@ export class TableView extends View {
   /*
    * set focus
    */
-  focus() {
+  override focus() {
     const { x, y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
     if (this.editView) {
       this.editView.focus({ preventScroll: true })
@@ -956,7 +957,7 @@ export class TableView extends View {
 
   private resizeEventListener?: EventListener
 
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback()
     this.resizeEventListener = () => {
       try {
@@ -977,7 +978,7 @@ export class TableView extends View {
     }
   }
 
-  disconnectedCallback() {
+  override disconnectedCallback() {
     window.removeEventListener("resize", this.resizeEventListener!)
   }
 }

@@ -79,7 +79,7 @@ export class ToolButton extends GenericView<OptionModelBase> {
         return value
     }
 
-    connectedCallback() {
+    override connectedCallback() {
         super.connectedCallback()
         if (this.model === undefined)
             this.setAttribute("disabled", "")

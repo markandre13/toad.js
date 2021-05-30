@@ -205,15 +205,15 @@ class VHTModel extends ArrayTableModel<VariableHeightThingy> {
 class VHTTableAdapter extends TableAdapter {
     model?: VHTModel
 
-    setModel(model: VHTModel) {
+    override setModel(model: VHTModel) {
         this.model = model
     }
 
-    getColumnHead(col: number): Node | undefined {
+    override getColumnHead(col: number): Node | undefined {
         return document.createTextNode("Thing")
     }
 
-    displayCell(col: number, row: number): Node | undefined { 
+    override displayCell(col: number, row: number): Node | undefined { 
         if (!this.model)
             return undefined
         const height = this.model.data[row].height
@@ -225,7 +225,7 @@ class VHTTableAdapter extends TableAdapter {
         return div
     }
 
-    createEditor(col: number, row: number): Node | undefined {
+    override createEditor(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined
