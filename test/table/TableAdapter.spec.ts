@@ -3,7 +3,7 @@ use(require('chai-subset'))
 
 import {
     TableAdapter, TypedTableAdapter, TableModel, TreeNodeModel, TreeNode
-} from "../../src/toad"
+} from "@toad"
 
 describe("toad.js", function () {
     describe("table", function () {

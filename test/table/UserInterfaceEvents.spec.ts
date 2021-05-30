@@ -1,8 +1,8 @@
 import { expect, use } from "chai"
 use(require('chai-subset'))
 
-import { TextView } from "../../src/toad"
-import { findScrollableParent, isScrollable } from "../../src/scrollIntoView"
+import { TextView } from "@toad"
+import { findScrollableParent, isScrollable } from "@toad/scrollIntoView"
 import { BookTableScene, Book } from "./BookTableScene"
 
 describe("toad.js", function() {

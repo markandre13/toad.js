@@ -5,9 +5,9 @@ import {
     TableView, TableModel, TableEditMode, 
     SelectionModel, TextView, TextModel, 
     bind, unbind, TableAdapter
-} from "../../src/toad"
+} from "@toad"
 
-import { setAnimationFrameCount } from "../../src/scrollIntoView"
+import { setAnimationFrameCount } from "@toad/scrollIntoView"
 
 describe("toad.js", function() {
     describe("table", function() {

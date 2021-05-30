@@ -6,6 +6,12 @@
     "declaration": false,
     "lib": [ "es6", "dom", "dom.iterable" ],
     "jsx": "react",
+    "baseUrl": ".",
+    "paths": {
+        "@toad": ["src/toad"],
+        "@toad/*": ["src/*"]
+    },
+    "experimentalDecorators": true,
     "strict": true,
     "strictNullChecks": true,
     "allowJs": false,

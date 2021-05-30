@@ -28,8 +28,8 @@ module.exports = (config) => {
         "traceResolution": false,
         "baseUrl": ".",
         "paths": {
-          "toad.js": [ "src/toad" ],
-          "toad.js/*": [ "src/*" ]
+          "@toad": [ "src/toad" ],
+          "@toad/*": [ "src/*" ]
         },
         "strict": true,
         "allowJs": false,

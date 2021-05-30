@@ -124,9 +124,9 @@ tableStyle.textContent = `
 
 .inputDiv { 
   position: relative;
-  background: #fff;
+  background: #f00;
   border: none;
-  opacity: 0;
+  opacity: 0.5;
 }
 
 .hiddenSizeCheck {

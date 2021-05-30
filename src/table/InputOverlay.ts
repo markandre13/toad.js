@@ -40,7 +40,7 @@ export class InputOverlay extends HTMLDivElement {
     })
 
     div.addEventListener("focusout", (event: FocusEvent) => {
-      div.style.opacity = "0"
+      div.style.opacity = "0.5"
     })
 
     div.style.display = "none"

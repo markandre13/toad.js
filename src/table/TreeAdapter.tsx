@@ -72,14 +72,12 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
             // minus
             svg.appendChild(<line x1={d*sx+dx+(rs>>2)} y1={dy+(rs>>1)} x2={d*sx+dx+rs-(rs>>2)} y2={dy+(rs>>1)} stroke="#000" cursor="pointer"/>)
 
-            const plus = <line
-                x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)}
-                stroke="#f00" cursor="pointer"/> as SVGLineElement
+            const plus = <line x1={d*sx+dx+(rs>>1)} y1={dy+(rs>>2)} x2={d*sx+dx+(rs>>1)} y2={dy+rs-(rs>>2)} stroke="#000" cursor="pointer"/>
             plus.style.display =  r.open ? "none" : ""
             svg.appendChild(plus)
 
             // horizontal line to data
-            svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#f80" />)
+            svg.appendChild(<line x1={d*sx+dx+rs} y1={dy+(rs>>1)} x2={d*sx+dx+rs+rx} y2={dy+(rs>>1)} stroke="#000" />)
 
             svg.onmousedown = (event: MouseEvent) => {
                 console.log(`TreeAdapter: onmousedown`)

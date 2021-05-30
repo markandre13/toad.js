@@ -1,6 +1,6 @@
 import { expect } from "chai"
-import * as dom from "toad.js/dom"
-import { MenuButton, CheckboxView, Signal, Model, TextModel, BooleanModel, NumberModel, bind, unbind, action, globalController } from "toad.js"
+import * as dom from "@toad/dom"
+import { MenuButton, action, globalController } from "@toad"
 
 describe("toad.js", function() {
 

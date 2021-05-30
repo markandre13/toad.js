@@ -3,7 +3,7 @@ use(require('chai-subset'))
 
 import { 
     TextModel, TreeNodeModel, TableEvent, TableEventType
-} from "../../src/toad"
+} from "@toad"
 
 describe("toad.js", function() {
     describe("table", function() {
@@ -615,13 +615,29 @@ describe("toad.js", function() {
                 xit("do not overlap tree cell with input div", function() {
                     // 1st there's some list of events to reach this state
                     // the input overlay should only be visible/placed when there is an editCell provided by the adapter
+
+                    // to ease debugging, code has been tweak to use opacity 0.5 instead of 0 and a red background
+                    // was reproduced by opening/closing row 0 very fast, then clicking in 4?
+                    // animateStep -> replaceChild gives: NotFoundError: The object can not be found here
+                    // 30 updateViewAfterInsertRow: adjustToCell() messages
+                    // haven't I done something with the display option as it's visible...?
+                    // can i make the input overlay transparent for input too? what the heck am i doing here anyway?
+
+                    // here's an idea for the animation: put it into an object, add a replace() method to it,
+                    // which will jump to the animations and on the next animation frame and jump into the animation
+                    // provided by the next animation. we could also use the earlier animations number of steps already
+                    // passed to use them for the duration of the next animation. (which is for the key up/down stuff)
                 })
                 xit("fast open/close with mouse breaks table update", function() {
                 })
+                // cursor up & down should just skip the animation if it ain't fast enough or
+                // adjust the scroll speed dynamically (whew! over-engineering)
 
-                // close 0, open 0, 1 is drawn wrong
-                // the +/- is sometimes broken (looks like lower part of '+' leaves window)
-                // custom algorithm too scroll the whole table into view
+                // we have a related issues here with the open/close animation...
+
+                // if a new animation comes up, just skip to it's end?
+
+                // custom algorithm to scroll the whole table into view as the built-in ones ain't nice
                 // select tree row, followed by implementing TableTool tree buttons
             })
         })

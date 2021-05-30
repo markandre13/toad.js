@@ -2,4 +2,7 @@ node_modules
 coverage
 lib
 js
+docs/main.js
+docs/main.js.map
+.DS_Store
 *~

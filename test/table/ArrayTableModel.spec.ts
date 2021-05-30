@@ -1,7 +1,7 @@
 import { expect, use } from "chai"
 use(require('chai-subset'))
 
-import { TableEvent, TableEventType } from "../../src/toad"
+import { TableEvent, TableEventType } from "@toad"
 import { BookTableScene, Book } from "./BookTableScene"
 
 describe("toad.js", function() {

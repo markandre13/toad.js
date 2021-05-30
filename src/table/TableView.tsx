@@ -285,7 +285,7 @@ export class TableView extends View {
 
       if (this.selectionModel !== undefined && this.selectionModel.row < event.index) {
         const cell = this.getCellAt(this.selectionModel.value.col, this.selectionModel.value.row)
-        console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
+        // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
         this.inputOverlay.adjustToCell(cell)
       }
 
@@ -711,7 +711,7 @@ export class TableView extends View {
 
     const cell = this.getCellAt(pos.col, pos.row)
     setTimeout(() => {
-      console.log(`prepareInputOverlayForPosition: => this.inputOverlay.adjustToCell()`)
+      // console.log(`prepareInputOverlayForPosition: => this.inputOverlay.adjustToCell()`)
       this.inputOverlay.adjustToCell(cell)
       if (hadFocus)
         this.focus()

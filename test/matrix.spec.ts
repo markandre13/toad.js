@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { Matrix } from "../src/Matrix"
+import { Matrix } from "@toad"
 
 describe("toad.js", function () {
     describe("matrix", () => {
