@@ -95,6 +95,20 @@ describe("toad.js", function () {
                 expect(b.trace[4]).to.equal("animationFrame(0.15)")
                 expect(b.trace[5]).to.equal("requestAnimationFrame()")
             })
+
+            it("stop() called from prepare() will skip the animation", function() {
+                const a = new class extends TestAnimation {
+                    override prepare() {
+                        super.prepare()
+                        this.stop()
+                    }
+                }
+
+                a.start()
+
+                expect(a.trace.length).to.equal(1)
+                expect(a.trace[0]).to.equal("prepare()")
+            })
         })
     })
 })

@@ -5,7 +5,13 @@ export class AnimationBase {
 
     start() {
         this.prepare()
+        if (this._stop === true)
+            return
         this.requestAnimationFrame(this._firstFrame)
+    }
+
+    stop() {
+        this._stop = true
     }
 
     replace(animation: AnimationBase) { 
@@ -18,6 +24,7 @@ export class AnimationBase {
     animationFrame(value: number) { }
     lastFrame() { }
 
+    protected _stop = false
     protected startTime!: number
     protected next?: AnimationBase
 

@@ -211,155 +211,16 @@ export class TableView extends View {
   modelChanged(event: TableEvent) {
     switch (event.type) {
       case TableEventType.INSERT_ROW:
-        this.updateViewAfterInsertRow(event)
+        const insert = new InsertRowAnimation(this, event)
+        insert.start()
         break
       case TableEventType.REMOVE_ROW:
-        this.updateViewAfterRemoveRow(event)        
+        const remove = new RemoveRowAnimation(this, event)
+        remove.start()
         break
       case TableEventType.CELL_CHANGED:
         this.onFieldViewBlur(new TablePos(event.col, event.row))
-        break;
-    }
-  }
-
-  updateViewAfterInsertRow(event: TableEvent) {
-    // console.log(`TableView.updateViewAfterInsertRow(): insert row ${event.index}`)
-
-    // create new rows and add them to the hiddenSizeCheckTable for measuring
-    const trHead: Array<HTMLTableRowElement> = []
-    const trBody: Array<HTMLTableRowElement> = []
-    for (let i = 0; i < event.size; ++i) {
-      // FIXME: height not yet measured for row header
-      const trH = <tr style={{height: '0px'}}/> 
-      trHead.push(trH)
-
-      const trB = this.createDOMBodyRow(event.index + i)
-      this.hiddenSizeCheckBody.appendChild(trB)
-      trBody.push(trB)
-    }
-
-    // insert temporary rows used for animation
-    const trAnimationHead = <tr style={{height: '0px'}}/>
-    this.rowHeadHead.insertBefore(trAnimationHead, this.rowHeadHead.children[event.index])
-    const trAnimationBody = <tr style={{height: '0px'}}/>
-    this.bodyBody.insertBefore(trAnimationBody, this.bodyBody.children[event.index + 1])
-   
-    const a = new (class extends AnimationBase {
-      table: TableView
-      rowAnimationHeight = 0
-      constructor(table: TableView) {
-        super()
-        this.table = table
-      }
-      override firstFrame() {
-        for (let i = 0; i < event.size; ++i) {
-          this.rowAnimationHeight += trBody[i].clientHeight + 3
-        }
-        this.table.rowAnimationHeight = this.rowAnimationHeight
-      }
-      override animationFrame(animationTime: number) {
-        const rowHeight = `${Math.round(animationTime * this.rowAnimationHeight)}px`
-        trAnimationHead.style.height = rowHeight
-        trAnimationBody.style.height = rowHeight
-      }
-      override lastFrame() {
-        for (let i = 0; i < event.size; ++i) {
-          const rowHeight = `${trBody[i].clientHeight + 3}px`
-          const bodyStyle = trHead[i].style
-          bodyStyle.height = bodyStyle.minHeight = bodyStyle.maxHeight = rowHeight
-          const headStyle = trHead[i].style
-          headStyle.height = headStyle.minHeight = headStyle.maxHeight = rowHeight
-        }
-        this.table.rowHeadHead.replaceChild(trHead[0], trAnimationHead)
-        this.table.bodyBody.replaceChild(trBody[0], trAnimationBody)
-        for (let i = 1; i < event.size; ++i) {
-          this.table.rowHeadHead.insertBefore(trHead[i], trHead[i - 1].nextSibling)
-          this.table.bodyBody.insertBefore(trBody[i], trBody[i - 1].nextSibling)
-        }
-
-        if (this.table.selectionModel !== undefined && this.table.selectionModel.row >= event.index) {
-          this.table.selectionModel.row += event.size
-        }
-
-        if (this.table.selectionModel !== undefined && this.table.selectionModel.row < event.index) {
-          const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
-          // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
-          this.table.inputOverlay.adjustToCell(cell)
-        }
-      }
-    })(this)
-    a.start()
-  }
-
-  updateViewAfterRemoveRow(event: TableEvent) {
-    const hadFocus = this.hasFocus()
-    // const hadFocus = true
-    this.inputOverlay.style.display = "none"
-
-    const trHead = this.rowHeadHead.children[event.index] as HTMLTableRowElement
-    const trBody = this.bodyBody.children[event.index + 1] as HTMLTableRowElement
-
-    let rowAnimationHeight = 0
-    for(let i=0; i<event.size; ++i) {
-      const tr = this.bodyBody.children[event.index + i + 1] as HTMLTableRowElement
-      rowAnimationHeight += tr.clientHeight
-    }
-    // const rowAnimationHeight = trBody.clientHeight
-    this.rowAnimationHeight = rowAnimationHeight
-
-
-    for (let i = 1; i < event.size; ++i) {
-      this.rowHeadHead.deleteRow(event.index + 1)
-      this.bodyBody.deleteRow(event.index + 2)
-    }
-
-    trHead.style.minHeight = trHead.style.maxHeight = ""
-    trBody.style.minHeight = trBody.style.maxHeight = ""
-    trHead.style.height = `${rowAnimationHeight}px`
-    trBody.style.height = `${rowAnimationHeight}px`
-    while (trHead.children.length > 0)
-      trHead.removeChild(trHead.children[0])
-    while (trBody.children.length > 0)
-      trBody.removeChild(trBody.children[0])
-
-    if (event.index + event.size >= this.model!.rowCount + event.size) {
-      // skip animation when deleting last rows
-      if (this.selectionModel && event.index > 0)
-        this.selectionModel.row = event.index - 1
-      
-      // for (let i = 0; i < event.size; ++i) {
-        this.rowHeadHead.deleteRow(event.index)
-        this.bodyBody.deleteRow(event.index + 1)
-      // }
-
-      this.inputOverlay.style.display = ""
-      if (hadFocus)
-        this.focus()
-
-    } else {
-      animate((value: number): boolean => {
-        value = 1 - value
-        trBody.style.height = trHead.style.height = `${value * rowAnimationHeight}px`
-        if (value === 0) {
-
-          // for (let i = 0; i < event.size; ++i) {
-            this.rowHeadHead.deleteRow(event.index)
-            this.bodyBody.deleteRow(event.index + 1)
-          // }
-
-          if (this.selectionModel !== undefined) {
-            this.selectionModel.row = event.index
-            this.prepareInputOverlayForPosition(this.selectionModel?.value)
-          }
-
-          setTimeout( () => {
-            this.inputOverlay.style.display = ""
-            if (hadFocus)
-              this.focus()
-          }, 0)
-        }
-        return true
-      })
+        break
     }
   }
 
@@ -424,11 +285,11 @@ export class TableView extends View {
     for (let i = 0; i < count; ++i) {
       let cell
       if (i >= headRow.children.length) {
-        cell = <th/>
+        cell = <th />
         if (column) {
           headRow.appendChild(cell)
         } else {
-          const row = <tr/>
+          const row = <tr />
           row.appendChild(cell)
           headRow.appendChild(row)
         }
@@ -450,11 +311,11 @@ export class TableView extends View {
 
     let fillerForMissingScrollbar
     if (headRow.children.length < count + 1) {
-      fillerForMissingScrollbar = <th/>
+      fillerForMissingScrollbar = <th />
       if (column) {
         headRow.appendChild(fillerForMissingScrollbar)
       } else {
-        const row = <tr/>
+        const row = <tr />
         row.appendChild(fillerForMissingScrollbar)
         headRow.appendChild(row)
       }
@@ -487,7 +348,7 @@ export class TableView extends View {
       this.bodyRow.removeChild(this.bodyRow.children[this.bodyRow.children.length - 1])
 
     while (this.bodyRow.children.length < this.model.colCount) {
-      this.bodyRow.appendChild(<td/>)
+      this.bodyRow.appendChild(<td />)
     }
 
     // cells
@@ -502,7 +363,7 @@ export class TableView extends View {
 
       let bodyRow: HTMLTableRowElement
       if (row + 1 >= this.bodyBody.children.length) {
-        bodyRow = <tr/>
+        bodyRow = <tr />
         this.bodyBody.appendChild(bodyRow)
       } else {
         bodyRow = this.bodyBody.children[row + 1] as HTMLTableRowElement
@@ -514,7 +375,7 @@ export class TableView extends View {
       for (let col = 0; col < this.model.colCount; ++col) {
         let cell: HTMLTableDataCellElement
         if (col >= bodyRow.children.length) {
-          cell = <td/>
+          cell = <td />
           bodyRow.appendChild(cell)
         } else {
           cell = bodyRow.children[col] as HTMLTableDataCellElement
@@ -539,11 +400,11 @@ export class TableView extends View {
     if (!this.model || !this.adapter)
       throw Error()
 
-    const bodyRow = <tr/>
+    const bodyRow = <tr />
     for (let col = 0; col < this.model.colCount; ++col) {
       let cell: HTMLTableDataCellElement
       if (col >= bodyRow.children.length) {
-        cell = <td/>
+        cell = <td />
         bodyRow.appendChild(cell)
       } else {
         cell = bodyRow.children[col] as HTMLTableDataCellElement
@@ -935,7 +796,7 @@ export class TableView extends View {
 
     const content = this.adapter!.displayCell(pos.col, pos.row)!
 
-    const tmp = <div/>
+    const tmp = <div />
     tmp.appendChild(content)
     if (tmp.innerHTML == cell.innerHTML)
       return
@@ -981,3 +842,160 @@ export class TableView extends View {
 }
 
 window.customElements.define("toad-table", TableView)
+
+class InsertRowAnimation extends AnimationBase {
+  table: TableView
+  event: TableEvent
+  rowAnimationHeight = 0
+  trHead: Array<HTMLTableRowElement> = []
+  trBody: Array<HTMLTableRowElement> = []
+  trAnimationHead!: HTMLTableRowElement
+  trAnimationBody!: HTMLTableRowElement
+
+  constructor(table: TableView, event: TableEvent) {
+    super()
+    this.table = table
+    this.event = event
+  }
+
+  override prepare() {
+    // create new rows and add them to the hiddenSizeCheckTable for measuring
+    for (let i = 0; i < this.event.size; ++i) {
+      // FIXME: height not yet measured for row header
+      const trH = <tr style={{ height: '0px' }} />
+      this.trHead.push(trH)
+
+      const trB = this.table.createDOMBodyRow(this.event.index + i)
+      this.table.hiddenSizeCheckBody.appendChild(trB)
+      this.trBody.push(trB)
+    }
+
+    // insert temporary rows used for animation
+    this.trAnimationHead = <tr style={{ height: '0px' }} />
+    this.table.rowHeadHead.insertBefore(this.trAnimationHead, this.table.rowHeadHead.children[this.event.index])
+    this.trAnimationBody = <tr style={{ height: '0px' }} />
+    this.table.bodyBody.insertBefore(this.trAnimationBody, this.table.bodyBody.children[this.event.index + 1])
+  }
+
+  override firstFrame() {
+    for (let i = 0; i < this.event.size; ++i) {
+      this.rowAnimationHeight += this.trBody[i].clientHeight + 3
+    }
+    this.table.rowAnimationHeight = this.rowAnimationHeight
+  }
+
+  override animationFrame(animationTime: number) {
+    const rowHeight = `${Math.round(animationTime * this.rowAnimationHeight)}px`
+    this.trAnimationHead.style.height = rowHeight
+    this.trAnimationBody.style.height = rowHeight
+  }
+
+  override lastFrame() {
+    for (let i = 0; i < this.event.size; ++i) {
+      const rowHeight = `${this.trBody[i].clientHeight + 3}px`
+      const bodyStyle = this.trHead[i].style
+      bodyStyle.height = bodyStyle.minHeight = bodyStyle.maxHeight = rowHeight
+      const headStyle = this.trHead[i].style
+      headStyle.height = headStyle.minHeight = headStyle.maxHeight = rowHeight
+    }
+    this.table.rowHeadHead.replaceChild(this.trHead[0], this.trAnimationHead)
+    this.table.bodyBody.replaceChild(this.trBody[0], this.trAnimationBody)
+    for (let i = 1; i < this.event.size; ++i) {
+      this.table.rowHeadHead.insertBefore(this.trHead[i], this.trHead[i - 1].nextSibling)
+      this.table.bodyBody.insertBefore(this.trBody[i], this.trBody[i - 1].nextSibling)
+    }
+
+    if (this.table.selectionModel !== undefined && this.table.selectionModel.row >= this.event.index) {
+      this.table.selectionModel.row += this.event.size
+    }
+
+    if (this.table.selectionModel !== undefined && this.table.selectionModel.row < this.event.index) {
+      const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
+      // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
+      this.table.inputOverlay.adjustToCell(cell)
+    }
+  }
+}
+
+class RemoveRowAnimation extends AnimationBase {
+  table: TableView
+  event: TableEvent
+  rowAnimationHeight = 0
+  hadFocus: boolean = false
+  trHead!: HTMLTableRowElement
+  trBody!: HTMLTableRowElement
+
+  constructor(table: TableView, event: TableEvent) {
+    super()
+    this.table = table
+    this.event = event
+  }
+
+  override prepare() {
+    this.hadFocus = this.table.hasFocus()
+    this.table.inputOverlay.style.display = "none"
+
+    this.trHead = this.table.rowHeadHead.children[this.event.index] as HTMLTableRowElement
+    this.trBody = this.table.bodyBody.children[this.event.index + 1] as HTMLTableRowElement
+
+    this.rowAnimationHeight = 0
+    for (let i = 0; i < this.event.size; ++i) {
+      const tr = this.table.bodyBody.children[this.event.index + i + 1] as HTMLTableRowElement
+      this.rowAnimationHeight += tr.clientHeight
+    }
+    // const rowAnimationHeight = trBody.clientHeight
+    this.table.rowAnimationHeight = this.rowAnimationHeight
+
+    for (let i = 1; i < this.event.size; ++i) {
+      this.table.rowHeadHead.deleteRow(this.event.index + 1)
+      this.table.bodyBody.deleteRow(this.event.index + 2)
+    }
+
+    this.trHead.style.minHeight = this.trHead.style.maxHeight = ""
+    this.trBody.style.minHeight = this.trBody.style.maxHeight = ""
+    this.trHead.style.height = `${this.rowAnimationHeight}px`
+    this.trBody.style.height = `${this.rowAnimationHeight}px`
+    while (this.trHead.children.length > 0)
+      this.trHead.removeChild(this.trHead.children[0])
+    while (this.trBody.children.length > 0)
+      this.trBody.removeChild(this.trBody.children[0])
+
+    if (this.event.index + this.event.size >= this.table.model!.rowCount + this.event.size) {
+      this.stop()
+      // skip animation when deleting last rows
+      if (this.table.selectionModel && this.event.index > 0)
+        this.table.selectionModel.row = this.event.index - 1
+
+      // for (let i = 0; i < event.size; ++i) {
+      this.table.rowHeadHead.deleteRow(this.event.index)
+      this.table.bodyBody.deleteRow(this.event.index + 1)
+      // }
+
+      this.table.inputOverlay.style.display = ""
+      if (this.hadFocus)
+        this.table.focus()
+    }
+  }
+
+  override animationFrame(value: number) {
+    value = 1 - value
+    this.trBody.style.height = this.trHead.style.height = `${value * this.rowAnimationHeight}px`
+  }
+
+  override lastFrame() {
+    this.table.rowHeadHead.deleteRow(this.event.index)
+    this.table.bodyBody.deleteRow(this.event.index + 1)
+
+    if (this.table.selectionModel !== undefined && this.table.selectionModel.row < this.event.index) {
+      const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
+      // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
+      this.table.inputOverlay.adjustToCell(cell)
+    }
+
+    setTimeout(() => {
+      this.table.inputOverlay.style.display = ""
+      if (this.hadFocus)
+        this.table.focus()
+    }, 0)
+  }
+}
