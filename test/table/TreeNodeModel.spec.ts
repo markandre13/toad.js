@@ -4,11 +4,11 @@ use(require('chai-subset'))
 import { 
     TextModel, TreeNodeModel, TableEvent, TableEventType
 } from "@toad"
+import { rootCertificates } from "tls"
 
 describe("toad.js", function() {
     describe("table", function() {
         describe("class TreeNodeModel manages a tree consisting of nodes with next and down pointers", function() {
-
             class Node {
                 label: string
                 next?: Node
@@ -66,6 +66,20 @@ describe("toad.js", function() {
                 tree = new MyTreeModel(Node)
                 tree.modified.add( (data)=> {
                     event = data
+                })
+            })
+
+            describe("constructor", function() {
+                it.only("initialises from an existing tree", function() {
+                    const root = new Node("#0")
+                    root.down = new Node("#1")
+                    root.down.next = new Node("#2")
+                    root.next = new Node("#3")
+                    tree = new MyTreeModel(Node, root)
+
+                    expect(tree.rows.length).is.equal(2)
+                    expect(tree.rows[0]).to.containSubset({ depth: 0, node: {label: "#0"} })
+                    expect(tree.rows[1]).to.containSubset({ depth: 0, node: {label: "#3"} })
                 })
             })
 

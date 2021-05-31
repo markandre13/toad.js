@@ -35,10 +35,10 @@ export class TableAdapter {
     static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel): void
     static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel, data?: any): void
     {
-        //  console.log("register ============")
-        //  console.log(adapter)
-        //  console.log(model)
-        //  console.log(data)
+        // console.log("TableAdapter.register() ============")
+        // console.log(adapter)
+        // console.log(model)
+        // console.log(data)
         let typeToModel = modelToAdapter.get(model)
         if (typeToModel === undefined) {
             typeToModel = new Map<any, any>()
@@ -55,6 +55,7 @@ export class TableAdapter {
     }
 
     static lookup(model: TableModel): (new() => TableAdapter) | undefined {
+        // console.log("TableAdapter.lookup() ============")
         let nodeClass: any
         if(model instanceof TypedTableModel) {
             nodeClass = model.nodeClass
@@ -72,7 +73,8 @@ export class TableAdapter {
                 }
             }
         }
-
+        // console.log("TableAdapter.lookup() found adapter")
+        // console.log(adapter)
         return adapter
     }
 }

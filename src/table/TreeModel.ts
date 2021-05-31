@@ -35,9 +35,12 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
 
     rows: Array<RowInfo<T>>
 
-    constructor(nodeClass: new () => T) {
+    constructor(nodeClass: new () => T, root?: T) {
         super(nodeClass)
         this.rows = new Array<RowInfo<T>>()
+        if (root !== undefined) {
+            this.createRowInfoHelper(this.rows, root, 0)
+        }
     }
 
     get colCount(): number { return 1 }

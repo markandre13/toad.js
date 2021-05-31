@@ -56,7 +56,8 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
         const r = this.model.rows[row]
 
         // console.log("-------------------- TreeNodeView.create() -------------------------")
-        const svg = <svg style={{border: "none", display: "block"}} width={70} height={item_h} /> as SVGSVGElement
+        // FIXME: adjust svg width to content... would auto work?
+        const svg = <svg style={{border: "none", display: "block"}} width={470} height={item_h} /> as SVGSVGElement
         const d = r.depth
 
         svg.appendChild(<text x={d*sx+dx+sx+5} y={dy+8} fill="#000">{label}</text>)
@@ -102,8 +103,6 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
                     event.stopPropagation()
                 }
             }
-
-
         } else {
             // upper vertical line instead of box
             svg.appendChild(<line x1={d*sx+dx+(rs>>1)} y1={dy} x2={d*sx+dx+(rs>>1)} y2={dy+(rs>>1)} stroke="#000" />)

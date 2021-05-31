@@ -22,7 +22,7 @@ import { TreeNode } from './TreeNode'
 export class TreeNodeModel<T extends TreeNode> extends TreeModel<T> {
     root?: T
     constructor(nodeClass: new() => T, root?: T) {
-        super(nodeClass)
+        super(nodeClass, root)
         this.root = root
     }
 

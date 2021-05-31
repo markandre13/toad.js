@@ -197,7 +197,14 @@ export class TableView extends View {
 
       const adapter = TableAdapter.lookup(model)
       if (adapter) {
-        this.adapter = new adapter()
+        try {
+          this.adapter = new adapter()
+        }
+        catch(e) {
+          console.log(`TableView.setModel(): failed to instantiate table adapter: ${e}`)
+          console.log(`setting TypeScript's target to 'es6' might help`)
+          throw e
+        }
         this.adapter.setModel(model)
 
         if (this.adapter.isViewCompact()) {
