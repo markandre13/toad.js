@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-gb">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>test</title>
+    <script src="polyfill/webcomponents-hi-sd-ce.js"></script>
+  </head>
+  <body>
+    <script>
+      let tableStyle = document.createElement("style")
+      tableStyle.textContent = `
+
+      :host {
+        /* relative will cause our children's absolute postion the be relative to :host */
+        position: relative;
+        /* the text are uses inline-block */
+        display: inline-block;
+        /* the textarea has a minimum size, so do we */
+        min-height: 100px;
+        min-width: 100px;
+
+        resize: both; /* try to place the resize on the body!!! */
+        overflow: auto;
+
+        /* look */
+        border: 1px #ccc solid;
+        border-radius: 3px;
+        outline-offset: -2px;
+        font-family: var(--toad-font-family, sans-serif);
+        font-size: var(--toad-font-size, 12px);
+      }
+      
+      div.columnHead {
+        position: absolute;
+        top: 0;
+        left: 30px;
+        right: 3;
+        height: 30px;
+        background: #f80;
+      }
+
+      div.rowHead {
+        position: absolute;
+        top: 30px;
+        bottom: 30px;
+        left: 0;
+        width: 30px;
+        background: #08f;
+        overflow: hidden;
+      }
+
+      div.body {
+        position: absolute;
+        top: 30px;
+        bottom: 30px;
+        left: 30px;
+        right: 0;
+        background: #0f0;
+      }`
+
+      class TableView extends HTMLElement {
+        constructor() {
+          super()
+          
+          // let rootDiv = document.createElement('div')
+          // rootDiv.classList.add("root")
+          
+          let columnHeadDiv = document.createElement('div')
+          columnHeadDiv.classList.add("columnHead")
+          columnHeadDiv.appendChild(document.createTextNode("COLHEAD"))
+          
+          let rowHeadDiv = document.createElement('div')
+          rowHeadDiv.classList.add("rowHead")
+          rowHeadDiv.appendChild(document.createTextNode("R O W H E A D"))
+          
+          let bodyDiv = document.createElement('div')
+          bodyDiv.classList.add("body")
+          bodyDiv.appendChild(document.createTextNode("BODY"))
+          
+          this.attachShadow({ mode: 'open' })
+          this.shadowRoot.appendChild(document.importNode(tableStyle, true))
+          // this.shadowRoot.appendChild(rootDiv)
+          let rootDiv = this.shadowRoot
+          rootDiv.appendChild(columnHeadDiv)
+          rootDiv.appendChild(rowHeadDiv)
+          rootDiv.appendChild(bodyDiv)
+
+        }
+      }
+      window.customElements.define("toad-table", TableView)
+    </script>
+    <!-- when empty: 22x2 characters & resizeable -->
+    <textarea></textarea>
+    <toad-table></toad-table>
+    <br />
+    <toad-table style="width: 320px; height: 400px;"></toad-table>
+  </body>
+</html>
