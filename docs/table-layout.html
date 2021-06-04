@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>test</title>
-    <script src="polyfill/webcomponents-hi-sd-ce.js"></script>
+    <script src="../polyfill/webcomponents-hi-sd-ce.js"></script>
   </head>
   <body>
     <script>
@@ -20,10 +20,7 @@
         /* the textarea has a minimum size, so do we */
         min-height: 100px;
         min-width: 100px;
-
-        resize: both; /* try to place the resize on the body!!! */
-        overflow: auto;
-
+       
         /* look */
         border: 1px #ccc solid;
         border-radius: 3px;
@@ -35,29 +32,28 @@
       div.columnHead {
         position: absolute;
         top: 0;
-        left: 30px;
-        right: 3;
-        height: 30px;
         background: #f80;
+        overflow: hidden;
       }
 
       div.rowHead {
         position: absolute;
-        top: 30px;
-        bottom: 30px;
         left: 0;
-        width: 30px;
         background: #08f;
         overflow: hidden;
       }
 
       div.body {
         position: absolute;
-        top: 30px;
-        bottom: 30px;
-        left: 30px;
+        top: 0;
+        bottom: 0;
+        left: 0;
         right: 0;
         background: #0f0;
+        opacity: 1;
+
+        resize: both; /* try to place the resize on the body!!! */
+        overflow: auto;
       }`
 
       class TableView extends HTMLElement {
@@ -77,7 +73,7 @@
           
           let bodyDiv = document.createElement('div')
           bodyDiv.classList.add("body")
-          bodyDiv.appendChild(document.createTextNode("BODY"))
+          bodyDiv.appendChild(document.createTextNode("X".repeat(80)+" BODY".repeat(400)))
           
           this.attachShadow({ mode: 'open' })
           this.shadowRoot.appendChild(document.importNode(tableStyle, true))
@@ -87,6 +83,29 @@
           rootDiv.appendChild(rowHeadDiv)
           rootDiv.appendChild(bodyDiv)
 
+          const resizeObserver = new ResizeObserver( entries => {
+            for (let e of entries) {
+              if (e.target === bodyDiv) {
+                const columnHeadBounds = columnHeadDiv.getBoundingClientRect()
+                const rowHeadBounds = rowHeadDiv.getBoundingClientRect()
+                const bodyBounds = bodyDiv.getBoundingClientRect()
+
+                // console.log(r)
+                // console.log(e.contentRect)
+
+                this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
+                this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
+
+                bodyDiv.style.top = columnHeadBounds.height + "px"
+                bodyDiv.style.left = rowHeadBounds.width + "px"
+                columnHeadDiv.style.left = rowHeadBounds.width + "px"
+                columnHeadDiv.style.right = (bodyBounds.width - e.contentRect.width)+"px"
+                rowHeadDiv.style.top = columnHeadBounds.height + "px"
+                rowHeadDiv.style.bottom = (bodyBounds.height - e.contentRect.height)+"px"
+              }
+            }
+          })
+          resizeObserver.observe(bodyDiv)
         }
       }
       window.customElements.define("toad-table", TableView)
