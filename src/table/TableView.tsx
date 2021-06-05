@@ -21,7 +21,6 @@
 //           try to move code outside by converting them into object of their own
 //           begin with the inputOverlay
 
-/** @jsx toadJSX.createElement */
 import * as toadJSX from '../jsx'
 import { ref } from '../jsx'
 
@@ -67,7 +66,7 @@ export class TableView extends View {
   adapter?: TableAdapter
   selectionModel?: SelectionModel
 
-  rootDiv: HTMLElement
+  rootDiv: toadJSX.Fragment
 
   rowHeadDiv!: HTMLElement
   rowHeadTable!: HTMLTableElement
@@ -99,7 +98,7 @@ export class TableView extends View {
     this.insideGoTo = false
 
     this.rootDiv =
-      <div class="root">
+      <>
         <div set={ref(this, 'rowHeadDiv')} class="rowhead">
           <table set={ref(this, 'rowHeadTable')}>
             <thead set={ref(this, 'rowHeadHead')}></thead>
@@ -125,9 +124,9 @@ export class TableView extends View {
         <table class="hiddenSizeCheck">
           <tbody set={ref(this, 'hiddenSizeCheckBody')}></tbody>
         </table>
-      </div>
+      </>
 
-    this.rootDiv.onkeydown = this.onRootDivKeyDown
+    this.onkeydown = this.onRootDivKeyDown
 
     this.bodyDiv.onscroll = () => {
       this.rowHeadDiv.scrollTop = this.bodyDiv.scrollTop
@@ -161,7 +160,28 @@ export class TableView extends View {
 
     this.attachShadow({ mode: 'open' })
     this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
-    this.shadowRoot!.appendChild(this.rootDiv)
+    this.rootDiv.children.forEach( child => this.shadowRoot!.appendChild(child))
+
+    const resizeObserver = new ResizeObserver( entries => {
+      for (let e of entries) {
+        if (e.target === this.bodyDiv) {
+          const columnHeadBounds = this.colHeadDiv.getBoundingClientRect()
+          const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
+          const bodyBounds = this.bodyDiv.getBoundingClientRect()
+
+          this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
+          this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
+
+          this.bodyDiv.style.top = columnHeadBounds.height + "px"
+          this.bodyDiv.style.left = rowHeadBounds.width + "px"
+          this.colHeadDiv.style.left = rowHeadBounds.width + "px"
+          this.colHeadDiv.style.right = (bodyBounds.width - e.contentRect.width)+"px"
+          this.rowHeadDiv.style.top = columnHeadBounds.height + "px"
+          this.rowHeadDiv.style.bottom = (bodyBounds.height - e.contentRect.height)+"px"
+        }
+      }
+    })
+    resizeObserver.observe(this.bodyDiv)
   }
 
   updateModel() {
@@ -206,12 +226,7 @@ export class TableView extends View {
           throw e
         }
         this.adapter.setModel(model)
-
-        if (this.adapter.isViewCompact()) {
-          this.rootDiv.classList.add("compact")
-        } else {
-          this.rootDiv.classList.remove("compact")
-        }
+        this.updateCompact()
         this.updateView()
       } else {
         throw Error("did not find an adapter for model of type " + model.constructor.name)
@@ -219,6 +234,14 @@ export class TableView extends View {
       return
     }
     throw Error("TableView.setModel(): unexpected model of type " + model.constructor.name)
+  }
+
+  updateCompact() {
+    if (this.adapter?.isViewCompact()) {
+      this.rootDiv.children.forEach( child => child.classList.add("compact"))
+    } else {
+      this.rootDiv.children.forEach( child => child.classList.remove("compact"))
+    }
   }
 
   modelChanged(event: TableEvent) {
@@ -449,7 +472,7 @@ export class TableView extends View {
         for (let selected of allSelected)
           selected.classList.remove("selected")
         this.toggleCellSelection(this.selectionModel.value, true)
-        this.rootDiv.tabIndex = 0
+        this.tabIndex = 0
         break
       }
       case TableEditMode.SELECT_ROW: {
@@ -457,7 +480,7 @@ export class TableView extends View {
         for (let selected of allSelected)
           selected.classList.remove("selected")
         this.toggleRowSelection(this.selectionModel.value.row, true)
-        this.rootDiv.tabIndex = 0
+        this.tabIndex = 0
         break
       }
     }
@@ -471,30 +494,30 @@ export class TableView extends View {
     const rowHeadHead = this.rowHeadHead.children
     const bodyRow = this.bodyRow.children
 
-    // set width
+    // set column widths
     for (let col = 0; col < this.model.colCount; ++col) {
-      const head = colHeadRow[col] as HTMLElement
-      const body = bodyRow[col] as HTMLElement
+      const columnHeader = colHeadRow[col] as HTMLElement
+      const columnBody = bodyRow[col] as HTMLElement
 
-      if (head.style.width === "") {
-        const headWidth = head.getBoundingClientRect().width - dom.horizontalPadding(head)
-        const bodyWidth = body.getBoundingClientRect().width - dom.horizontalPadding(body)
+      if (columnHeader.style.width === "") {
+        const headWidth = columnHeader.getBoundingClientRect().width - dom.horizontalPadding(columnHeader)
+        const bodyWidth = columnBody.getBoundingClientRect().width - dom.horizontalPadding(columnBody)
         const width = Math.max(headWidth, bodyWidth)
-        head.style.width = head.style.minWidth = head.style.maxWidth = `${width}px`
-        body.style.width = body.style.minWidth = body.style.maxWidth = `${width}px`
+        columnHeader.style.width = columnHeader.style.minWidth = columnHeader.style.maxWidth = `${width}px`
+        columnBody.style.width = columnBody.style.minWidth = columnBody.style.maxWidth = `${width}px`
       }
     }
 
-    // set height
+    // set row heights
     for (let row = 0; row < this.model.rowCount; ++row) {
-      const head = rowHeadHead[row] as HTMLElement
-      const body = this.bodyBody.children[row + 1] as HTMLElement
+      const rowHeader = rowHeadHead[row] as HTMLElement
+      const rowBody = this.bodyBody.children[row + 1] as HTMLElement
 
-      const headHeight = head.clientHeight - dom.verticalPadding(head)
-      const bodyHeight = body.clientHeight - dom.verticalPadding(body)
+      const headHeight = rowHeader.clientHeight - dom.verticalPadding(rowHeader)
+      const bodyHeight = rowBody.clientHeight - dom.verticalPadding(rowBody)
 
-      head.style.height = head.style.minHeight = head.style.maxHeight =
-        body.style.height = body.style.minHeight = body.style.maxHeight =
+      rowHeader.style.height = rowHeader.style.minHeight = rowHeader.style.maxHeight =
+        rowBody.style.height = rowBody.style.minHeight = rowBody.style.maxHeight =
         ((headHeight > bodyHeight ? headHeight : bodyHeight)) + "px"
     }
 
@@ -511,35 +534,35 @@ export class TableView extends View {
     //  w0,h0 |   w1
     // -------+-------
     //    h1  |
-    const w0 = this.rowHeadTable.clientWidth
-    let w1 = this.bodyTable.clientWidth
-    const h0 = this.colHeadTable.clientHeight
-    let h1 = this.bodyTable.clientHeight
+    // const w0 = this.rowHeadTable.clientWidth
+    // let w1 = this.bodyTable.clientWidth
+    // const h0 = this.colHeadTable.clientHeight
+    // let h1 = this.bodyTable.clientHeight
 
-    const width = this.parentElement!.clientWidth
-    const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-    if (w0 + w1 > width)
-      w1 = width - w0
-    if (h0 + h1 > height)
-      h1 = height - h0
+    // const width = this.parentElement!.clientWidth
+    // const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+    // if (w0 + w1 > width)
+    //   w1 = width - w0
+    // if (h0 + h1 > height)
+    //   h1 = height - h0
 
     // console.log(`w0=${w0}, w1=${w1}, h0=${h0}, h1=${h1}`)
 
-    this.rowHeadDiv.style.top = `${h0}px`
-    this.rowHeadDiv.style.width = `${w0}px`
-    this.rowHeadDiv.style.height = `${h1}px`
+    // this.rowHeadDiv.style.top = `${h0}px`
+    // this.rowHeadDiv.style.width = `${w0}px`
+    // this.rowHeadDiv.style.height = `${h1}px`
 
-    this.colHeadDiv.style.left = `${w0 - 1}px`
-    this.colHeadDiv.style.top = `${-h1}px`
-    this.colHeadDiv.style.width = `${w1}px`
+    // this.colHeadDiv.style.left = `${w0 - 1}px`
+    // this.colHeadDiv.style.top = `${-h1}px`
+    // this.colHeadDiv.style.width = `${w1}px`
 
-    this.bodyDiv.style.left = `${w0}px`
-    this.bodyDiv.style.top = `-${h1}px`
-    this.bodyDiv.style.width = `${w1}px`
-    this.bodyDiv.style.height = `${h1}px`
+    // this.bodyDiv.style.left = `${w0}px`
+    // this.bodyDiv.style.top = `-${h1}px`
+    // this.bodyDiv.style.width = `${w1}px`
+    // this.bodyDiv.style.height = `${h1}px`
 
-    this.rootDiv.style.width = `${w0 + w1}px`
-    this.rootDiv.style.height = `${h0 + h1}px`
+    // this.style.width = `${w0 + w1}px`
+    // this.style.height = `${h0 + h1}px`
   }
 
   protected unadjustLayoutBeforeRender(pos: TablePos) {
@@ -616,7 +639,7 @@ export class TableView extends View {
     if (this.editView) {
       this.editView.focus({ preventScroll: true })
     } else {
-      this.rootDiv.focus({ preventScroll: true })
+      super.focus({ preventScroll: true })
     }
     this.bodyDiv.scrollLeft = x
     this.bodyDiv.scrollTop = y

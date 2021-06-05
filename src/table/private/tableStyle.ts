@@ -22,29 +22,48 @@
 
 export let tableStyle = document.createElement("style")
 tableStyle.textContent = `
-.root {
+:host {
+  position: relative;
+  display: inline-block;
+
+  min-height: 100px;
+  min-width: 100px;
+
   border: 1px #ccc solid;
   border-radius: 3px;
   outline-offset: -2px;
   font-family: var(--toad-font-family, sans-serif);
   font-size: var(--toad-font-size, 12px);
-  background: #e0e0e0;
+  background: #fff;
 }
-.rowhead {
-  position: relative;
+:host:focus .cells tr.selected,
+:host:focus .cells td.selected {
+  background: #0069d4;
+  color: #fff;
+}
+
+.colhead {
+  position: absolute;
+  top: 0;
   overflow: hidden;
 }
-.colhead {
-  position: relative;
+.rowhead {
+  position: absolute;
+  left: 0;
   overflow: hidden;
 }
 .cells {
-  position: relative;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   overflow: auto;
+  resize: both;
   cursor: default;
 }
 
-.root > div > table {
+:host > div > table {
   border-collapse: collapse;
   border-spacing: 0;
   border: none 0px;
@@ -93,21 +112,14 @@ tableStyle.textContent = `
   color: #fff;
 }
 
-.root:focus .cells tr.selected,
-.root:focus .cells td.selected {
-  background: #0069d4;
-  color: #fff;
-}
-
-.root.compact .colhead th,
-.root.compact .rowhead th {
+.compact.colhead th,
+.compact.rowhead th {
   border-color: none;
   border-style: none;
   border-width: 0;
   padding: 0px;
 }
-
-.root.compact .cells * td {
+.compact.cells * td {
   border-color: none;
   border-style: none;
   border-width: 0;

@@ -94,14 +94,20 @@ export namespace JSX {
     }
 }
 
-export class Fragment {   
+export class Fragment {
+    children: Array<HTMLElement>
+    constructor(children: Array<HTMLElement>) {
+        this.children = children
+    }
 }
 
-export function createElement(name: string | FunctionConstructor, props: JSX.DefaultProps, ...children: any): Element {
+export function createElement(name: string, props: JSX.DefaultProps, ...children: any): Element
+export function createElement(name: FunctionConstructor, props: JSX.DefaultProps, ...children: any): Fragment
+export function createElement(name: string | FunctionConstructor, props: JSX.DefaultProps, ...children: any): Element | Fragment {
     let namespace
 
     if (typeof name !== 'string') {
-        name = "div"
+        return new Fragment(children)
     }
 
     switch (name) {
