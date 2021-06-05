@@ -17,7 +17,7 @@
  */
 
 /** @jsx toadJSX.createElement */
-import * as toadJSX from '../jsx'
+import * as toadJSX from '../util/jsx'
 
 import { Model } from "../model/Model"
 import { View } from "../view/View"

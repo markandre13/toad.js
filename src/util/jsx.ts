@@ -20,9 +20,14 @@ export namespace JSX {
     interface JsxStyle {
         width?: string | number
         height?: string | number
+        top?: string | number
+        bottom?: string | number
+        left?: string | number
+        right?: string | number
         border?: string
         cursor?: string
         display?: string
+        position?: string
     }
     export interface DefaultProps {
         class?: string
@@ -31,6 +36,9 @@ export namespace JSX {
         height?: string | number
         title?: string
         set?: Reference
+    }
+    export interface ToadTableProps extends DefaultProps {
+        model: string
     }
     export interface SVGProps extends DefaultProps {
         viewBox?: string
@@ -87,6 +95,7 @@ export namespace JSX {
             cursor?: string
             class?: string
         }
+        "toad-table": ToadTableProps
     }
     export interface Reference {
         object: Object

@@ -1,5 +1,5 @@
 /** @jsx toadJSX.createElement */
-import * as toadJSX from '../../jsx'
+import * as toadJSX from '../../util/jsx'
 import { TableEvent } from "../TableEvent"
 import { AnimationBase } from '@toad/util/animation'
 import { TableView } from '../TableView'

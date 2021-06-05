@@ -21,10 +21,10 @@
 //           try to move code outside by converting them into object of their own
 //           begin with the inputOverlay
 
-import * as toadJSX from '../jsx'
-import { ref } from '../jsx'
+import * as toadJSX from '../util/jsx'
+import { ref } from '../util/jsx'
 
-import * as dom from "../dom"
+import * as dom from "../util/dom"
 import { scrollIntoView } from "../scrollIntoView"
 import { Model } from "../model/Model"
 import { View } from "../view/View"
@@ -170,8 +170,11 @@ export class TableView extends View {
           const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
           const bodyBounds = this.bodyDiv.getBoundingClientRect()
 
-          this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
-          this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
+          // :host { height & width: fit-content } did not work
+          if (this.style.left === "" && this.style.right === "")
+            this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
+          if (this.style.top === "" && this.style.bottom === "")
+            this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
 
           this.bodyDiv.style.top = columnHeadBounds.height + "px"
           this.bodyDiv.style.left = rowHeadBounds.width + "px"
@@ -521,14 +524,6 @@ export class TableView extends View {
         rowBody.style.height = rowBody.style.minHeight = rowBody.style.maxHeight =
         ((headHeight > bodyHeight ? headHeight : bodyHeight)) + "px"
     }
-
-    if (this.setSizeCount === 0) {
-      const w1 = this.bodyTable.clientWidth
-      const h1 = this.bodyTable.clientHeight 
-      this.bodyDiv.style.width = "${w1}px"
-      this.bodyDiv.style.height = "${h1}px"
-      ++this.setSizeCount
-    }
   }
 
   protected unadjustLayoutBeforeRender(pos: TablePos) {
@@ -536,7 +531,6 @@ export class TableView extends View {
     let body = this.bodyRow.children[pos.col] as HTMLElement
     head.style.width = head.style.minWidth = head.style.maxWidth =
       body.style.width = body.style.minWidth = body.style.maxWidth = ""
-      // this.bodyDiv.style.overflow = "hidden"
 
     // FIXME: row height
   }

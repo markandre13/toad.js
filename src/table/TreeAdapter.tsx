@@ -17,7 +17,7 @@
  */
 
 /** @jsx toadJSX.createElement */
-import * as toadJSX from '../jsx'
+import * as toadJSX from '../util/jsx'
 
 import { TableModel } from "./TableModel"
 import { TreeModel } from "./TreeModel"
@@ -57,7 +57,7 @@ export class TreeAdapter<T> extends TypedTableAdapter<T> {
 
         // console.log("-------------------- TreeNodeView.create() -------------------------")
         // FIXME: adjust svg width to content... would auto work?
-        const svg = <svg style={{border: "none", display: "block"}} width={470} height={item_h} /> as SVGSVGElement
+        const svg = <svg style={{border: "none", display: "block"}} height={item_h} /> as SVGSVGElement
         const d = r.depth
 
         svg.appendChild(<text x={d*sx+dx+sx+5} y={dy+8} fill="#000">{label}</text>)

@@ -24,6 +24,7 @@ export { Template } from "./controller/Template"
 export { Dialog } from "./controller/Dialog"
 export { bind, action, unbind, globalController, boolean } from "./controller/globalController"
 export * from "./util/animation"
+export * from "./util/jsx"
 
 export { Model } from "./model/Model"
 export { Action } from "./model/Action"
