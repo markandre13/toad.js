@@ -31,7 +31,12 @@ export namespace JSX {
         right?: string | number
         border?: string
         cursor?: string
-        display?: string
+        display?: "block" | "inline" | "run-in" | "flow" | "flow-root" | "table" | "flex" | "grid" | "ruby"
+        | "list-item" | "contents" | "none" | "inline-block" | "inline-list-item" | "inline-table" | "inline-flex" | "inline-grid"
+        | "table-row-group" | "table-header-group" | "table-footer-group" | "table-row" | "table-cell" 
+        | "table-column-group" | "table-column" | "table-caption"
+        | "ruby-base" | "ruby-text" | "ruby-base-container" | "ruby-text-container"
+        overflow?: "visible" | "hidden" | "scroll" | "auto" | "initial" | "inherit"
         position?: string
     }
     export interface DefaultProps {
@@ -67,6 +72,8 @@ export namespace JSX {
     }
     export interface IntrinsicElements {
         div: DefaultProps
+        span: DefaultProps
+        canvas: DefaultProps
         b: DefaultProps
         i: DefaultProps
         u: DefaultProps
@@ -133,6 +140,11 @@ export class Fragment {
     children: Array<HTMLElement>
     constructor(children: Array<HTMLElement>) {
         this.children = children
+    }
+    appendTo(element: HTMLElement) {
+        for(let child of this.children) {
+            element.appendChild(child)
+        }
     }
 }
 

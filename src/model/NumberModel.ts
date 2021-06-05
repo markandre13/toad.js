@@ -18,12 +18,18 @@
 
 import { GenericModel } from "./GenericModel"
 
+export interface NumberModelOptions {
+  min?: number
+  max?: number
+  step?: number
+}
+
 export class NumberModel extends GenericModel<number> {
   min?: number
   max?: number
   step?: number
 
-  constructor(value: number, options: any) {
+  constructor(value: number, options?: NumberModelOptions) {
     super(value)
     if (options) {
       this.min = options.min
