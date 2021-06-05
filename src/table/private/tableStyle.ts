@@ -25,10 +25,6 @@ tableStyle.textContent = `
 :host {
   position: relative;
   display: inline-block;
-
-  min-height: 100px;
-  min-width: 100px;
-
   border: 1px #ccc solid;
   border-radius: 3px;
   outline-offset: -2px;
@@ -54,10 +50,9 @@ tableStyle.textContent = `
 }
 .cells {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  /* minimums are not used on safari when resizing resize */
+  min-height: 100px;
+  min-width: 100px;
   overflow: auto;
   resize: both;
   cursor: default;

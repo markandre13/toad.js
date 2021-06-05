@@ -89,6 +89,7 @@ export class TableView extends View {
   hiddenSizeCheckBody!: HTMLTableSectionElement
 
   private animator = new Animator()
+  private setSizeCount = 0
 
   rowAnimationHeight = 0 // TODO: put in testAPI object
 
@@ -521,48 +522,13 @@ export class TableView extends View {
         ((headHeight > bodyHeight ? headHeight : bodyHeight)) + "px"
     }
 
-    // layout
-    // test cases
-    // [ ] no headers at all
-    // [ ] no row header case
-    // [ ] no col header case
-    // [X] col and row header
-    // [ ] height & width should never exceed viewport dimensions
-    // [ ] scroll stuff
-    // pixel tweaking stuff...
-
-    //  w0,h0 |   w1
-    // -------+-------
-    //    h1  |
-    // const w0 = this.rowHeadTable.clientWidth
-    // let w1 = this.bodyTable.clientWidth
-    // const h0 = this.colHeadTable.clientHeight
-    // let h1 = this.bodyTable.clientHeight
-
-    // const width = this.parentElement!.clientWidth
-    // const height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
-    // if (w0 + w1 > width)
-    //   w1 = width - w0
-    // if (h0 + h1 > height)
-    //   h1 = height - h0
-
-    // console.log(`w0=${w0}, w1=${w1}, h0=${h0}, h1=${h1}`)
-
-    // this.rowHeadDiv.style.top = `${h0}px`
-    // this.rowHeadDiv.style.width = `${w0}px`
-    // this.rowHeadDiv.style.height = `${h1}px`
-
-    // this.colHeadDiv.style.left = `${w0 - 1}px`
-    // this.colHeadDiv.style.top = `${-h1}px`
-    // this.colHeadDiv.style.width = `${w1}px`
-
-    // this.bodyDiv.style.left = `${w0}px`
-    // this.bodyDiv.style.top = `-${h1}px`
-    // this.bodyDiv.style.width = `${w1}px`
-    // this.bodyDiv.style.height = `${h1}px`
-
-    // this.style.width = `${w0 + w1}px`
-    // this.style.height = `${h0 + h1}px`
+    if (this.setSizeCount === 0) {
+      const w1 = this.bodyTable.clientWidth
+      const h1 = this.bodyTable.clientHeight 
+      this.bodyDiv.style.width = "${w1}px"
+      this.bodyDiv.style.height = "${h1}px"
+      ++this.setSizeCount
+    }
   }
 
   protected unadjustLayoutBeforeRender(pos: TablePos) {
@@ -570,6 +536,7 @@ export class TableView extends View {
     let body = this.bodyRow.children[pos.col] as HTMLElement
     head.style.width = head.style.minWidth = head.style.maxWidth =
       body.style.width = body.style.minWidth = body.style.maxWidth = ""
+      // this.bodyDiv.style.overflow = "hidden"
 
     // FIXME: row height
   }
