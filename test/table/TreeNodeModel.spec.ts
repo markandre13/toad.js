@@ -70,7 +70,7 @@ describe("toad.js", function() {
             })
 
             describe("constructor", function() {
-                it.only("initialises from an existing tree", function() {
+                it("initialises from an existing tree", function() {
                     const root = new Node("#0")
                     root.down = new Node("#1")
                     root.down.next = new Node("#2")

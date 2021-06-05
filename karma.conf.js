@@ -15,6 +15,7 @@ module.exports = (config) => {
     },
     reporters: ["mocha", "karma-typescript"],
     karmaTypescriptConfig: {
+      tsconfig: "tsconfig.json",
       bundlerOptions: {
         sourceMap: true
       },
@@ -23,18 +24,7 @@ module.exports = (config) => {
         instrumentation: false,
       },
       compilerOptions: {
-        "target": "es6",
         "module": "commonjs",
-        "traceResolution": false,
-        "baseUrl": ".",
-        "paths": {
-          "@toad": [ "src/toad" ],
-          "@toad/*": [ "src/*" ]
-        },
-        "noImplicitOverride": true,
-        "strict": true,
-        "allowJs": false,
-        "noImplicitAny": true,
         "sourceMap": true
       },
       "exclude": [

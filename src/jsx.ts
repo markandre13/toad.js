@@ -94,8 +94,16 @@ export namespace JSX {
     }
 }
 
-export function createElement(name: string, props: JSX.DefaultProps, ...children: any): Element {
+export class Fragment {   
+}
+
+export function createElement(name: string | FunctionConstructor, props: JSX.DefaultProps, ...children: any): Element {
     let namespace
+
+    if (typeof name !== 'string') {
+        name = "div"
+    }
+
     switch (name) {
         case 'svg':
         case 'line':

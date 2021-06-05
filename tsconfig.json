@@ -6,6 +6,8 @@
     "declaration": false,
     "lib": [ "es6", "dom", "dom.iterable" ],
     "jsx": "react",
+    "jsxFactory": "toadJSX.createElement",
+    "jsxFragmentFactory": "toadJSX.Fragment",
     "baseUrl": ".",
     "paths": {
         "@toad": ["src/toad"],
