@@ -37,6 +37,13 @@ export namespace JSX {
         title?: string
         set?: Reference
     }
+    export interface InputProps extends DefaultProps {
+        type?: "button" | "checkbox" | "image" | "radio"
+        | "color" | "date" | "datetime" | "datetime-local" | "email" | "file"
+        | "hidden" | "month" | "number" | "password" | "range" | "research"
+        | "search" | "submit" | "tel" | "text" | "url" | "week"
+        value?: string
+    }
     export interface ToadTableProps extends DefaultProps {
         model: string
     }
@@ -56,6 +63,7 @@ export namespace JSX {
         tr: DefaultProps
         th: DefaultProps
         td: DefaultProps
+        input: InputProps
         svg: SVGProps
         line: {
             x1: string | number
