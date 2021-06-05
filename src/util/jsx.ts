@@ -16,6 +16,11 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { Action } from "@toad/model/Action"
+import { NumberModel } from "@toad/model/NumberModel"
+import { TextModel } from "@toad/model/TextModel"
+import { TableModel } from "@toad/table/TableModel"
+
 export namespace JSX {
     interface JsxStyle {
         width?: string | number
@@ -44,8 +49,18 @@ export namespace JSX {
         | "search" | "submit" | "tel" | "text" | "url" | "week"
         value?: string
     }
+    export interface ToadButtonProps extends DefaultProps {
+        model?: string | TextModel
+        action?: string | Action
+    }
+    export interface ToadSliderProps extends DefaultProps {
+        model?: string | NumberModel
+    }
+    export interface ToadTextProps extends DefaultProps {
+        model?: string | TextModel | NumberModel
+    }
     export interface ToadTableProps extends DefaultProps {
-        model: string
+        model?: string | TableModel
     }
     export interface SVGProps extends DefaultProps {
         viewBox?: string
@@ -103,6 +118,9 @@ export namespace JSX {
             cursor?: string
             class?: string
         }
+        "toad-button": ToadButtonProps
+        "toad-text": ToadTextProps
+        "toad-slider": ToadSliderProps
         "toad-table": ToadTableProps
     }
     export interface Reference {
@@ -141,6 +159,10 @@ export function createElement(name: string | FunctionConstructor, props: JSX.Def
     if (props !== null) {
         for (const [key, value] of Object.entries(props)) {
             switch(key) {
+                case 'model':
+                case 'action':
+                    (tag as any).setModel(value)
+                    break
                 case 'class':
                     tag.classList.add(value) // FIXME: value is whitespace separated list
                     break
