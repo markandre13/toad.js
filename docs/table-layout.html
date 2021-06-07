@@ -8,6 +8,16 @@
     <script src="../polyfill/webcomponents-hi-sd-ce.js"></script>
   </head>
   <body>
+  
+<!--
+:host	the shadow host
+  will be overwritten by the document's styles
+:host([centered])
+  when host has attribute 'centered'
+:host-context(.dark-theme)
+  when host or parent matches selector
+-->
+  
     <script>
       let tableStyle = document.createElement("style")
       tableStyle.textContent = `

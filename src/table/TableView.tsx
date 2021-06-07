@@ -512,8 +512,12 @@ export class TableView extends View {
       }
     }
 
+    if (this.model.rowCount != this.bodyBody.children.length -1) {
+      console.log(`adjustLayoutAfterRender(): bodyBody has ${this.bodyBody.children.length-1} rows while model has ${this.model.rowCount} rows`)
+    }
+
     // set row heights
-    for (let row = 0; row < this.model.rowCount; ++row) {
+    for (let row = 0; row < this.bodyBody.children.length - 1 ; ++row) {
       const rowHeader = rowHeadHead[row] as HTMLElement
       const rowBody = this.bodyBody.children[row + 1] as HTMLElement
 

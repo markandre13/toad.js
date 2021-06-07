@@ -40,7 +40,10 @@ export class SliderView extends GenericView<NumberModel> {
   updateView() {
     if (!this.model)
       return
-    this.input.step = String(this.model.step)
+    if (this.model.step === undefined && this.model.min !== undefined && this.model.max !== undefined)
+      this.input.step = `${(this.model.max - this.model.min)/100}`
+    else
+      this.input.step = String(this.model.step)
     this.input.min = String(this.model.min)
     this.input.max = String(this.model.max)
     this.input.value = String(this.model.value)

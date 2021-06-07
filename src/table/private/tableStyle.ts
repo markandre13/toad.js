@@ -58,7 +58,7 @@ tableStyle.textContent = `
   cursor: default;
 }
 
-:host > div > table {
+:host > div > table, :host > table {
   border-collapse: collapse;
   border-spacing: 0;
   border: none 0px;
@@ -67,7 +67,10 @@ tableStyle.textContent = `
   background: #e0e0e0;
 }
 
-.colhead th, .rowhead th, .cells td {
+.colhead th,
+.rowhead th,
+.cells td,
+.hiddenSizeCheck td {
   letter-spacing: 0;  
   overflow: hidden;   
   padding: 2px;
@@ -114,7 +117,8 @@ tableStyle.textContent = `
   border-width: 0;
   padding: 0px;
 }
-.compact.cells * td {
+.compact.cells * td,
+.compact.hiddenSizeCheck * td {
   border-color: none;
   border-style: none;
   border-width: 0;

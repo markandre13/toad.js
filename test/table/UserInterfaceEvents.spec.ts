@@ -1,25 +1,30 @@
 import { expect, use } from "chai"
 use(require('chai-subset'))
 
-import { TextView, TableView, TableAdapter, TreeNode, TreeNodeModel, TreeAdapter, bind, unbind } from "@toad"
+import { TextView, TreeNode, TreeAdapter } from "@toad"
 import { findScrollableParent, isScrollable } from "@toad/scrollIntoView"
 import { BookTableScene, Book } from "./BookTableScene"
+import { TreeViewScene } from "./TreeViewScene"
+import { SSL_OP_EPHEMERAL_RSA } from "constants"
 
 describe("toad.js", function() {
     describe("table", function() {
         describe("class TableView", function() {
-            let scene: BookTableScene
-            let rows: HTMLCollection
+            // let scene: BookTableScene
+            // let rows: HTMLCollection
 
-            this.beforeEach( async function() {
-                scene = new BookTableScene()
-                rows = scene.table.bodyBody.children
-                expect(rows.length).to.equal(8+1)
-            })
+            // this.beforeEach( async function() {
+            //     scene = new BookTableScene()
+            //     rows = scene.table.bodyBody.children
+            //     expect(rows.length).to.equal(8+1)
+            // })
 
             describe("update view when model changes", function() {
                 describe("update cell and model after input changes and focus changes via", function() {
                     it("mouse", async function() {
+                        const scene = new BookTableScene()
+                        const rows = scene.table.bodyBody.children
+
                         scene.table.focus()
                         scene.mouseDownAtCell(0, 0)
 
@@ -33,6 +38,9 @@ describe("toad.js", function() {
                         expect((rows[0 + 1].childNodes[0] as HTMLElement).innerText).to.equal("XXX")
                     })
                     it("keyboard", async function() {
+                        const scene = new BookTableScene()
+                        const rows = scene.table.bodyBody.children
+
                         scene.table.focus()
                         scene.mouseDownAtCell(0, 0)
 
@@ -50,6 +58,9 @@ describe("toad.js", function() {
                 })
                 describe("insert row", function() {
                     it("single row", async function() {
+                        const scene = new BookTableScene()
+                        const rows = scene.table.bodyBody.children
+
                         const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                         scene.model.insert(3, newBook)
                         await scene.sleep()
@@ -60,6 +71,9 @@ describe("toad.js", function() {
                         expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
                     })
                     it("multiple rows", async function() {
+                        const scene = new BookTableScene()
+                        const rows = scene.table.bodyBody.children
+
                         const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                         const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
                         scene.model.insert(3, [newBook0, newBook1])
@@ -72,10 +86,30 @@ describe("toad.js", function() {
                         expect((rows[4+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook1.title)
                         expect((rows[4+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook1.author)
                         expect((rows[4+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook1.year}`)
+
+                        expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight + rows[4+1].clientHeight)
+                    })
+                    it("multiple row in tree", async function() {
+                        const scene = new TreeViewScene()
+                        const rows = scene.table.bodyBody.children
+
+                        // close
+                        const previousHeight = rows[1+1].clientHeight + rows[1+2].clientHeight
+                        scene.mouseDownAtCell(0, 1, 20, 10)
+                        await scene.sleep()
+                        expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
+
+                        // open
+                        scene.mouseDownAtCell(0, 1, 20, 10)
+                        await scene.sleep()
+                        expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
                     })
                 })
                 describe("delete row", function() {                    
                     it("single row", async function(){
+                        const scene = new BookTableScene()
+                        const rows = scene.table.bodyBody.children
+
                         // FIXME!!! rowAnimationHeight isn't checked by any of the tests anymore...
                         // or... VariableRowHeight.spec.ts covers that...
                         scene.model.remove(2, 2)
@@ -86,6 +120,9 @@ describe("toad.js", function() {
                         expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("2001: A Space Odyssey")
                     })
                     it("multiple rows", async function(){
+                        const scene = new BookTableScene()
+                        const rows = scene.table.bodyBody.children
+
                         scene.model.remove(2)
                         await scene.sleep()
 
@@ -98,6 +135,8 @@ describe("toad.js", function() {
 
             describe("user interface events", function() {
                 it("mousedown on a cell updates the selection model", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(2, 1)
                     expect(scene.selectionModel.col).equals(2)
                     expect(scene.selectionModel.row).equals(1)
@@ -108,6 +147,8 @@ describe("toad.js", function() {
                 })
 
                 it("mousedown on a cell makes the cell editable", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(2, 1)
                     scene.expectInputOverlayToEqual("1961")
 
@@ -116,6 +157,8 @@ describe("toad.js", function() {
                 })
 
                 it("scroll selected cell into view", async function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 0)
                     await scene.sleep()
                     scene.expectScrollAt(0, 0)
@@ -126,6 +169,8 @@ describe("toad.js", function() {
                 })
 
                 it("tab goes to the next cell", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 0)
                     expect(scene.selectionModel.col).equals(0)
                     expect(scene.selectionModel.row).equals(0)
@@ -136,6 +181,8 @@ describe("toad.js", function() {
                 })
 
                 it("tab at end of row goes to head of next row", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(9, 0)
                     expect(scene.selectionModel.col).equals(9)
                     expect(scene.selectionModel.row).equals(0)
@@ -146,6 +193,8 @@ describe("toad.js", function() {
                 })
 
                 it("shift tab goes to the previous cell", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(1, 0)
                     expect(scene.selectionModel.col).equals(1)
                     expect(scene.selectionModel.row).equals(0)
@@ -156,6 +205,8 @@ describe("toad.js", function() {
                 })
 
                 it("shift tab at head of row goes to last cell of previous row", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 1)
                     expect(scene.selectionModel.col).equals(0)
                     expect(scene.selectionModel.row).equals(1)
@@ -166,6 +217,8 @@ describe("toad.js", function() {
                 })
 
                 it("cursor up goes to the cell above", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(1, 1)
                     expect(scene.selectionModel.col).equals(1)
                     expect(scene.selectionModel.row).equals(1)
@@ -176,6 +229,8 @@ describe("toad.js", function() {
                 })
 
                 it("cursor down goes to the cell below", function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(1, 1)
                     expect(scene.selectionModel.col).equals(1)
                     expect(scene.selectionModel.row).equals(1)
@@ -198,6 +253,7 @@ describe("toad.js", function() {
                 // THEREFORE
                 //   goToCell must save and restore bodyDiv's scroll position
                 xit("GIVEN 2nd row selected, 1st row visible WHEN 1st row click THEN do not scroll", async function() {
+                    const scene = new BookTableScene()
 
                     const cell00 = scene.table.getCellAt(0, 0)!
                     const body = findScrollableParent(cell00)!
@@ -215,6 +271,8 @@ describe("toad.js", function() {
                 })
 
                 it("input overlay is at correct position after inserting row below selection", async function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 3)
                     await scene.sleep(1)
 
@@ -230,6 +288,8 @@ describe("toad.js", function() {
                 })
 
                 it("input overlay is at correct position after inserting row above selection", async function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 3)
                     await scene.sleep(1)
 
@@ -245,6 +305,8 @@ describe("toad.js", function() {
                 })
 
                 it("input overlay is at correct position after deleting row at selection", async function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 3)
                     await scene.sleep(1)
 
@@ -269,6 +331,8 @@ describe("toad.js", function() {
                 xit("after deleting multiple row, selection is at correct position")
 
                 it("input overlay is at correct position after deleting row at selection in last row", async function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 6)
                     scene.sendArrowDown()
                     await scene.sleep(1)
@@ -283,6 +347,8 @@ describe("toad.js", function() {
                 })
 
                 it("changing selection updates view", async function() {
+                    const scene = new BookTableScene()
+
                     scene.mouseDownAtCell(0, 0)
                     await scene.sleep(1)
                     scene.selectionModel.row = 2
@@ -297,6 +363,8 @@ describe("toad.js", function() {
                 // fast sequence and scroll
 
                 it("handle horizontal scrolling when tab is pressed before scroll animation is finished", async function() {
+                    const scene = new BookTableScene()
+
                     this.timeout(15000)
 
                     // send tab keys in an interval slower than the scroll animation
@@ -353,71 +421,3 @@ describe("toad.js", function() {
         })
     })
 })
-
-class MyNode implements TreeNode {
-    label: string
-    next?: MyNode
-    down?: MyNode
-    static counter = 0
-    constructor() {
-        this.label = `#${MyNode.counter++}`
-    }
-}
-
-class MyTreeAdapter extends TreeAdapter<MyNode> {
-    override displayCell(col: number, row: number): Node | undefined {       
-        return this.model && this.treeCell(row, this.model.rows[row].node.label)
-    }
-}
-
-class TreeViewScene {
-    table: TableView
-    tree: TreeNodeModel<MyNode>
-
-    constructor() {
-
-        // setAnimationFrameCount(0)
-        unbind()
-        TableAdapter.unbind()
-        document.body.innerHTML = ""
-
-        let tree = new TreeNodeModel(MyNode)
-        tree.addSiblingAfter(0)
-        tree.addChildAfter(0)
-        tree.addChildAfter(1)
-        tree.addSiblingAfter(2)
-        tree.addSiblingAfter(1)
-        tree.addChildAfter(4)
-        tree.addSiblingAfter(0)
-        bind("tree", tree)
-        this.tree = tree
-
-        TableAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
-
-        document.body.innerHTML = `<toad-tabletool></toad-tabletool><toad-table model="tree"></toad-table>`
-        this.table = document.body.children[1] as TableView
-        expect(this.table.tagName).to.equal("TOAD-TABLE")
-    }
-
-    sleep(milliseconds: number = 500) {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve('success')
-            }, milliseconds)
-        })
-    }
-
-    mouseDownAtCell(col: number, row: number) {
-        const cell = this.table.getCellAt(col, row)!
-        const svg = cell.children[0] as SVGSVGElement
-        let bounds = svg.getBoundingClientRect()
-        const e = new MouseEvent("mousedown", {
-            bubbles: true,
-            clientX: bounds.left + 10,
-            clientY: bounds.top + 10,
-            relatedTarget: svg
-        })
-        // console.log("dispatch mousedown")
-        svg.dispatchEvent(e)
-    }
-}

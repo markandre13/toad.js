@@ -1,4 +1,3 @@
-/** @jsx toadJSX.createElement */
 import * as toadJSX from '../../util/jsx'
 import { TableEvent } from "../TableEvent"
 import { AnimationBase } from '@toad/util/animation'
@@ -39,10 +38,11 @@ export class InsertRowAnimation extends AnimationBase {
   }
 
   override firstFrame() {
-    for (let i = 0; i < this.event.size; ++i) {
-      this.rowAnimationHeight += this.trBody[i].clientHeight + 3
-    }
-    this.table.rowAnimationHeight = this.rowAnimationHeight
+    // for (let i = 0; i < this.event.size; ++i) {
+    //   this.rowAnimationHeight += this.trBody[i].clientHeight + 3
+    // }
+    // this works for 'compact'
+    this.table.rowAnimationHeight = this.rowAnimationHeight = this.table.hiddenSizeCheckBody.clientHeight
   }
 
   override animationFrame(animationTime: number) {
