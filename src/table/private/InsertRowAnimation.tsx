@@ -43,6 +43,7 @@ export class InsertRowAnimation extends AnimationBase {
     // }
     // this works for 'compact'
     this.table.rowAnimationHeight = this.rowAnimationHeight = this.table.hiddenSizeCheckBody.clientHeight
+    // this.stop()
   }
 
   override animationFrame(animationTime: number) {
@@ -75,5 +76,14 @@ export class InsertRowAnimation extends AnimationBase {
       // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
       this.table.inputOverlay.adjustToCell(cell)
     }
+    setTimeout( () => {
+      let actualHeight = 0
+      for(let i=0; i<this.event.size; ++i) {
+        actualHeight += this.table.bodyBody.children[i+1].clientHeight
+      }
+      if (actualHeight != this.rowAnimationHeight) {
+        console.log(`InsertRotAnimation.lastFrame(): calculated height was ${this.rowAnimationHeight} but actually it's ${actualHeight}`)
+      }
+    }, 0)
   }
 }

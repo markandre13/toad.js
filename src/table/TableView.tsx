@@ -89,7 +89,6 @@ export class TableView extends View {
   hiddenSizeCheckBody!: HTMLTableSectionElement
 
   private animator = new Animator()
-  private setSizeCount = 0
 
   rowAnimationHeight = 0 // TODO: put in testAPI object
 

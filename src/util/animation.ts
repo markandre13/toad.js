@@ -40,6 +40,8 @@ export class AnimationBase {
     @bind protected _firstFrame(time: number) {
         this.startTime = time
         this.firstFrame()
+        // if (this._stop)
+        //     return
         this.animationFrame(0)
         this.requestAnimationFrame(this._animationFrame)
     }
