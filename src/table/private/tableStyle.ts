@@ -54,9 +54,6 @@ tableStyle.textContent = `
   bottom: 0;
   right: 0;
 
-  /* minimums are not used on safari when resizing resize */
-  min-height: 100px;
-  min-width: 100px;
   overflow: auto;
   resize: both;
   cursor: default;

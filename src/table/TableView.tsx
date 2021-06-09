@@ -40,6 +40,7 @@ import { InputOverlay } from "./InputOverlay"
 import { Animator } from '@toad/util/animation'
 import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertRowAnimation } from './private/InsertRowAnimation'
+import { throws } from 'assert'
 
 /*
  * rootDiv (div.root, onkeydown)
@@ -160,31 +161,31 @@ export class TableView extends View {
 
     this.attachShadow({ mode: 'open' })
     this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
-    this.rootDiv.children.forEach( child => this.shadowRoot!.appendChild(child))
+    this.rootDiv.children.forEach(child => this.shadowRoot!.appendChild(child))
 
-    const resizeObserver = new ResizeObserver( entries => {
-      for (let e of entries) {
-        if (e.target === this.bodyDiv) {
-          const columnHeadBounds = this.colHeadDiv.getBoundingClientRect()
-          const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
-          const bodyBounds = this.bodyDiv.getBoundingClientRect()
+    // const resizeObserver = new ResizeObserver( entries => {
+    //   for (let e of entries) {
+    //     if (e.target === this.bodyDiv) {
+    //       const columnHeadBounds = this.colHeadDiv.getBoundingClientRect()
+    //       const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
+    //       const bodyBounds = this.bodyDiv.getBoundingClientRect()
 
-          // :host { height & width: fit-content } did not work
-          if (this.style.left === "" && this.style.right === "")
-            this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
-          if (this.style.top === "" && this.style.bottom === "")
-            this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
+    //       // :host { height & width: fit-content } did not work
+    //       if (this.style.left === "" && this.style.right === "")
+    //         this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
+    //       if (this.style.top === "" && this.style.bottom === "")
+    //         this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
 
-          this.bodyDiv.style.top = columnHeadBounds.height + "px"
-          this.bodyDiv.style.left = rowHeadBounds.width + "px"
-          this.colHeadDiv.style.left = rowHeadBounds.width + "px"
-          this.colHeadDiv.style.right = (bodyBounds.width - e.contentRect.width)+"px"
-          this.rowHeadDiv.style.top = columnHeadBounds.height + "px"
-          this.rowHeadDiv.style.bottom = (bodyBounds.height - e.contentRect.height)+"px"
-        }
-      }
-    })
-    resizeObserver.observe(this.bodyDiv)
+    //       this.bodyDiv.style.top = columnHeadBounds.height + "px"
+    //       this.bodyDiv.style.left = rowHeadBounds.width + "px"
+    //       this.colHeadDiv.style.left = rowHeadBounds.width + "px"
+    //       this.colHeadDiv.style.right = (bodyBounds.width - e.contentRect.width)+"px"
+    //       this.rowHeadDiv.style.top = columnHeadBounds.height + "px"
+    //       this.rowHeadDiv.style.bottom = (bodyBounds.height - e.contentRect.height)+"px"
+    //     }
+    //   }
+    // })
+    // resizeObserver.observe(this.bodyDiv)
   }
 
   updateModel() {
@@ -223,7 +224,7 @@ export class TableView extends View {
         try {
           this.adapter = new adapter()
         }
-        catch(e) {
+        catch (e) {
           console.log(`TableView.setModel(): failed to instantiate table adapter: ${e}`)
           console.log(`setting TypeScript's target to 'es6' might help`)
           throw e
@@ -241,9 +242,9 @@ export class TableView extends View {
 
   updateCompact() {
     if (this.adapter?.isViewCompact()) {
-      this.rootDiv.children.forEach( child => child.classList.add("compact"))
+      this.rootDiv.children.forEach(child => child.classList.add("compact"))
     } else {
-      this.rootDiv.children.forEach( child => child.classList.remove("compact"))
+      this.rootDiv.children.forEach(child => child.classList.remove("compact"))
     }
   }
 
@@ -511,12 +512,12 @@ export class TableView extends View {
       }
     }
 
-    if (this.model.rowCount != this.bodyBody.children.length -1) {
-      console.log(`adjustLayoutAfterRender(): bodyBody has ${this.bodyBody.children.length-1} rows while model has ${this.model.rowCount} rows`)
+    if (this.model.rowCount != this.bodyBody.children.length - 1) {
+      console.log(`adjustLayoutAfterRender(): bodyBody has ${this.bodyBody.children.length - 1} rows while model has ${this.model.rowCount} rows`)
     }
 
     // set row heights
-    for (let row = 0; row < this.bodyBody.children.length - 1 ; ++row) {
+    for (let row = 0; row < this.bodyBody.children.length - 1; ++row) {
       const rowHeader = rowHeadHead[row] as HTMLElement
       const rowBody = this.bodyBody.children[row + 1] as HTMLElement
 
@@ -527,6 +528,77 @@ export class TableView extends View {
         rowBody.style.height = rowBody.style.minHeight = rowBody.style.maxHeight =
         ((headHeight > bodyHeight ? headHeight : bodyHeight)) + "px"
     }
+
+    function b2s(r: DOMRect): string {
+      return `${r.x},${r.y},${r.width},${r.height}`
+    }
+
+    // :host { height & width: fit-content } did not work
+    // if (this.style.left === "" && this.style.right === "") || (this.style.width === "")
+    //   this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
+    // if (this.style.top === "" && this.style.bottom === "")
+    //   this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
+
+    const columnHeadBounds = this.colHeadDiv.getBoundingClientRect()
+    const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
+
+    const computedStyle = window.getComputedStyle(this)
+    const computedWidth = computedStyle.width
+    const computedHeight = computedStyle.height
+
+    let bodyBounds = this.bodyDiv.getBoundingClientRect()
+    if (computedWidth === "0px") {
+      const parent = this.parentElement
+      if (parent) {
+        if (bodyBounds.width < parent.clientWidth)
+          this.style.width = (bodyBounds.width + rowHeadBounds.width) + "px"
+        else
+          this.style.width = "100%"
+      }
+    }
+    if (computedHeight === "0px") {
+      const parent = this.parentElement
+      if (parent) {
+        if (bodyBounds.height < parent.clientHeight)
+          this.style.height = (bodyBounds.height + columnHeadBounds.height) + "px"
+        else
+          this.style.height = "100%"
+      }
+    }
+
+    let hostBounds = this.getBoundingClientRect()
+
+    // substract border of 1px on all sides
+    hostBounds.width -= 2
+    hostBounds.height -= 2
+
+    // adjust the bodyDiv to setup the scrollbars
+    this.bodyDiv.style.width = (hostBounds.width - rowHeadBounds.width) + "px"
+    this.bodyDiv.style.height = (hostBounds.height - columnHeadBounds.height) + "px"
+
+    bodyBounds = this.bodyDiv.getBoundingClientRect()
+    const verticalScrollbarWidth = bodyBounds.width - this.bodyDiv.clientWidth
+    const horizontalScrollbarHeight = bodyBounds.height - this.bodyDiv.clientHeight
+
+    // console.log(`host   = ${b2s(hostBounds)}`)
+    // console.log(`column = ${b2s(columnHeadBounds)}`)
+    // console.log(`row    = ${b2s(rowHeadBounds)}`)
+    // console.log(`body   = ${b2s(bodyBounds)}`)
+    // console.log(`verticalScrollbarWidth=${verticalScrollbarWidth}, ${horizontalScrollbarHeight}`)
+    // console.log(`style          left=${this.style.left} right=${this.style.right} width=${this.style.width}`)
+    // console.log(`               top=${this.style.top} bottom=${this.style.bottom} height=${this.style.height}`)
+    // console.log(`computed style left=${computedStyle.left} right=${computedStyle.right} width=${computedStyle.width}`)
+    // console.log(`               top=${computedStyle.top} bottom=${computedStyle.bottom} height=${computedStyle.height}`)
+
+    this.bodyDiv.style.top = columnHeadBounds.height + "px"
+    this.bodyDiv.style.left = rowHeadBounds.width + "px"
+
+    this.colHeadDiv.style.top = "0"
+    this.colHeadDiv.style.left = (rowHeadBounds.width - 1) + "px"
+    this.colHeadDiv.style.width = (hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth) + "px"
+
+    this.rowHeadDiv.style.top = columnHeadBounds.height + "px"
+    this.rowHeadDiv.style.height = (hostBounds.height - columnHeadBounds.height - horizontalScrollbarHeight) + "px"
   }
 
   protected unadjustLayoutBeforeRender(pos: TablePos) {
