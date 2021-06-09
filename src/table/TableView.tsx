@@ -530,7 +530,7 @@ export class TableView extends View {
     }
 
     function b2s(r: DOMRect): string {
-      return `${r.x},${r.y},${r.width},${r.height}`
+      return `${r.x}, ${r.y}, ${r.width}, ${r.height}`
     }
 
     // :host { height & width: fit-content } did not work
@@ -539,30 +539,58 @@ export class TableView extends View {
     // if (this.style.top === "" && this.style.bottom === "")
     //   this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
 
+
     const columnHeadBounds = this.colHeadDiv.getBoundingClientRect()
     const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
+    let bodyBounds = this.bodyDiv.getBoundingClientRect()
+    let cellsBounds = this.bodyTable.getBoundingClientRect()
 
     const computedStyle = window.getComputedStyle(this)
     const computedWidth = computedStyle.width
     const computedHeight = computedStyle.height
 
-    let bodyBounds = this.bodyDiv.getBoundingClientRect()
+    // computedStyle.s
+    // overflow-x, overflow-y: scroll, auto, ...
+    // scrollbarBehaviour: auto | smooth
+    // scrollbarGutter
+    // scrollbarColor: auto, dark, light, <color>
+    // scrollbarWidth: auto,  thin, none
+
+    // console.log(`column = ${b2s(columnHeadBounds)}`)
+    // console.log(`row    = ${b2s(rowHeadBounds)}`)
+    // console.log(`body   = ${b2s(bodyBounds)}`)
+
+    this.style.overflowX = ""
+    this.style.overflowY = ""
+
+    let enoughHorizontalSpace = false
+    let enoughVerticalSpace = false
     if (computedWidth === "0px") {
       const parent = this.parentElement
       if (parent) {
-        if (bodyBounds.width < parent.clientWidth)
-          this.style.width = (bodyBounds.width + rowHeadBounds.width) + "px"
-        else
+        const requiredWidth = rowHeadBounds.width + cellsBounds.width
+        if (requiredWidth < parent.clientWidth) {
+          this.style.width = requiredWidth + "px"
+          this.bodyDiv.style.overflowX = "hidden"
+          // console.log("enough horizontal space")
+          enoughHorizontalSpace = true
+        } else {
           this.style.width = "100%"
+        }
       }
     }
     if (computedHeight === "0px") {
       const parent = this.parentElement
       if (parent) {
-        if (bodyBounds.height < parent.clientHeight)
-          this.style.height = (bodyBounds.height + columnHeadBounds.height) + "px"
-        else
+        const requiredHeight = columnHeadBounds.height + cellsBounds.height
+        if (requiredHeight < parent.clientHeight) {
+          this.style.height = requiredHeight + "px"
+          this.bodyDiv.style.overflowY = "hidden"
+          // console.log("enough vertical space")
+          enoughVerticalSpace = true
+        } else {
           this.style.height = "100%"
+        }
       }
     }
 
@@ -573,12 +601,29 @@ export class TableView extends View {
     hostBounds.height -= 2
 
     // adjust the bodyDiv to setup the scrollbars
-    this.bodyDiv.style.width = (hostBounds.width - rowHeadBounds.width) + "px"
-    this.bodyDiv.style.height = (hostBounds.height - columnHeadBounds.height) + "px"
+    if (enoughHorizontalSpace) {
+      this.bodyDiv.style.width = ""
+    } else {
+      this.bodyDiv.style.width = (hostBounds.width - rowHeadBounds.width) + "px"
+    }
+    if (enoughVerticalSpace) {
+      this.bodyDiv.style.height = ""
+    } else {
+      this.bodyDiv.style.height = (hostBounds.height - columnHeadBounds.height) + "px"
+    }
 
     bodyBounds = this.bodyDiv.getBoundingClientRect()
-    const verticalScrollbarWidth = bodyBounds.width - this.bodyDiv.clientWidth
-    const horizontalScrollbarHeight = bodyBounds.height - this.bodyDiv.clientHeight
+    let verticalScrollbarWidth = bodyBounds.width - this.bodyDiv.clientWidth
+    let horizontalScrollbarHeight = bodyBounds.height - this.bodyDiv.clientHeight
+
+    if (enoughHorizontalSpace) {
+      // console.log("set horizontalScrollbarHeight to 0")
+      horizontalScrollbarHeight = 0
+    }
+    if (enoughVerticalSpace) {
+      // console.log("set verticalScrollbarWidth to 0")
+      verticalScrollbarWidth = 0
+    }
 
     // console.log(`host   = ${b2s(hostBounds)}`)
     // console.log(`column = ${b2s(columnHeadBounds)}`)
@@ -595,9 +640,11 @@ export class TableView extends View {
 
     this.colHeadDiv.style.top = "0"
     this.colHeadDiv.style.left = (rowHeadBounds.width - 1) + "px"
-    this.colHeadDiv.style.width = (hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth) + "px"
+    this.colHeadDiv.style.width = (hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth + 1) + "px"
+    // console.log(`set colHead width = ${hostBounds.width} - ${rowHeadBounds.width} - ${verticalScrollbarWidth} = ${hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth} `)
 
     this.rowHeadDiv.style.top = columnHeadBounds.height + "px"
+    this.rowHeadDiv.style.left = "0"
     this.rowHeadDiv.style.height = (hostBounds.height - columnHeadBounds.height - horizontalScrollbarHeight) + "px"
   }
 
