@@ -539,10 +539,9 @@ export class TableView extends View {
     // if (this.style.top === "" && this.style.bottom === "")
     //   this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
 
-
     const columnHeadBounds = this.colHeadDiv.getBoundingClientRect()
     const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
-    let bodyBounds = this.bodyDiv.getBoundingClientRect()
+    let scrollBounds = this.bodyDiv.getBoundingClientRect()
     let cellsBounds = this.bodyTable.getBoundingClientRect()
 
     const computedStyle = window.getComputedStyle(this)
@@ -575,7 +574,7 @@ export class TableView extends View {
           // console.log("enough horizontal space")
           enoughHorizontalSpace = true
         } else {
-          this.style.width = "100%"
+          this.style.width = (parent.clientWidth - 2) + "px"
         }
       }
     }
@@ -589,16 +588,18 @@ export class TableView extends View {
           // console.log("enough vertical space")
           enoughVerticalSpace = true
         } else {
-          this.style.height = "100%"
+          this.style.height = (parent.clientHeight - 2) + "px"
         }
       }
     }
 
-    let hostBounds = this.getBoundingClientRect()
-
-    // substract border of 1px on all sides
-    hostBounds.width -= 2
-    hostBounds.height -= 2
+    let outerBounds = this.getBoundingClientRect()
+    const hostBounds = {
+      x: this.clientLeft + outerBounds.x,
+      y: this.clientTop + outerBounds.y,
+      width: this.clientWidth,
+      height: this.clientHeight
+    } as DOMRect
 
     // adjust the bodyDiv to setup the scrollbars
     if (enoughHorizontalSpace) {
@@ -612,9 +613,9 @@ export class TableView extends View {
       this.bodyDiv.style.height = (hostBounds.height - columnHeadBounds.height) + "px"
     }
 
-    bodyBounds = this.bodyDiv.getBoundingClientRect()
-    let verticalScrollbarWidth = bodyBounds.width - this.bodyDiv.clientWidth
-    let horizontalScrollbarHeight = bodyBounds.height - this.bodyDiv.clientHeight
+    scrollBounds = this.bodyDiv.getBoundingClientRect()
+    let verticalScrollbarWidth = scrollBounds.width - this.bodyDiv.clientWidth
+    let horizontalScrollbarHeight = scrollBounds.height - this.bodyDiv.clientHeight
 
     if (enoughHorizontalSpace) {
       // console.log("set horizontalScrollbarHeight to 0")
