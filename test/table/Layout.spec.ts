@@ -10,7 +10,7 @@ describe("toad.js", function () {
         describe.only("table should behave like an inline-block", function() {
             describe("without styling", function() {
                 xit("doesn't exceed the parent's width", function() {
-                    const scence = new TestTableScene({
+                    const scene = new TestTableScene({
                         html: `
                         <div style="
                             border: 1px #000 solid;
@@ -24,7 +24,7 @@ describe("toad.js", function () {
                     })
                 })
                 xit("doesn't exceed the parent's height", function() {
-                    const scence = new TestTableScene({
+                    const scene = new TestTableScene({
                         html: `
                         <div style="
                             border: 1px #000 solid;
@@ -152,6 +152,28 @@ describe("toad.js", function () {
                 await scence.sleep(10)
 
                 expectTableLayout(expectedBounds, table)
+            })
+
+            // row & col headers aren't updated after the insert
+            // but editing a cell fixes that for that specific column/row
+            xit("column and row headers are updated after changing the model", function() {
+            // scene.model.insert(5, [
+                //     scene.model.createRow(),
+                //     scene.model.createRow(),
+                //     scene.model.createRow(),
+                //     scene.model.createRow(),
+                //     scene.model.createRow(),
+                // ])
+            })
+
+            it("when neither table nor parent have a size, use a default", async function() {
+                const scene = new TestTableScene({
+                    html: `<div><toad-table model='books'></toad-table></div>`
+                })
+                const table = document.querySelector("toad-table") as TableView
+                await scene.sleep(10)
+
+                // expectTableLayout(expectedBounds, table)
             })
         })
     })

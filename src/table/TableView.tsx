@@ -494,6 +494,8 @@ export class TableView extends View {
     if (!this.model)
       throw Error("TableView.adjustLayoutAfterRender(): no model")
 
+    // console.log(`TableView.adjustLayoutAfterRender()`)
+
     const colHeadRow = this.colHeadRow.children
     const rowHeadHead = this.rowHeadHead.children
     const bodyRow = this.bodyRow.children
@@ -544,6 +546,9 @@ export class TableView extends View {
     let scrollBounds = this.bodyDiv.getBoundingClientRect()
     let cellsBounds = this.bodyTable.getBoundingClientRect()
 
+    const parentComputedStyle = window.getComputedStyle(this.parentElement!)
+    // console.log(`parent: computed: ${parentComputedStyle.width}, ${parentComputedStyle.height}, client: ${this.parentElement!.clientWidth}, ${this.parentElement!.clientHeight}`)
+
     const computedStyle = window.getComputedStyle(this)
     const computedWidth = computedStyle.width
     const computedHeight = computedStyle.height
@@ -559,6 +564,8 @@ export class TableView extends View {
     // console.log(`row    = ${b2s(rowHeadBounds)}`)
     // console.log(`body   = ${b2s(bodyBounds)}`)
 
+    // console.log(`hosts computed size = ${computedWidth}, ${computedHeight}`)
+
     this.style.overflowX = ""
     this.style.overflowY = ""
 
@@ -569,11 +576,14 @@ export class TableView extends View {
       if (parent) {
         const requiredWidth = rowHeadBounds.width + cellsBounds.width
         if (requiredWidth < parent.clientWidth) {
+          // console.log(`requiredWidth < parent.clientWidth => this.style.width = ${requiredWidth}px`)
           this.style.width = requiredWidth + "px"
           this.bodyDiv.style.overflowX = "hidden"
           // console.log("enough horizontal space")
           enoughHorizontalSpace = true
         } else {
+          // elements like <div> per default have the maximum width, use it
+          // console.log(`requiredWidth >= parent.clientWidth => this.style.width = ${parent.clientWidth - 2}px`)
           this.style.width = (parent.clientWidth - 2) + "px"
         }
       }
@@ -581,14 +591,21 @@ export class TableView extends View {
     if (computedHeight === "0px") {
       const parent = this.parentElement
       if (parent) {
-        const requiredHeight = columnHeadBounds.height + cellsBounds.height
+        let requiredHeight = columnHeadBounds.height + cellsBounds.height
+        // include the horizontal scrollbar in the calculation FIXME: also include the vertical one for the width
+        if (!enoughHorizontalSpace)
+          requiredHeight += 15 // FIXME: this is the scrollbar height on Safari as of time of writing
+        // console.log(`DEBUG: requiredHeight=${requiredHeight}, parent.clientHeight=${parent.clientHeight}, cellsBounds.height=${cellsBounds.height}, rows=${this.bodyBody.children.length}`)
         if (requiredHeight < parent.clientHeight) {
           this.style.height = requiredHeight + "px"
+          // console.log(`requiredHeight < parent.clientHeight => this.style.height = ${requiredHeight}px`)
           this.bodyDiv.style.overflowY = "hidden"
           // console.log("enough vertical space")
           enoughVerticalSpace = true
         } else {
-          this.style.height = (parent.clientHeight - 2) + "px"
+          // elements like <div> per default have the minumum height, instead use the requiredHeight but no more than 400px
+          // console.log(`requiredHeight < parent.clientHeight => this.style.height = ${parent.clientHeight - 2}px`)
+          this.style.height = Math.min(400, requiredHeight) + "px"
         }
       }
     }

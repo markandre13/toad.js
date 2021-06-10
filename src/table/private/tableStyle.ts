@@ -55,7 +55,7 @@ tableStyle.textContent = `
   right: 0;
 
   overflow: auto;
-  resize: both;
+  /* resize: both; */
   cursor: default;
 }
 
