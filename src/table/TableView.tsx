@@ -490,6 +490,34 @@ export class TableView extends View {
     }
   }
 
+  adjustLayout(pos: TablePos | undefined) {
+    this.unadjustLayoutBeforeRender(pos)
+    setTimeout(() => {
+      this.adjustLayoutAfterRender()
+    }, 0)
+  }
+
+  protected unadjustLayoutBeforeRender(pos: TablePos | undefined) {
+    if (pos === undefined) {
+      for(let column = 0; column<this.model!.colCount; ++column) {
+        this.unadjustLayoutColumnBeforeRender(column)
+      }
+    } else {
+      this.unadjustLayoutColumnBeforeRender(pos.col)
+    }
+    // FIXME: row height
+  }
+
+  protected unadjustLayoutColumnBeforeRender(column: number) {
+    const head = this.colHeadRow.children[column] as HTMLElement
+    const body = this.bodyRow.children[column] as HTMLElement
+    head.style.width = head.style.minWidth = head.style.maxWidth =
+      body.style.width = body.style.minWidth = body.style.maxWidth = ""
+
+    // FIXME: row height
+  }
+
+
   protected adjustLayoutAfterRender() {
     if (!this.model)
       throw Error("TableView.adjustLayoutAfterRender(): no model")
@@ -664,15 +692,6 @@ export class TableView extends View {
     this.rowHeadDiv.style.top = columnHeadBounds.height + "px"
     this.rowHeadDiv.style.left = "0"
     this.rowHeadDiv.style.height = (hostBounds.height - columnHeadBounds.height - horizontalScrollbarHeight) + "px"
-  }
-
-  protected unadjustLayoutBeforeRender(pos: TablePos) {
-    let head = this.colHeadRow.children[pos.col] as HTMLElement
-    let body = this.bodyRow.children[pos.col] as HTMLElement
-    head.style.width = head.style.minWidth = head.style.maxWidth =
-      body.style.width = body.style.minWidth = body.style.maxWidth = ""
-
-    // FIXME: row height
   }
 
   protected prepareInputOverlayForCell(cell: HTMLTableDataCellElement | undefined) {

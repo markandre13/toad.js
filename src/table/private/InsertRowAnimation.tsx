@@ -76,6 +76,8 @@ export class InsertRowAnimation extends AnimationBase {
       // console.log(`updateViewAfterInsertRow: => this.inputOverlay.adjustToCell()`)
       this.table.inputOverlay.adjustToCell(cell)
     }
+    // FIXME: only one row
+    this.table.adjustLayout({col: 0, row: this.event.index})
     setTimeout( () => {
       let actualHeight = 0
       for(let i=0; i<this.event.size; ++i) {
