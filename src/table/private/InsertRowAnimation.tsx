@@ -22,7 +22,9 @@ export class InsertRowAnimation extends AnimationBase {
     // create new rows and add them to the hiddenSizeCheckTable for measuring
     for (let i = 0; i < this.event.size; ++i) {
       // FIXME: height not yet measured for row header
-      const trH = <tr style={{ height: '0px' }} />
+      // const trH = <tr style={{ height: '0px' }} />
+      let trH = this.table.createDOMRowHeaderRow(this.event.index)
+      this.table.hiddenSizeCheckRowHead.appendChild(trH)
       this.trHead.push(trH)
 
       const trB = this.table.createDOMBodyRow(this.event.index + i)
@@ -42,7 +44,10 @@ export class InsertRowAnimation extends AnimationBase {
     //   this.rowAnimationHeight += this.trBody[i].clientHeight + 3
     // }
     // this works for 'compact'
-    this.table.rowAnimationHeight = this.rowAnimationHeight = this.table.hiddenSizeCheckBody.clientHeight
+    this.table.rowAnimationHeight = this.rowAnimationHeight = Math.max(
+      this.table.hiddenSizeCheckBody.clientHeight,
+      this.table.hiddenSizeCheckRowHead.clientHeight
+    )
     // this.stop()
   }
 
@@ -54,7 +59,7 @@ export class InsertRowAnimation extends AnimationBase {
 
   override lastFrame() {
     for (let i = 0; i < this.event.size; ++i) {
-      const rowHeight = `${this.trBody[i].clientHeight + 3}px`
+      const rowHeight = `${Math.max(this.trHead[i].clientHeight, this.trBody[i].clientHeight)}px`
       const bodyStyle = this.trHead[i].style
       bodyStyle.height = bodyStyle.minHeight = bodyStyle.maxHeight = rowHeight
       const headStyle = this.trHead[i].style
@@ -77,7 +82,8 @@ export class InsertRowAnimation extends AnimationBase {
       this.table.inputOverlay.adjustToCell(cell)
     }
     // FIXME: only one row
-    this.table.adjustLayout({col: 0, row: this.event.index})
+    // this.table.adjustLayout({col: 0, row: this.event.index})
+    this.table.adjustLayout(undefined) // all columns
     setTimeout( () => {
       let actualHeight = 0
       for(let i=0; i<this.event.size; ++i) {

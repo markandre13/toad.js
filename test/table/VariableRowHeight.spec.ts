@@ -183,8 +183,8 @@ class VariableRowHeightScene {
     }
 
     expectScrollAt(x: number, y: number) {
-        expect(this.table.bodyDiv.scrollLeft, "x").equals(x)
-        expect(this.table.bodyDiv.scrollTop, "y").equals(y)
+        expect(this.table.scrollDiv.scrollLeft, "x").equals(x)
+        expect(this.table.scrollDiv.scrollTop, "y").equals(y)
     }
 }
 

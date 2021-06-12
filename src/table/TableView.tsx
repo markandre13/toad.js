@@ -42,6 +42,11 @@ import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertRowAnimation } from './private/InsertRowAnimation'
 import { throws } from 'assert'
 
+enum Log {
+  LAYOUT
+}
+
+
 /*
  * rootDiv (div.root, onkeydown)
  *   rowHeadDiv (div.rowhead, hidden)
@@ -77,7 +82,7 @@ export class TableView extends View {
   colHeadTable!: HTMLTableElement
   colHeadRow!: HTMLTableRowElement
 
-  bodyDiv!: HTMLElement
+  scrollDiv!: HTMLElement
   bodyTable!: HTMLTableElement
   bodyBody!: HTMLTableSectionElement
   bodyRow!: HTMLTableRowElement
@@ -87,7 +92,12 @@ export class TableView extends View {
   fieldModel?: Model
   insideGoTo: boolean
 
+  hiddenSizeCheckRowHead!: HTMLTableSectionElement
   hiddenSizeCheckBody!: HTMLTableSectionElement
+
+  private log(what: Log, msg: string) {
+    // console.log(msg)
+  }
 
   private animator = new Animator()
 
@@ -112,7 +122,7 @@ export class TableView extends View {
             </thead>
           </table>
         </div>
-        <div set={ref(this, 'bodyDiv')} class="cells">
+        <div set={ref(this, 'scrollDiv')} class="cells">
           <table set={ref(this, 'bodyTable')}>
             <tbody set={ref(this, 'bodyBody')}>
               <tr set={ref(this, 'bodyRow')} class="bodyrow"></tr>
@@ -123,15 +133,16 @@ export class TableView extends View {
           </div>
         </div>
         <table class="hiddenSizeCheck">
-          <tbody set={ref(this, 'hiddenSizeCheckBody')}></tbody>
+          <thead set={ref(this, 'hiddenSizeCheckRowHead')} />
+          <tbody set={ref(this, 'hiddenSizeCheckBody')} />
         </table>
       </>
 
     this.onkeydown = this.onRootDivKeyDown
 
-    this.bodyDiv.onscroll = () => {
-      this.rowHeadDiv.scrollTop = this.bodyDiv.scrollTop
-      this.colHeadDiv.scrollLeft = this.bodyDiv.scrollLeft
+    this.scrollDiv.onscroll = () => {
+      this.rowHeadDiv.scrollTop = this.scrollDiv.scrollTop
+      this.colHeadDiv.scrollLeft = this.scrollDiv.scrollLeft
     }
 
     this.bodyTable.onmousedown = (event: MouseEvent) => {
@@ -434,18 +445,28 @@ export class TableView extends View {
     //    dump(this.bodyBody)
   }
 
+  createDOMRowHeaderRow(row: number) {
+    if (!this.model || !this.adapter)
+      throw Error()
+    const cell = this.adapter.getRowHead(row)
+    // TODO: we really should return undefined to avoid creating unused tags
+    if (cell === undefined)
+      return <tr />
+    return <tr><th>{cell}</th></tr>
+  }
+
   createDOMBodyRow(row: number) {
     if (!this.model || !this.adapter)
       throw Error()
 
-    const bodyRow = <tr />
+    const result = <tr />
     for (let col = 0; col < this.model.colCount; ++col) {
       let cell: HTMLTableDataCellElement
-      if (col >= bodyRow.children.length) {
+      if (col >= result.children.length) {
         cell = <td />
-        bodyRow.appendChild(cell)
+        result.appendChild(cell)
       } else {
-        cell = bodyRow.children[col] as HTMLTableDataCellElement
+        cell = result.children[col] as HTMLTableDataCellElement
       }
       cell.style.width = ""
       const content = this.adapter.displayCell(col, row)
@@ -455,11 +476,11 @@ export class TableView extends View {
     }
 
     if (this.style.width === "100%") {
-      let lastCell = bodyRow.children[bodyRow.children.length - 1] as HTMLTableDataCellElement
+      let lastCell = result.children[result.children.length - 1] as HTMLTableDataCellElement
       lastCell.style.width = "100%"
     }
 
-    return bodyRow
+    return result
   }
 
   protected createSelection() {
@@ -497,6 +518,30 @@ export class TableView extends View {
     }, 0)
   }
 
+// unadjust causes the screen to flicker, the easiest approach would be to double buffer
+//   function getScreenshotOfElement(element, posX, posY, width, height, callback) {
+//     html2canvas(element, {
+//         onrendered: function (canvas) {
+//             var context = canvas.getContext('2d');
+//             var imageData = context.getImageData(posX, posY, width, height).data;
+//             var outputCanvas = document.createElement('canvas');
+//             var outputContext = outputCanvas.getContext('2d');
+//             outputCanvas.width = width;
+//             outputCanvas.height = height;
+
+//             var idata = outputContext.createImageData(width, height);
+//             idata.data.set(imageData);
+//             outputContext.putImageData(idata, 0, 0);
+//             callback(outputCanvas.toDataURL().replace("data:image/png;base64,", ""));
+//         },
+//         width: width,
+//         height: height,
+//         useCORS: true,
+//         taintTest: false,
+//         allowTaint: false
+//     });
+// }
+
   protected unadjustLayoutBeforeRender(pos: TablePos | undefined) {
     if (pos === undefined) {
       for(let column = 0; column<this.model!.colCount; ++column) {
@@ -522,7 +567,7 @@ export class TableView extends View {
     if (!this.model)
       throw Error("TableView.adjustLayoutAfterRender(): no model")
 
-    // console.log(`TableView.adjustLayoutAfterRender()`)
+    this.log(Log.LAYOUT, `TableView.adjustLayoutAfterRender()`)
 
     const colHeadRow = this.colHeadRow.children
     const rowHeadHead = this.rowHeadHead.children
@@ -543,7 +588,7 @@ export class TableView extends View {
     }
 
     if (this.model.rowCount != this.bodyBody.children.length - 1) {
-      console.log(`adjustLayoutAfterRender(): bodyBody has ${this.bodyBody.children.length - 1} rows while model has ${this.model.rowCount} rows`)
+      this.log(Log.LAYOUT, `adjustLayoutAfterRender(): bodyBody has ${this.bodyBody.children.length - 1} rows while model has ${this.model.rowCount} rows`)
     }
 
     // set row heights
@@ -563,77 +608,71 @@ export class TableView extends View {
       return `${r.x}, ${r.y}, ${r.width}, ${r.height}`
     }
 
-    // :host { height & width: fit-content } did not work
-    // if (this.style.left === "" && this.style.right === "") || (this.style.width === "")
-    //   this.style.width = (bodyBounds.width + rowHeadBounds.width)+"px"
-    // if (this.style.top === "" && this.style.bottom === "")
-    //   this.style.height = (bodyBounds.height + columnHeadBounds.height)+"px"
+    // basic layout
 
     const columnHeadBounds = this.colHeadDiv.getBoundingClientRect()
     const rowHeadBounds = this.rowHeadDiv.getBoundingClientRect()
-    let scrollBounds = this.bodyDiv.getBoundingClientRect()
+    let scrollBounds = this.scrollDiv.getBoundingClientRect()
     let cellsBounds = this.bodyTable.getBoundingClientRect()
-
-    const parentComputedStyle = window.getComputedStyle(this.parentElement!)
-    // console.log(`parent: computed: ${parentComputedStyle.width}, ${parentComputedStyle.height}, client: ${this.parentElement!.clientWidth}, ${this.parentElement!.clientHeight}`)
 
     const computedStyle = window.getComputedStyle(this)
     const computedWidth = computedStyle.width
     const computedHeight = computedStyle.height
 
-    // computedStyle.s
-    // overflow-x, overflow-y: scroll, auto, ...
-    // scrollbarBehaviour: auto | smooth
-    // scrollbarGutter
-    // scrollbarColor: auto, dark, light, <color>
-    // scrollbarWidth: auto,  thin, none
-
     // console.log(`column = ${b2s(columnHeadBounds)}`)
     // console.log(`row    = ${b2s(rowHeadBounds)}`)
-    // console.log(`body   = ${b2s(bodyBounds)}`)
-
+    // console.log(`scroll  = ${b2s(scrollBounds)}`)
     // console.log(`hosts computed size = ${computedWidth}, ${computedHeight}`)
 
+    //
+    // set TableView width and height
+    //
     this.style.overflowX = ""
     this.style.overflowY = ""
 
     let enoughHorizontalSpace = false
     let enoughVerticalSpace = false
+
+    // note: we can check if a style is set for TableView either directly or via a class by comparing
+    // computed(Height|Width) to "0px" as a result of having the shadowDom
     if (computedWidth === "0px") {
+      this.log(Log.LAYOUT, `  TableView has no width specified`)
       const parent = this.parentElement
       if (parent) {
         const requiredWidth = rowHeadBounds.width + cellsBounds.width
         if (requiredWidth < parent.clientWidth) {
-          // console.log(`requiredWidth < parent.clientWidth => this.style.width = ${requiredWidth}px`)
+          this.log(Log.LAYOUT, `    parent is wide enough for content, set TableView width to ${requiredWidth}px`)
           this.style.width = requiredWidth + "px"
-          this.bodyDiv.style.overflowX = "hidden"
-          // console.log("enough horizontal space")
+          this.scrollDiv.style.overflowX = "hidden"
           enoughHorizontalSpace = true
         } else {
-          // elements like <div> per default have the maximum width, use it
-          // console.log(`requiredWidth >= parent.clientWidth => this.style.width = ${parent.clientWidth - 2}px`)
+          this.log(Log.LAYOUT, `    parent isn't wide enough for content, set TableView width to parent's width of ${parent.clientWidth - 2}px`)
+          // elements like <div> default to have the maximum width, use it
           this.style.width = (parent.clientWidth - 2) + "px"
         }
       }
     }
     if (computedHeight === "0px") {
+      this.log(Log.LAYOUT, `  TableView has no height specified`)
       const parent = this.parentElement
       if (parent) {
         let requiredHeight = columnHeadBounds.height + cellsBounds.height
         // include the horizontal scrollbar in the calculation FIXME: also include the vertical one for the width
         if (!enoughHorizontalSpace)
           requiredHeight += 15 // FIXME: this is the scrollbar height on Safari as of time of writing
-        // console.log(`DEBUG: requiredHeight=${requiredHeight}, parent.clientHeight=${parent.clientHeight}, cellsBounds.height=${cellsBounds.height}, rows=${this.bodyBody.children.length}`)
-        if (requiredHeight < parent.clientHeight) {
+
+        const maxHeight = window.innerHeight // FIXME: use maxSize: 100vh and then let it begin overridden?
+
+        if (requiredHeight < maxHeight) {
+          this.log(Log.LAYOUT, `    parent IS high enough for content, set TableView height to ${requiredHeight}px`)
           this.style.height = requiredHeight + "px"
-          // console.log(`requiredHeight < parent.clientHeight => this.style.height = ${requiredHeight}px`)
-          this.bodyDiv.style.overflowY = "hidden"
-          // console.log("enough vertical space")
+          this.scrollDiv.style.overflowY = "hidden"
           enoughVerticalSpace = true
         } else {
-          // elements like <div> per default have the minumum height, instead use the requiredHeight but no more than 400px
-          // console.log(`requiredHeight < parent.clientHeight => this.style.height = ${parent.clientHeight - 2}px`)
-          this.style.height = Math.min(400, requiredHeight) + "px"
+          // elements like <div> adjust to their children
+          // set height to required height but no higher than body as table has it's own scroll feature
+          this.log(Log.LAYOUT, `    parent is NOT high enough for content, default TableView height to ${maxHeight}px`)
+          this.style.height = maxHeight + "px"
         }
       }
     }
@@ -646,46 +685,50 @@ export class TableView extends View {
       height: this.clientHeight
     } as DOMRect
 
+    //
     // adjust the bodyDiv to setup the scrollbars
+    //
+    this.log(Log.LAYOUT, `  adjust the bodyDiv to setup the scrollbars`)
     if (enoughHorizontalSpace) {
-      this.bodyDiv.style.width = ""
+      this.log(Log.LAYOUT, `    table IS wide enough for content, do not set scrollDiv's width`)
+      this.scrollDiv.style.width = ""
     } else {
-      this.bodyDiv.style.width = (hostBounds.width - rowHeadBounds.width) + "px"
+      this.log(Log.LAYOUT, `    table is NOT wide enough for content, set scroll width to ${hostBounds.width - rowHeadBounds.width}px`)
+      this.scrollDiv.style.width = (hostBounds.width - rowHeadBounds.width) + "px"
     }
     if (enoughVerticalSpace) {
-      this.bodyDiv.style.height = ""
+      this.log(Log.LAYOUT, `    table IS heigh enough for content, do not set scrollDiv's height`)
+      this.scrollDiv.style.height = ""
     } else {
-      this.bodyDiv.style.height = (hostBounds.height - columnHeadBounds.height) + "px"
+      this.log(Log.LAYOUT, `    table is NOT high enough for content, set scroll height to ${hostBounds.height - columnHeadBounds.height}px`)
+      this.scrollDiv.style.height = (hostBounds.height - columnHeadBounds.height) + "px"
     }
 
-    scrollBounds = this.bodyDiv.getBoundingClientRect()
-    let verticalScrollbarWidth = scrollBounds.width - this.bodyDiv.clientWidth
-    let horizontalScrollbarHeight = scrollBounds.height - this.bodyDiv.clientHeight
-
-    if (enoughHorizontalSpace) {
-      // console.log("set horizontalScrollbarHeight to 0")
-      horizontalScrollbarHeight = 0
-    }
-    if (enoughVerticalSpace) {
-      // console.log("set verticalScrollbarWidth to 0")
-      verticalScrollbarWidth = 0
-    }
+    //
+    // figure out how much space the scrollbars take
+    //
+    this.log(Log.LAYOUT, `  figure out how much space the scrollbars take`)
+    scrollBounds = this.scrollDiv.getBoundingClientRect()
+    let verticalScrollbarWidth = enoughVerticalSpace ? 0 : scrollBounds.width - this.scrollDiv.clientWidth
+    let horizontalScrollbarHeight = enoughHorizontalSpace ? 0 : scrollBounds.height - this.scrollDiv.clientHeight
+    this.log(Log.LAYOUT, `    width ${verticalScrollbarWidth}, height ${horizontalScrollbarHeight}`)
 
     // console.log(`host   = ${b2s(hostBounds)}`)
     // console.log(`column = ${b2s(columnHeadBounds)}`)
     // console.log(`row    = ${b2s(rowHeadBounds)}`)
-    // console.log(`body   = ${b2s(bodyBounds)}`)
+    // console.log(`scroll = ${b2s(scrollBounds)}`)
     // console.log(`verticalScrollbarWidth=${verticalScrollbarWidth}, ${horizontalScrollbarHeight}`)
     // console.log(`style          left=${this.style.left} right=${this.style.right} width=${this.style.width}`)
     // console.log(`               top=${this.style.top} bottom=${this.style.bottom} height=${this.style.height}`)
     // console.log(`computed style left=${computedStyle.left} right=${computedStyle.right} width=${computedStyle.width}`)
     // console.log(`               top=${computedStyle.top} bottom=${computedStyle.bottom} height=${computedStyle.height}`)
 
-    this.bodyDiv.style.top = columnHeadBounds.height + "px"
-    this.bodyDiv.style.left = rowHeadBounds.width + "px"
+    this.scrollDiv.style.top = columnHeadBounds.height + "px"
+    this.scrollDiv.style.left = rowHeadBounds.width + "px"
 
     this.colHeadDiv.style.top = "0"
     this.colHeadDiv.style.left = (rowHeadBounds.width - 1) + "px"
+    this.log(Log.LAYOUT, `  set colHeadDiv = ${hostBounds.width} (host width) - ${rowHeadBounds.width} (rowHeadDiv width) - ${verticalScrollbarWidth} (vertical scrollbar width) = ${hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth + 1}`)
     this.colHeadDiv.style.width = (hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth + 1) + "px"
     // console.log(`set colHead width = ${hostBounds.width} - ${rowHeadBounds.width} - ${verticalScrollbarWidth} = ${hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth} `)
 
@@ -755,14 +798,14 @@ export class TableView extends View {
    * set focus
    */
   override focus() {
-    const { x, y } = { x: this.bodyDiv.scrollLeft, y: this.bodyDiv.scrollTop }
+    const { x, y } = { x: this.scrollDiv.scrollLeft, y: this.scrollDiv.scrollTop }
     if (this.editView) {
       this.editView.focus({ preventScroll: true })
     } else {
       super.focus({ preventScroll: true })
     }
-    this.bodyDiv.scrollLeft = x
-    this.bodyDiv.scrollTop = y
+    this.scrollDiv.scrollLeft = x
+    this.scrollDiv.scrollTop = y
   }
 
   hasFocus(): boolean {

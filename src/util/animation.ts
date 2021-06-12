@@ -1,5 +1,6 @@
 import bind from 'bind-decorator'
 
+// TODO: look into cancelAnimationFrame during refactoring
 export class AnimationBase {
     static animationFrameCount = 468
 

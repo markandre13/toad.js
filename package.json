@@ -15,7 +15,7 @@
     "build:watch": "rollup --config src/rollup.config.js --watch",
     "build-docs": "rollup --config docs/rollup.config.js",
     "test": "karma start",
-    "test:watch": "karma start --singleRun=false --autoWatch=true",
+    "test:watch": "karma start --singleRun=false --autoWatch=true | grep -v '^Chrome Headless .* LOG:'",
     "ui-test": "webpack ; mocha ui-test/bootstrap.js -t 100000 --recursive ui-test",
     "update": "npx npm-check-updates -u && npm install"
   },

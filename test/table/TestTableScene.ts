@@ -11,6 +11,25 @@ interface Options {
     html?: string
 }
 
+interface Rect {
+    x: number
+    y: number
+    width: number
+    height?: number
+}
+
+interface Expectations {
+    withinHostBounds?: Rect
+    hasHorizontalScrollBar?: Boolean
+    hasVerticalScrollBar?: boolean
+}
+
+function b2s(r: Rect | undefined): string {
+    if (r === undefined)
+        return "undefined"
+    return `${r.x},${r.y},${r.width},${r.height}`
+}
+
 export class TestTableScene {
     table: TableView
     model: TestTableModel
@@ -53,6 +72,69 @@ export class TestTableScene {
     }
     static createHTML(style = "", amount = 50): string {
         return `<span style="border: 1px solid #000; background: #f80; display: inline-block; overflow: auto;${style}">${"Lorem ipsum! ".repeat(amount)}</span>`
+    }
+    
+    expectTableLayout(expectations: Expectations) {
+        const outerBounds = this.table.getBoundingClientRect()
+        const hostBounds = {
+            x: this.table.clientLeft + outerBounds.x,
+            y: this.table.clientTop + outerBounds.y,
+            width: this.table.clientWidth,
+            height: this.table.clientHeight
+        }
+    
+        const columnHeadBounds = this.table.colHeadDiv.getBoundingClientRect()
+        const rowHeadBounds = this.table.rowHeadDiv.getBoundingClientRect()
+        const scrollBounds = this.table.scrollDiv.getBoundingClientRect()
+        const bodyBounds = this.table.bodyTable.getBoundingClientRect()
+    
+        const verticalScrollbarWidth = scrollBounds.width - this.table.scrollDiv.clientWidth
+        const horizontalScrollbarHeight = scrollBounds.height - this.table.scrollDiv.clientHeight
+
+        // expect(columnHeadBounds.width).to.equal(scrollBounds.width)
+        // expect(rowHeadBounds.height).to.equal(scrollBounds.height)
+    
+        // console.log(`expected = ${b2s(expectations.withinHostBounds)}`)
+        // console.log(`outer    = ${b2s(outerBounds)}`)
+        // console.log(`host     = ${b2s(hostBounds)}`)
+        // console.log(`column   = ${b2s(columnHeadBounds)}`)
+        // console.log(`row      = ${b2s(rowHeadBounds)}`)
+        // console.log(`scroll   = ${b2s(scrollBounds)}`)
+        // console.log(`body     = ${b2s(bodyBounds)}`)
+        // console.log(`scrollbar= ${verticalScrollbarWidth}, ${horizontalScrollbarHeight}`)
+
+        if (expectations.hasHorizontalScrollBar !== undefined)
+            expect(0).to.equal(horizontalScrollbarHeight)
+        if (expectations.hasVerticalScrollBar !== undefined)
+            expect(0).to.equal(verticalScrollbarWidth)
+    
+        // console.log(`width = ${rowHeadBounds.width} + ${scrollBounds.width} = ${rowHeadBounds.width + scrollBounds.width}`)
+        // console.log(`height= ${columnHeadBounds.height} + ${scrollBounds.height} = ${columnHeadBounds.height + scrollBounds.height}`)
+    
+        if (expectations.withinHostBounds) {
+            const o: Rect = {
+                x: outerBounds.x,
+                y: outerBounds.y,
+                width: outerBounds.width,
+                height: outerBounds.height
+            }
+            if (expectations.withinHostBounds.height === undefined)
+                o.height = undefined
+            expect(b2s(o)).to.equal(b2s(expectations.withinHostBounds))
+        }
+    
+        expect(columnHeadBounds.x).to.equal(hostBounds.x-1+rowHeadBounds.width)
+        expect(columnHeadBounds.y).to.equal(hostBounds.y)
+        expect(columnHeadBounds.width, 'columnHeadDiv has wrong width').to.equal(hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth + 1)
+    
+        expect(rowHeadBounds.x).to.equal(hostBounds.x)
+        expect(rowHeadBounds.y).to.equal(hostBounds.y+columnHeadBounds.height)
+        expect(rowHeadBounds.height).to.equal(hostBounds.height - columnHeadBounds.height - horizontalScrollbarHeight)
+    
+        expect(scrollBounds.x).to.equal(hostBounds.x+rowHeadBounds.width)
+        expect(scrollBounds.y).to.equal(hostBounds.y+columnHeadBounds.height)
+        expect(scrollBounds.width).to.equal(hostBounds.width - rowHeadBounds.width)
+        expect(scrollBounds.height).to.equal(hostBounds.height - columnHeadBounds.height)
     }
 
     sleep(milliseconds: number = 500) {
@@ -145,8 +227,8 @@ export class TestTableScene {
     }
 
     expectScrollAt(x: number, y: number) {
-        expect(this.table.bodyDiv.scrollLeft, "x").equals(x)
-        expect(this.table.bodyDiv.scrollTop, "y").equals(y)
+        expect(this.table.scrollDiv.scrollLeft, "x").equals(x)
+        expect(this.table.scrollDiv.scrollTop, "y").equals(y)
     }
 
     expectInputOverlayAt(col: number, row: number) {

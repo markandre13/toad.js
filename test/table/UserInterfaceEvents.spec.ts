@@ -376,7 +376,7 @@ describe("toad.js", function() {
                         else
                             scene.sendTab()
                         await scene.sleep()
-                        expectedScrollX.push(scene.table.bodyDiv.scrollLeft)
+                        expectedScrollX.push(scene.table.scrollDiv.scrollLeft)
                         // console.log(`${i}: ${scene.table.bodyDiv.scrollLeft}`)
                     }
 
