@@ -139,8 +139,8 @@ describe("toad.js", function () {
                 scene.expectTableLayout({})
             })
         })
-        describe("keep headers up to date", async () => {
-            it.only("column and row headers are updated after changing the model", async function() {
+        xdescribe("keep headers up to date", async () => {
+            it("column and row headers are updated after changing the model", async function() {
                 const scene = new TestTableScene()
 
                 // const expectedBounds = document.querySelector("span")?.getBoundingClientRect()!

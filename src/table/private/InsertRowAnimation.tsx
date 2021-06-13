@@ -84,14 +84,14 @@ export class InsertRowAnimation extends AnimationBase {
     // FIXME: only one row
     // this.table.adjustLayout({col: 0, row: this.event.index})
     this.table.adjustLayout(undefined) // all columns
-    setTimeout( () => {
-      let actualHeight = 0
-      for(let i=0; i<this.event.size; ++i) {
-        actualHeight += this.table.bodyBody.children[i+1].clientHeight
-      }
-      if (actualHeight != this.rowAnimationHeight) {
-        console.log(`InsertRotAnimation.lastFrame(): calculated height was ${this.rowAnimationHeight} but actually it's ${actualHeight}`)
-      }
-    }, 0)
+    // setTimeout( () => {
+    //   let actualHeight = 0
+    //   for(let i=0; i<this.event.size; ++i) {
+    //     actualHeight += this.table.bodyBody.children[i+1].clientHeight
+    //   }
+    //   if (actualHeight != this.rowAnimationHeight) {
+    //     console.log(`InsertRowAnimation.lastFrame(): calculated height was ${this.rowAnimationHeight} but actually it's ${actualHeight}`)
+    //   }
+    // }, 0)
   }
 }

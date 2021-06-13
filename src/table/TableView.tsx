@@ -518,30 +518,14 @@ export class TableView extends View {
     }, 0)
   }
 
-// unadjust causes the screen to flicker, the easiest approach would be to double buffer
-//   function getScreenshotOfElement(element, posX, posY, width, height, callback) {
-//     html2canvas(element, {
-//         onrendered: function (canvas) {
-//             var context = canvas.getContext('2d');
-//             var imageData = context.getImageData(posX, posY, width, height).data;
-//             var outputCanvas = document.createElement('canvas');
-//             var outputContext = outputCanvas.getContext('2d');
-//             outputCanvas.width = width;
-//             outputCanvas.height = height;
 
-//             var idata = outputContext.createImageData(width, height);
-//             idata.data.set(imageData);
-//             outputContext.putImageData(idata, 0, 0);
-//             callback(outputCanvas.toDataURL().replace("data:image/png;base64,", ""));
-//         },
-//         width: width,
-//         height: height,
-//         useCORS: true,
-//         taintTest: false,
-//         allowTaint: false
-//     });
-// }
-
+  // this causes the screen to flicker. there doesn't seem to be a way to take screenshots which
+  // can be used for double buffering. (html2canvas doesn't take a screenshot)
+  // two possible counter measures:
+  // * create an invisible copy of the dom and let the browser align it.
+  //   this might not scale with large tables
+  // * measure each cell individually before displaying them on the screen to obtain their measurements.
+  //   store the data for later use.
   protected unadjustLayoutBeforeRender(pos: TablePos | undefined) {
     if (pos === undefined) {
       for(let column = 0; column<this.model!.colCount; ++column) {
@@ -558,10 +542,8 @@ export class TableView extends View {
     const body = this.bodyRow.children[column] as HTMLElement
     head.style.width = head.style.minWidth = head.style.maxWidth =
       body.style.width = body.style.minWidth = body.style.maxWidth = ""
-
     // FIXME: row height
   }
-
 
   protected adjustLayoutAfterRender() {
     if (!this.model)
