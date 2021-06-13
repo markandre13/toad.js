@@ -14,7 +14,7 @@ describe("toad.js", function () {
                         get colCount(): number { return 1 }
                         get rowCount(): number { return 1 }
                     }
-                    class FubarTableAdapter extends TableAdapter { }
+                    class FubarTableAdapter extends TableAdapter<FoobarTableModel> { }
                     TableAdapter.register(FubarTableAdapter, FubarTableModel)
 
                     // works when the table model is exactly the type being registered
@@ -35,7 +35,8 @@ describe("toad.js", function () {
                         next?: Node0
                         down?: Node0
                     }
-                    class Adapter0 extends TypedTableAdapter<Node0> { }
+                    class Adapter0 extends TypedTableAdapter<TreeNodeModel<Node0>> { }
+                    // class Adapter0 extends TypedTableAdapter<TreeNodeModel<Node0>> { }
                     TableAdapter.register(Adapter0, TreeNodeModel, Node0)
 
                     class Node1 implements TreeNode {
@@ -43,7 +44,7 @@ describe("toad.js", function () {
                         next?: Node1
                         down?: Node1
                     }
-                    class Adapter1 extends TypedTableAdapter<Node1> { }
+                    class Adapter1 extends TypedTableAdapter<TreeNodeModel<Node1>> { }
                     TableAdapter.register(Adapter1, TreeNodeModel, Node1)
 
                     // works when the table model's data type is exactly the type being registered

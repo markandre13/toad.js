@@ -69,7 +69,7 @@ enum Log {
 export class TableView extends View {
   model?: TableModel
 
-  adapter?: TableAdapter
+  adapter?: TableAdapter<any>
   selectionModel?: SelectionModel
 
   rootDiv: toadJSX.Fragment

@@ -20,9 +20,17 @@ import { TableModel } from "./TableModel"
 import { TypedTableModel } from "./TypedTableModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 
-
-export class TableAdapter {
-    setModel(model: TableModel): void {}
+export class TableAdapter<T extends TableModel> {
+    model?: T
+    get colCount(): number {
+        return this.model === undefined ? 0 : this.model.colCount
+    }
+    get rowCount(): number {
+        return this.model === undefined ? 0 : this.model.rowCount
+    }
+    setModel(model: T): void {
+        this.model = model
+    }
     getColumnHead(col: number): Node | undefined { return undefined }
     getRowHead(row: number): Node | undefined { return undefined }
     displayCell(col: number, row: number): Node | undefined { return undefined }
@@ -33,10 +41,10 @@ export class TableAdapter {
     // FIXME: convert the comments below into clean code
     // data is used for TypeTableModel
     // Map<model, Map<data, adapter>>
-    private static modelToAdapter = new Map<new(...args: any[]) => TableModel, Map<new(...args: any[])=> any, new()=> TableAdapter>>()
-    static register<T, A extends TypedTableAdapter<T>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
-    static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel): void
-    static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel, data?: any): void
+    private static modelToAdapter = new Map<new(...args: any[]) => TableModel, Map<new(...args: any[])=> any, new()=> TableAdapter<any>>>()
+    static register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
+    static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel): void
+    static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel, data?: any): void
     {
         // console.log("TableAdapter.register() ============")
         // console.log(adapter)
@@ -57,7 +65,7 @@ export class TableAdapter {
         TableAdapter.modelToAdapter.clear()
     }
 
-    static lookup(model: TableModel): (new() => TableAdapter) {
+    static lookup(model: TableModel): (new() => TableAdapter<any>) {
         // console.log("TableAdapter.lookup() ============")
 
         let dataType: any

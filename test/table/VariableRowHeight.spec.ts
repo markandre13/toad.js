@@ -202,12 +202,7 @@ class VHTModel extends ArrayTableModel<VariableHeightThingy> {
     get colCount(): number { return 1 }
 }
 
-class VHTTableAdapter extends TableAdapter {
-    model?: VHTModel
-
-    override setModel(model: VHTModel) {
-        this.model = model
-    }
+class VHTTableAdapter extends TableAdapter<VHTModel> {
 
     override getColumnHead(col: number): Node | undefined {
         return document.createTextNode("Thing")

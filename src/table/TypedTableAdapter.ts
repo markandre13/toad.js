@@ -17,6 +17,8 @@
  */
 
 import { TableAdapter } from './TableAdapter'
+import { TypedTableModel } from './TypedTableModel'
 
-export class TypedTableAdapter<T> extends TableAdapter {
-}
+abstract class AbstractTypedTableAdapter<T, M extends TypedTableModel<T>> extends TableAdapter<M> {}
+type InferTypedTableModelParameter<M> = M extends TypedTableModel<infer T> ? T : never
+export class TypedTableAdapter<M extends TypedTableModel<any>> extends AbstractTypedTableAdapter<InferTypedTableModelParameter<M>, M> {}

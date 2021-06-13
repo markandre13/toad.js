@@ -193,12 +193,7 @@ class BookTableModel extends ArrayTableModel<Book> {
     get colCount(): number { return 10 }
 }
 
-class BookTableAdapter extends TableAdapter {
-    model?: BookTableModel
-
-    override setModel(model: BookTableModel) {
-        this.model = model
-    }
+class BookTableAdapter extends TableAdapter<BookTableModel> {
 
     override getColumnHead(col: number): Node | undefined {
         switch (col) {

@@ -43,8 +43,8 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         }
     }
 
-    get colCount(): number { return 1 }
-    get rowCount(): number { return this.rows.length }
+    override get colCount(): number { return 1 }
+    override get rowCount(): number { return this.rows.length }
 
     getRow(node: T): number | undefined {
         for (let i = 0; i < this.rows.length; ++i) {

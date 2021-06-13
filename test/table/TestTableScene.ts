@@ -271,12 +271,7 @@ export class TestTableModel extends ArrayTableModel<TestRow> {
     get colCount(): number { return this.data[0].cells.length }
 }
 
-export class TestTableAdapter extends TableAdapter {
-    model?: TestTableModel
-
-    override setModel(model: TestTableModel) {
-        this.model = model
-    }
+export class TestTableAdapter extends TableAdapter<TestTableModel> {
 
     override getColumnHead(col: number): Node | undefined {
         return document.createTextNode(`COL${col}`)

@@ -26,12 +26,12 @@ export class TreeNodeModel<T extends TreeNode> extends TreeModel<T> {
         this.root = root
     }
 
-    createNode(): T { return new this.nodeClass() }
-    deleteNode(node: T): void { }
-    getRoot(): T | undefined { return this.root }
-    setRoot(node?: T): void { this.root = node }
-    getDown(node: T): T | undefined { return node.down as T }
-    setDown(node: T, down?: T): void { node.down = down }
-    getNext(node: T): T | undefined { return node.next as T }
-    setNext(node: T, next?: T): void { node.next = next }
+    override createNode(): T { return new this.nodeClass() }
+    override deleteNode(node: T): void { }
+    override getRoot(): T | undefined { return this.root }
+    override setRoot(node?: T): void { this.root = node }
+    override getDown(node: T): T | undefined { return node.down as T }
+    override setDown(node: T, down?: T): void { node.down = down }
+    override getNext(node: T): T | undefined { return node.next as T }
+    override setNext(node: T, next?: T): void { node.next = next }
 }
