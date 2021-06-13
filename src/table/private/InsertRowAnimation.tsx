@@ -3,6 +3,7 @@ import { TableEvent } from "../TableEvent"
 import { AnimationBase } from '@toad/util/animation'
 import { TableView } from '../TableView'
 
+// TODO: fix animation at last row (i might've seen a disabled test for this)
 export class InsertRowAnimation extends AnimationBase {
   table: TableView
   event: TableEvent
@@ -21,9 +22,7 @@ export class InsertRowAnimation extends AnimationBase {
   override prepare() {
     // create new rows and add them to the hiddenSizeCheckTable for measuring
     for (let i = 0; i < this.event.size; ++i) {
-      // FIXME: height not yet measured for row header
-      // const trH = <tr style={{ height: '0px' }} />
-      let trH = this.table.createDOMRowHeaderRow(this.event.index)
+      const trH = this.table.createDOMRowHeaderRow(this.event.index)
       this.table.hiddenSizeCheckRowHead.appendChild(trH)
       this.trHead.push(trH)
 
@@ -53,8 +52,12 @@ export class InsertRowAnimation extends AnimationBase {
 
   override animationFrame(animationTime: number) {
     const rowHeight = `${Math.round(animationTime * this.rowAnimationHeight)}px`
-    this.trAnimationHead.style.height = rowHeight
-    this.trAnimationBody.style.height = rowHeight
+    this.trAnimationHead.style.height = this.trAnimationBody.style.height = rowHeight
+    // FIXME: the following code needs a test
+    if (this.table.selectionModel !== undefined && this.table.selectionModel.row < this.event.index) {
+      const cell = this.table.getCellAt(this.table.selectionModel.value.col, this.table.selectionModel.value.row)
+      this.table.inputOverlay.adjustToCell(cell)
+    }
   }
 
   override lastFrame() {
