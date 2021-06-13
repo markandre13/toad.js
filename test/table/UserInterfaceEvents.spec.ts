@@ -1,28 +1,19 @@
 import { expect, use } from "chai"
 use(require('chai-subset'))
 
-import { TextView, TreeNode, TreeAdapter } from "@toad"
+import { TextView } from "@toad"
 import { findScrollableParent, isScrollable } from "@toad/scrollIntoView"
-import { BookTableScene, Book } from "./BookTableScene"
+import { BookTableScene } from "./BookTableScene"
 import { TreeViewScene } from "./TreeViewScene"
-import { SSL_OP_EPHEMERAL_RSA } from "constants"
+import { TestRow, TestTableScene } from "./TestTableScene"
 
 describe("toad.js", function() {
     describe("table", function() {
         describe("class TableView", function() {
-            // let scene: BookTableScene
-            // let rows: HTMLCollection
-
-            // this.beforeEach( async function() {
-            //     scene = new BookTableScene()
-            //     rows = scene.table.bodyBody.children
-            //     expect(rows.length).to.equal(8+1)
-            // })
-
             describe("update view when model changes", function() {
-                describe("update cell and model after input changes and focus changes via", function() {
+                describe("after cell was edited, update cell and model after focus moved away via", function() {
                     it("mouse", async function() {
-                        const scene = new BookTableScene()
+                        const scene = new TestTableScene()
                         const rows = scene.table.bodyBody.children
 
                         scene.table.focus()
@@ -34,11 +25,11 @@ describe("toad.js", function() {
 
                         scene.mouseDownAtCell(0, 1)
 
-                        expect(scene.data[0].title).to.equal("XXX")
+                        expect(scene.model.data[0].cells[0]).to.equal("XXX")
                         expect((rows[0 + 1].childNodes[0] as HTMLElement).innerText).to.equal("XXX")
                     })
                     it("keyboard", async function() {
-                        const scene = new BookTableScene()
+                        const scene = new TestTableScene()
                         const rows = scene.table.bodyBody.children
 
                         scene.table.focus()
@@ -50,7 +41,7 @@ describe("toad.js", function() {
 
                         scene.sendArrowDown()
 
-                        expect(scene.data[0].title).to.equal("XXX")
+                        expect(scene.model.data[0].cells[0]).to.equal("XXX")
                         expect((rows[0 + 1].childNodes[0] as HTMLElement).innerText).to.equal("XXX")
                     })
                     // TODO: test this when just a cell in the model changes
@@ -58,34 +49,33 @@ describe("toad.js", function() {
                 })
                 describe("insert row", function() {
                     it("single row", async function() {
-                        const scene = new BookTableScene()
+                        const scene = new TestTableScene()
                         const rows = scene.table.bodyBody.children
 
-                        const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
+                        const newBook = new TestRow(101)
                         scene.model.insert(3, newBook)
                         await scene.sleep()
 
-                        expect(rows.length).to.equal(9+1)
-                        expect((rows[3+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook.title)
-                        expect((rows[3+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook.author)
-                        expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook.year}`)
+                        expect(rows.length).to.equal(11+1)
+                        expect((rows[3 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:101")
+                        expect((rows[3 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:101")
+
+                        expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight)
                     })
                     it("multiple rows", async function() {
-                        const scene = new BookTableScene()
+                        const scene = new TestTableScene()
                         const rows = scene.table.bodyBody.children
 
-                        const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
-                        const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
+                        const newBook0 = new TestRow(101)
+                        const newBook1 = new TestRow(102)
                         scene.model.insert(3, [newBook0, newBook1])
                         await scene.sleep()
 
-                        expect(rows.length).to.equal(10+1)
-                        expect((rows[3+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook0.title)
-                        expect((rows[3+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook0.author)
-                        expect((rows[3+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook0.year}`)
-                        expect((rows[4+1].childNodes[0] as HTMLElement).innerText).to.equal(newBook1.title)
-                        expect((rows[4+1].childNodes[1] as HTMLElement).innerText).to.equal(newBook1.author)
-                        expect((rows[4+1].childNodes[2] as HTMLElement).innerText).to.equal(`${newBook1.year}`)
+                        expect(rows.length).to.equal(12+1)
+                        expect((rows[3 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:101")
+                        expect((rows[3 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:101")
+                        expect((rows[4 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:102")
+                        expect((rows[4 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:102")
 
                         expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight + rows[4+1].clientHeight)
                     })
@@ -105,9 +95,20 @@ describe("toad.js", function() {
                         expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
                     })
                 })
-                describe("delete row", function() {                    
-                    it("single row", async function(){
-                        const scene = new BookTableScene()
+                describe("delete row", function() {   
+                    it("single rows", async function(){
+                        const scene = new TestTableScene()
+                        const rows = scene.table.bodyBody.children
+
+                        scene.model.remove(2)
+                        await scene.sleep()
+
+                        expect(rows.length).to.equal(9+1)
+                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:1")
+                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:3")
+                    })                 
+                    it("multiple rows", async function(){
+                        const scene = new TestTableScene()
                         const rows = scene.table.bodyBody.children
 
                         // FIXME!!! rowAnimationHeight isn't checked by any of the tests anymore...
@@ -115,27 +116,16 @@ describe("toad.js", function() {
                         scene.model.remove(2, 2)
                         await scene.sleep()
 
-                        expect(rows.length).to.equal(6+1)
-                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
-                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("2001: A Space Odyssey")
-                    })
-                    it("multiple rows", async function(){
-                        const scene = new BookTableScene()
-                        const rows = scene.table.bodyBody.children
-
-                        scene.model.remove(2)
-                        await scene.sleep()
-
-                        expect(rows.length).to.equal(7+1)
-                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("Stranger In A Strange Land")
-                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("Rendezvous with Rama")
+                        expect(rows.length).to.equal(8+1)
+                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:1")
+                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:4")
                     })
                 })
             })
 
             describe("user interface events", function() {
                 it("mousedown on a cell updates the selection model", function() {
-                    const scene = new BookTableScene()
+                    const scene = new TestTableScene()
 
                     scene.mouseDownAtCell(2, 1)
                     expect(scene.selectionModel.col).equals(2)
@@ -147,13 +137,13 @@ describe("toad.js", function() {
                 })
 
                 it("mousedown on a cell makes the cell editable", function() {
-                    const scene = new BookTableScene()
+                    const scene = new TestTableScene()
 
                     scene.mouseDownAtCell(2, 1)
-                    scene.expectInputOverlayToEqual("1961")
+                    scene.expectInputOverlayToEqual("CELL:2:1")
 
                     scene.mouseDownAtCell(0, 2)
-                    scene.expectInputOverlayToEqual("The Fountains of Paradise")
+                    scene.expectInputOverlayToEqual("CELL:0:2")
                 })
 
                 it("scroll selected cell into view", async function() {
