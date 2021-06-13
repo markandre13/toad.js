@@ -165,7 +165,7 @@ describe("toad.js", function() {
 
                     scene.mouseDownAtCell(7, 1)                   
                     await scene.sleep()
-                    scene.expectScrollAt(225, 0)
+                    scene.expectScrollAt(212, 0)
                 })
 
                 it("tab goes to the next cell", function() {

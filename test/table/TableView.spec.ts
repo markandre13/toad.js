@@ -2,12 +2,13 @@ import { expect, use } from "chai"
 use(require('chai-subset'))
 
 import { 
-    TableView, TableModel, TableEditMode, 
-    SelectionModel, TextView, TextModel, 
+    TableView, TableEditMode, 
+    SelectionModel, TextView, 
     bind, unbind, TableAdapter
 } from "@toad"
 
 import { setAnimationFrameCount } from "@toad/scrollIntoView"
+import { TestTableAdapter, TestTableModel, TestRow } from "./TestTableScene"
 
 describe("toad.js", function() {
     describe("table", function() {
@@ -15,147 +16,104 @@ describe("toad.js", function() {
 
             beforeEach(function() {
                 unbind()
+                TableAdapter.unbind()
                 document.body.innerHTML = ""
+                TableAdapter.register(TestTableAdapter, TestTableModel, TestRow)
+                setAnimationFrameCount(0)
             })
 
-            class MyTableModel extends TableModel {
-                data: any
-                constructor() {
-                    super()
-                    this.data = [
-                        [ "The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966 ],
-                        [ "Stranger In A Strange Land", "Robert A. Heinlein", 1961 ],
-                        [ "The Fountains of Paradise", "Arthur C. Clarke", 1979],
-                        [ "Rendezvous with Rama", "Arthur C. Clarke", 1973 ],
-                        [ "2001: A Space Odyssey", "Arthur C. Clarke", 1968 ],
-                        [ "Do Androids Dream of Electric Sheep?", "Philip K. Dick", 1968],
-                        [ "A Scanner Darkly", "Philip K. Dick", 1977],
-                        [ "Second Variety", "Philip K. Dick", 1953]
-                    ]
-                }
-                get colCount(): number { return this.data[0].length }
-                get rowCount(): number { return this.data.length }
-            }
-            class MyTableAdapter extends TableAdapter {
-                model?: MyTableModel
-                override setModel(model: TableModel): void {
-                    this.model = model as MyTableModel
-                }
-                override getColumnHead(col: number): Node | undefined { 
-                    switch(col) {
-                        case 0: return document.createTextNode("Title")
-                        case 1: return document.createTextNode("Author")
-                        case 2: return document.createTextNode("Year")
-                    }
-                    return undefined
-                }              
-                override displayCell(col: number, row: number): Node | undefined {
-                    if (!this.model)
-                        return undefined
-                    return document.createTextNode(this.model.data[row][col])
-                }
-                override createEditor(col: number, row: number): Node | undefined {
-                    if (!this.model)
-                        return undefined
-                    const model = new TextModel(this.model.data[row][col])
-                    model.modified.add( () => {
-                        if (this.model)
-                            this.model.data[row][col] = model.value
-                    })
-                    const view = new TextView()
-                    view.setModel(model)
-                    return view
-                }
-            }
-            TableAdapter.register(MyTableAdapter, MyTableModel)
-            setAnimationFrameCount(0)
-
-            describe("initialize view from model", function() {
-                it("does so when the model is defined before the view", function() {
-                    let model = new MyTableModel()
+            describe("when initializing TableView from a Model", function() {
+                it("initializes when the MODEL is defined BEFORE the VIEW", function() {
+                    const model = new TestTableModel()
                     bind("data", model)
+                    
                     document.body.innerHTML = "<toad-table model='data'></toad-table>"
                     
-                    let table = document.body.children[0] as TableView
-                    expect(table.tagName).to.equal("TOAD-TABLE")
-                    
-                    let cell = table.getCellAt(0, 0)!
-                    expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
+                    const table = document.body.children[0] as TableView
+                    expect(table.tagName).to.equal("TOAD-TABLE")                  
+                    const cell = table.getCellAt(0, 0)!
+                    expect(cell.innerText).to.equal("CELL:0:0")
                 })
-                it("does so when the view is defined before the model", function() {
+                it("initializes when the VIEW is defined BEFORE the MODEL", function() {
                     document.body.innerHTML = "<toad-table model='data'></toad-table>"
-                    let model = new MyTableModel()
+
+                    const model = new TestTableModel()
                     bind("data", model)
                     
-                    let table = document.body.children[0] as TableView
+                    const table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
-                    
-                    let cell = table.getCellAt(0, 0)!
-                    expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
+                    const cell = table.getCellAt(0, 0)!
+                    expect(cell.innerText).to.equal("CELL:0:0")
                 })
             })
             
             describe("selection model", function() {
-                it("edit cell", function() {
-                    let dataModel = new MyTableModel()
+                it("when changed in EDIT_CELL mode, the edit field in the table view also changes", function() {
+                    const dataModel = new TestTableModel()
                     bind("books", dataModel)
-                    let selectionModel = new SelectionModel()
+                    const selectionModel = new SelectionModel()
                     expect(selectionModel.mode).to.equal(TableEditMode.EDIT_CELL)
                     bind("books", selectionModel)
                     document.body.innerHTML = "<toad-table model='books'></toad-table>"
                     
-                    let table = document.body.children[0] as TableView
-                    expect(table.tagName).to.equal("TOAD-TABLE")
-                    
-                    let cell = table.getCellAt(0, 0)!
-                    expect(cell.innerText).to.equal("The Moon Is A Harsh Mistress")
+                    const table = document.querySelector("toad-table") as TableView
+                   
+                    // check that the table works
 
-                    let row = cell.parentElement as HTMLTableRowElement
+                    const cell = table.getCellAt(0, 0)!
+                    expect(cell.innerText).to.equal("CELL:0:0")
+
+                    const row = cell.parentElement as HTMLTableRowElement
                     expect(row.tagName).to.equal("TR")
                     
                     expect(row.classList.contains("selected")).to.equal(false)
                     
+                    // selection is at initial position
                     let text = table.inputOverlay.children[0] as TextView
                     expect(text.tagName).to.equal("TOAD-TEXT")
-                    expect(text.value).to.equal("The Moon Is A Harsh Mistress")
+                    expect(text.value).to.equal("CELL:0:0")
                     
+                    // change selected row
                     selectionModel.row = 1                   
                     text = table.inputOverlay.children[0] as TextView
                     expect(text.tagName).to.equal("TOAD-TEXT")
-                    expect(text.value).to.equal("Stranger In A Strange Land")
+                    expect(text.value).to.equal("CELL:0:1")
                     
+                    // change selected column
                     selectionModel.col = 1
                     text = table.inputOverlay.children[0] as TextView
                     expect(text.tagName).to.equal("TOAD-TEXT")
-                    expect(text.value).to.equal("Robert A. Heinlein")
+                    expect(text.value).to.equal("CELL:1:1")
                 })
 
-                it("select row", function() {
-                    let dataModel = new MyTableModel()
+                it("when changed in SELECT_ROW mode, the row marked as selected also changes", function() {
+                    const dataModel = new TestTableModel()
                     bind("books", dataModel)
-                    let selectionModel = new SelectionModel()
+                    const selectionModel = new SelectionModel()
                     selectionModel.mode = TableEditMode.SELECT_ROW
                     bind("books", selectionModel)
                     document.body.innerHTML = "<toad-table model='books'></toad-table>"
                     
-                    let table = document.body.children[0] as TableView
+                    const table = document.body.children[0] as TableView
                     expect(table.tagName).to.equal("TOAD-TABLE")
                     
-                    let cell0 = table.getCellAt(0, 0)!
-                    let cell1 = table.getCellAt(0, 1)!
-                    expect(cell0.innerText).to.equal("The Moon Is A Harsh Mistress")
+                    const cell0 = table.getCellAt(0, 0)!
+                    const cell1 = table.getCellAt(0, 1)!
+                    expect(cell0.innerText).to.equal("CELL:0:0")
+                    expect(cell1.innerText).to.equal("CELL:0:1")
 
-                    let row0 = cell0.parentElement as HTMLTableRowElement
-                    let row1 = cell1.parentElement as HTMLTableRowElement
+                    const row0 = cell0.parentElement as HTMLTableRowElement
+                    const row1 = cell1.parentElement as HTMLTableRowElement
                     expect(row0.tagName).to.equal("TR")
                     
-                    expect(row0.classList.contains("selected")).to.equal(true)
-                    expect(row1.classList.contains("selected")).to.equal(false)
-                    
-                    selectionModel.row = 1
+                    // intial row
+                    expect(row0.classList.contains("selected")).to.be.true
+                    expect(row1.classList.contains("selected")).to.be.false
 
-                    expect(row0.classList.contains("selected")).to.equal(false)
-                    expect(row1.classList.contains("selected")).to.equal(true)
+                    // change row
+                    selectionModel.row = 1
+                    expect(row0.classList.contains("selected")).to.be.false
+                    expect(row1.classList.contains("selected")).to.be.true
                 })
             })
     /*

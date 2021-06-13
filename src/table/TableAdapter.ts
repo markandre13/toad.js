@@ -20,7 +20,6 @@ import { TableModel } from "./TableModel"
 import { TypedTableModel } from "./TypedTableModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 
-const modelToAdapter = new Map<new(...args: any[]) => TableModel, Map<new(...args: any[])=> any, new()=> TableAdapter>>()
 
 export class TableAdapter {
     setModel(model: TableModel): void {}
@@ -31,6 +30,10 @@ export class TableAdapter {
 
     isViewCompact(): boolean { return false }
 
+    // FIXME: convert the comments below into clean code
+    // data is used for TypeTableModel
+    // Map<model, Map<data, adapter>>
+    private static modelToAdapter = new Map<new(...args: any[]) => TableModel, Map<new(...args: any[])=> any, new()=> TableAdapter>>()
     static register<T, A extends TypedTableAdapter<T>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
     static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel): void
     static register(adapter: new() => TableAdapter, model: new(...args: any[])=>TableModel, data?: any): void
@@ -39,10 +42,10 @@ export class TableAdapter {
         // console.log(adapter)
         // console.log(model)
         // console.log(data)
-        let typeToModel = modelToAdapter.get(model)
+        let typeToModel = TableAdapter.modelToAdapter.get(model)
         if (typeToModel === undefined) {
             typeToModel = new Map<any, any>()
-            modelToAdapter.set(model, typeToModel)
+            TableAdapter.modelToAdapter.set(model, typeToModel)
         }
         if (typeToModel.get(data) !== undefined) {
             throw Error(`attempt to redefine existing table adapter`)
@@ -51,27 +54,39 @@ export class TableAdapter {
     }
 
     static unbind() {
-        modelToAdapter.clear()
+        TableAdapter.modelToAdapter.clear()
     }
 
-    static lookup(model: TableModel): (new() => TableAdapter) | undefined {
+    static lookup(model: TableModel): (new() => TableAdapter) {
         // console.log("TableAdapter.lookup() ============")
-        let nodeClass: any
+
+        let dataType: any
         if(model instanceof TypedTableModel) {
-            nodeClass = model.nodeClass
+            dataType = model.nodeClass
         } else {
-            nodeClass = undefined
+            dataType = undefined
         }
         
-        let adapter = modelToAdapter.get(Object.getPrototypeOf(model).constructor)?.get(nodeClass)
-
+        let adapter = TableAdapter.modelToAdapter.get(Object.getPrototypeOf(model).constructor)?.get(dataType)
         if (adapter === undefined) {
-            for(let baseClass of modelToAdapter.keys()) {
+            for(let baseClass of TableAdapter.modelToAdapter.keys()) {
                 if (model instanceof baseClass) {
-                    adapter = modelToAdapter.get(baseClass)?.get(nodeClass)
+                    adapter = TableAdapter.modelToAdapter.get(baseClass)?.get(dataType)
                     break
                 }
             }
+        }
+
+        if (adapter === undefined) {
+            let msg = `TableAdapter.lookup(): Did not find an adapter for model of type ${model.constructor.name}`
+            msg += `\n    Requested adapter: model=${model.constructor.name}, type=${dataType.name}\n    Available adapters:`
+            for (const [modelX, typeToAdapterX] of TableAdapter.modelToAdapter) {
+                for(const [typeX, adapterX] of typeToAdapterX) {
+                    // msg += `\n model=${model?.constructor.name}, type=${type.name}`
+                    msg += `\n        model=${modelX.name}, type=${typeX}`
+                }
+            }
+            throw Error(msg)
         }
         // console.log("TableAdapter.lookup() found adapter")
         // console.log(adapter)

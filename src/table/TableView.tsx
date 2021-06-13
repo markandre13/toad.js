@@ -229,23 +229,18 @@ export class TableView extends View {
     if (model instanceof TableModel) {
       this.model = model
       this.model.modified.add((event: TableEvent) => { this.modelChanged(event) }, this)
-
       const adapter = TableAdapter.lookup(model)
-      if (adapter) {
-        try {
-          this.adapter = new adapter()
-        }
-        catch (e) {
-          console.log(`TableView.setModel(): failed to instantiate table adapter: ${e}`)
-          console.log(`setting TypeScript's target to 'es6' might help`)
-          throw e
-        }
-        this.adapter.setModel(model)
-        this.updateCompact()
-        this.updateView()
-      } else {
-        throw Error("did not find an adapter for model of type " + model.constructor.name)
+      try {
+        this.adapter = new adapter()
       }
+      catch (e) {
+        console.log(`TableView.setModel(): failed to instantiate table adapter: ${e}`)
+        console.log(`setting TypeScript's target to 'es6' might help`)
+        throw e
+      }
+      this.adapter.setModel(model)
+      this.updateCompact()
+      this.updateView()
       return
     }
     throw Error("TableView.setModel(): unexpected model of type " + model.constructor.name)

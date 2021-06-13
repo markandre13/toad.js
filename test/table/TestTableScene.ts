@@ -5,7 +5,6 @@ import {
     bind, unbind, TableAdapter, ArrayTableModel
 } from "@toad"
 import { setAnimationFrameCount } from "@toad/scrollIntoView"
-import { throws } from "assert"
 
 interface Options {
     html?: string
@@ -265,14 +264,14 @@ function createTestData() {
     return rows
 }
 
-class TestTableModel extends ArrayTableModel<TestRow> {
+export class TestTableModel extends ArrayTableModel<TestRow> {
     constructor() {
         super(createTestData(), TestRow)        
     }
     get colCount(): number { return this.data[0].cells.length }
 }
 
-class TestTableAdapter extends TableAdapter {
+export class TestTableAdapter extends TableAdapter {
     model?: TestTableModel
 
     override setModel(model: TestTableModel) {
