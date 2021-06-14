@@ -5,9 +5,11 @@
    WebComponent/TypeScript Edition
 </p>
 
-# Welcome to the TOAD GUI Library.
+## Welcome to the TOAD GUI Library
 
-### About
+Try the <a href="https://markandre13.github.io/toad-demo/">Live Demo</a>!
+
+### Background
 
  * toad.js utilizes ***WebComponents*** and hence doesn't need all the infrastructure code burdening
   React or Angular and therefore fits nicely into 71KB (2KB gzipped).
@@ -45,9 +47,6 @@
 * Support for table and tree views is in active development.
 
 * Support for Routing, Undo/Redo, Dialogs, Copy'n Paste, Drag'n Drop, etc. is on the roadmap.
-
-Please see the <a href="https://markandre13.github.io/toad-demo/">introduction</a> for further
-information.
 
 toad.js is currently being written to develop <a href="https://github.com/markandre13/workflow">workflow - A collaborative real-time white- and kanban board</a>.
 
