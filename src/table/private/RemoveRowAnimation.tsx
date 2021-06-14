@@ -45,7 +45,7 @@ export class RemoveRowAnimation extends AnimationBase {
     while (this.trBody.children.length > 0)
       this.trBody.removeChild(this.trBody.children[0])
 
-    if (this.event.index + this.event.size >= this.table.model!.rowCount + this.event.size) {
+    if (this.event.index + this.event.size >= this.table.adapter!.rowCount + this.event.size) {
       // skip animation when deleting last rows
       this.stop()
 

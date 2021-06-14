@@ -314,11 +314,11 @@ export class TableView extends View {
     if (column === true) {
       headTable = this.colHeadTable
       headRow = this.colHeadRow
-      count = this.model.colCount
+      count = this.adapter.colCount
     } else {
       headTable = this.rowHeadTable
       headRow = this.rowHeadHead
-      count = this.model.rowCount
+      count = this.adapter.rowCount
     }
 
     let noHeader = false
@@ -388,20 +388,20 @@ export class TableView extends View {
       throw Error("TableView.updateBody(): no adapter")
 
     // body row
-    while (this.bodyRow.children.length > this.model.colCount)
+    while (this.bodyRow.children.length > this.adapter.colCount)
       this.bodyRow.removeChild(this.bodyRow.children[this.bodyRow.children.length - 1])
 
-    while (this.bodyRow.children.length < this.model.colCount) {
+    while (this.bodyRow.children.length < this.adapter.colCount) {
       this.bodyRow.appendChild(<td />)
     }
 
     // cells
 
     //    (this.bodyRow.children[this.bodyRow.children.length] as HTMLElement).style.width="100%"
-    while (this.bodyBody.children.length - 1 > this.model.rowCount)
+    while (this.bodyBody.children.length - 1 > this.adapter.rowCount)
       this.bodyBody.removeChild(this.bodyBody.children[this.bodyBody.children.length - 1])
 
-    for (let row = 0; row < this.model.rowCount; ++row) {
+    for (let row = 0; row < this.adapter.rowCount; ++row) {
 
       // FIXME: call createDOMBodyRow here
 
@@ -413,10 +413,10 @@ export class TableView extends View {
         bodyRow = this.bodyBody.children[row + 1] as HTMLTableRowElement
       }
 
-      while (bodyRow.children.length > this.model.colCount)
+      while (bodyRow.children.length > this.adapter.colCount)
         bodyRow.removeChild(bodyRow.children[bodyRow.children.length - 1])
 
-      for (let col = 0; col < this.model.colCount; ++col) {
+      for (let col = 0; col < this.adapter.colCount; ++col) {
         let cell: HTMLTableDataCellElement
         if (col >= bodyRow.children.length) {
           cell = <td />
@@ -455,7 +455,7 @@ export class TableView extends View {
       throw Error()
 
     const result = <tr />
-    for (let col = 0; col < this.model.colCount; ++col) {
+    for (let col = 0; col < this.adapter.colCount; ++col) {
       let cell: HTMLTableDataCellElement
       if (col >= result.children.length) {
         cell = <td />
@@ -523,7 +523,7 @@ export class TableView extends View {
   //   store the data for later use.
   protected unadjustLayoutBeforeRender(pos: TablePos | undefined) {
     if (pos === undefined) {
-      for(let column = 0; column<this.model!.colCount; ++column) {
+      for(let column = 0; column<this.adapter!.colCount; ++column) {
         this.unadjustLayoutColumnBeforeRender(column)
       }
     } else {
@@ -543,6 +543,8 @@ export class TableView extends View {
   protected adjustLayoutAfterRender() {
     if (!this.model)
       throw Error("TableView.adjustLayoutAfterRender(): no model")
+    if (!this.adapter)
+      throw Error("TableView.adjustLayoutAfterRender(): no adapter")
 
     this.log(Log.LAYOUT, `TableView.adjustLayoutAfterRender()`)
 
@@ -551,7 +553,7 @@ export class TableView extends View {
     const bodyRow = this.bodyRow.children
 
     // set column widths
-    for (let col = 0; col < this.model.colCount; ++col) {
+    for (let col = 0; col < this.adapter.colCount; ++col) {
       const columnHeader = colHeadRow[col] as HTMLElement
       const columnBody = bodyRow[col] as HTMLElement
 
@@ -564,8 +566,8 @@ export class TableView extends View {
       }
     }
 
-    if (this.model.rowCount != this.bodyBody.children.length - 1) {
-      this.log(Log.LAYOUT, `adjustLayoutAfterRender(): bodyBody has ${this.bodyBody.children.length - 1} rows while model has ${this.model.rowCount} rows`)
+    if (this.adapter.rowCount != this.bodyBody.children.length - 1) {
+      this.log(Log.LAYOUT, `adjustLayoutAfterRender(): bodyBody has ${this.bodyBody.children.length - 1} rows while model has ${this.adapter.rowCount} rows`)
     }
 
     // set row heights
@@ -793,7 +795,7 @@ export class TableView extends View {
    * Selection
    */
   protected toggleCellSelection(pos: TablePos, flag: boolean): void {
-    if (pos.col >= this.model!.colCount || pos.row >= this.model!.rowCount)
+    if (pos.col >= this.adapter!.colCount || pos.row >= this.adapter!.rowCount)
       return
     let element = this.bodyBody.children[pos.row + 1].children[pos.col]
     element.classList.toggle("selected", flag)
@@ -804,7 +806,7 @@ export class TableView extends View {
   }
 
   protected toggleRowSelection(row: number, flag: boolean): void {
-    if (row >= this.model!.rowCount)
+    if (row >= this.adapter!.rowCount)
       return
     let rowElement = this.bodyBody.children[1 + this.selectionModel!.value.row]
     rowElement.classList.toggle("selected", flag)
@@ -841,8 +843,8 @@ export class TableView extends View {
   }
 
   goToLastCell() {
-    if (this.model)
-      this.goTo(this.model.colCount - 1, this.model.rowCount - 1)
+    if (this.adapter)
+      this.goTo(this.adapter.colCount - 1, this.adapter.rowCount - 1)
   }
 
   getCellAt(column: number, row: number): HTMLTableDataCellElement | undefined {
@@ -851,11 +853,11 @@ export class TableView extends View {
 
   getCellPosition(element: HTMLElement): TablePos {
     let col: number, row: number
-    for (col = 0; col < this.model!.colCount; ++col) {
+    for (col = 0; col < this.adapter!.colCount; ++col) {
       if (element.parentElement!.children[col] === element)
         break
     }
-    for (row = 1; row < this.model!.rowCount + 1; ++row) {
+    for (row = 1; row < this.adapter!.rowCount + 1; ++row) {
       if (element.parentElement!.parentElement!.children[row] === element.parentElement)
         break
     }
@@ -876,7 +878,7 @@ export class TableView extends View {
         let row = this.selectionModel.value.row
         switch (event.key) {
           case "ArrowDown":
-            if (row + 1 < this.model!.rowCount)
+            if (row + 1 < this.adapter!.rowCount)
               ++row
             break
           case "ArrowUp":
@@ -894,7 +896,7 @@ export class TableView extends View {
         let pos = { col: this.selectionModel.col, row: this.selectionModel.row }
         switch (event.key) {
           case "ArrowRight":
-            if (pos.col + 1 < this.model!.colCount) {
+            if (pos.col + 1 < this.adapter!.colCount) {
               ++pos.col
             }
             break
@@ -904,7 +906,7 @@ export class TableView extends View {
             }
             break
           case "ArrowDown":
-            if (pos.row + 1 < this.model!.rowCount)
+            if (pos.row + 1 < this.adapter!.rowCount)
               ++pos.row
             break
           case "ArrowUp":
@@ -925,7 +927,7 @@ export class TableView extends View {
   protected onFieldViewKeyDown(event: KeyboardEvent, pos: TablePos) {
     switch (event.key) {
       case "ArrowDown":
-        if (pos.row + 1 >= this.model!.rowCount)
+        if (pos.row + 1 >= this.adapter!.rowCount)
           break
         event.preventDefault()
         this.goTo(pos.col, pos.row + 1)
@@ -944,15 +946,15 @@ export class TableView extends View {
           } else {
             if (pos.row > 0) {
               event.preventDefault()
-              this.goTo(this.model!.colCount - 1, pos.row - 1)
+              this.goTo(this.adapter!.colCount - 1, pos.row - 1)
             }
           }
         } else {
-          if (pos.col + 1 < this.model!.colCount) {
+          if (pos.col + 1 < this.adapter!.colCount) {
             event.preventDefault()
             this.goTo(pos.col + 1, pos.row)
           } else {
-            if (pos.row + 1 < this.model!.rowCount) {
+            if (pos.row + 1 < this.adapter!.rowCount) {
               event.preventDefault()
               this.goTo(0, pos.row + 1)
             }
