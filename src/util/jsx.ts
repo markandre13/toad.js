@@ -38,10 +38,17 @@ export namespace JSX {
     export interface ToadTableProps extends HTMLElementProps {
         model?: string | TableModel
     }
+
+    type SVGPreserveAspectRatioAlign = "none" | "xMinYMin" | "xMidYMin" | "xMaxYMin" | "xMinYMid" | "xMidYMid" | "xMaxYMid" | "xMinYMax" | "xMidYMax" | "xMaxYMax"
+    type SVGPreserveAspectRatioMeetOrSlice = " meet" | " slice" | ""
+    type SVGPreserveAspectRatio = `${SVGPreserveAspectRatioAlign}${SVGPreserveAspectRatioMeetOrSlice}`
+
     export interface SVGProps extends HTMLElementProps {
         viewBox?: string
         width?: string | number
         height?: string | number
+        preserveAspectRatio?: SVGPreserveAspectRatio
+        transform?: string
     }
 
     interface ToadProps {
@@ -902,13 +909,28 @@ export namespace JSX {
 
         svg: SVGProps
         line: {
+            // SVG 5.12.2
+            id?: string
+
+            // stroke properties
+            stroke?: string
+            strokeWidth?: string // length percentage
+            strokeLinecap?: "butt" | "round" | "square"
+            strokeLinejoin?: "miter" | "miter-clip" | "round" | "bevel" | "arcs"
+            strokeMiterlimit?: number
+            // strokeDasharray?:
+            strokeDashoffset?: string // length percentage
+
+            cursor?: string
+            class?: string
+
+
+            // line
             x1: string | number
             y1: string | number
             x2: string | number
             y2: string | number
-            stroke?: string
-            cursor?: string
-            class?: string
+            // pathLength
         }
         rect: {
             x: string | number
@@ -988,7 +1010,7 @@ export function createElement(name: string | FunctionConstructor, props: JSX.HTM
     }
     const tag = document.createElementNS(namespace, name) as HTMLElement | SVGSVGElement
     if (props !== null) {
-        for (const [key, value] of Object.entries(props)) {
+        for (let [key, value] of Object.entries(props)) {
             switch (key) {
                 case 'model':
                 case 'action':
@@ -998,16 +1020,20 @@ export function createElement(name: string | FunctionConstructor, props: JSX.HTM
                     tag.classList.add(value) // FIXME: value is whitespace separated list
                     break
                 case 'style':
-                    for (const [skey, svalue] of Object.entries(value)) {
-                        const regex = /[A-Z]/g;
-                        const csskey = skey.replace(regex, (upperCase) => "-"+upperCase.toLowerCase())
-                        tag.style.setProperty(csskey, svalue as string)
+                    for (let [skey, svalue] of Object.entries(value)) {
+                        const regex = /[A-Z]/g
+                        skey = skey.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
+                        tag.style.setProperty(skey, svalue as string)
                     }
                     break
                 case 'set':
                     Object.defineProperty(props.set!.object, props.set!.attribute, { value: tag })
                     break
                 default:
+                    if (namespace === "http://www.w3.org/2000/svg") {
+                        const regex = /[A-Z]/g
+                        key = key.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
+                    }
                     tag.setAttributeNS(null, key, value)
             }
         }
