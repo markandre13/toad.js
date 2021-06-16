@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// https://html.spec.whatwg.org/multipage/
+import * as CSS from "csstype"
 
 import { Action } from "@toad/model/Action"
 import { NumberModel } from "@toad/model/NumberModel"
@@ -24,23 +24,6 @@ import { TextModel } from "@toad/model/TextModel"
 import { TableModel } from "@toad/table/TableModel"
 
 export namespace JSX {
-    interface JsxStyle {
-        width?: string | number
-        height?: string | number
-        top?: string | number
-        bottom?: string | number
-        left?: string | number
-        right?: string | number
-        border?: string
-        cursor?: string
-        display?: "block" | "inline" | "run-in" | "flow" | "flow-root" | "table" | "flex" | "grid" | "ruby"
-        | "list-item" | "contents" | "none" | "inline-block" | "inline-list-item" | "inline-table" | "inline-flex" | "inline-grid"
-        | "table-row-group" | "table-header-group" | "table-footer-group" | "table-row" | "table-cell" 
-        | "table-column-group" | "table-column" | "table-caption"
-        | "ruby-base" | "ruby-text" | "ruby-base-container" | "ruby-text-container"
-        overflow?: "visible" | "hidden" | "scroll" | "auto" | "initial" | "inherit"
-        position?: string
-    }
 
     export interface ToadButtonProps extends HTMLElementProps {
         model?: string | TextModel
@@ -65,16 +48,295 @@ export namespace JSX {
         set?: Reference
     }
 
+    // use csstype's nice CSS definitons and comments for VSCode's Intellisense
+    export interface CSSProperties extends CSS.Properties<string | number> { }
+
+    // copy'n pasted Aria definitions from DefinitelyTyped/types/react/index.d.ts
+
+    // All the WAI-ARIA 1.1 attributes from https://www.w3.org/TR/wai-aria-1.1/
+    interface AriaAttributes {
+        /** Identifies the currently active element when DOM focus is on a composite widget, textbox, group, or application. */
+        'aria-activedescendant'?: string
+        /** Indicates whether assistive technologies will present all, or only parts of, the changed region based on the change notifications defined by the aria-relevant attribute. */
+        'aria-atomic'?: boolean | 'false' | 'true'
+        /**
+         * Indicates whether inputting text could trigger display of one or more predictions of the user's intended value for an input and specifies how predictions would be
+         * presented if they are made.
+         */
+        'aria-autocomplete'?: 'none' | 'inline' | 'list' | 'both'
+        /** Indicates an element is being modified and that assistive technologies MAY want to wait until the modifications are complete before exposing them to the user. */
+        'aria-busy'?: boolean | 'false' | 'true'
+        /**
+         * Indicates the current "checked" state of checkboxes, radio buttons, and other widgets.
+         * @see aria-pressed @see aria-selected.
+         */
+        'aria-checked'?: boolean | 'false' | 'mixed' | 'true'
+        /**
+         * Defines the total number of columns in a table, grid, or treegrid.
+         * @see aria-colindex.
+         */
+        'aria-colcount'?: number
+        /**
+         * Defines an element's column index or position with respect to the total number of columns within a table, grid, or treegrid.
+         * @see aria-colcount @see aria-colspan.
+         */
+        'aria-colindex'?: number
+        /**
+         * Defines the number of columns spanned by a cell or gridcell within a table, grid, or treegrid.
+         * @see aria-colindex @see aria-rowspan.
+         */
+        'aria-colspan'?: number
+        /**
+         * Identifies the element (or elements) whose contents or presence are controlled by the current element.
+         * @see aria-owns.
+         */
+        'aria-controls'?: string
+        /** Indicates the element that represents the current item within a container or set of related elements. */
+        'aria-current'?: boolean | 'false' | 'true' | 'page' | 'step' | 'location' | 'date' | 'time'
+        /**
+         * Identifies the element (or elements) that describes the object.
+         * @see aria-labelledby
+         */
+        'aria-describedby'?: string
+        /**
+         * Identifies the element that provides a detailed, extended description for the object.
+         * @see aria-describedby.
+         */
+        'aria-details'?: string
+        /**
+         * Indicates that the element is perceivable but disabled, so it is not editable or otherwise operable.
+         * @see aria-hidden @see aria-readonly.
+         */
+        'aria-disabled'?: boolean | 'false' | 'true'
+        /**
+         * Indicates what functions can be performed when a dragged object is released on the drop target.
+         * @deprecated in ARIA 1.1
+         */
+        'aria-dropeffect'?: 'none' | 'copy' | 'execute' | 'link' | 'move' | 'popup'
+        /**
+         * Identifies the element that provides an error message for the object.
+         * @see aria-invalid @see aria-describedby.
+         */
+        'aria-errormessage'?: string
+        /** Indicates whether the element, or another grouping element it controls, is currently expanded or collapsed. */
+        'aria-expanded'?: boolean | 'false' | 'true'
+        /**
+         * Identifies the next element (or elements) in an alternate reading order of content which, at the user's discretion,
+         * allows assistive technology to override the general default of reading in document source order.
+         */
+        'aria-flowto'?: string
+        /**
+         * Indicates an element's "grabbed" state in a drag-and-drop operation.
+         * @deprecated in ARIA 1.1
+         */
+        'aria-grabbed'?: boolean | 'false' | 'true'
+        /** Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by an element. */
+        'aria-haspopup'?: boolean | 'false' | 'true' | 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog'
+        /**
+         * Indicates whether the element is exposed to an accessibility API.
+         * @see aria-disabled.
+         */
+        'aria-hidden'?: boolean | 'false' | 'true'
+        /**
+         * Indicates the entered value does not conform to the format expected by the application.
+         * @see aria-errormessage.
+         */
+        'aria-invalid'?: boolean | 'false' | 'true' | 'grammar' | 'spelling'
+        /** Indicates keyboard shortcuts that an author has implemented to activate or give focus to an element. */
+        'aria-keyshortcuts'?: string
+        /**
+         * Defines a string value that labels the current element.
+         * @see aria-labelledby.
+         */
+        'aria-label'?: string
+        /**
+         * Identifies the element (or elements) that labels the current element.
+         * @see aria-describedby.
+         */
+        'aria-labelledby'?: string
+        /** Defines the hierarchical level of an element within a structure. */
+        'aria-level'?: number
+        /** Indicates that an element will be updated, and describes the types of updates the user agents, assistive technologies, and user can expect from the live region. */
+        'aria-live'?: 'off' | 'assertive' | 'polite'
+        /** Indicates whether an element is modal when displayed. */
+        'aria-modal'?: boolean | 'false' | 'true'
+        /** Indicates whether a text box accepts multiple lines of input or only a single line. */
+        'aria-multiline'?: boolean | 'false' | 'true'
+        /** Indicates that the user may select more than one item from the current selectable descendants. */
+        'aria-multiselectable'?: boolean | 'false' | 'true'
+        /** Indicates whether the element's orientation is horizontal, vertical, or unknown/ambiguous. */
+        'aria-orientation'?: 'horizontal' | 'vertical'
+        /**
+         * Identifies an element (or elements) in order to define a visual, functional, or contextual parent/child relationship
+         * between DOM elements where the DOM hierarchy cannot be used to represent the relationship.
+         * @see aria-controls.
+         */
+        'aria-owns'?: string
+        /**
+         * Defines a short hint (a word or short phrase) intended to aid the user with data entry when the control has no value.
+         * A hint could be a sample value or a brief description of the expected format.
+         */
+        'aria-placeholder'?: string
+        /**
+         * Defines an element's number or position in the current set of listitems or treeitems. Not required if all elements in the set are present in the DOM.
+         * @see aria-setsize.
+         */
+        'aria-posinset'?: number
+        /**
+         * Indicates the current "pressed" state of toggle buttons.
+         * @see aria-checked @see aria-selected.
+         */
+        'aria-pressed'?: boolean | 'false' | 'mixed' | 'true'
+        /**
+         * Indicates that the element is not editable, but is otherwise operable.
+         * @see aria-disabled.
+         */
+        'aria-readonly'?: boolean | 'false' | 'true'
+        /**
+         * Indicates what notifications the user agent will trigger when the accessibility tree within a live region is modified.
+         * @see aria-atomic.
+         */
+        'aria-relevant'?: 'additions' | 'additions removals' | 'additions text' | 'all' | 'removals' | 'removals additions' | 'removals text' | 'text' | 'text additions' | 'text removals'
+        /** Indicates that user input is required on the element before a form may be submitted. */
+        'aria-required'?: boolean | 'false' | 'true'
+        /** Defines a human-readable, author-localized description for the role of an element. */
+        'aria-roledescription'?: string
+        /**
+         * Defines the total number of rows in a table, grid, or treegrid.
+         * @see aria-rowindex.
+         */
+        'aria-rowcount'?: number
+        /**
+         * Defines an element's row index or position with respect to the total number of rows within a table, grid, or treegrid.
+         * @see aria-rowcount @see aria-rowspan.
+         */
+        'aria-rowindex'?: number
+        /**
+         * Defines the number of rows spanned by a cell or gridcell within a table, grid, or treegrid.
+         * @see aria-rowindex @see aria-colspan.
+         */
+        'aria-rowspan'?: number
+        /**
+         * Indicates the current "selected" state of various widgets.
+         * @see aria-checked @see aria-pressed.
+         */
+        'aria-selected'?: boolean | 'false' | 'true'
+        /**
+         * Defines the number of items in the current set of listitems or treeitems. Not required if all elements in the set are present in the DOM.
+         * @see aria-posinset.
+         */
+        'aria-setsize'?: number
+        /** Indicates if items in a table or grid are sorted in ascending or descending order. */
+        'aria-sort'?: 'none' | 'ascending' | 'descending' | 'other'
+        /** Defines the maximum allowed value for a range widget. */
+        'aria-valuemax'?: number
+        /** Defines the minimum allowed value for a range widget. */
+        'aria-valuemin'?: number
+        /**
+         * Defines the current value for a range widget.
+         * @see aria-valuetext.
+         */
+        'aria-valuenow'?: number
+        /** Defines the human readable text alternative of aria-valuenow for a range widget. */
+        'aria-valuetext'?: string
+    }
+
+    // All the WAI-ARIA 1.1 role attribute values from https://www.w3.org/TR/wai-aria-1.1/#role_definitions
+    type AriaRole =
+        | 'alert'
+        | 'alertdialog'
+        | 'application'
+        | 'article'
+        | 'banner'
+        | 'button'
+        | 'cell'
+        | 'checkbox'
+        | 'columnheader'
+        | 'combobox'
+        | 'complementary'
+        | 'contentinfo'
+        | 'definition'
+        | 'dialog'
+        | 'directory'
+        | 'document'
+        | 'feed'
+        | 'figure'
+        | 'form'
+        | 'grid'
+        | 'gridcell'
+        | 'group'
+        | 'heading'
+        | 'img'
+        | 'link'
+        | 'list'
+        | 'listbox'
+        | 'listitem'
+        | 'log'
+        | 'main'
+        | 'marquee'
+        | 'math'
+        | 'menu'
+        | 'menubar'
+        | 'menuitem'
+        | 'menuitemcheckbox'
+        | 'menuitemradio'
+        | 'navigation'
+        | 'none'
+        | 'note'
+        | 'option'
+        | 'presentation'
+        | 'progressbar'
+        | 'radio'
+        | 'radiogroup'
+        | 'region'
+        | 'row'
+        | 'rowgroup'
+        | 'rowheader'
+        | 'scrollbar'
+        | 'search'
+        | 'searchbox'
+        | 'separator'
+        | 'slider'
+        | 'spinbutton'
+        | 'status'
+        | 'switch'
+        | 'tab'
+        | 'table'
+        | 'tablist'
+        | 'tabpanel'
+        | 'term'
+        | 'textbox'
+        | 'timer'
+        | 'toolbar'
+        | 'tooltip'
+        | 'tree'
+        | 'treegrid'
+        | 'treeitem'
+        | (string & {})
+
+    type HTMLAttributeReferrerPolicy =
+        | ""
+        | "no-referrer"
+        | "no-referrer-when-downgrade"
+        | "origin"
+        | "origin-when-cross-origin"
+        | "same-origin"
+        | "strict-origin"
+        | "strict-origin-when-cross-origin"
+        | "unsafe-url"
+
     // 4.9 Element
     interface ElementProps extends ToadProps {
         id?: string
         class?: string
         // classList
-        // slot
+        slot?: string
+
+        // dataset
     }
 
     // 3.2.2 Elements in the DOM
-    export interface HTMLElementProps extends ElementProps {
+    export interface HTMLElementProps extends ElementProps, AriaAttributes {
         // metadata attributes
         title?: string
         lang?: string
@@ -91,21 +353,34 @@ export namespace JSX {
 
         // FIXME: 3.2.6 Global Attributes missing
         autofocus?: boolean
-        contenteditable?: boolean
-        enterkeyhint?: string
-        // inputmode
-        // is
-        // itemid
-        // itemref
-        // itemscope
-        // itemtype
+        contentEditable?: boolean | "inherit"
+        enterkeyhint?: "enter" | "done" | "go" | "next" | "previous" | "search" | "send"
+        /**
+        * Hints at the type of data that might be entered by the user while editing the element or its contents
+        * @see https://html.spec.whatwg.org/multipage/interaction.html#input-modalities:-the-inputmode-attribute
+        */
+        inputMode?: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search"
+        is?: string
+        itemID?: string
+        itemRef?: string
+        itemScope?: string
+        itemtype?: string
         // nonce
-        style?: JsxStyle
-        // tabindex
+        style?: CSSProperties
+        tabIndex?: number
 
-        // skipped:
-        // innerText?: string
-        // outerText?: string
+        // WAI-ARIA
+        role?: AriaRole
+
+        // RDFa Attributes
+        about?: string
+        datatype?: string
+        inlist?: any
+        prefix?: string
+        property?: string
+        resource?: string
+        typeof?: string
+        vocab?: string
     }
 
     interface HTMLBaseElementProps extends HTMLElementProps {
@@ -126,14 +401,14 @@ export namespace JSX {
         // sizes
         imageSrcset?: string
         imageSizes?: string
-        referrerPolicy?: string
+        referrerPolicy?: HTMLAttributeReferrerPolicy
         disabled?: boolean
     }
 
     interface HTMLMetaElementProps extends HTMLElementProps {
         name?: string
         // http-equiv
-        httpEquiv?: "content-languagle"|"content-type"|"default-style"|"refresh"|"set-cookie"|"x-ua-compatible"|"content-security-policy"
+        httpEquiv?: "content-languagle" | "content-type" | "default-style" | "refresh" | "set-cookie" | "x-ua-compatible" | "content-security-policy"
         content?: string
         charset?: string // not part of the DOM?
     }
@@ -146,7 +421,7 @@ export namespace JSX {
     interface HTMLOListElementProps extends HTMLElementProps {
         reversed?: boolean
         start?: number
-        type?: "1"|"a"|"A"|"i"|"I"
+        type?: "1" | "a" | "A" | "i" | "I"
     }
 
     interface HTMLLIElementProps extends HTMLElementProps {
@@ -155,16 +430,13 @@ export namespace JSX {
 
     interface HTMLAnchorElementProps extends HTMLElementProps {
         target?: string
-        download?: string
+        download?: string // any?
         ping?: string
         rel?: string
-        // relList
-        hreflang?: string
+        hrefLang?: string
         type?: string
         text?: string
-        referrerPolicy?: string
-
-        // HTMLHyperlinkElementUtils ???
+        referrerPolicy?: HTMLAttributeReferrerPolicy
     }
 
     interface HTMLQuoteElementProps extends HTMLElementProps {
@@ -199,7 +471,7 @@ export namespace JSX {
         src?: string
         secset?: string
         sizes?: string
-        crossOrigin?: string
+        crossOrigin?: "anonymous" | "use-credentials" | ""
         useMap?: string
         isMap?: boolean
         width?: number
@@ -208,9 +480,9 @@ export namespace JSX {
         // naturalHeight?: number
         // complete?: boolean
         // currentSrc?: string
-        referrerPolicy?: string
-        decoding?: string
-        loading?: "lazy"|"eager"
+        referrerPolicy?: HTMLAttributeReferrerPolicy
+        decoding?: "async" | "auto" | "sync"
+        loading?: "lazy" | "eager"
     }
 
     interface HTMLIFrameElementProps extends HTMLElementProps {
@@ -222,7 +494,7 @@ export namespace JSX {
         allowFullscreen?: boolean
         width?: string
         height?: string
-        referrerPolicy?: string
+        referrerPolicy?: HTMLAttributeReferrerPolicy
         loading?: string
     }
 
@@ -286,7 +558,7 @@ export namespace JSX {
         download?: string
         ping?: string
         rel?: string
-        referrerPolicy?: string
+        referrerPolicy?: HTMLAttributeReferrerPolicy
     }
 
     interface HTMLTableColElementProps extends HTMLElementProps {
@@ -346,7 +618,7 @@ export namespace JSX {
         src?: string
         step?: string
         type?: "button" | "checkbox" | "image" | "radio" | "color" | "date" | "datetime" | "datetime-local" | "email" | "file"
-            | "hidden" | "month" | "number" | "password" | "range" | "research" | "search" | "submit" | "tel" | "text" | "url" | "week"
+        | "hidden" | "month" | "number" | "password" | "range" | "research" | "search" | "submit" | "tel" | "text" | "url" | "week"
         defaultValue?: string
         value?: string
         // valueAsDate
@@ -429,7 +701,7 @@ export namespace JSX {
         formNoValidate?: boolean
         formTarget?: string
         name?: string
-        type?: string
+        type?: "submit" | "reset" | "button"
         value?: string
     }
 
@@ -463,7 +735,7 @@ export namespace JSX {
         crossOrigin?: string
         text?: string
         integrity?: string
-        referrerPolicy?: string
+        referrerPolicy?: HTMLAttributeReferrerPolicy
     }
 
     interface HTMLSlotElementProps extends HTMLElementProps {
@@ -478,7 +750,7 @@ export namespace JSX {
     export interface IntrinsicElements {
         // 4.1 The document element
         html: HTMLElementProps
-        
+
         // 4.2 Document metadata
         head: HTMLElementProps
         title: HTMLElementProps
@@ -502,7 +774,7 @@ export namespace JSX {
         hgroup: HTMLElementProps
         header: HTMLElementProps
         address: HTMLElementProps
-        
+
         // 4.4 Grouping content
         p: HTMLElementProps
         hr: HTMLElementProps
@@ -517,6 +789,19 @@ export namespace JSX {
         figure: HTMLElementProps
         figurecaption: HTMLElementProps
         main: HTMLElementProps
+        /**
+         * The `div` element has no special meaning at all. It represents its children.
+         * 
+         * It can be used with the `class`, `lang`, and `title` attributes to mark up semantics
+         * common to a group of consecutive elements.
+         * 
+         * It can also be used in a `dl` element, wrapping groups of `dt` and `dd` elements.
+         * 
+         * **NOTE**: Authors are strongly encouraged to view the `div` element as an element of last
+         * resort, for when no other element is suitable. Use of more appropriate elements
+         * instead of the `div` element leads to better accessibility for readers and easier
+         * maintainability for authors.
+         */
         div: HTMLElementProps
 
         // 4.5 Text-level semantics
@@ -612,7 +897,7 @@ export namespace JSX {
         canvas: HTMLCanvasElementProps
 
         strike: HTMLElementProps
-        
+
         // SVG
 
         svg: SVGProps
@@ -674,7 +959,7 @@ export class Fragment {
         this.children = children
     }
     appendTo(element: HTMLElement) {
-        for(let child of this.children) {
+        for (let child of this.children) {
             element.appendChild(child)
         }
     }
@@ -704,7 +989,7 @@ export function createElement(name: string | FunctionConstructor, props: JSX.HTM
     const tag = document.createElementNS(namespace, name) as HTMLElement | SVGSVGElement
     if (props !== null) {
         for (const [key, value] of Object.entries(props)) {
-            switch(key) {
+            switch (key) {
                 case 'model':
                 case 'action':
                     (tag as any).setModel(value)
@@ -714,7 +999,9 @@ export function createElement(name: string | FunctionConstructor, props: JSX.HTM
                     break
                 case 'style':
                     for (const [skey, svalue] of Object.entries(value)) {
-                        tag.style.setProperty(skey, svalue as string)
+                        const regex = /[A-Z]/g;
+                        const csskey = skey.replace(regex, (upperCase) => "-"+upperCase.toLowerCase())
+                        tag.style.setProperty(csskey, svalue as string)
                     }
                     break
                 case 'set':

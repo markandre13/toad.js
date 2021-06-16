@@ -19,7 +19,6 @@
 /** @jsx toadJSX.createElement */
 import * as toadJSX from '../util/jsx'
 
-import { TableModel } from "./TableModel"
 import { TreeModel } from "./TreeModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 
