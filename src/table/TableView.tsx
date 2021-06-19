@@ -427,7 +427,10 @@ export class TableView extends View {
         cell.style.width = ""
         const content = this.adapter.displayCell(col, row)
         if (content) {
-          cell.appendChild(content)
+          if (Array.isArray(content))
+            content.forEach( e => cell.appendChild(e))
+          else
+            cell.appendChild(content)
         }
       }
 
@@ -466,7 +469,10 @@ export class TableView extends View {
       cell.style.width = ""
       const content = this.adapter.displayCell(col, row)
       if (content) {
-        cell.appendChild(content)
+        if (Array.isArray(content))
+            content.forEach( e => cell.appendChild(e))
+          else
+            cell.appendChild(content)
       }
     }
 
@@ -575,12 +581,19 @@ export class TableView extends View {
       const rowHeader = rowHeadHead[row] as HTMLElement
       const rowBody = this.bodyBody.children[row + 1] as HTMLElement
 
-      const headHeight = rowHeader.clientHeight - dom.verticalPadding(rowHeader)
-      const bodyHeight = rowBody.clientHeight - dom.verticalPadding(rowBody)
+      let headHeight = rowHeader.clientHeight - dom.verticalPadding(rowHeader)
+      let bodyHeight = rowBody.clientHeight - dom.verticalPadding(rowBody)
+
+      let height = Math.max(headHeight, bodyHeight)
+
+      // if (this.adapter?.isViewCompact()) {
+      //   height += 2
+      // }
+      // console.log(`TableView.adjustLayoutAfterRender(): row ${row}, headHeight=${headHeight}, bodyHeight=${bodyHeight}`)
 
       rowHeader.style.height = rowHeader.style.minHeight = rowHeader.style.maxHeight =
         rowBody.style.height = rowBody.style.minHeight = rowBody.style.maxHeight =
-        ((headHeight > bodyHeight ? headHeight : bodyHeight)) + "px"
+        `${height}px`
     }
 
     function b2s(r: DOMRect): string {
@@ -977,7 +990,13 @@ export class TableView extends View {
     if (tmp.innerHTML == cell.innerHTML)
       return
 
-    cell.replaceChild(content, cell.childNodes[0])
+    // cell.replaceChild(content, cell.childNodes[0])
+    while(cell.childElementCount)
+      cell.removeChild(cell.children[0])
+    if (Array.isArray(content))
+      content.forEach( e => cell.appendChild(e))
+    else
+      cell.appendChild(content)
 
     this.unadjustLayoutBeforeRender(pos)
     setTimeout(() => {

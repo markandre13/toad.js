@@ -19,8 +19,18 @@ export class MyNode implements TreeNode {
 }
 
 export class MyTreeAdapter extends TreeAdapter<MyNode> {
-    override displayCell(col: number, row: number): Node | undefined {       
-        return this.model && this.treeCell(row, this.model.rows[row].node.label)
+    override displayCell(col: number, row: number): Node | Node[] | undefined {       
+        if (!this.model)
+            return undefined
+
+        const text = document.createElement("span")
+        text.style.padding = "2px 4px 2px 2px"
+        text.appendChild(document.createTextNode(this.model.rows[row].node.label))
+    
+        return [
+            this.treeCell(row, this.model.rows[row].node.label)!,
+            text
+        ]
     }
 }
 

@@ -76,7 +76,13 @@ tableStyle.textContent = `
   overflow: hidden;   
   padding: 2px;
   margin: 0px;
-  white-space: nowrap;
+
+  /* this might not be always desirable; */
+  white-space: nowrap; 
+
+  /* this might not be always desirable; used to align text and treenodecell vertically */
+  display: flex; align-items:center;
+
   border: solid 1px #ccc;
 }
 

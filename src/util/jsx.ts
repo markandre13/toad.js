@@ -968,6 +968,7 @@ export namespace JSX {
         "toad-text": ToadTextProps
         "toad-slider": ToadSliderProps
         "toad-table": ToadTableProps
+        "toad-treenodecell": HTMLElementProps
     }
     export interface Reference {
         object: Object

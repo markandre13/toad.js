@@ -33,7 +33,7 @@ export class TableAdapter<T extends TableModel> {
     }
     getColumnHead(col: number): Node | undefined { return undefined }
     getRowHead(row: number): Node | undefined { return undefined }
-    displayCell(col: number, row: number): Node | undefined { return undefined }
+    displayCell(col: number, row: number): Node | Node[] | undefined { return undefined }
     createEditor(col: number, row: number): Node | undefined { return undefined }
 
     isViewCompact(): boolean { return false }

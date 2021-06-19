@@ -20,7 +20,7 @@ import { TypedTableModel } from "./TypedTableModel"
 import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 
-class RowInfo<T> {
+export class RowInfo<T> {
     node: T
     open: boolean
     depth: number
