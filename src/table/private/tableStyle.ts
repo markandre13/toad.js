@@ -80,9 +80,6 @@ tableStyle.textContent = `
   /* this might not be always desirable; */
   white-space: nowrap; 
 
-  /* this might not be always desirable; used to align text and treenodecell vertically */
-  display: flex; align-items:center;
-
   border: solid 1px #ccc;
 }
 
@@ -118,7 +115,17 @@ tableStyle.textContent = `
 }
 
 .compact.colhead th,
-.compact.rowhead th {
+.compact.rowhead th,
+.compact.hiddenSizeCheck * th,
+.compact.cells * td,
+.compact.hiddenSizeCheck * td {
+  /* for some reason, without this, the cells have a distance... */
+  display: flex;
+}
+
+.compact.colhead th,
+.compact.rowhead th,
+.compact.hiddenSizeCheck * th {
   border-color: none;
   border-style: none;
   border-width: 0;

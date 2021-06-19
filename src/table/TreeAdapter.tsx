@@ -29,11 +29,25 @@ export class TreeNodeCell<T> extends View {
     resizeObserver!: ResizeObserver
     model: TreeModel<T>
     rowinfo: RowInfo<T>
-    constructor(model: TreeModel<T>, rowinfo: RowInfo<T>) {
+    label: string
+    constructor(model: TreeModel<T>, rowinfo: RowInfo<T>, label: string) {
         super()
-        this.attachShadow({ mode: 'open' })
         this.model = model
         this.rowinfo = rowinfo
+        this.label = label
+
+        this.style.display = "inline-flex"
+        this.style.alignItems = "center"
+
+        this.style.border = "none"
+        this.style.margin = "0"
+        this.style.padding = "0"
+        // this.style.background = "#f80"
+        this.style.height = `100%`
+        // this.style.width = `${width}px`
+
+
+        this.attachShadow({ mode: 'open' })
 
         // // for chromium, the recommendation is to go with a single resize observer
         this.resizeObserver = new ResizeObserver(entries => {
@@ -87,8 +101,10 @@ export class TreeNodeCell<T> extends View {
         const dy = Math.round(height / 2) + 0.5 - rs / 2      // step from top to rectangle
         const rx = 3      // horizontal line from rectangle to data on the left
 
-        const width = this.rowinfo.depth * sx + sx + dx
+        const width = this.rowinfo.depth * sx + sx + dx 
         const height2 = height + 2
+
+        console.log(`${this.label}: size = ${width}, ${height}`)
 
         // if (item_h === 0)
         //     return
@@ -97,12 +113,6 @@ export class TreeNodeCell<T> extends View {
         //     return
 
         // console.log(`TreeNodeCell<T> of height ${item_h}`)
-
-        this.style.display = "inline-block"
-        this.style.border = "none"
-        // this.style.background = "#f80"
-        this.style.height = `${height}px`
-        this.style.width = `${width}px`
 
         const svg = <svg
             style={{ 
@@ -198,13 +208,16 @@ export class TreeNodeCell<T> extends View {
             }
         }
 
-        if (this.shadowRoot.children.length === 0) {
-            this.shadowRoot.appendChild(svg)
-        } else {
+        while(this.shadowRoot.childElementCount > 0)
             this.shadowRoot.removeChild(this.shadowRoot.children[0])
-            this.shadowRoot.appendChild(svg)
-            // this.replaceChild(svg, this.shadowRoot.children[0])
-        }
+
+        this.shadowRoot.appendChild(svg)
+
+        const text = document.createElement("span")
+        text.style.display = "inline-block"
+        text.style.padding = "2px 4px 2px 2px"
+        text.appendChild(document.createTextNode(this.label))
+        this.shadowRoot.appendChild(text)
     }
 }
 
@@ -217,6 +230,6 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
     treeCell(row: number, label: string): Element | undefined {
         if (!this.model)
             return undefined
-        return new TreeNodeCell(this.model, this.model.rows[row])
+        return new TreeNodeCell(this.model, this.model.rows[row], label)
     }
 }
