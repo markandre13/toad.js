@@ -26,14 +26,6 @@ import { Model } from '../model/Model'
 import { RowInfo } from './TreeModel'
 
 export class TreeNodeCell<T> extends View {
-    // for chromium, the recommendation is to go with a single resize observer
-    // static resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[], observer: ResizeObserver) => {
-    //     for(const e of entries) {
-    //         const c = e.target as TreeNodeCell<any>
-    //         c.paint()
-    //         TreeNodeCell.resizeObserver.unobserve(c.parentElement!)
-    //     }
-    // })
     model: TreeModel<T>
     rowinfo: RowInfo<T>
     label: string
@@ -49,20 +41,11 @@ export class TreeNodeCell<T> extends View {
     setModel(model: Model) { }
 
     override connectedCallback() {
-        // console.log(`TreeNodeCell<T>.connected(): parent=${this.parentElement}`)
-        // TreeNodeCell.resizeObserver.observe(this.parentElement!, { box: 'content-box' })
         super.connectedCallback()
         this.paint()
-
-        // paint again to accomodate for the label size
-        // FIXME: this doesn't work when any other element in the row changes it's size
-        setTimeout( () => {
-            this.paint()
-        }, 0)
     }
 
     override disconnectedCallback() {
-        // TreeNodeCell.resizeObserver.unobserve(this.parentElement!)
         super.disconnectedCallback()
     }
 
@@ -72,127 +55,112 @@ export class TreeNodeCell<T> extends View {
         if (!this.parentElement)
             return
 
-        const row = this.model.getRow(this.rowinfo.node)!
+        const row = this.model.getRow(this.rowinfo.node)
         if (row === undefined)
             return
 
-        // FIXME: this is a hack relying on paint being called twice
-        //        reason is that this.parentElement.clientHeight some can be a pixel smaller than the span,
-        //        causing a pixel missing where the tree node cells should connect to each other
-        //        can be seen when span has no padding and contains a text node
-        let spanHeight = 0
-        if (this.shadowRoot.childElementCount > 0) {
-            const s = this.shadowRoot.children[1] as HTMLElement
-            spanHeight = s.offsetHeight
-        }
-
         const rs = 8      // rectangle width and height
-        const sx = rs + 4     // horizontal step width, minimal vertical step width
-        const height = Math.max(
-            this.parentElement.clientHeight,
-            spanHeight,
-            sx)
+        const sx = rs + 4 // horizontal step width, minimal vertical step width
+        const height = sx
         const dx = 3.5    // additional step before and after drawing the rectangle
         const dy = Math.round(height / 2 - rs / 2) - 0.5       // step from top to rectangle
         const rx = 3      // horizontal line from rectangle to data on the left
         const width = this.rowinfo.depth * sx + sx + dx
-        const height2 = height
-
-        // console.log(`label: ${this.label}: height=${height}`)
 
         const content: toadJSX.Fragment = <>
-            <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{
+            <svg width={width} height={sx} style={{
                 verticalAlign: "middle",
-                // background: "#88f",
+                background: "none",
             }} />
             <span style={{
                 verticalAlign: "middle",
                 padding: "2px",
-                // background: "#f88",
             }}>{this.label}</span>
         </>
+
         const svg = content[0] as SVGElement
 
-        const rowinfo = this.rowinfo
-        const d = rowinfo.depth
+        if (true) {
+            const rowinfo = this.rowinfo
+            const d = rowinfo.depth
 
-        if (this.model.getDown(rowinfo.node)) {
-            // TODO: port Rectangle from workflow to toad.js
-            const x0 = d * sx + dx
+            // when we have children, draw a box
+            if (this.model.getDown(rowinfo.node)) {
+                // TODO: port Rectangle from workflow to toad.js
+                const x0 = d * sx + dx
 
-            // box
-            const box = <rect x={d * sx + dx} y={dy} width={rs} height={rs} stroke="#000" fill="#fff" cursor="pointer" />
-            svg.appendChild(box)
+                // box
+                const box = <rect x={d * sx + dx} y={dy} width={rs} height={rs} stroke="#000" fill="#fff" cursor="pointer" />
+                svg.appendChild(box)
 
-            // minus
-            svg.appendChild(<line x1={d * sx + dx + (rs >> 2)} y1={dy + (rs >> 1)} x2={d * sx + dx + rs - (rs >> 2)} y2={dy + (rs >> 1)} stroke="#000" cursor="pointer" />)
+                // minus
+                svg.appendChild(<line x1={d * sx + dx + (rs >> 2)} y1={dy + (rs >> 1)} x2={d * sx + dx + rs - (rs >> 2)} y2={dy + (rs >> 1)} stroke="#000" cursor="pointer" />)
 
-            const plus = <line x1={d * sx + dx + (rs >> 1)} y1={dy + (rs >> 2)} x2={d * sx + dx + (rs >> 1)} y2={dy + rs - (rs >> 2)} stroke="#000" cursor="pointer" />
-            plus.style.display = rowinfo.open ? "none" : ""
-            svg.appendChild(plus)
+                // plus
+                const plus = <line x1={d * sx + dx + (rs >> 1)} y1={dy + (rs >> 2)} x2={d * sx + dx + (rs >> 1)} y2={dy + rs - (rs >> 2)} stroke="#000" cursor="pointer" />
+                plus.style.display = rowinfo.open ? "none" : ""
+                svg.appendChild(plus)
 
-            // horizontal line to data
-            svg.appendChild(<line x1={d * sx + dx + rs} y1={dy + (rs >> 1)} x2={d * sx + dx + rs + rx} y2={dy + (rs >> 1)} stroke="#000" />)
+                // horizontal line to data
+                svg.appendChild(<line x1={d * sx + dx + rs} y1={dy + (rs >> 1)} x2={d * sx + dx + rs + rx} y2={dy + (rs >> 1)} stroke="#000" />)
 
-            svg.onmousedown = (event: MouseEvent) => {
-                event.preventDefault()
-                if (this.model === undefined) {
-                    console.log("  ==> no model")
-                    return
-                }
-
-                const rowNumber = row // this.model.getRow(rowinfo.node)
-                if (rowNumber === undefined) {
-                    console.log("  ==> couldn't find row number for node")
-                    return
-                }
-
-                const bounds = svg.getBoundingClientRect()
-                const x = event.clientX - bounds.left
-                const y = event.clientY - bounds.top
-                if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy + rs) {
-                    this.model?.toggleAt(rowNumber) // TODO: this row number varies!!!
-                    // console.log(`toggled row ${row} to ${this.model!.isOpen(row)}`)
-                    plus.style.display = this.model.isOpen(rowNumber) ? "none" : ""
+                svg.onmousedown = (event: MouseEvent) => {
+                    event.preventDefault()
                     event.stopPropagation()
-                }
-            }
-        } else {
-            // upper vertical line instead of box
-            svg.appendChild(<line x1={d * sx + dx + (rs >> 1)} y1={dy} x2={d * sx + dx + (rs >> 1)} y2={dy + (rs >> 1)} stroke="#000" />)
-            // horizontal line to data
-            svg.appendChild(<line x1={d * sx + dx + (rs >> 1)} y1={dy + (rs >> 1)} x2={d * sx + dx + rs + rx} y2={dy + (rs >> 1)} stroke="#000" />)
-        }
 
-        // small line above box
-        svg.appendChild(<line x1={d * sx + dx + (rs >> 1)} y1={0} x2={d * sx + dx + (rs >> 1)} y2={dy} stroke="#000" />)
-
-        // lines connecting nodes
-        // console.log(`render tree graphic for row ${row} at depth ${d}`)
-        for (let i = 0; i <= d; ++i) {
-            // console.log(`check row ${row}, depth ${i}`)
-            for (let j = row + 1; j < this.model.rowCount; ++j) {
-                if (this.model.rows[j].depth < i)
-                    break
-                if (i === this.model.rows[j].depth) {
-                    if (i !== d) {
-                        // long line without box
-                        svg.appendChild(<line x1={i * sx + dx + (rs >> 1)} y1={0} x2={i * sx + dx + (rs >> 1)} y2={height2} stroke="#000" />)
-                    } else {
-                        // small line below box
-                        if (this.model.getDown(rowinfo.node) !== undefined) {
-                            // has subtree => start below box
-                            svg.appendChild(<line x1={i * sx + dx + (rs >> 1)} y1={dy + rs} x2={i * sx + dx + (rs >> 1)} y2={height2} stroke="#000" />)
-                        } else {
-                            // has no subtree => has no box => don't start below box
-                            svg.appendChild(<line x1={i * sx + dx + (rs >> 1)} y1={dy + (rs >> 1)} x2={i * sx + dx + (rs >> 1)} y2={height2} stroke="#000" />)
-                        }
+                    const rowNumber = this.model.getRow(rowinfo.node)
+                    if (rowNumber === undefined) {
+                        console.log("  ==> couldn't find row number for node")
+                        return
                     }
-                    break
+
+                    const bounds = svg.getBoundingClientRect()
+                    const x = event.clientX - bounds.left
+                    const y = event.clientY - bounds.top
+                    if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy + rs) {
+                        this.model?.toggleAt(rowNumber)
+                        plus.style.display = this.model.isOpen(rowNumber) ? "none" : ""
+                    }
+                }
+            } else {
+                // upper vertical line instead of box
+                svg.appendChild(<line x1={d * sx + dx + (rs >> 1)} y1="0" x2={d * sx + dx + (rs >> 1)} y2={dy + (rs >> 1)} stroke="#000" />)
+                // horizontal line to data
+                svg.appendChild(<line x1={d * sx + dx + (rs >> 1)} y1={dy + (rs >> 1)} x2={d * sx + dx + rs + rx} y2={dy + (rs >> 1)} stroke="#000" />)
+            }
+
+            // the vertical lines connecting with the surrounding rows are done as background images in the <td> parent.
+            // this frees us to set a vertical size to meet the boundaries of the <td>
+            // as well as removing the vertical size while the table layout is recalculated
+            let lines = ""
+            for (let i = 0; i <= d; ++i) {
+                const x = i * sx + dx + (rs >> 1)
+                for (let j = row + 1; j < this.model.rowCount; ++j) {
+                    if (this.model.rows[j].depth < i)
+                        break
+                    if (i === this.model.rows[j].depth) {
+                        if (i !== d) {
+                            // long line without box
+                            lines += `<line x1='${x}' y1='0' x2='${x}' y2='100%' stroke='%23000' />`
+                        } else {
+                            if (this.model.getNext(rowinfo.node) !== undefined) {
+                                // there's more below (either subtree or next sibling), draw a full line
+                                lines += `<line x1='${x}' y1='0' x2='${x}' y2='100%' stroke='%23000' />`
+                              }
+                        }
+                        break
+                    }
                 }
             }
+            // there isn't more below, draw a line from the top to the middle
+            if (this.model.getDown(rowinfo.node) === undefined || this.model.getNext(rowinfo.node) === undefined) {
+                const x = d * sx + dx + (rs >> 1)
+                lines += `<line x1='${x}' y1='0' x2='${x}' y2='50%' stroke='%23000' />`
+            }
+            
+            this.parentElement.style.background = `url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'>${lines}</svg>\")`
+            this.parentElement.style.backgroundRepeat = "repeat-y"
         }
-
         content.replaceIn(this.shadowRoot!)
     }
 
