@@ -20,11 +20,9 @@ import { BooleanModel } from "../model/BooleanModel"
 import { GenericView } from "./GenericView"
 
 /* Safari & Chrome can do this and we want this */
-declare global {
-  interface SVGElement {
-    focus(): void;
-  }
-}
+// declare global {
+//   interface SVGElement extends Element {}
+// }
 
 /*
 the checkbox can be customized like this (color names are not final yet)

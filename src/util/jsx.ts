@@ -976,13 +976,18 @@ export namespace JSX {
     }
 }
 
-export class Fragment {
-    children: Array<HTMLElement>
-    constructor(children: Array<HTMLElement>) {
-        this.children = children
+export class Fragment extends Array<Element> {
+    constructor(children: Array<Element>) {
+        super(...children)
     }
-    appendTo(element: HTMLElement) {
-        for (let child of this.children) {
+    replaceIn(element: Element | ShadowRoot) {
+        while(element.childElementCount > 0) {
+            element.removeChild(element.children[element.childElementCount-1])
+        }
+        this.appendTo(element)
+    }
+    appendTo(element: Element | ShadowRoot) {
+        for (let child of this) {
             element.appendChild(child)
         }
     }

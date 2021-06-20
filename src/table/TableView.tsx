@@ -172,7 +172,7 @@ export class TableView extends View {
 
     this.attachShadow({ mode: 'open' })
     this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
-    this.rootDiv.children.forEach(child => this.shadowRoot!.appendChild(child))
+    this.rootDiv.appendTo(this.shadowRoot!)
 
     // const resizeObserver = new ResizeObserver( entries => {
     //   for (let e of entries) {
@@ -248,9 +248,9 @@ export class TableView extends View {
 
   updateCompact() {
     if (this.adapter?.isViewCompact()) {
-      this.rootDiv.children.forEach(child => child.classList.add("compact"))
+      this.rootDiv.forEach(child => child.classList.add("compact"))
     } else {
-      this.rootDiv.children.forEach(child => child.classList.remove("compact"))
+      this.rootDiv.forEach(child => child.classList.remove("compact"))
     }
   }
 

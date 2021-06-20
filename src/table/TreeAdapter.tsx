@@ -26,7 +26,14 @@ import { Model } from '../model/Model'
 import { RowInfo } from './TreeModel'
 
 export class TreeNodeCell<T> extends View {
-    resizeObserver!: ResizeObserver
+    // for chromium, the recommendation is to go with a single resize observer
+    // static resizeObserver = new ResizeObserver((entries: ResizeObserverEntry[], observer: ResizeObserver) => {
+    //     for(const e of entries) {
+    //         const c = e.target as TreeNodeCell<any>
+    //         c.paint()
+    //         TreeNodeCell.resizeObserver.unobserve(c.parentElement!)
+    //     }
+    // })
     model: TreeModel<T>
     rowinfo: RowInfo<T>
     label: string
@@ -36,100 +43,78 @@ export class TreeNodeCell<T> extends View {
         this.rowinfo = rowinfo
         this.label = label
 
-        this.style.display = "inline-flex"
-        this.style.alignItems = "center"
-
-        this.style.border = "none"
-        this.style.margin = "0"
-        this.style.padding = "0"
-        // this.style.background = "#f80"
-        this.style.height = `100%`
-        // this.style.width = `${width}px`
-
-
         this.attachShadow({ mode: 'open' })
-
-        // // for chromium, the recommendation is to go with a single resize observer
-        this.resizeObserver = new ResizeObserver(entries => {
-            // console.log(`TreeNodeCell<T>.parent.resize(): ${this.parentElement!.clientHeight}`)
-            this.paint()
-        })
-        // this.onclick = this.handleClick
-        // this.onresize = this.handleResize
     }
 
     setModel(model: Model) { }
 
     override connectedCallback() {
         // console.log(`TreeNodeCell<T>.connected(): parent=${this.parentElement}`)
-        this.paint()
-        this.resizeObserver.observe(this.parentElement!, { box: 'content-box' })
+        // TreeNodeCell.resizeObserver.observe(this.parentElement!, { box: 'content-box' })
         super.connectedCallback()
+        this.paint()
+
+        // paint again to accomodate for the label size
+        // FIXME: this doesn't work when any other element in the row changes it's size
+        setTimeout( () => {
+            this.paint()
+        }, 0)
     }
 
     override disconnectedCallback() {
-        this.resizeObserver.disconnect()
+        // TreeNodeCell.resizeObserver.unobserve(this.parentElement!)
         super.disconnectedCallback()
     }
 
-    // attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
-    //     console.log(`attribute ${name} changed`)
-    // }
-    // @bind handleClick(event: MouseEvent) {
-    //     console.log(event)
-    // }
-    // @bind handleResize(event: UIEvent) {
-    //     console.log(event)
-    // }
     paint() {
         if (!this.shadowRoot)
             return
-
-        const row = this.model.getRow(this.rowinfo.node)
-        if (row === undefined)
-            return
-
         if (!this.parentElement)
             return
 
-        // const item_h = Math.max(this.parentElement.clientHeight, 10) - 3 // height of row
-        const height = this.parentElement.clientHeight
-        
+        const row = this.model.getRow(this.rowinfo.node)!
+        if (row === undefined)
+            return
+
+        // FIXME: this is a hack relying on paint being called twice
+        //        reason is that this.parentElement.clientHeight some can be a pixel smaller than the span,
+        //        causing a pixel missing where the tree node cells should connect to each other
+        //        can be seen when span has no padding and contains a text node
+        let spanHeight = 0
+        if (this.shadowRoot.childElementCount > 0) {
+            const s = this.shadowRoot.children[1] as HTMLElement
+            spanHeight = s.offsetHeight
+        }
+
         const rs = 8      // rectangle width and height
-        const sx = 12     // horizontal step width
+        const sx = rs + 4     // horizontal step width, minimal vertical step width
+        const height = Math.max(
+            this.parentElement.clientHeight,
+            spanHeight,
+            sx)
         const dx = 3.5    // additional step before and after drawing the rectangle
-        const dy = Math.round(height / 2) + 0.5 - rs / 2      // step from top to rectangle
+        const dy = Math.round(height / 2 - rs / 2) - 0.5       // step from top to rectangle
         const rx = 3      // horizontal line from rectangle to data on the left
+        const width = this.rowinfo.depth * sx + sx + dx
+        const height2 = height
 
-        const width = this.rowinfo.depth * sx + sx + dx 
-        const height2 = height + 2
+        // console.log(`label: ${this.label}: height=${height}`)
 
-        console.log(`${this.label}: size = ${width}, ${height}`)
-
-        // if (item_h === 0)
-        //     return
-
-        // if (this.shadowRoot.childElementCount !== 0)
-        //     return
-
-        // console.log(`TreeNodeCell<T> of height ${item_h}`)
-
-        const svg = <svg
-            style={{ 
-                display: "inline-block",
-                // background: "#f00",
-                border: "none",
-                padding: "0",
-                margin: "0"
-            }}
-            width={width}
-            height={height}
-            viewBox={`0 0 ${width} ${height}`} /> as SVGElement
+        const content: toadJSX.Fragment = <>
+            <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{
+                verticalAlign: "middle",
+                // background: "#88f",
+            }} />
+            <span style={{
+                verticalAlign: "middle",
+                padding: "2px",
+                // background: "#f88",
+            }}>{this.label}</span>
+        </>
+        const svg = content[0] as SVGElement
 
         const rowinfo = this.rowinfo
         const d = rowinfo.depth
-
-        // svg.appendChild(<text x={d * sx + dx + sx + 5} y={dy + 8} fill="#000">{label}</text>)
 
         if (this.model.getDown(rowinfo.node)) {
             // TODO: port Rectangle from workflow to toad.js
@@ -208,17 +193,9 @@ export class TreeNodeCell<T> extends View {
             }
         }
 
-        while(this.shadowRoot.childElementCount > 0)
-            this.shadowRoot.removeChild(this.shadowRoot.children[0])
-
-        this.shadowRoot.appendChild(svg)
-
-        const text = document.createElement("span")
-        text.style.display = "inline-block"
-        text.style.padding = "2px 4px 2px 2px"
-        text.appendChild(document.createTextNode(this.label))
-        this.shadowRoot.appendChild(text)
+        content.replaceIn(this.shadowRoot!)
     }
+
 }
 
 window.customElements.define("toad-treenodecell", TreeNodeCell)
@@ -227,9 +204,16 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
 
     override isViewCompact(): boolean { return true }
 
-    treeCell(row: number, label: string): Element | undefined {
+    treeCell(row: number, label: string): Element | Element[] | undefined {
         if (!this.model)
             return undefined
         return new TreeNodeCell(this.model, this.model.rows[row], label)
+        // return <>
+        //     <svg width="40" height="40" viewBox="0 0 40 40" style={{background: "#88f", verticalAlign: "middle"}}>
+        //         <line x1="20.5" y1="0" x2="20.5" y2="40" stroke="#000" />
+        //         <line x1="0" y1="20.5" x2="40" y2="20.5" stroke="#000" />
+        //     </svg>
+        //     <span style={{background: "#f88", verticalAlign: "middle"}}>Achtung</span>
+        // </>
     }
 }

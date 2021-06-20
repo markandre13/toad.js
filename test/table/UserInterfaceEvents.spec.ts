@@ -79,6 +79,9 @@ describe("toad.js", function() {
 
                         expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight + rows[4+1].clientHeight)
                     })
+                    it.only("tree", async function() {
+                        const scene = new TreeViewScene()
+                    })
                     it("multiple row in tree", async function() {
                         const scene = new TreeViewScene()
                         const rows = scene.table.bodyBody.children
