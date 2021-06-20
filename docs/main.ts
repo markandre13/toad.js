@@ -83,14 +83,14 @@ class BookTableAdapter extends TableAdapter<BookTableModel> {
         return document.createTextNode(`${row}`)
     }
 
-    override displayCell(col: number, row: number): Node | undefined {       
+    override getDisplayCell(col: number, row: number): Node | undefined {       
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined
         return document.createTextNode(text)
     }
 
-    override createEditor(col: number, row: number): Node | undefined {
+    override getEditorCell(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined
@@ -166,7 +166,7 @@ class MyNode implements TreeNode {
 }
 
 class MyTreeAdapter extends TreeAdapter<MyNode> {
-    override displayCell(col: number, row: number): Node | undefined {       
+    override getDisplayCell(col: number, row: number) {       
         return this.model && this.treeCell(row, this.model.rows[row].node.label)
     }
 }

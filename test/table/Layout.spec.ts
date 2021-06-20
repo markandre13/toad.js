@@ -7,7 +7,7 @@ import { TestTableScene } from "./TestTableScene"
 describe("toad.js", function () {
     describe("table", function () {
         describe("table should behave like an inline-block", function() {
-            it("???", async function() {
+            it("TestTableScene itself passes the test", async function() {
                 const scene = new TestTableScene()
                 await scene.sleep()
                 scene.expectTableLayout({

@@ -29,19 +29,22 @@ export class InputOverlay extends HTMLDivElement {
     div.addEventListener("focusin", (event: FocusEvent) => {
       div.style.opacity = "1"
       if (event.target && event.relatedTarget) {
-        if (dom.isNodeBeforNode(event.relatedTarget as Node, div)) {
-          if (div.focusInFromLeft)
-            div.focusInFromLeft()
-        } else {
-          if (div.focusInFromRight)
-            div.focusInFromRight()
+        try {
+          if (dom.isNodeBeforeNode(event.relatedTarget as Node, div)) {
+            if (div.focusInFromLeft)
+              div.focusInFromLeft()
+          } else {
+            if (div.focusInFromRight)
+              div.focusInFromRight()
+          }
         }
+        catch(e) {}
       }
     })
 
     div.addEventListener("focusout", (event: FocusEvent) => {
-      // div.style.opacity = "0.5"
-      div.unsetViewRect()
+      div.style.opacity = "0.5" // this is for debugging to check if the overlay is really placed nicely...
+      // div.unsetViewRect()
     })
 
     div.style.display = "none"
@@ -102,8 +105,8 @@ export class InputOverlay extends HTMLDivElement {
       top = td.offsetTop - tbody.clientHeight
     } else {
       // Safari & Opera
-      left = td.offsetLeft + 1
-      top = td.offsetTop - tbody.clientHeight - 1
+      left = td.offsetLeft + 0.5
+      top = td.offsetTop - tbody.clientHeight 
     }
 
     const width = td.clientWidth - dom.horizontalPadding(td)

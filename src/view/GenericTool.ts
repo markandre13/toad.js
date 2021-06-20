@@ -32,7 +32,7 @@ export abstract class GenericTool<T extends Model> extends View {
     setModel(model?: Model): void { }
 
     static focusIn(view: View) {
-        // console.log(`focusIn ${view.nodeName}`)
+        // console.log(`GenericView.focusIn(${view.nodeName})`)
         const viewParents = new Map<Element, number>()
         for(let parent = view.parentElement, distance=0; parent !== null; parent = parent.parentElement, ++distance) {
             viewParents.set(parent, distance)
@@ -61,10 +61,14 @@ export abstract class GenericTool<T extends Model> extends View {
                 closestToolList.push(tool)
             } 
         }
+        if (!closestParent) {
+            console.log(`GenericView.focusIn(${view.nodeName}): couldn't find a parent with GenericTool children`)
+            return
+        }
 
         // within that parent find the tool which follows after the view
         let closestTool: GenericTool<any> | undefined
-        const viewIndex = GenericTool.getIndex(view, closestParent!)
+        const viewIndex = GenericTool.getIndex(view, closestParent)
         // console.log(`view has index ${viewIndex}`)
         let closestNextSiblingIndex = Number.MIN_SAFE_INTEGER
         for(let tool of closestToolList) {
@@ -81,6 +85,10 @@ export abstract class GenericTool<T extends Model> extends View {
     }
 
     static getIndex(view: Element, parent: Element): number {
+        if (parent === undefined) {
+            console.trace(`GenericTool.getIndex(${view}, ${parent})`)
+        }
+
         let element = view
         while(element.parentElement !== parent)
             element = element.parentElement!
@@ -121,14 +129,13 @@ export abstract class GenericTool<T extends Model> extends View {
 }
 
 window.addEventListener("focusin", (event: FocusEvent) => {
+    if (event.target instanceof GenericTool)
+        return
+    
     if (event.relatedTarget instanceof View) {
-        // console.log(`focus out`)
-        // console.log(event.relatedTarget)
         GenericTool.focusOut(event.relatedTarget)
     }
     if (event.target instanceof View) {
-        // console.log(`focus in`)
-        // console.log(event.target)
         GenericTool.focusIn(event.target)
     }
 })

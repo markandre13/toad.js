@@ -37,13 +37,13 @@ export class TestTableScene {
     constructor(options: Options = {}) {
         setAnimationFrameCount(0)
         unbind()
-        TableAdapter.unbind()       
+        TableAdapter.unbind()
         document.body.innerHTML = ""
 
         TableAdapter.register(TestTableAdapter, TestTableModel, TestRow)
 
         this.model = new TestTableModel()
-        
+
         bind("books", this.model)
 
         this.selectionModel = new SelectionModel()
@@ -58,11 +58,11 @@ export class TestTableScene {
 
     static createHTMLTable(style = ""): string {
         let html = `<table border="1" style="${style}"><thead><tr>`
-        for(let column=0; column<5; ++column)
+        for (let column = 0; column < 5; ++column)
             html += `<th>COLUMN:${column}</th>`
-        for(let row=0; row<10; ++row) {
+        for (let row = 0; row < 10; ++row) {
             html += `</tr></thead><tbody><tr>`
-            for(let column=0; column<5; ++column) {
+            for (let column = 0; column < 5; ++column) {
                 html += `<td>CELL:${column}:${row}</td>`
             }
         }
@@ -72,7 +72,7 @@ export class TestTableScene {
     static createHTML(style = "", amount = 50): string {
         return `<span style="border: 1px solid #000; background: #f80; display: inline-block; overflow: auto;${style}">${"Lorem ipsum! ".repeat(amount)}</span>`
     }
-    
+
     expectTableLayout(expectations: Expectations) {
         const outerBounds = this.table.getBoundingClientRect()
         const hostBounds = {
@@ -81,18 +81,18 @@ export class TestTableScene {
             width: this.table.clientWidth,
             height: this.table.clientHeight
         }
-    
+
         const columnHeadBounds = this.table.colHeadDiv.getBoundingClientRect()
         const rowHeadBounds = this.table.rowHeadDiv.getBoundingClientRect()
         const scrollBounds = this.table.scrollDiv.getBoundingClientRect()
         const bodyBounds = this.table.bodyTable.getBoundingClientRect()
-    
+
         const verticalScrollbarWidth = scrollBounds.width - this.table.scrollDiv.clientWidth
         const horizontalScrollbarHeight = scrollBounds.height - this.table.scrollDiv.clientHeight
 
         // expect(columnHeadBounds.width).to.equal(scrollBounds.width)
         // expect(rowHeadBounds.height).to.equal(scrollBounds.height)
-    
+
         // console.log(`expected = ${b2s(expectations.withinHostBounds)}`)
         // console.log(`outer    = ${b2s(outerBounds)}`)
         // console.log(`host     = ${b2s(hostBounds)}`)
@@ -103,13 +103,13 @@ export class TestTableScene {
         // console.log(`scrollbar= ${verticalScrollbarWidth}, ${horizontalScrollbarHeight}`)
 
         if (expectations.hasHorizontalScrollBar !== undefined)
-            expect(0).to.equal(horizontalScrollbarHeight)
+            expect(0).to.equal(Math.round(horizontalScrollbarHeight))
         if (expectations.hasVerticalScrollBar !== undefined)
-            expect(0).to.equal(verticalScrollbarWidth)
-    
+            expect(0).to.equal(Math.round(verticalScrollbarWidth))
+
         // console.log(`width = ${rowHeadBounds.width} + ${scrollBounds.width} = ${rowHeadBounds.width + scrollBounds.width}`)
         // console.log(`height= ${columnHeadBounds.height} + ${scrollBounds.height} = ${columnHeadBounds.height + scrollBounds.height}`)
-    
+
         if (expectations.withinHostBounds) {
             const o: Rect = {
                 x: outerBounds.x,
@@ -121,18 +121,20 @@ export class TestTableScene {
                 o.height = undefined
             expect(b2s(o)).to.equal(b2s(expectations.withinHostBounds))
         }
-    
-        expect(columnHeadBounds.x).to.equal(hostBounds.x-1+rowHeadBounds.width)
+
+        expect(columnHeadBounds.x).to.equal(hostBounds.x - 1 + rowHeadBounds.width)
         expect(columnHeadBounds.y).to.equal(hostBounds.y)
-        expect(columnHeadBounds.width, 'columnHeadDiv has wrong width').to.equal(hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth + 1)
-    
+        expect(Math.round(columnHeadBounds.width), 'columnHeadDiv has wrong width')
+            .to.equal(Math.round(hostBounds.width - rowHeadBounds.width - verticalScrollbarWidth + 1))
+
         expect(rowHeadBounds.x).to.equal(hostBounds.x)
-        expect(rowHeadBounds.y).to.equal(hostBounds.y+columnHeadBounds.height)
+        expect(rowHeadBounds.y).to.equal(hostBounds.y + columnHeadBounds.height)
         expect(rowHeadBounds.height).to.equal(hostBounds.height - columnHeadBounds.height - horizontalScrollbarHeight)
-    
-        expect(scrollBounds.x).to.equal(hostBounds.x+rowHeadBounds.width)
-        expect(scrollBounds.y).to.equal(hostBounds.y+columnHeadBounds.height)
-        expect(scrollBounds.width).to.equal(hostBounds.width - rowHeadBounds.width)
+
+        expect(scrollBounds.x).to.equal(hostBounds.x + rowHeadBounds.width)
+        expect(scrollBounds.y).to.equal(hostBounds.y + columnHeadBounds.height)
+        expect(Math.round(scrollBounds.width))
+            .to.equal(Math.round(hostBounds.width - rowHeadBounds.width))
         expect(scrollBounds.height).to.equal(hostBounds.height - columnHeadBounds.height)
     }
 
@@ -252,21 +254,21 @@ export class TestTableScene {
 export class TestRow {
     cells: string[] = []
     constructor(row: number = 777) {
-        for(let col=0; col<5; ++col)
+        for (let col = 0; col < 5; ++col)
             this.cells.push(`CELL:${col}:${row}`)
     }
 }
 
 function createTestData() {
     const rows: TestRow[] = []
-    for(let row=0; row<10; ++row)
+    for (let row = 0; row < 10; ++row)
         rows.push(new TestRow(row))
     return rows
 }
 
 export class TestTableModel extends ArrayTableModel<TestRow> {
     constructor() {
-        super(createTestData(), TestRow)        
+        super(createTestData(), TestRow)
     }
     get colCount(): number { return this.data[0].cells.length }
 }

@@ -250,7 +250,7 @@ export class TableTool extends GenericTool<Model> {
         return view instanceof TableView
     }
     activate(): void {
-        this.lastActiveTable = TableTool.activeView as TableView
+        this.lastActiveTable = GenericTool.activeView as TableView
         this.toolbar.classList.add("active")
     }
     deactivate(): void {

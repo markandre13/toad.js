@@ -121,12 +121,14 @@ export function attributeOrUndefined(element: Element, name: string): string|und
 }
 
 // return true when first appears before second within the dom hierachy
-export function isNodeBeforNode(first: Node, second: Node): boolean {
-  let parentsOfFirstNode = new Map<Node, Node>()
+export function isNodeBeforeNode(first: Node, second: Node): boolean {
+  
   let node: Node|null
   
+  // get all parents of the first node
   let firstPrevious = first
   node = first
+  let parentsOfFirstNode = new Map<Node, Node>() // parent to child
   while(true) {
     firstPrevious = node
     node = node.parentNode
@@ -135,22 +137,21 @@ export function isNodeBeforNode(first: Node, second: Node): boolean {
     parentsOfFirstNode.set(node, firstPrevious)
   }
 
+  // find a parent of the second node which is also a parent of the first node
   let secondPrevious = second
   node = second
   while(node) {
     secondPrevious = node
     node = node.parentNode
-    if (!node)
-      throw Error("fuck")
+    if (!node) {
+      throw Error(`isNodeBeforeNode(first, second): nodes have no common parent`)
+    }
     let lookup = parentsOfFirstNode.get(node)
     if (lookup) {
       firstPrevious = lookup
       break
     }
-    node = node.parentNode
   }
-  if (!node)
-    throw Error("fuck")
   
   for(let child of node!.childNodes) {
     if (child === firstPrevious)
@@ -158,7 +159,7 @@ export function isNodeBeforNode(first: Node, second: Node): boolean {
     if (child === secondPrevious)
       return false
   }
-  throw Error("fuck")
+  throw Error("isNodeBeforeNode(first, second): couldn't determine order of nodes")
 }
 
 export function pixelToNumber(pixel: string): number {
