@@ -19,7 +19,7 @@ export class MyNode implements TreeNode {
 }
 
 export class MyTreeAdapter extends TreeAdapter<MyNode> {
-    override displayCell(col: number, row: number): Node | Node[] | undefined {       
+    override getDisplayCell(col: number, row: number): Node | Node[] | undefined {       
         if (!this.model)
             return undefined
         return this.treeCell(row, this.model.rows[row].node.label)!

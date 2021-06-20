@@ -208,14 +208,14 @@ class BookTableAdapter extends TableAdapter<BookTableModel> {
         return document.createTextNode(`${row}`)
     }
 
-    override displayCell(col: number, row: number): Node | undefined {
+    override getDisplayCell(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined
         return document.createTextNode(text)
     }
 
-    override createEditor(col: number, row: number): Node | undefined {
+    override getEditorCell(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined

@@ -427,7 +427,7 @@ export class TableView extends View {
           cell = bodyRow.children[col] as HTMLTableDataCellElement
         }
         cell.style.width = ""
-        const content = this.adapter.displayCell(col, row)
+        const content = this.adapter.getDisplayCell(col, row)
         if (content) {
           if (Array.isArray(content))
             content.forEach( e => cell.appendChild(e))
@@ -469,7 +469,7 @@ export class TableView extends View {
         cell = result.children[col] as HTMLTableDataCellElement
       }
       cell.style.width = ""
-      const content = this.adapter.displayCell(col, row)
+      const content = this.adapter.getDisplayCell(col, row)
       if (content) {
         if (Array.isArray(content))
             content.forEach( e => cell.appendChild(e))
@@ -747,10 +747,10 @@ export class TableView extends View {
 
     this.setSelectionTo(pos)
 
-    let editView = this.adapter.createEditor(pos.col, pos.row) as View // as HTMLElement
+    let editView = this.adapter.getEditorCell(pos.col, pos.row) as View // as HTMLElement
     // FIXME: call this.inputOverlay.setChild(editView) to hide inputOverlay?
     if (!editView) {
-      this.inputOverlay.setChild(undefined)
+      this.inputOverlay.setEditView(undefined)
       return
     }
     this.editView = editView
@@ -759,7 +759,7 @@ export class TableView extends View {
       this.onFieldViewKeyDown(event, pos)
     }
 
-    this.inputOverlay.setChild(editView)
+    this.inputOverlay.setEditView(editView)
 
     const cell = this.getCellAt(pos.col, pos.row)
     setTimeout(() => {
@@ -987,7 +987,7 @@ export class TableView extends View {
     if (cell === undefined)
       return
 
-    const content = this.adapter!.displayCell(pos.col, pos.row)!
+    const content = this.adapter!.getDisplayCell(pos.col, pos.row)!
 
     const tmp = document.createElement('div')
     if (Array.isArray(content)) {

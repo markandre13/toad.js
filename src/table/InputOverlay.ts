@@ -48,11 +48,11 @@ export class InputOverlay extends HTMLDivElement {
 
     div.setViewRect = InputOverlay.prototype.setViewRect
     div.unsetViewRect = InputOverlay.prototype.unsetViewRect
-    div.setChild = InputOverlay.prototype.setChild
+    div.setEditView = InputOverlay.prototype.setEditView
     div.adjustToCell = InputOverlay.prototype.adjustToCell
   }
 
-  setChild(fieldView: HTMLElement | undefined) {
+  setEditView(fieldView: HTMLElement | undefined) {
     // avoid side effect of scrolling parent on safari
     const scrollableParent = findScrollableParent(this)
     let savedScrollLeft = 0, savedScrollTop = 0

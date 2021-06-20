@@ -208,7 +208,7 @@ class VHTTableAdapter extends TableAdapter<VHTModel> {
         return document.createTextNode("Thing")
     }
 
-    override displayCell(col: number, row: number): Node | undefined { 
+    override getDisplayCell(col: number, row: number): Node | undefined { 
         if (!this.model)
             return undefined
         const height = this.model.data[row].height
@@ -220,7 +220,7 @@ class VHTTableAdapter extends TableAdapter<VHTModel> {
         return div
     }
 
-    override createEditor(col: number, row: number): Node | undefined {
+    override getEditorCell(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
             return undefined
