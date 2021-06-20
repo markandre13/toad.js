@@ -65,7 +65,7 @@ export class TreeViewScene {
 
     mouseDownAtCell(col: number, row: number, dx = 10, dy = 10) {
         const cell = this.table.getCellAt(col, row)!
-        const svg = cell.children[0] as SVGSVGElement
+        const svg = cell.children[0].shadowRoot!.children[0]
         let bounds = svg.getBoundingClientRect()
         const e = new MouseEvent("mousedown", {
             bubbles: true,
@@ -73,7 +73,6 @@ export class TreeViewScene {
             clientY: bounds.top + dy,
             relatedTarget: svg
         })
-        // console.log("dispatch mousedown")
         svg.dispatchEvent(e)
     }
 }

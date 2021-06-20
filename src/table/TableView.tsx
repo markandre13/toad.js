@@ -43,7 +43,8 @@ import { InsertRowAnimation } from './private/InsertRowAnimation'
 import { throws } from 'assert'
 
 enum Log {
-  LAYOUT
+  LAYOUT,
+  USER
 }
 
 
@@ -96,7 +97,8 @@ export class TableView extends View {
   hiddenSizeCheckBody!: HTMLTableSectionElement
 
   private log(what: Log, msg: string) {
-    // console.log(msg)
+    // if (what == Log.USER)
+    //   console.log(msg)
   }
 
   private animator = new Animator()
@@ -156,7 +158,7 @@ export class TableView extends View {
         return
       }
       event.preventDefault() // otherwise field will loose focus again
-      // console.log("bodyTable.onmousedown() -> goToCell()")
+      this.log(Log.USER, `bodyTable.onmousedown() -> goToCell(event.target)`)
       this.goToCell(event.target as HTMLTableDataCellElement)
     }
 
@@ -741,6 +743,8 @@ export class TableView extends View {
 
     let hadFocus = this.hasFocus()
 
+    this.log(Log.USER, `TableView.prepareInputOverlayForPosition(${pos.col}, ${pos.row})`)
+
     this.setSelectionTo(pos)
 
     let editView = this.adapter.createEditor(pos.col, pos.row) as View // as HTMLElement
@@ -985,18 +989,31 @@ export class TableView extends View {
 
     const content = this.adapter!.displayCell(pos.col, pos.row)!
 
-    const tmp = <div />
-    tmp.appendChild(content)
+    const tmp = document.createElement('div')
+    if (Array.isArray(content)) {
+      content.forEach( e => tmp.appendChild(e))
+    } else {
+      tmp.appendChild(content)
+    }
+
+    this.log(Log.USER, `TableView.onFieldViewBlur(${pos.col}, ${pos.row}): change "${cell.innerHTML}" to "${tmp.innerHTML}"`)
+
     if (tmp.innerHTML == cell.innerHTML)
       return
 
-    // cell.replaceChild(content, cell.childNodes[0])
-    while(cell.childElementCount)
-      cell.removeChild(cell.children[0])
+    this.log(Log.USER, `TableView.onFieldViewBlur(${pos.col}, ${pos.row})"): cell is now "${cell.innerHTML}"`)
+
+    while(cell.childNodes.length > 0)
+      cell.removeChild(cell.childNodes[cell.childNodes.length - 1])
+
+    this.log(Log.USER, `TableView.onFieldViewBlur(${pos.col}, ${pos.row})"): cleared cell, it's now "${cell.innerHTML}"`)
+
     if (Array.isArray(content))
       content.forEach( e => cell.appendChild(e))
     else
       cell.appendChild(content)
+
+    this.log(Log.USER, `TableView.onFieldViewBlur(${pos.col}, ${pos.row})"): cell is now "${cell.innerHTML}"`)
 
     this.unadjustLayoutBeforeRender(pos)
     setTimeout(() => {

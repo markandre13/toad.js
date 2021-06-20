@@ -754,6 +754,10 @@ export namespace JSX {
         height?: string | number
     }
 
+    // this doesn't quite work as expected...
+    // export type Element = Fragment | Element
+    // export interface Element extends HTMLElement, Fragment {}
+
     export interface IntrinsicElements {
         // 4.1 The document element
         html: HTMLElementProps
@@ -981,8 +985,8 @@ export class Fragment extends Array<Element> {
         super(...children)
     }
     replaceIn(element: Element | ShadowRoot) {
-        while(element.childElementCount > 0) {
-            element.removeChild(element.children[element.childElementCount-1])
+        while(element.childNodes.length > 0) {
+            element.removeChild(element.childNodes[element.childNodes.length - 1])
         }
         this.appendTo(element)
     }

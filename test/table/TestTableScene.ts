@@ -281,6 +281,7 @@ export class TestTableAdapter extends TableAdapter<TestTableModel> {
         return document.createTextNode(`${row}`)
     }
 
+    // FIXME: rename into getDisplayCell
     override displayCell(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)
@@ -288,6 +289,7 @@ export class TestTableAdapter extends TableAdapter<TestTableModel> {
         return document.createTextNode(text)
     }
 
+    // FIXME: rename into getEditorCell
     override createEditor(col: number, row: number): Node | undefined {
         const text = this.getField(col, row)
         if (text === undefined)

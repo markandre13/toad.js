@@ -85,12 +85,12 @@ describe("toad.js", function() {
 
                         // close
                         const previousHeight = rows[1+1].clientHeight + rows[1+2].clientHeight
-                        scene.mouseDownAtCell(0, 1, 20, 10)
+                        scene.mouseDownAtCell(0, 1, 20, 5)
                         await scene.sleep()
                         expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
 
                         // open
-                        scene.mouseDownAtCell(0, 1, 20, 10)
+                        scene.mouseDownAtCell(0, 1, 20, 5)
                         await scene.sleep()
                         expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
                     })

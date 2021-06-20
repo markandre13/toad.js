@@ -67,7 +67,7 @@ export class TreeNodeCell<T> extends View {
         const rx = 3      // horizontal line from rectangle to data on the left
         const width = this.rowinfo.depth * sx + sx + dx
 
-        const content: toadJSX.Fragment = <>
+        const content = <>
             <svg width={width} height={sx} style={{
                 verticalAlign: "middle",
                 background: "none",
@@ -90,19 +90,19 @@ export class TreeNodeCell<T> extends View {
                 const x0 = d * sx + dx
 
                 // box
-                const box = <rect x={d * sx + dx} y={dy} width={rs} height={rs} stroke="#000" fill="#fff" cursor="pointer" />
+                const box = <rect x={x0} y={dy} width={rs} height={rs} stroke="#000" fill="#fff" cursor="pointer" />
                 svg.appendChild(box)
 
                 // minus
-                svg.appendChild(<line x1={d * sx + dx + (rs >> 2)} y1={dy + (rs >> 1)} x2={d * sx + dx + rs - (rs >> 2)} y2={dy + (rs >> 1)} stroke="#000" cursor="pointer" />)
+                svg.appendChild(<line x1={x0 + (rs >> 2)} y1={dy + (rs >> 1)} x2={x0 + rs - (rs >> 2)} y2={dy + (rs >> 1)} stroke="#000" cursor="pointer" />)
 
                 // plus
-                const plus = <line x1={d * sx + dx + (rs >> 1)} y1={dy + (rs >> 2)} x2={d * sx + dx + (rs >> 1)} y2={dy + rs - (rs >> 2)} stroke="#000" cursor="pointer" />
+                const plus = <line x1={x0 + (rs >> 1)} y1={dy + (rs >> 2)} x2={x0 + (rs >> 1)} y2={dy + rs - (rs >> 2)} stroke="#000" cursor="pointer" />
                 plus.style.display = rowinfo.open ? "none" : ""
                 svg.appendChild(plus)
 
                 // horizontal line to data
-                svg.appendChild(<line x1={d * sx + dx + rs} y1={dy + (rs >> 1)} x2={d * sx + dx + rs + rx} y2={dy + (rs >> 1)} stroke="#000" />)
+                svg.appendChild(<line x1={x0 + rs} y1={dy + (rs >> 1)} x2={x0 + rs + rx} y2={dy + (rs >> 1)} stroke="#000" />)
 
                 svg.onmousedown = (event: MouseEvent) => {
                     event.preventDefault()
@@ -117,6 +117,9 @@ export class TreeNodeCell<T> extends View {
                     const bounds = svg.getBoundingClientRect()
                     const x = event.clientX - bounds.left
                     const y = event.clientY - bounds.top
+
+                    // console.log(`TreeNodeCell.mouseDown(): ${event.clientX}, ${event.clientY} -> ${x}, ${y} (rect at ${x0}, ${dy}, ${rs}, ${rs})`)
+
                     if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy + rs) {
                         this.model?.toggleAt(rowNumber)
                         plus.style.display = this.model.isOpen(rowNumber) ? "none" : ""
