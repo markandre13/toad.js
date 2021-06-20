@@ -17,7 +17,7 @@
  */
 
 import * as dom from "../util/dom"
-import { findScrollableParent } from "../scrollIntoView" 
+import { findScrollableParent } from "../scrollIntoView"
 
 export class InputOverlay extends HTMLDivElement {
 
@@ -40,12 +40,14 @@ export class InputOverlay extends HTMLDivElement {
     })
 
     div.addEventListener("focusout", (event: FocusEvent) => {
-      div.style.opacity = "0.5"
+      // div.style.opacity = "0.5"
+      div.unsetViewRect()
     })
 
     div.style.display = "none"
 
     div.setViewRect = InputOverlay.prototype.setViewRect
+    div.unsetViewRect = InputOverlay.prototype.unsetViewRect
     div.setChild = InputOverlay.prototype.setChild
     div.adjustToCell = InputOverlay.prototype.adjustToCell
   }
@@ -53,11 +55,11 @@ export class InputOverlay extends HTMLDivElement {
   setChild(fieldView: HTMLElement | undefined) {
     // avoid side effect of scrolling parent on safari
     const scrollableParent = findScrollableParent(this)
-    let savedScrollLeft = 0, savedScrollTop = 0 
+    let savedScrollLeft = 0, savedScrollTop = 0
     if (scrollableParent !== undefined)
-      [ savedScrollLeft, savedScrollTop ] = [ scrollableParent.scrollLeft, scrollableParent.scrollTop ]
- 
-    if (this.children.length === 0) {
+      [savedScrollLeft, savedScrollTop] = [scrollableParent.scrollLeft, scrollableParent.scrollTop]
+
+    if (!this.hasChildNodes()) {
       if (fieldView)
         this.appendChild(fieldView)
     } else {
@@ -65,12 +67,12 @@ export class InputOverlay extends HTMLDivElement {
         this.children[0].dispatchEvent(new FocusEvent("blur"))
       }
       if (fieldView)
-        this.replaceChild(fieldView, this.children[0])
+        this.replaceChild(fieldView, this.childNodes[0])
       else
-        this.removeChild(this.children[0])
+        this.removeChild(this.childNodes[0])
     }
 
-    this.style.display  = fieldView ? "" : "none"
+    this.style.display = fieldView ? "" : "none"
 
     // restore scrollable parent
     if (scrollableParent !== undefined) {
@@ -80,9 +82,15 @@ export class InputOverlay extends HTMLDivElement {
   }
 
   adjustToCell(td: HTMLTableDataCellElement | undefined) {
+
+    if (!this.hasChildNodes()) {
+      this.unsetViewRect()
+      return
+    }
+
     if (td === undefined)
       return
-    // console.log(`adjustInputOverlayToCell(${element})`)
+
     let boundary = td.getBoundingClientRect()
     let tr = td.parentElement
     let tbody = tr!.parentElement!
@@ -105,10 +113,19 @@ export class InputOverlay extends HTMLDivElement {
   }
 
   private setViewRect(top: number, left: number, width: number, height: number) {
+    this.style.display = ""
     this.style.top = `${top}px`
     this.style.left = `${left}px`
     this.style.width = `${width}px`
     this.style.height = `${height}px`
+  }
+
+  private unsetViewRect() {
+    this.style.display = "none"
+    this.style.top = ""
+    this.style.left = ""
+    this.style.width = ""
+    this.style.height = ""
   }
 }
 // window.customElements.define("toad-table-inputoverlay", InputOverlay, { extends: 'div' })
