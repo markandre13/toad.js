@@ -19,7 +19,7 @@
 import { Model } from "./Model"
 
 export class GenericModel<T> extends Model {
-  _value: T
+  protected _value: T
 
   constructor(value: T) {
     super()

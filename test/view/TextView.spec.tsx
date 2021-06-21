@@ -10,11 +10,9 @@ describe("toad.js", function () {
         document.body.innerHTML = ""
     }
 
-    // FIXME: make _value protected in Model!!!
-
     describe("<toad-text>", function () {
         describe("NumberModel", function () {
-            it.only("view and model are in sync", function () {
+            it("view and model are in sync", function () {
                 const model = new NumberModel(42, { min: 0, max: 100, step: 1 })
 
                 const content = <><toad-text model={model} /></> as toadJSX.Fragment
@@ -29,6 +27,8 @@ describe("toad.js", function () {
                 view.value = "81"
                 expect(view.value).to.equal(`${model.value}`)
             })
+            // range
+            // scroll wheel
         })
     })
 
