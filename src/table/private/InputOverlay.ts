@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as dom from "../util/dom"
-import { findScrollableParent } from "../scrollIntoView"
+import * as dom from "../../util/dom"
+import { findScrollableParent } from "../../scrollIntoView"
 
 export class InputOverlay extends HTMLDivElement {
 
@@ -43,11 +43,11 @@ export class InputOverlay extends HTMLDivElement {
     })
 
     div.addEventListener("focusout", (event: FocusEvent) => {
-      div.style.opacity = "0.5" // this is for debugging to check if the overlay is really placed nicely...
-      // div.unsetViewRect()
+      div.style.opacity = "0" // this is for debugging to check if the overlay is really placed nicely...
     })
 
     div.style.display = "none"
+    // div.style.background = "#f80"
 
     div.setViewRect = InputOverlay.prototype.setViewRect
     div.unsetViewRect = InputOverlay.prototype.unsetViewRect
@@ -84,32 +84,42 @@ export class InputOverlay extends HTMLDivElement {
     }
   }
 
-  adjustToCell(td: HTMLTableDataCellElement | undefined) {
+  adjustToCell(cell: HTMLTableDataCellElement | undefined) {
 
     if (!this.hasChildNodes()) {
       this.unsetViewRect()
       return
     }
 
-    if (td === undefined)
+    if (cell === undefined)
       return
 
-    let boundary = td.getBoundingClientRect()
-    let tr = td.parentElement
-    let tbody = tr!.parentElement!
+    let boundary = cell.getBoundingClientRect()
+    let tr = cell.parentElement
+    if (tr === null) {
+      // console.trace(`InputOverlay.adjustToCell(): cell to adjust to has no parent`)
+      // console.log(cell)
+      return
+    }
+    let tbody = tr.parentElement
+    if (tbody === null) {
+      // console.trace(`InputOverlay.adjustToCell(): cell's parent row has no parent`)
+      // console.log(tr)
+      return
+    }
 
     let top, left
     if (navigator.userAgent.indexOf("Chrome") > -1) {
       // Chrome
-      left = td.offsetLeft + 2
-      top = td.offsetTop - tbody.clientHeight
+      left = cell.offsetLeft + 2
+      top = cell.offsetTop - tbody.clientHeight
     } else {
       // Safari & Opera
-      left = td.offsetLeft + 0.5
-      top = td.offsetTop - tbody.clientHeight 
+      left = cell.offsetLeft + 0.5
+      top = cell.offsetTop - tbody.clientHeight 
     }
 
-    const width = td.clientWidth - dom.horizontalPadding(td)
+    const width = cell.clientWidth - dom.horizontalPadding(cell)
     const height = boundary.height
 
     this.setViewRect(top, left, width, height)
@@ -117,6 +127,7 @@ export class InputOverlay extends HTMLDivElement {
 
   private setViewRect(top: number, left: number, width: number, height: number) {
     this.style.display = ""
+    this.style.opacity = "1"
     this.style.top = `${top}px`
     this.style.left = `${left}px`
     this.style.width = `${width}px`
@@ -124,6 +135,7 @@ export class InputOverlay extends HTMLDivElement {
   }
 
   private unsetViewRect() {
+    this.style.opacity = "0"
     this.style.display = "none"
     this.style.top = ""
     this.style.left = ""

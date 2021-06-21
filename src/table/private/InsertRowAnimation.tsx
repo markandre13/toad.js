@@ -1,3 +1,21 @@
+/*
+ *  The TOAD JavaScript/TypeScript GUI Library
+ *  Copyright (C) 2021 Mark-André Hopf <mhopf@mark13.org>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 import * as toadJSX from '../../util/jsx'
 import { TableEvent } from "../TableEvent"
 import { AnimationBase } from '@toad/util/animation'
@@ -32,22 +50,23 @@ export class InsertRowAnimation extends AnimationBase {
     }
 
     // insert temporary rows used for animation
-    this.trAnimationHead = <tr style={{ height: '0px' }} />
+    const img = `url(\"data:image/svg+xml;utf8,<svg width='3' height='3' xmlns='http://www.w3.org/2000/svg'><line shape-rendering='crispEdges' x1='-1' y1='-1' x2='5' y2='5' stroke='%23888' /></svg>\")`
+
+    this.trAnimationHead = <tr style={{ height: '0px', background: img }}><th style={{padding: "0"}}/></tr>
     this.table.rowHeadHead.insertBefore(this.trAnimationHead, this.table.rowHeadHead.children[this.event.index])
-    this.trAnimationBody = <tr style={{ height: '0px' }} />
+    this.trAnimationBody = <tr style={{ height: '0px', background: img }}></tr>
+    for(let i=0; i<this.table.adapter!.colCount; ++i) {
+      this.trAnimationBody.appendChild(<td style={{padding: "0"}}/>)
+      this.trAnimationBody.style.background = img
+    }
     this.table.bodyBody.insertBefore(this.trAnimationBody, this.table.bodyBody.children[this.event.index + 1])
   }
 
   override firstFrame() {
-    // for (let i = 0; i < this.event.size; ++i) {
-    //   this.rowAnimationHeight += this.trBody[i].clientHeight + 3
-    // }
-    // this works for 'compact'
     this.table.rowAnimationHeight = this.rowAnimationHeight = Math.max(
       this.table.hiddenSizeCheckBody.clientHeight,
       this.table.hiddenSizeCheckRowHead.clientHeight
     )
-    // this.stop()
   }
 
   override animationFrame(animationTime: number) {

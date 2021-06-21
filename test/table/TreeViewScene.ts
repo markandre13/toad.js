@@ -8,6 +8,9 @@ import { TableView, TableAdapter, TreeAdapter, TreeNode, TreeNodeModel, bind, un
 // │  └─ 4
 // │     └─ 5
 // └─ 6
+//    └─ 7
+//    └─ 8
+//    └─ 9
 export class MyNode implements TreeNode {
     label: string
     next?: MyNode
@@ -18,7 +21,29 @@ export class MyNode implements TreeNode {
     }
 }
 
+interface Options {
+    rowHeads?: boolean
+}
+
+class MyTreeModel extends TreeNodeModel<MyNode> {
+    options: Options
+
+    constructor(options: Options = {}) {
+        super(MyNode)
+        this.options = options
+    }
+}
+
 export class MyTreeAdapter extends TreeAdapter<MyNode> {
+    
+    override getRowHead(row: number) {
+        // FIXME: we don't want this cast, let TreeAdapter have an option 2nd type argument instead
+        if ((this.model as MyTreeModel).options.rowHeads !== true) {
+            return undefined
+        }
+        return document.createTextNode(`ROW#${row}`)
+    }
+
     override getDisplayCell(col: number, row: number): Node | Node[] | undefined {       
         if (!this.model)
             return undefined
@@ -26,18 +51,19 @@ export class MyTreeAdapter extends TreeAdapter<MyNode> {
     }
 }
 
+
 export class TreeViewScene {
     table: TableView
     tree: TreeNodeModel<MyNode>
 
-    constructor() {
+    constructor(options: Options = {}) {
 
         // setAnimationFrameCount(0)
         unbind()
         TableAdapter.unbind()
         document.body.innerHTML = ""
 
-        let tree = new TreeNodeModel(MyNode)
+        let tree = new MyTreeModel(options)
         tree.addSiblingAfter(0)
         tree.addChildAfter(0)
         tree.addChildAfter(1)
@@ -45,6 +71,9 @@ export class TreeViewScene {
         tree.addSiblingAfter(1)
         tree.addChildAfter(4)
         tree.addSiblingAfter(0)
+        tree.addChildAfter(6)
+        tree.addSiblingAfter(7)
+        tree.addSiblingAfter(8)
         bind("tree", tree)
         this.tree = tree
 

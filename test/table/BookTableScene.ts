@@ -232,6 +232,11 @@ class BookTableAdapter extends TableAdapter<BookTableModel> {
         if (!this.model)
             return undefined
         let text: string | undefined
+        if (row<0 || row>=this.rowCount) {
+            const msg = `BookTableAdapter.getField(${col}, ${row}) is out of range, size is ${this.colCount}, ${this.rowCount}`
+            console.trace(msg)
+            throw Error(msg)
+        }
         switch (col) {
             case 0: text = this.model.data[row].title; break
             case 1: text = this.model.data[row].author; break

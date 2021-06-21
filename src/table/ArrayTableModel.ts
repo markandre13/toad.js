@@ -36,6 +36,10 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
 
   insert(row: number, rowData?: T | Array<T>): number {
     // console.log(`add row above ${row}`)
+    if (row > this.rowCount) {
+      throw Error(`ArrayTableModel.insert(${row}) is out of range, model size is ${this.colCount}, ${this.rowCount}`)
+    }
+
     if (rowData === undefined)
       rowData = this.createRow()
     let rowArray
@@ -49,6 +53,9 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
   }
 
   remove(row: number, count: number = 1): number {
+    if (row >= this.rowCount || row+count > this.rowCount) {
+      throw Error(`ArrayTableModel.remove(${row}, ${count}) is out of range, model size is ${this.colCount}, ${this.rowCount}`)
+    }
     // console.log(`delete row ${row}`)
     this.data.splice(row, count)
     this.modified.trigger(new TableEvent(TableEventType.REMOVE_ROW, row, count))

@@ -1,0 +1,20 @@
+// currently we wait for the browser to render text to determine the actual
+// text dimensions. a more sane approach seems to available using this
+// function:
+
+CanvasRenderingContext2D.measureText() !!! this might simplify a lot!!!!
+
+// this creates a PNG
+
+const canvas = new OffscreenCanvas(2, 2)
+const ctx = canvas.getContext("2d")!
+ctx.clearRect(0,0,2,2)
+ctx.fillRect(0,0,1,1)
+ctx.fillRect(1,1,1,1)
+const img = canvas.convertToBlob().then( x => {
+  console.log(x.text().then( y => {
+    console.log(y)
+  }))
+})
+const image = canvas.transferToImageBitmap()
+image.close()

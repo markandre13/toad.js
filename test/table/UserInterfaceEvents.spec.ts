@@ -6,6 +6,7 @@ import { findScrollableParent, isScrollable } from "@toad/scrollIntoView"
 import { BookTableScene } from "./BookTableScene"
 import { TreeViewScene } from "./TreeViewScene"
 import { TestRow, TestTableScene } from "./TestTableScene"
+import { table } from "console"
 
 describe("toad.js", function() {
     describe("table", function() {
@@ -48,77 +49,218 @@ describe("toad.js", function() {
                     // TODO: test this with two table views
                 })
                 describe("insert row", function() {
-                    it("single row", async function() {
-                        const scene = new TestTableScene()
-                        const rows = scene.table.bodyBody.children
+                    describe("basic delete operations", function() {
+                        it("single row", async function() {
+                            const scene = new TestTableScene()
+                            const rows = scene.table.bodyBody.children
 
-                        const newBook = new TestRow(101)
-                        scene.model.insert(3, newBook)
-                        await scene.sleep()
+                            const newRow = new TestRow(101)
+                            scene.model.insert(3, newRow)
+                            await scene.sleep()
 
-                        expect(rows.length).to.equal(11+1)
-                        expect((rows[3 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:101")
-                        expect((rows[3 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:101")
+                            expect(rows.length).to.equal(11+1)
+                            expect((rows[3 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:101")
+                            expect((rows[3 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:101")
 
-                        expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight)
+                            expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight)
+                        })
+                        it("multiple rows", async function() {
+                            const scene = new TestTableScene()
+                            const rows = scene.table.bodyBody.children
+
+                            const newRow0 = new TestRow(101)
+                            const newRow1 = new TestRow(102)
+                            scene.model.insert(3, [newRow0, newRow1])
+                            await scene.sleep()
+
+                            expect(rows.length).to.equal(12+1)
+                            expect((rows[3 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:101")
+                            expect((rows[3 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:101")
+                            expect((rows[4 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:102")
+                            expect((rows[4 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:102")
+
+                            expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight + rows[4+1].clientHeight)
+                        })
+                        it("multiple rows in tree", async function() {
+                            const scene = new TreeViewScene()
+                            const rows = scene.table.bodyBody.children
+
+                            // close
+                            const previousHeight = rows[1+1].clientHeight + rows[1+2].clientHeight
+                            scene.mouseDownAtCell(0, 1, 20, 5)
+                            await scene.sleep()
+                            expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
+
+                            // open
+                            scene.mouseDownAtCell(0, 1, 20, 5)
+                            await scene.sleep()
+                            expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
+                        })
+                        // // easier to check visually for now
+                        // it.only("multiple rows in tree at table bottom", async function() {
+                        //     const scene = new TreeViewScene({rowHeads: true})
+                        //     const rows = scene.table.bodyBody.children
+
+                        //     // close the 1st node
+                        //     scene.mouseDownAtCell(0, 0, 5, 5)
+                        //     await scene.sleep()
+
+                        //     // close
+                        //     const previousHeight = rows[1+2].clientHeight + rows[1+4].clientHeight
+                        //     scene.mouseDownAtCell(0, 1, 5, 5)
+                        //     await scene.sleep()
+                        //     // expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
+
+                        //     // open
+                        //     scene.mouseDownAtCell(0, 1, 5, 5)
+                        //     await scene.sleep()
+                        //     // expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
+                        // })
                     })
-                    it("multiple rows", async function() {
-                        const scene = new TestTableScene()
-                        const rows = scene.table.bodyBody.children
+                    describe("interaction with the selection and input overlay", function() {
+                        it("selection is BEFORE inserted area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 3
+                            await scene.sleep(0)
 
-                        const newBook0 = new TestRow(101)
-                        const newBook1 = new TestRow(102)
-                        scene.model.insert(3, [newBook0, newBook1])
-                        await scene.sleep()
+                            const newRow0 = new TestRow(101)
+                            const newRow1 = new TestRow(102)
+                            scene.model.insert(5, [newRow0, newRow1])
+                            await scene.sleep()
 
-                        expect(rows.length).to.equal(12+1)
-                        expect((rows[3 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:101")
-                        expect((rows[3 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:101")
-                        expect((rows[4 + 1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:102")
-                        expect((rows[4 + 1].childNodes[4] as HTMLElement).innerText).to.equal("CELL:4:102")
+                            expect(scene.selectionModel.row).equals(3)
+                            scene.expectInputOverlayAt(0, 3)
+                        })
+                        it("selection is AT inserted area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 3
+                            await scene.sleep(0)
 
-                        expect(scene.table.rowAnimationHeight).to.equal(rows[3+1].clientHeight + rows[4+1].clientHeight)
-                    })
-                    it("multiple row in tree", async function() {
-                        const scene = new TreeViewScene()
-                        const rows = scene.table.bodyBody.children
+                            const newRow0 = new TestRow(101)
+                            const newRow1 = new TestRow(102)
+                            scene.model.insert(3, [newRow0, newRow1])
+                            await scene.sleep()
 
-                        // close
-                        const previousHeight = rows[1+1].clientHeight + rows[1+2].clientHeight
-                        scene.mouseDownAtCell(0, 1, 20, 5)
-                        await scene.sleep()
-                        expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
+                            expect(scene.selectionModel.row).equals(5)
+                            scene.expectInputOverlayAt(0, 5)
+                        })
+                        it("selection is AFTER inserted area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 5
+                            await scene.sleep(0)
 
-                        // open
-                        scene.mouseDownAtCell(0, 1, 20, 5)
-                        await scene.sleep()
-                        expect(scene.table.rowAnimationHeight).to.equal(previousHeight)
+                            const newRow0 = new TestRow(101)
+                            const newRow1 = new TestRow(102)
+                            scene.model.insert(3, [newRow0, newRow1])
+                            await scene.sleep()
+
+                            expect(scene.selectionModel.row).equals(7)
+                            scene.expectInputOverlayAt(0, 7)
+                        })
                     })
                 })
-                describe("delete row", function() {   
-                    it("single rows", async function(){
-                        const scene = new TestTableScene()
-                        const rows = scene.table.bodyBody.children
+                describe("delete row", function() {
+                    describe("basic delete operations", function() {
+                        it("single rows", async function(){
+                            const scene = new TestTableScene()
+                            const rows = scene.table.bodyBody.children
 
-                        scene.model.remove(2)
-                        await scene.sleep()
+                            scene.model.remove(2)
+                            await scene.sleep()
 
-                        expect(rows.length).to.equal(9+1)
-                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:1")
-                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:3")
-                    })                 
-                    it("multiple rows", async function(){
-                        const scene = new TestTableScene()
-                        const rows = scene.table.bodyBody.children
+                            expect(rows.length).to.equal(9+1)
+                            expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:1")
+                            expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:3")
+                        })                 
+                        it("multiple rows", async function(){
+                            const scene = new TestTableScene()
+                            const rows = scene.table.bodyBody.children
 
-                        // FIXME!!! rowAnimationHeight isn't checked by any of the tests anymore...
-                        // or... VariableRowHeight.spec.ts covers that...
-                        scene.model.remove(2, 2)
-                        await scene.sleep()
+                            scene.model.remove(2, 2)
+                            await scene.sleep()
 
-                        expect(rows.length).to.equal(8+1)
-                        expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:1")
-                        expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:4")
+                            expect(rows.length).to.equal(8+1)
+                            expect((rows[1+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:1")
+                            expect((rows[2+1].childNodes[0] as HTMLElement).innerText).to.equal("CELL:0:4")
+                        })
+                    })
+                    describe("interaction with the selection and input overlay", function() {
+                        it("selection is BEFORE deleted area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 3
+                            await scene.sleep(0)
+
+                            scene.model.remove(5, 3)
+                            await scene.sleep()
+
+                            expect(scene.selectionModel.row).equals(3)
+                            scene.expectInputOverlayAt(0, 3)
+                        })
+
+                        it("selection is INSIDE AT HEAD of deleted area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 4
+                            await scene.sleep(0)
+
+                            scene.model.remove(4, 2)
+                            await scene.sleep()
+
+                            expect(scene.selectionModel.row).equals(4)
+                            scene.expectInputOverlayAt(0, 4)
+                        })
+
+                        it("selection is INSIDE deleted area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 5
+                            await scene.sleep(0)
+
+                            scene.model.remove(4, 3)
+                            await scene.sleep()
+
+                            expect(scene.selectionModel.row).equals(4)
+                            scene.expectInputOverlayAt(0, 4)
+                        })
+
+                        it("selection is INSIDE deleted area and there are NO FURTHER ROWS after the area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 7
+                            await scene.sleep(0)
+
+                            scene.model.remove(6, 4)
+                            await scene.sleep()
+
+                            expect(scene.selectionModel.row).equals(5)
+                            scene.expectInputOverlayAt(0, 5)
+                        })
+
+                        it("selection is BEHIND deleted area", async function() {
+                            const scene = new TestTableScene()
+                            scene.mouseDownAtCell(0, 0)     // move focus to the table
+                            await scene.sleep(0)
+                            scene.selectionModel.row = 7
+                            await scene.sleep(0)
+
+                            scene.model.remove(2, 3)
+                            await scene.sleep()
+
+                            expect(scene.selectionModel.row).equals(4)
+                            scene.expectInputOverlayAt(0, 4)
+                        })
+
                     })
                 })
             })

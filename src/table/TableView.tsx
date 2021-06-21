@@ -36,7 +36,7 @@ import { TableAdapter } from "./TableAdapter"
 import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 import { tableStyle } from "./private/tableStyle"
-import { InputOverlay } from "./InputOverlay"
+import { InputOverlay } from "./private/InputOverlay"
 import { Animator } from '@toad/util/animation'
 import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertRowAnimation } from './private/InsertRowAnimation'
@@ -44,6 +44,7 @@ import { throws } from 'assert'
 
 enum Log {
   LAYOUT,
+  SELECTION,
   USER
 }
 
@@ -492,10 +493,12 @@ export class TableView extends View {
 
     switch (this.selectionModel.mode) {
       case TableEditMode.EDIT_CELL:
+        this.log(Log.SELECTION, `TableView.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
         this.prepareInputOverlayForPosition(new TablePos(this.selectionModel.col, this.selectionModel.row))
         delete (this.rootDiv as any).tabIndex
         break
       case TableEditMode.SELECT_CELL: {
+        this.log(Log.SELECTION, `TableView.createSelection(): mode=SELECT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
         let allSelected = this.bodyBody.querySelectorAll("tbody > tr > td.selected")
         for (let selected of allSelected)
           selected.classList.remove("selected")
@@ -504,6 +507,7 @@ export class TableView extends View {
         break
       }
       case TableEditMode.SELECT_ROW: {
+        this.log(Log.SELECTION, `TableView.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
         let allSelected = this.bodyBody.querySelectorAll("tbody > tr.selected")
         for (let selected of allSelected)
           selected.classList.remove("selected")
@@ -748,6 +752,7 @@ export class TableView extends View {
     this.setSelectionTo(pos)
 
     let editView = this.adapter.getEditorCell(pos.col, pos.row) as View // as HTMLElement
+    this.log(Log.SELECTION, `prepareInputOverlayForPosition() got editView=${editView}`)
     // FIXME: call this.inputOverlay.setChild(editView) to hide inputOverlay?
     if (!editView) {
       this.inputOverlay.setEditView(undefined)

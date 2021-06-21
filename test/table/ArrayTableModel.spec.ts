@@ -44,6 +44,26 @@ describe("toad.js", function() {
 
                     expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 3, 2))
                 })
+
+                it("insert AT END of table (index == model.rowCount)", async function() {
+                    const model = BookTableScene.createBookModel()
+                    expect(model.data.length).to.equal(8)
+
+                    const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
+                    model.insert(model.rowCount, newBook)
+
+                    expect(model.data.length).to.equal(9)
+                    expect(model.data[8]).to.equal(newBook)
+                })
+
+                it("insert BEHIND END of table throws an exception (index > model.rowCount)", async function() {
+                    const model = BookTableScene.createBookModel()
+                    expect(model.data.length).to.equal(8)
+
+                    const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
+                    expect( () => model.insert(model.rowCount + 1, newBook)).to.throw(Error)
+                })
+
             })
             describe("remove()", function() {
                 it("remove(index)", function() {
@@ -70,6 +90,24 @@ describe("toad.js", function() {
                     expect(model.data[2].title).to.equal("2001: A Space Odyssey")
 
                     expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 2, 2))
+                })
+                it("remove AT END of table throws an exception (index == model.rowCount)", async function() {
+                    const model = BookTableScene.createBookModel()
+                    expect( () => model.remove(model.rowCount)).to.throw(Error)
+                })
+                it("remove BEHIND END of table throws an exception (index > model.rowCount)", async function() {
+                    const model = BookTableScene.createBookModel()
+                    expect( () => model.remove(model.rowCount)).to.throw(Error)
+                })
+                it("remove AT END of table", async function() {
+                    const model = BookTableScene.createBookModel()
+                    expect(model.data.length).to.equal(8)
+                    model.remove(model.rowCount-1, 1)
+                    expect(model.data.length).to.equal(7)
+                })
+                it("removed are stretches BEHIND END of table", async function() {
+                    const model = BookTableScene.createBookModel()
+                    expect( () => model.remove(model.rowCount-1, 2)).to.throw(Error)
                 })
             })
         })

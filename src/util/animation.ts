@@ -41,8 +41,8 @@ export class AnimationBase {
     @bind protected _firstFrame(time: number) {
         this.startTime = time
         this.firstFrame()
-        // if (this._stop)
-        //     return
+        if (this._stop)
+            return
         this.animationFrame(0)
         this.requestAnimationFrame(this._animationFrame)
     }
@@ -60,6 +60,9 @@ export class AnimationBase {
         const value = this.ease(elapsed)
 
         this.animationFrame(value)
+        if (this._stop) {
+            return
+        }
 
         if (value < 1.0) {
             this.requestAnimationFrame(this._animationFrame.bind(this))
