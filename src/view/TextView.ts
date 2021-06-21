@@ -79,10 +79,14 @@ export class TextView extends GenericView<TextModel> {
   }
 
   updateView() {
-    if (this.model && this.input.value != this.model.value) {
-      this.input.value = this.model.value
+    if (!this.model)
+      return
+    const strValue = `${this.model.value}`
+    if (this.input.value !== strValue) {
+      this.input.value = strValue
+      this.setAttribute("value", this.input.value)
     }
-    this.setAttribute("value", this.input.value)
+    
   }
   
   get value() {

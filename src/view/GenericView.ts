@@ -39,7 +39,7 @@ export abstract class GenericView<T extends Model> extends View {
       this.model.modified.remove(view)
 
     if (model)
-      model.modified.add(() => { view.updateView() }, view)
+      model.modified.add(() => view.updateView(), view)
 
     this.model = model
     this.updateView()
