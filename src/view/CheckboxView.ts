@@ -132,6 +132,13 @@ export class CheckboxView extends GenericView<BooleanModel> {
     this.shadowRoot!.appendChild(document.importNode(checkboxStyle, true))
     this.shadowRoot!.appendChild(svg)
   }
+
+  override setModel(model?: BooleanModel) {
+    if (model !== undefined && !(model instanceof BooleanModel)) {
+      throw Error(`CheckBoxView.setModel(): model is not of type BooleanModel`)
+    }
+    super.setModel(model)
+  }
   
   static get observedAttributes() {return ['checked'] }
   

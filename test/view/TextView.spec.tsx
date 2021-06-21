@@ -1,14 +1,14 @@
 import * as toadJSX from '@toad/util/jsx'
 
 import { expect } from "chai"
-import { TextView, NumberModel, bind, unbind } from "@toad"
+import { TextView, TextModel, NumberModel, bind, unbind } from "@toad"
 
 describe("toad.js", function () {
 
-    function clearAll() {
+    beforeEach( () => {
         unbind()
         document.body.innerHTML = ""
-    }
+    })
 
     describe("<toad-text>", function () {
         describe("NumberModel", function () {
@@ -30,66 +30,53 @@ describe("toad.js", function () {
             // range
             // scroll wheel
         })
+        describe("TextModel", function () {
+            describe("initialize view from model", function () {
+                it("does so when the model is defined before the view", function () {
+                    let model = new TextModel("alpha")
+                    bind("model", model)
+                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    let view = document.body.children[0]
+                    console.log(view.nodeName)
+
+                    expect(view.getAttribute("value")).to.equal("alpha")
+                })
+
+                it("does so when the view is defined before the model", function () {
+                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    let checkbox = document.body.children[0]
+                    let model = new TextModel("alpha")
+                    bind("model", model)
+                    
+                    expect(checkbox.getAttribute("value")).to.equal("alpha")              
+                })
+            })
+
+            describe("on change sync data between model and view", function () {
+                it("updates the html element when the model changes", function () {
+                    let model = new TextModel("alpha")
+                    bind("model", model)
+                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    let checkbox = document.body.children[0]
+                    expect(checkbox.getAttribute("value")).to.equal("alpha")
+                    model.value = "bravo"
+                    expect(checkbox.getAttribute("value")).to.equal("bravo")
+                })
+
+                it("updates the model when the html element changes", function () {
+                    let model = new TextModel("alpha")
+                    bind("model", model)
+                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    let view = document.body.children[0] as TextView
+                    expect(model.value).to.equal("alpha")
+                    view.setAttribute("value", "bravo")
+                    expect(model.value).to.equal("bravo")
+                })
+            })
+        })
     })
 
-    // xdescribe("<toad-text> and TextModel", function() {
-    //     describe("initialize view from model", function() {
-    //         it("does so when the model is defined before the view", function() {
-    //             let model = new BooleanModel(true)
-    //             bind("bool", model)
-    //             document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-    //             let checkbox = document.body.children[0]
+    xdescribe("<toad-text> and TextModel", function () {
 
-    //             expect(checkbox.hasAttribute("checked")).to.equal(true)
-    //             clearAll()
-
-    //             model = new BooleanModel(false)
-    //             bind("bool", model)
-    //             document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-    //             expect(checkbox.hasAttribute("checked")).to.equal(false)
-    //             clearAll()
-    //         })
-
-    //         it("does so when the view is defined before the model", function() {
-    //             document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-    //             let checkbox = document.body.children[0]
-    //             let model = new BooleanModel(true)
-    //             bind("bool", model)
-    //             expect(checkbox.hasAttribute("checked")).to.equal(true)
-    //             clearAll()
-
-    //             document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-    //             checkbox = document.body.children[0]
-    //             model = new BooleanModel(false)
-    //             bind("bool", model)
-    //             expect(checkbox.hasAttribute("checked")).to.equal(false)
-    //             clearAll()
-    //         })
-    //     })
-
-    //     describe("on change sync data between model and view", function() {
-
-    //         it("updates the html element when the model changes", function() {
-    //             let model = new BooleanModel(true)
-    //             bind("bool", model)
-    //             document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-    //             let checkbox = document.body.children[0]
-    //             expect(checkbox.hasAttribute("checked")).to.equal(true)
-    //             model.value = false
-    //             expect(checkbox.hasAttribute("checked")).to.equal(false)
-    //             clearAll()
-    //         })
-
-    //         it("updates the model when the html element changes", function() {
-    //             let model = new BooleanModel(false)
-    //             bind("bool", model)
-    //             document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-    //             let checkbox = document.body.children[0] as CheckboxView
-    //             expect(model.value).not.to.equal(true)
-    //             checkbox.setAttribute("checked", "")
-    //             expect(model.value).to.equal(true)
-    //             clearAll()
-    //         })
-    //     })
-    // })
+    })
 })

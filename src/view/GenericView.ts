@@ -33,7 +33,7 @@ export abstract class GenericView<T extends Model> extends View {
     if (model === this.model)
       return
 
-    let view = this
+    const view = this
 
     if (this.model)
       this.model.modified.remove(view)

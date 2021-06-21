@@ -41,19 +41,26 @@ export class TextModel extends Model {
   }
 
   set value(value: string) {
-    if (this._value == value)
+    if (this._value === value)
       return
+    if (typeof value !== "string") {
+      console.trace(`TextModel.set value(value: string): ${typeof value} is not type string`)
+      return
+    }
     this._value = value
     this.modified.trigger()
   }
 
   get value(): string {
-    if (typeof this._value === "number") {
-      this._value = String(this._value)
+    switch(typeof this._value) {
+      case "number":
+      case "string":
+        this._value = `${this._value}`
+        break
+      case "function":
+        this._value = this._value()
+        break
     }
-    else if (typeof this._value !== "string") {
-      this._value = this._value() as string
-    }
-    return this._value
+    return this._value as string
   }
 }
