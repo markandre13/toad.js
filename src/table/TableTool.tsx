@@ -16,9 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @jsx toadJSX.createElement */
-import * as toadJSX from '../util/jsx'
-
 import { Model } from "../model/Model"
 import { View } from "../view/View"
 import { GenericTool } from "../view/GenericTool"
@@ -108,7 +105,6 @@ export class TableTool extends GenericTool<Model> {
             if (selection && model && model instanceof ArrayTableModel) {
                 model.remove(selection.row)
             }
-            
         }
         this.toolbar.appendChild(this.buttonDeleteRow)
 

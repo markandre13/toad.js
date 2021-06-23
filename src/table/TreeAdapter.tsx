@@ -16,7 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import * as toadJSX from '../util/jsx'
 import bind from 'bind-decorator'
 
 import { TreeModel } from "./TreeModel"

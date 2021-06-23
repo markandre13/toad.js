@@ -16,9 +16,6 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @jsx toadJSX.createElement */
-import * as toadJSX from '../util/jsx'
-
 import { Model } from "../model/Model"
 import { GenericView } from "./GenericView"
 import { textAreaStyle } from "./textAreaStyle"

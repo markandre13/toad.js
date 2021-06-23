@@ -1,6 +1,5 @@
 import { expect } from "chai"
 import { Signal, TextModel, TableAdapter, NumberModel, bind, unbind, action, Action } from "@toad"
-import * as toadJSX from '@toad/util/jsx'
 
 describe("toad.js", function () {
 

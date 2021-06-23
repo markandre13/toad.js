@@ -1,7 +1,5 @@
-import * as toadJSX from '@toad/util/jsx'
-
 import { expect } from "chai"
-import { TextView, TextModel, NumberModel, bind, unbind } from "@toad"
+import { TextView, TextModel, NumberModel, bind, unbind, Fragment } from "@toad"
 
 describe("toad.js", function () {
 
@@ -15,7 +13,7 @@ describe("toad.js", function () {
             it("view and model are in sync", function () {
                 const model = new NumberModel(42, { min: 0, max: 100, step: 1 })
 
-                const content = <><toad-text model={model} /></> as toadJSX.Fragment
+                const content = <><toad-text model={model} /></> as Fragment
                 content.replaceIn(document.body)
                 const view = content[0] as TextView
 

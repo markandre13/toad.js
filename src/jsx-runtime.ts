@@ -754,9 +754,7 @@ export namespace JSX {
         height?: string | number
     }
 
-    // this doesn't quite work as expected...
-    // export type Element = Fragment | Element
-    // export interface Element extends HTMLElement, Fragment {}
+    // export type Element = Element | Fragment
 
     export interface IntrinsicElements {
         // 4.1 The document element
@@ -981,8 +979,8 @@ export namespace JSX {
 }
 
 export class Fragment extends Array<Element> {
-    constructor(children: Array<Element>) {
-        super(...children)
+    constructor(props: any) {
+        super(...props?.children)
     }
     replaceIn(element: Element | ShadowRoot) {
         while(element.childNodes.length > 0) {
@@ -997,16 +995,22 @@ export class Fragment extends Array<Element> {
     }
 }
 
-// the FunctionConstructor is a hack for <></>
-// actually it would be nice if we could support value objects too, eg. <TableView> instead of <toad-table>
-export function createElement(name: string, props: JSX.HTMLElementProps, ...children: any): Element
-export function createElement(name: FunctionConstructor, props: JSX.HTMLElementProps, ...children: any): Fragment
-export function createElement(name: string | FunctionConstructor, props: JSX.HTMLElementProps, ...children: any): Element | Fragment {
+// https://reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html
+export function jsx(nameOrConstructor: string | { new(...args: any[]): any }, props: any, key?: string) {
+    if (props !== undefined && props.children !== undefined) {
+        props.children = [props.children]
+    }
+    return jsxs(nameOrConstructor, props)
+}
+
+export function jsxs(nameOrConstructor: string | { new(...args: any[]): any }, props: any, key?: string) {
     let namespace
 
-    if (typeof name !== 'string') {
-        return new Fragment(children)
+    if (typeof nameOrConstructor !== 'string') {
+        return new nameOrConstructor(props)
     }
+
+    const name = nameOrConstructor as string
 
     switch (name) {
         case 'svg':
@@ -1027,10 +1031,10 @@ export function createElement(name: string | FunctionConstructor, props: JSX.HTM
                     (tag as any).setModel(value)
                     break
                 case 'class':
-                    tag.classList.add(value) // FIXME: value is whitespace separated list
+                    tag.classList.add(value as string) // FIXME: value is whitespace separated list
                     break
                 case 'style':
-                    for (let [skey, svalue] of Object.entries(value)) {
+                    for (let [skey, svalue] of Object.entries(value as string)) {
                         const regex = /[A-Z]/g
                         skey = skey.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
                         tag.style.setProperty(skey, svalue as string)
@@ -1044,18 +1048,48 @@ export function createElement(name: string | FunctionConstructor, props: JSX.HTM
                         const regex = /[A-Z]/g
                         key = key.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
                     }
-                    tag.setAttributeNS(null, key, value)
+                    tag.setAttributeNS(null, key, value as string)
+            }
+        }
+        if (props.children !== undefined) {
+            for (let child of props.children) {
+                if (typeof child === "string") {
+                    tag.appendChild(document.createTextNode(child))
+                } else {
+                    tag.appendChild(child)
+                }
             }
         }
     }
-    for (let child of children) {
-        if (typeof child === "string") {
-            tag.appendChild(document.createTextNode(child))
-        } else {
-            tag.appendChild(child)
-        }
-    }
     return tag
+   
+}
+
+// the FunctionConstructor is a hack for <></>
+// actually it would be nice if we could support value objects too, eg. <TableView> instead of <toad-table>
+// export function createElement(name: string, props: JSX.HTMLElementProps, ...children: any): Element
+// export function createElement(name: FunctionConstructor, props: JSX.HTMLElementProps, ...children: any): Fragment
+// export function createElement(name: string | FunctionConstructor, props: JSX.HTMLElementProps, ...children: any): Element | Fragment {
+// }
+// backward compability
+export function createElement(nameOrConstructor: string | { new(...args: any[]): any }, props: any, ...children: any) {
+    // console.log(`createElement(${nameOrConstructor}, ${JSON.stringify(props)}, ${children}`)
+
+    // props: remove 'key', add 'children'
+    let key
+    if (props !== null) {
+        if ('key' in props) {
+            key = props.key
+            delete props.key
+        }
+        if (children !== undefined) {
+            props.children = children
+        }
+    } else {
+        if (children !== undefined )
+            props = { children }
+    }
+    return jsxs(nameOrConstructor, props, key)
 }
 
 export function ref<T>(object: T, attribute: keyof T): JSX.Reference {

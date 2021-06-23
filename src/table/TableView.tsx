@@ -21,8 +21,7 @@
 //           try to move code outside by converting them into object of their own
 //           begin with the inputOverlay
 
-import * as toadJSX from '../util/jsx'
-import { ref } from '../util/jsx'
+import { Fragment, ref } from '../jsx-runtime'
 
 import * as dom from "../util/dom"
 import { scrollIntoView } from "../scrollIntoView"
@@ -47,7 +46,6 @@ enum Log {
   SELECTION,
   USER
 }
-
 
 /*
  * rootDiv (div.root, onkeydown)
@@ -74,7 +72,7 @@ export class TableView extends View {
   adapter?: TableAdapter<any>
   selectionModel?: SelectionModel
 
-  rootDiv: toadJSX.Fragment
+  rootDiv: Fragment
 
   rowHeadDiv!: HTMLElement
   rowHeadTable!: HTMLTableElement
