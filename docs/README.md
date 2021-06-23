@@ -7,7 +7,7 @@
 
 ## Welcome to the TOAD GUI Library
 
-Try the <a href="https://markandre13.github.io/toad-demo/">Live Demo</a>!
+Try the <a href="https://markandre13.github.io/toad.js/">Live Demo</a>!
 
 ### Background
 

@@ -17,10 +17,64 @@
  */
 
 import {
+    TextModel, HtmlModel, NumberModel, BooleanModel,
+
+    Template,
+
     ArrayModel, ArrayAdapter, TableAdapter,
     TreeNode, TreeNodeModel, TreeAdapter,
-    bind, refs
+    bind, action, refs
 } from '@toad'
+
+//
+// <toad-text>
+//
+
+let textModel = new TextModel("")
+bind("hello", textModel)
+
+//
+// <toad-texttool> & <toad-textarea>
+//
+let markupModel = new HtmlModel("")
+markupModel.modified.add(() => {
+    document.getElementById("rawhtml")!.innerText = markupModel.value
+})
+bind("markup", markupModel)
+
+//
+// <toad-button>
+//
+action("hitMe", () => {
+    textModel.value = "Hit me too!"
+    hitMeMore.enabled = true
+})
+var hitMeMore = action("hitMeMore", () => {
+    textModel.value = "You hit me!"
+    hitMeMore.enabled = false
+})
+
+//
+// <toad-checkbox> and <toad-if>
+//
+
+let onoff = new BooleanModel(false)
+bind("onoff", onoff)
+
+//
+// <toad-slider>
+//
+
+let size = new NumberModel(42, { min: 0, max: 99 })
+bind("size", size)
+
+// <toad-menu>
+action("file|logout", () => {
+    alert("You are about to logout")
+})
+action("help", () => {
+    alert("Please.")
+})
 
 //
 // Books
@@ -91,3 +145,27 @@ export function main(): void {
     initializeBooks()
     initializeTree()
 }
+
+class MyCodeButton extends HTMLElement {
+    condition = new BooleanModel(false)
+    constructor() {
+        super()
+        let template = new Template("my-code-button") // FIXME: how about inlining the HTML?
+        let label = template.text("label", "Show Code")
+        template.action("action", () => {
+            if (this.condition.value) {
+                this.condition.value = false
+                label.value = "Show Code"
+            } else {
+                this.condition.value = true
+                label.value = "Hide Code"
+            }
+        })
+        this.attachShadow({ mode: 'open' })
+        this.shadowRoot!.appendChild(template.root)
+    }
+    connectedCallback() {
+        bind(this.getAttribute("condition")!, this.condition) // FIXME: bind to parents context
+    }
+}
+window.customElements.define("my-code-button", MyCodeButton)

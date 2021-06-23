@@ -16,7 +16,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 export { Point, MatrixStruct, Matrix } from "./Matrix"
 export { Signal } from "./Signal"
 
@@ -51,7 +50,10 @@ export { TextArea } from "./view/TextArea"
 export { TextTool } from "./view/TextTool"
 export { ToadIf } from "./view/ToadIf"
 
+export { Menu } from "./menu/Menu"
 export { MenuButton } from "./menu/MenuButton"
+export { MenuSpacer } from "./menu/MenuSpacer"
+export { PopupMenu } from "./menu/PopupMenu"
 
 export { TableView } from "./table/TableView"
 export { TableTool } from "./table/TableTool"

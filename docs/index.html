@@ -1,0 +1,344 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Introduction to toad.js</title>
+    <meta name="description" content="An introduction to the TOAD TypeScript GUI Library (toad.js).">
+    <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>"/>
+    <script type="application/javascript" src="../polyfill/webcomponents-hi-sd-ce.js"></script>
+    <script src="main.js"></script>
+    <style>
+      :root {
+        --toad-font-family: "Trebuchet MS", Futura, Helvetica Neue, Helvetica, Arial, sans-serif;
+        --toad-font-size: 12px;
+        --toad-outline-color: #9eccfb;
+        --toad-selection-color: #0069d4;
+      }
+      body {
+        font-family: var(--toad-font-family);
+        font-size: var(--toad-font-size);
+      }
+      h3 {
+        padding: 2px;
+        color: rgb(0,112,172);
+        border-bottom: rgb(0,112,172) solid 2px;
+      }
+    </style>
+
+    <template id="my-code-button">
+      <style>
+        toad-button {
+          --toad-primary-color: #800;
+        }
+      </style>
+      <p>
+        <toad-button action="action" model="label"></toad-button>
+      </p>
+    </template>
+  </head>
+
+  <body onload="example.main()">
+
+    <p style="text-align: center">
+      <img src="toad.gif" alt="TOAD" /><br />
+      WebComponent/TypeScript Edition
+    </p>
+    
+    <h3>Introduction</h3>
+
+    <p>
+      <a href="https://github.com/markandre13/toad.js#readme">toad.js</a> brings some of the ideas from the TOAD C++ GUI library
+      (<a href="https://github.com/markandre13/toad-x11#readme">UNIX/X11</a>, <a href="https://github.com/markandre13/toad-macosx#readme">macOS/Cocoa</a>)
+      to the web.
+    </p>
+    
+    <ul>
+      <li>intended for the development of
+          <a href="https://en.wikipedia.org/wiki/Progressive_Web_Apps">Progressive
+          Web Apps</a></li>
+      <li>
+        supports the separation of frontend (view) and business domain (model) code via the MVC pattern
+      </li>
+      <li>
+        allows to bind view and model either via HTML or JSX
+      </li>
+      <li>
+        not a HTML template library like Handlebars, Angular, React or Vue but a collection of ready-made 
+        view and model classes
+      </li>
+    </ul>
+    
+    <p>
+      toad.js makes use of new web technologes like Custom Elements, Shadow
+      DOM and JSX.
+    </p>
+
+    <p>
+      Development is happening in my spare time and focused on Safari, the Desktop and to support the development of
+      <a href="https://github.com/markandre13/workflow#readme">workflow</a>
+      and
+      <a href="https://github.com/markandre13/makehuman.js#readme">makehuman.js</a>.
+      But it should basically work on any other modern browser.
+    </p>
+
+    <h3>&lt;toad-menu&gt;</h3>
+    
+    <toad-menu>
+      <toad-menuentry name="file" label="File">
+        <toad-menuentry name="new" label="New">
+          <toad-menuentry name="empty" label="Empty"></toad-menuentry>
+          <toad-menuentry name="template" label="From Template"></toad-menuentry>
+          <toad-menuentry name="upload" label="Upload"></toad-menuentry>
+        </toad-menuentry>
+        <toad-menuentry name="open" label="Open"></toad-menuentry>
+        <toad-menuentry name="close" label="Close"></toad-menuentry>
+        <toad-menuentry name="logout" label="Logout"></toad-menuentry>
+      </toad-menuentry>
+      <toad-menuentry name="edit" label="Edit">
+        <toad-menuentry name="cut" label="Cut" shortcut="Ctrl+X"></toad-menuentry>
+        <toad-menuentry name="copy" label="Copy" shortcut="Ctrl+C"></toad-menuentry>
+        <toad-menuentry name="paste" label="Paste" shortcut="Ctrl+V"></toad-menuentry>
+      </toad-menuentry>
+      <toad-menuspacer></toad-menuspacer>
+      <toad-menuentry name="help" label="Help"></toad-menuentry>
+      <toad-menuentry name="settings" label="Settings">
+        <toad-menuentry name="account" label="Account"></toad-menuentry>
+        <toad-menuentry name="system" label="System"></toad-menuentry>
+      </toad-menuentry>
+    </toad-menu>
+
+    <my-code-button condition="menu-condition"></my-code-button>
+    <toad-if model="menu-condition">
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-menu&gt;
+        &lt;toad-menuentry name="file" label="File"&gt;
+          &lt;toad-menuentry name="new" label="New"&gt;
+            &lt;toad-menuentry name="empty" label="Empty"&gt;&lt;/toad-menuentry&gt;
+            &lt;toad-menuentry name="template" label="From Template"&gt;&lt;/toad-menuentry&gt;
+            &lt;toad-menuentry name="upload" label="Upload"&gt;&lt;/toad-menuentry&gt;
+          &lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="open" label="Open"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="close" label="Close"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="logout" label="Logout"&gt;&lt;/toad-menuentry&gt;
+        &lt;/toad-menuentry&gt;
+        &lt;toad-menuentry name="edit" label="Edit"&gt;
+          &lt;toad-menuentry name="cut" label="Cut" shortcut="Ctrl+X"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="copy" label="Copy" shortcut="Ctrl+C"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="paste" label="Paste" shortcut="Ctrl+V"&gt;&lt;/toad-menuentry&gt;
+        &lt;/toad-menuentry&gt;
+        &lt;toad-menuspacer&gt;&lt;/toad-menuspacer&gt;
+        &lt;toad-menuentry name="help" label="Help"&gt;&lt;/toad-menuentry&gt;
+        &lt;toad-menuentry name="settings" label="Settings"&gt;
+          &lt;toad-menuentry name="account" label="Account"&gt;&lt;/toad-menuentry&gt;
+          &lt;toad-menuentry name="system" label="System"&gt;&lt;/toad-menuentry&gt;
+        &lt;/toad-menuentry&gt;
+      &lt;/toad-menu&gt;</pre>
+    <h4>TypeScript</h4>
+    <pre>
+      toad.action("file|logout", () =&gt; {
+        alert("You are about to logout")
+      })
+      toad.action("help", () =&gt; {
+        alert("Please.")
+      })</pre>
+    </toad-if>
+
+    <h3>&lt;toad-text&gt;</h3>
+    <toad-text model="hello"></toad-text>
+    <toad-text model="hello"></toad-text>
+
+    <my-code-button condition="text-condition"></my-code-button>
+    <toad-if model="text-condition">
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-text model="hello"&gt;&lt;/toad-text&gt;
+      &lt;toad-text model="hello"&gt;&lt;/toad-text&gt;</pre>
+    <h4>TypeScript</h4>
+    <pre>
+      let textModel = new toad.TextModel("")
+      toad.bind("hello", textModel)</pre>
+    </toad-if>
+    
+    <h3>&lt;toad-texttool&gt; &amp; &lt;toad-textarea&gt;</h3>
+    <toad-texttool></toad-texttool>
+    <toad-textarea model="markup"></toad-textarea>
+    <pre id="rawhtml"></pre>
+        
+    <my-code-button condition="textarea-condition"></my-code-button>
+    <toad-if model="textarea-condition">
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-texttool&gt;&lt;/toad-texttool&gt;
+      &lt;toad-textarea model="markup"&gt;&lt;/toad-textarea&gt;
+      &lt;pre id="rawhtml"&gt;&lt;/pre&gt;
+    </pre>
+    <h4>TypeScript</h4>
+    <pre>
+      let markupModel = new toad.HtmlModel("")
+      markupModel.modified.add( () =&gt; {
+        document.getElementById("rawhtml").innerText = markupModel.value
+      })
+      toad.bind("markup", markupModel)
+    </pre>
+    </toad-if>
+
+    <h3>&lt;toad-button&gt;</h3>
+    <toad-button action="hitMe">Hit me!</toad-button>
+    <toad-button action="hitMeMore" model="hello">I get my text from the
+    model registered as 'hello'</toad-button>
+
+    <my-code-button condition="button-condition"></my-code-button>
+    <toad-if model="button-condition">
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-button action="hitMe"&gt;Hit me!&lt;/toad-button&gt;
+      &lt;toad-button action="hitMeMore" model="hello"&gt;I get my text from the model registered as 'hello'&lt;/toad-button&gt;</pre>
+    <h4>TypeScript</h4>
+    <pre>
+      toad.action("hitMe", () =&gt; {
+          textModel.value = "Hit me too!"
+          hitMeMore.enabled = true
+      })
+      var hitMeMore = toad.action("hitMeMore", () =&gt; {
+          textModel.value = "You hit me!"
+          hitMeMore.enabled = false
+      })</pre>
+    </toad-if>
+    
+    <h3>&lt;toad-checkbox&gt; and &lt;toad-if&gt;</h3>
+    The answer to life, the universe and everything?
+    <toad-checkbox model="onoff"></toad-checkbox>
+    <toad-if model="onoff">
+      <p>What is 6 &times; 7?</p>
+    </toad-if>
+    
+    <my-code-button condition="checkbox-condition"></my-code-button>
+    <toad-if model="checkbox-condition">
+    <h4>HTML</h4>
+    <pre>
+      The answer to life, the universe and everything?
+      &lt;toad-checkbox model="onoff">&lt;/toad-checkbox&gt;
+      &lt;toad-if model="onoff"&gt;
+        &lt;p>What is 6 &amp;times; 7?&lt;/p&gt;
+      &lt;/toad-if&gt;</pre>
+    <h4>TypeScript</h4>
+    <pre>
+      let onoff = new toad.BooleanModel(false)
+      toad.bind("onoff", onoff)</pre>
+    </toad-if>
+    
+    <h3>&lt;toad-slider&gt;</h3>
+    <toad-text model="size"></toad-text>
+    <toad-slider model="size"></toad-slider>
+    
+    <my-code-button condition="slider-condition"></my-code-button>
+    <toad-if model="slider-condition">
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-text model="size"&gt;&lt;/toad-text&gt;
+      &lt;toad-slider model="size"&gt;&lt;/toad-slider&gt;</pre>
+    <h4>JavaScipt</h4>
+    <pre>
+      let size = new toad.NumberModel(42, {min: 0, max: 99})
+      toad.bind("size", size)</pre>
+    </toad-if>
+
+    <h3>&lt;toad-table&gt; from array</h3>
+    <div style="display: inline-block; width: 45%; border: inset;">
+      <b style="font-size: 150%">Alice</b>
+      <toad-tabletool></toad-tabletool>
+      <toad-table model="books"></toad-table>
+    </div>
+    <div style="display: inline-block; width: 45%; border: inset;">
+      <b style="font-size: 150%">Bob</b>
+      <toad-tabletool></toad-tabletool>
+      <toad-table model="books"></toad-table>
+    </div>
+    
+    <my-code-button condition="table-condition"></my-code-button>
+    <toad-if model="table-condition">
+    <h4>HTML</h4>
+    <pre>
+      &lt;div style="display: inline-block; width: 45%; border: inset;"&gt;
+        &lt;b style="font-size: 150%"&gt;Alice&lt;/b&gt;
+        &lt;toad-tabletool&gt;&lt;/toad-tabletool&gt;
+        &lt;toad-table model="books"&gt;&lt;/toad-table&gt;
+      &lt;/div&gt;
+      &lt;div style="display: inline-block; width: 45%; border: inset;"&gt;
+        &lt;b style="font-size: 150%"&gt;Bob&lt;/b&gt;
+        &lt;toad-tabletool&gt;&lt;/toad-tabletool&gt;
+        &lt;toad-table model="books"&gt;&lt;/toad-table&gt;
+      &lt;/div&gt;</pre>
+      
+    <h4>TypeScript</h4>
+    <pre>
+      class Book {
+        title: string = ""
+        author: string = ""
+        year: number = 1970
+      }
+  
+      const bookList = [
+          { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
+          { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
+          { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
+          { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
+          { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
+          { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
+          { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
+          { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
+      ]
+      
+      class BookAdapter extends ArrayAdapter&lt;ArrayModel&lt;Book&gt;&gt; {
+          override getColumnHeads() { return ["Title", "Author", "Year"] }
+          override getRow(book: Book) { return refs(book, "title", "author", "year") }
+      }
+      
+      TableAdapter.register(BookAdapter, ArrayModel, Book)
+      const model = new ArrayModel&lt;Book&gt;(bookList, Book)
+      bind("books", model)</pre>
+    </toad-if>
+
+    <h3>&lt;toad-table&gt; from tree</h3>
+    <toad-tabletool></toad-tabletool>
+    <toad-table model="tree"></toad-table>
+    
+    <my-code-button condition="tree-condition"></my-code-button>
+    <toad-if model="tree-condition">
+    <h4>HTML</h4>
+    <pre>
+      &lt;toad-tabletool>&lt;/toad-tabletool&gt;
+      &lt;toad-table model="tree"&gt;&lt;/toad-table&gt;</pre>
+      
+    <h4>TypeScript</h4>
+    <pre>
+      class MyNode implements TreeNode {
+        label: string
+        next?: MyNode
+        down?: MyNode
+        static counter = 0
+        constructor() {
+            this.label = `#${MyNode.counter++}`
+        }
+      }
+      
+      class MyTreeAdapter extends TreeAdapter&lt;MyNode&gt; {
+          override getDisplayCell(col: number, row: number) {
+              return this.model && this.treeCell(row, this.model.rows[row].node.label)
+          }
+      }
+    
+      TreeAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
+      let model = new TreeNodeModel(MyNode)
+      model.addSiblingAfter(0)
+      model.addChildAfter(0)
+      model.addChildAfter(1)
+      model.addSiblingAfter(2)
+      model.addSiblingAfter(1)
+      model.addChildAfter(4)
+      model.addSiblingAfter(0)
+      bind("tree", model)</pre>
+    </toad-if>
+  </body>
+</html>
