@@ -4,14 +4,15 @@
     "moduleResolution": "node",
     "traceResolution": false,
     "declaration": false,
-    "lib": [ "es6", "dom", "dom.iterable" ],
+    "lib": [ "dom", "dom.iterable", "esnext" ],
     "jsx": "react-jsx",
     "jsxImportSource": "@toad",
-    "baseUrl": ".",
+    "baseUrl": "src",
     "paths": {
-        "@toad": ["src/toad"],
-        "@toad/*": ["src/*"]
+        "@toad": ["toad"],
+        "@toad/*": ["*"]
     },
+    "resolveJsonModule": true,
     "experimentalDecorators": true,
     "noImplicitOverride": true,
     "strict": true,
