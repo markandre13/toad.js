@@ -16,9 +16,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableAdapter } from './TableAdapter'
-import { TypedTableModel } from './TypedTableModel'
+import { ArrayTableModel } from "./ArrayTableModel"
 
-abstract class AbstractTypedTableAdapter<T, M extends TypedTableModel<T>> extends TableAdapter<M> {}
-export type InferTypedTableModelParameter<M> = M extends TypedTableModel<infer T> ? T : never
-export class TypedTableAdapter<M extends TypedTableModel<any>> extends AbstractTypedTableAdapter<InferTypedTableModelParameter<M>, M> {}
+export class ArrayModel<T> extends ArrayTableModel<T> {
+    constructor(data: Array<T>, rowClass: new () => T) {
+        super(data, rowClass)
+    }
+    get colCount(): number { return 10 }
+}

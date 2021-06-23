@@ -69,3 +69,6 @@ export { TreeModel } from "./table/TreeModel"
 export { TreeAdapter } from "./table/TreeAdapter"
 export { TreeNode } from "./table/TreeNode"
 export { TreeNodeModel } from "./table/TreeNodeModel"
+
+export { ArrayModel } from "./table/ArrayModel"
+export { ArrayAdapter } from "./table/ArrayAdapter"

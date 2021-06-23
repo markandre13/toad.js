@@ -52,7 +52,7 @@ export namespace JSX {
     }
 
     interface ToadProps {
-        set?: Reference
+        set?: Reference<any> // FIXME: we might be able to specify the exact type here
     }
 
     // use csstype's nice CSS definitons and comments for VSCode's Intellisense
@@ -972,10 +972,49 @@ export namespace JSX {
         "toad-table": ToadTableProps
         "toad-treenodecell": HTMLElementProps
     }
-    export interface Reference {
-        object: Object
-        attribute: string
+}
+
+export class Reference<T> {
+    object: Object
+    attribute: string
+    constructor(object: Object, attribute: keyof T) {
+        this.object = object
+        this.attribute = attribute.toString()
     }
+
+    get(): any {
+        return (this.object as any)[this.attribute]
+    }
+    set(value: any) {
+        Object.defineProperty(this.object, this.attribute, { value: value })
+    }
+
+    toString(): string {
+        return `${(this.object as any)[this.attribute]}`
+    }
+    fromString(value: string) {
+        const type = typeof (this.object as any)[this.attribute]
+        let outValue
+        switch(type) {
+            case "string":
+                outValue = value
+                break
+            case "number":
+                outValue = Number.parseFloat(value)
+                break
+            default:
+                throw Error(`Reference.fromString() isn't yet supported for type ${type}`)
+        }
+        Object.defineProperty(this.object, this.attribute, { value: outValue })
+    }
+}
+
+export function ref<T>(object: T, attribute: keyof T): Reference<T> {
+    return new Reference<T>(object, attribute)
+}
+
+export function refs<T>(object: T, ...attributes: (keyof T)[]): Reference<T>[] {
+    return attributes.map(a => new Reference<T>(object, a))
 }
 
 export class Fragment extends Array<Element> {
@@ -983,7 +1022,7 @@ export class Fragment extends Array<Element> {
         super(...props?.children)
     }
     replaceIn(element: Element | ShadowRoot) {
-        while(element.childNodes.length > 0) {
+        while (element.childNodes.length > 0) {
             element.removeChild(element.childNodes[element.childNodes.length - 1])
         }
         this.appendTo(element)
@@ -1062,7 +1101,7 @@ export function jsxs(nameOrConstructor: string | { new(...args: any[]): any }, p
         }
     }
     return tag
-   
+
 }
 
 // the FunctionConstructor is a hack for <></>
@@ -1086,12 +1125,9 @@ export function createElement(nameOrConstructor: string | { new(...args: any[]):
             props.children = children
         }
     } else {
-        if (children !== undefined )
+        if (children !== undefined)
             props = { children }
     }
     return jsxs(nameOrConstructor, props, key)
 }
 
-export function ref<T>(object: T, attribute: keyof T): JSX.Reference {
-    return { object: object, attribute: attribute.toString() }
-}
