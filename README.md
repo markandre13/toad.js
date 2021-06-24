@@ -1,5 +1,5 @@
 <p align="center">
-   <img src="docs/toad.gif" alt="TOAD" /><br />
+   <img src="https://markandre13.github.io/toad.js/toad.gif" alt="TOAD" /><br />
    WebComponent/TypeScript Edition
 </p>
 
