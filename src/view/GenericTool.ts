@@ -29,8 +29,6 @@ export abstract class GenericTool<T extends Model> extends View {
     abstract activate(): void
     abstract deactivate(): void
 
-    setModel(model?: Model): void { }
-
     static focusIn(view: View) {
         // console.log(`GenericView.focusIn(${view.nodeName})`)
         const viewParents = new Map<Element, number>()

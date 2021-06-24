@@ -18,6 +18,8 @@
 
 import { Signal } from "../Signal"
 
+export type InferModelParameter<M> = M extends Model<infer T> ? T : never
+
 export abstract class Model<T = void> {
   modified: Signal<T>
 

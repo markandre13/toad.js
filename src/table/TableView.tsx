@@ -39,7 +39,6 @@ import { InputOverlay } from "./private/InputOverlay"
 import { Animator } from '@toad/util/animation'
 import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertRowAnimation } from './private/InsertRowAnimation'
-import { throws } from 'assert'
 
 enum Log {
   LAYOUT,
@@ -203,7 +202,7 @@ export class TableView extends View {
   updateModel() {
   }
 
-  setModel(model?: Model): void {
+  override setModel(model?: Model): void {
     if (!model) {
       if (this.selectionModel)
         this.selectionModel.modified.remove(this)

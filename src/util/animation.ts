@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import bind from 'bind-decorator'
+import { bind } from 'bind-decorator'
 
 // TODO: look into cancelAnimationFrame during refactoring
 export class AnimationBase {

@@ -21,7 +21,6 @@ import bind from 'bind-decorator'
 import { TreeModel } from "./TreeModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 import { View } from '../view/View'
-import { Model } from '../model/Model'
 import { RowInfo } from './TreeModel'
 
 export class TreeNodeCell<T> extends View {
@@ -36,8 +35,6 @@ export class TreeNodeCell<T> extends View {
 
         this.attachShadow({ mode: 'open' })
     }
-
-    setModel(model: Model) { }
 
     override connectedCallback() {
         super.connectedCallback()

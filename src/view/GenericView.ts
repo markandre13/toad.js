@@ -16,11 +16,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "../model/Model"
+import { Model, InferModelParameter } from "../model/Model"
 import { View } from "./View"
 
-export abstract class GenericView<T extends Model> extends View {
-  model?: T
+export abstract class GenericView<M extends Model<T>, T = InferModelParameter<M>> extends View {
+  model?: M
 
   constructor() {
     super()
@@ -29,7 +29,7 @@ export abstract class GenericView<T extends Model> extends View {
   abstract updateModel(): void
   abstract updateView(): void
 
-  setModel(model?: T): void {
+  override setModel(model?: M): void {
     if (model === this.model)
       return
 

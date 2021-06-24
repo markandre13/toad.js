@@ -21,10 +21,12 @@ import { globalController } from "../controller/globalController"
 import { Controller } from "../controller/Controller"
 
 // TODO: do we use this directly or is GenericView it's only subclass?
-export abstract class View extends HTMLElement {
+export class View extends HTMLElement {
   controller?: Controller
 
-  abstract setModel(model?: Model): void
+  setModel(model?: Model<any>): void {
+    console.trace(`Please note that View.setModel(model) has no implementation.`)
+  }
 
   getModelId(): string {
     if (!this.hasAttribute("model"))
