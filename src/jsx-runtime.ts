@@ -481,8 +481,8 @@ export namespace JSX {
         crossOrigin?: "anonymous" | "use-credentials" | ""
         useMap?: string
         isMap?: boolean
-        width?: number
-        height?: number
+        width?: number | string
+        height?: number | string
         // naturalWidth?: number
         // naturalHeight?: number
         // complete?: boolean

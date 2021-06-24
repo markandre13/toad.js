@@ -47,8 +47,29 @@ div {
 `
 
 export class ToolButton extends GenericView<OptionModelBase> {
-    constructor() {
+    constructor(props?: {
+        model?: OptionModelBase,
+        value: string,
+        img: string,
+        disabled?: boolean
+    }) {
         super()
+
+        if (!props) {
+            props = {
+                value: this.getAttribute("value")!,
+                img: this.getAttribute("img")!,
+                disabled: this.hasAttribute("disabled")
+            }
+        } else {
+            this.setAttribute("value", props.value)
+            this.setAttribute("img", props.img)
+            if (props.disabled === true)
+                this.setAttribute("disabled", "disabled")
+        }
+
+        if (props.model)
+            this.setModel(props.model)
         
         let button = document.createElement("div")
         // button.setAttribute("tabindex", "0")
@@ -62,9 +83,7 @@ export class ToolButton extends GenericView<OptionModelBase> {
         }
 
         let img = document.createElement("img")
-        if (this.hasAttribute("img")) {
-            img.src = this.getAttribute("img")!
-        }
+        img.src = props.img
         button.appendChild(img)
 
         this.attachShadow({mode: 'open'})
