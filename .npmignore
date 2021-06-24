@@ -1,7 +1,12 @@
 *~
+DEADJOE
 src/
 test/
 ui-test/
 docs/
 polyfill/
 js/
+coverage/
+karma.conf.js
+tsconfig.json
+.vscode
