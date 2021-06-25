@@ -153,4 +153,5 @@ export class TextArea extends GenericView<TextModel> {
         }
     }
 }
-window.customElements.define("toad-textarea", TextArea)
+
+

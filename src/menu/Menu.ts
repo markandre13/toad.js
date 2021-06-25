@@ -162,4 +162,5 @@ export class Menu extends MenuButtonContainer {
     this.shadowRoot!.appendChild(this.view)
   }
 }
-window.customElements.define("toad-menu", Menu)
+
+

@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { View } from "@toad/../lib/toad"
 import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
 import { GenericView } from "./GenericView"
@@ -35,4 +36,4 @@ export class SlotView extends GenericView<TextModel> {
       this.innerText = value
   }
 }
-window.customElements.define("toad-slot", SlotView)
+

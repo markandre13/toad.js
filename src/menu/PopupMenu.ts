@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { View } from "../view/View"
 import { MenuButton } from "./MenuButton"
 import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuButtonContainer"
@@ -63,7 +64,7 @@ export class PopupMenu extends MenuButtonContainer {
   }
 }
 
-window.customElements.define("toad-popupmenu", PopupMenu)
+View.define("toad-popupmenu", PopupMenu)
 
 export function placePopupVertical(parent: HTMLElement, popup: HTMLElement): void {
   let parentBoundary = parent.getBoundingClientRect()

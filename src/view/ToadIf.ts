@@ -32,4 +32,5 @@ export class ToadIf extends GenericView<BooleanModel> {
     }
   }
 }
-customElements.define('toad-if', ToadIf)
+
+

@@ -384,4 +384,3 @@ export class MenuButton extends GenericView<TextModel> {
     this.updateView()
   }
 }
-window.customElements.define("toad-menubutton", MenuButton)

@@ -126,4 +126,4 @@ export class ToolButton extends GenericView<OptionModelBase> {
         }
     }
 }
-window.customElements.define("toad-toolbutton", ToolButton)
+

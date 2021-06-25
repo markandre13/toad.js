@@ -97,4 +97,5 @@ export class TextView extends GenericView<TextModel> {
     this.updateModel() // FIXME: do we need this?
   }
 }
-window.customElements.define("toad-text", TextView)
+
+

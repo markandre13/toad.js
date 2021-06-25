@@ -180,4 +180,5 @@ export class CheckboxView extends GenericView<BooleanModel> {
       this.removeAttribute("checked")
   }
 }
-window.customElements.define("toad-checkbox", CheckboxView)
+
+

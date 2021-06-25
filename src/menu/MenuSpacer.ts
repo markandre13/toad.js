@@ -16,6 +16,4 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export class MenuSpacer extends HTMLElement {
-}
-window.customElements.define("toad-menuspacer", MenuSpacer)
+export class MenuSpacer extends HTMLElement {}

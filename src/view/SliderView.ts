@@ -49,4 +49,3 @@ export class SliderView extends GenericView<NumberModel> {
     this.input.value = String(this.model.value)
   }
 }
-window.customElements.define("toad-slider", SliderView)

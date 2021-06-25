@@ -106,4 +106,5 @@ export class ButtonView extends ActionView {
     // FIXME: set "disabled" property of this
   }
 }
-window.customElements.define("toad-button", ButtonView)
+
+

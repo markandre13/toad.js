@@ -74,3 +74,46 @@ export { TreeNodeModel } from "./table/TreeNodeModel"
 
 export { ArrayModel } from "./table/ArrayModel"
 export { ArrayAdapter } from "./table/ArrayAdapter"
+
+// FIXME: For the JSX stuff, drop the View suffix
+import { View } from "./view/View"
+import { ButtonView } from "./view/ButtonView"
+import { CheckboxView } from "./view/CheckboxView"
+import { SliderView } from "./view/SliderView"
+import { SlotView } from "./view/SlotView"
+import { TextArea } from "./view/TextArea"
+import { TextTool } from "./view/TextTool"
+import { TextView } from "./view/TextView"
+import { ToadIf } from "./view/ToadIf"
+import { ToolButton } from "./view/ToolButton"
+
+import { Menu } from "./menu/Menu"
+import { MenuButton } from "./menu/MenuButton"
+import { MenuEntry } from "./menu/MenuEntry"
+import { MenuSpacer } from "./menu/MenuSpacer"
+
+import { TableView } from "./table/TableView"
+import { TableTool } from "./table/TableTool"
+import { TreeNodeCell } from "./table/TreeAdapter"
+
+export function initialize() {
+    View.define("toad-button", ButtonView)
+    View.define("toad-checkbox", CheckboxView)
+    View.define("toad-slider", SliderView)
+    View.define("toad-slot", SlotView)
+    View.define("toad-textarea", TextArea)
+    View.define("toad-texttool", TextTool)
+    View.define("toad-text", TextView)
+    View.define("toad-if", ToadIf)
+    View.define("toad-toolbutton", ToolButton)
+
+    View.define("toad-menu", Menu)
+    View.define("toad-menubutton", MenuButton)
+    View.define("toad-menuentry", MenuEntry)
+    View.define("toad-menuspacer", MenuSpacer)
+
+    View.define("toad-table", TableView)
+    View.define("toad-tabletool", TableTool)
+    View.define("toad-treenodecell", TreeNodeCell)
+}
+initialize()

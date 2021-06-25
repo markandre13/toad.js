@@ -16,6 +16,5 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-class MenuEntry extends HTMLElement {
-}
-window.customElements.define("toad-menuentry", MenuEntry)
+export class MenuEntry extends HTMLElement {}
+

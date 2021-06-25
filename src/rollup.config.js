@@ -21,7 +21,7 @@ export default {
                 },
                 include: [ "src" ]
             },
-            "useTsconfigDeclarationDir": true,
+            "useTsconfigDeclarationDir": false,
         }),
         nodeResolve(),
         commonjs(),

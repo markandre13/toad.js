@@ -22,6 +22,13 @@ import { Controller } from "../controller/Controller"
 
 // TODO: do we use this directly or is GenericView it's only subclass?
 export class View extends HTMLElement {
+
+  public static define(name: string, view: CustomElementConstructor, options?: ElementDefinitionOptions) {
+    if (window.customElements.get(name) === undefined) {
+      window.customElements.define(name, view, options)
+    }
+  }
+
   controller?: Controller
 
   setModel(model?: Model<any>): void {

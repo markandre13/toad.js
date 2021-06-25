@@ -258,4 +258,5 @@ export class TextTool extends GenericView<Model> {
         }
     }
 }
-window.customElements.define("toad-texttool", TextTool)
+
+

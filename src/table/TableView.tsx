@@ -1055,6 +1055,3 @@ export class TableView extends View {
   }
 }
 
-window.customElements.define("toad-table", TableView)
-
-

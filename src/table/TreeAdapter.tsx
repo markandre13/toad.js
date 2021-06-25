@@ -165,8 +165,6 @@ export class TreeNodeCell<T> extends View {
 
 }
 
-window.customElements.define("toad-treenodecell", TreeNodeCell)
-
 export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
 
     override isViewCompact(): boolean { return true }
