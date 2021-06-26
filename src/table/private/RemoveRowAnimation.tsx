@@ -17,7 +17,7 @@
  */
 
 import { TableEvent } from "../TableEvent"
-import { AnimationBase } from '@toad/util/animation'
+import { AnimationBase } from '../../util/animation'
 import { TableView } from '../TableView'
 
 enum SelectionIs {

@@ -36,7 +36,7 @@ import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 import { tableStyle } from "./private/tableStyle"
 import { InputOverlay } from "./private/InputOverlay"
-import { Animator } from '@toad/util/animation'
+import { Animator } from '../util/animation'
 import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertRowAnimation } from './private/InsertRowAnimation'
 

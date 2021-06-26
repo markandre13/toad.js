@@ -24,8 +24,13 @@ import { Controller } from "../controller/Controller"
 export class View extends HTMLElement {
 
   public static define(name: string, view: CustomElementConstructor, options?: ElementDefinitionOptions) {
-    if (window.customElements.get(name) === undefined) {
+    const element = window.customElements.get(name)
+    if (element === undefined) {
       window.customElements.define(name, view, options)
+    } else {  
+      if (element !== view) {
+        console.trace(`View::define(${name}, ...): attempt to redefine view with different constructor`)
+      }
     }
   }
 

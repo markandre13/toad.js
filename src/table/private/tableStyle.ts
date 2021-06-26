@@ -110,15 +110,6 @@ tableStyle.textContent = `
   color: #fff;
 }
 
-// .compact.colhead th,
-// .compact.rowhead th,
-// .compact.hiddenSizeCheck * th,
-// .compact.cells * td,
-// .compact.hiddenSizeCheck * td {
-//   /* for some reason, without this, the cells have a distance... */
-//   display: flex;
-// }
-
 .compact.colhead th,
 .compact.rowhead th,
 .compact.hiddenSizeCheck * th {

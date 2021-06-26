@@ -1,3 +1,7 @@
+// i should pay attention to this:
+
+https://developers.google.com/web/fundamentals/web-components/best-practices
+
 // currently we wait for the browser to render text to determine the actual
 // text dimensions. a more sane approach seems to available using this
 // function:

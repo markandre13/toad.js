@@ -96,7 +96,11 @@ import { TableView } from "./table/TableView"
 import { TableTool } from "./table/TableTool"
 import { TreeNodeCell } from "./table/TreeAdapter"
 
+let _isInitialized = false
+
 export function initialize() {
+    _isInitialized = true
+
     View.define("toad-button", ButtonView)
     View.define("toad-checkbox", CheckboxView)
     View.define("toad-slider", SliderView)
@@ -116,4 +120,9 @@ export function initialize() {
     View.define("toad-tabletool", TableTool)
     View.define("toad-treenodecell", TreeNodeCell)
 }
+
+export function isInitialized() {
+    return _isInitialized
+}
+
 initialize()

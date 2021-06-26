@@ -18,10 +18,10 @@
 
 import * as CSS from "csstype"
 
-import { Action } from "@toad/model/Action"
-import { NumberModel } from "@toad/model/NumberModel"
-import { TextModel } from "@toad/model/TextModel"
-import { TableModel } from "@toad/table/TableModel"
+import { Action } from "./model/Action"
+import { NumberModel } from "./model/NumberModel"
+import { TextModel } from "./model/TextModel"
+import { TableModel } from "./table/TableModel"
 
 export namespace JSX {
 
