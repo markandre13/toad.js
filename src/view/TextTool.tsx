@@ -17,12 +17,12 @@
  */
 
 import { Model } from "../model/Model"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 import { textAreaStyle } from "./textAreaStyle"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
-export class TextTool extends GenericView<Model> {
+export class TextTool extends ModelView<Model> {
     // FIXME: make this a list where all texttools register/unregister via connectedCallback()/disconnectedCallback()
     // FIXME: disable texttool when it is not above an active textarea in the view hierachy
     static texttool?: TextTool
@@ -245,17 +245,6 @@ export class TextTool extends GenericView<Model> {
         this.buttonJustifyCenter.classList.toggle("active", document.queryCommandState("justifyCenter"))
         this.buttonJustifyRight.classList.toggle("active", document.queryCommandState("justifyRight"))
         // this.buttonJustifyFull.classList.toggle("active", document.queryCommandState("justifyFull"))
-    }
-
-    updateModel() {
-        if (this.model) {
-        }
-    }
-
-    updateView() {
-        if (!this.model) {
-            return
-        }
     }
 }
 

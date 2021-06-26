@@ -17,7 +17,7 @@
  */
 
 import { TextModel } from "../model/TextModel"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 
 let textStyle = document.createElement("style")
 textStyle.textContent=`
@@ -40,7 +40,7 @@ input {
 }
 `
 
-export class TextView extends GenericView<TextModel> {
+export class TextView extends ModelView<TextModel> {
   input: HTMLInputElement
 
   constructor() {
@@ -71,14 +71,14 @@ export class TextView extends GenericView<TextModel> {
     }
   }
   
-  updateModel() {
+  override updateModel() {
     if (this.model) {
       this.model.value = this.input.value
     }
     this.setAttribute("value", this.input.value)
   }
 
-  updateView() {
+  override updateView() {
     if (!this.model)
       return
     const strValue = `${this.model.value}`
@@ -86,7 +86,6 @@ export class TextView extends GenericView<TextModel> {
       this.input.value = strValue
       this.setAttribute("value", this.input.value)
     }
-    
   }
   
   get value() {

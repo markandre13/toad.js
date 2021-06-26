@@ -20,7 +20,7 @@ import { Action } from "../model/Action"
 import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
 import { Model } from "../model/Model"
-import { GenericView } from "../view/GenericView"
+import { ModelView } from "../view/ModelView"
 import { globalController } from "../controller/globalController"
 import { menuStyle } from "./menuStyle"
 import { MenuState } from "./MenuState"
@@ -28,7 +28,7 @@ import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuButtonContainer"
 import { PopupMenu } from "./PopupMenu"
 
-export class MenuButton extends GenericView<TextModel> {
+export class MenuButton extends ModelView<TextModel> {
   static inside?: MenuButton
   static buttonDown: boolean
   static documentMouseDown?: (event: MouseEvent) => void
@@ -256,11 +256,7 @@ export class MenuButton extends GenericView<TextModel> {
     this.updateView()
   }
 
-  updateModel() {
-    //console.log("MenuButton.updateModel "+this.node.title)
-  }
-
-  updateView(): void {
+  override updateView(): void {
     if (this.model && this.model.value) { // FIXME: use updateView only for Model stuff
       if (!this.shadowRoot)
         throw Error("yikes")

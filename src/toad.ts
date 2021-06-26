@@ -26,7 +26,7 @@ export { bind, action, unbind, globalController, boolean } from "./controller/g
 export * from "./util/animation"
 export * from "./jsx-runtime"
 
-export { Model } from "./model/Model"
+export { Model, InferModelParameter } from "./model/Model"
 export { Action } from "./model/Action"
 export { GenericModel } from "./model/GenericModel"
 export { TextModel } from "./model/TextModel"
@@ -37,7 +37,7 @@ export { OptionModel } from "./model/OptionModel"
 export { OptionModelBase } from "./model/OptionModelBase"
 
 export { View } from "./view/View"
-export { GenericView } from "./view/GenericView"
+export { ModelView } from "./view/ModelView"
 export { GenericTool } from "./view/GenericTool"
 export { ActionView } from "./view/ActionView"
 export { SlotView } from "./view/SlotView"

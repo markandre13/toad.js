@@ -19,15 +19,16 @@
 import { Model, InferModelParameter } from "../model/Model"
 import { View } from "./View"
 
-export abstract class GenericView<M extends Model<T>, T = InferModelParameter<M>> extends View {
+export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
   model?: M
 
   constructor() {
     super()
   }
 
-  abstract updateModel(): void
-  abstract updateView(): void
+  // NOTE: these were 'abstract' but then the 'override' did not work
+  updateModel(): void {}
+  updateView(data?: T): void {}
 
   override setModel(model?: M): void {
     if (model === this.model)
@@ -39,9 +40,9 @@ export abstract class GenericView<M extends Model<T>, T = InferModelParameter<M>
       this.model.modified.remove(view)
 
     if (model)
-      model.modified.add(() => view.updateView(), view)
+      model.modified.add((data: T) => view.updateView(data), view)
 
     this.model = model
-    this.updateView()
+    this.updateView(undefined)
   }
 }

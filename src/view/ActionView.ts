@@ -20,11 +20,11 @@ import { TextModel } from "../model/TextModel"
 import { Model } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Action } from "../model/Action"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 
 // FIXME: ActionView should also be a template instead of having a fixed TextModel
 
-export abstract class ActionView extends GenericView<TextModel> {
+export abstract class ActionView extends ModelView<TextModel> {
   action?: Action
 
   constructor() {

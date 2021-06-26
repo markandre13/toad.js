@@ -17,7 +17,7 @@
  */
 
 import { OptionModelBase } from "../model/OptionModelBase"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 
 let toolbuttonStyle = document.createElement("style")
 toolbuttonStyle.textContent=`
@@ -46,7 +46,7 @@ div {
 }
 `
 
-export class ToolButton extends GenericView<OptionModelBase> {
+export class ToolButton extends ModelView<OptionModelBase> {
     constructor(props?: {
         model?: OptionModelBase,
         value: string,
@@ -103,11 +103,8 @@ export class ToolButton extends GenericView<OptionModelBase> {
         if (this.model === undefined)
             this.setAttribute("disabled", "")
     }
-    
-    updateModel() {
-    }
-    
-    updateView() {
+   
+    override updateView() {
         if (this.model === undefined) {
             this.setAttribute("disabled", "")
             this.removeAttribute("selected")

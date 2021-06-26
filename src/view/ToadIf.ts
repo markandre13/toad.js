@@ -17,16 +17,13 @@
  */
 
 import { BooleanModel } from "../model/BooleanModel"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 
 // <toad-if> requires correct HTML otherwise <toad-if> and it's content might
 // be separated by stuff like an </p> inserted automatically by the browser
 // so one should use stuff like htmltidy or htmlhint
-export class ToadIf extends GenericView<BooleanModel> {
-  updateModel() {
-  }
-
-  updateView() {
+export class ToadIf extends ModelView<BooleanModel> {
+  override updateView() {
     if (this.model) {
       this.style.display = this.model.value ? "" : "none"
     }

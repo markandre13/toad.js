@@ -18,12 +18,11 @@
 
 import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 
-export class SlotView extends GenericView<TextModel> {
+export class SlotView extends ModelView<TextModel> {
   constructor() { super() }
-  updateModel() { }
-  updateView() {
+  override updateView() {
     if (!this.model)
       return
 

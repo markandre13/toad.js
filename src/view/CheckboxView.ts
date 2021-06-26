@@ -17,7 +17,7 @@
  */
 
 import { BooleanModel } from "../model/BooleanModel"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 
 /* Safari & Chrome can do this and we want this */
 // declare global {
@@ -93,7 +93,7 @@ svg path {
   stroke: var(--checked-marker-color, var(--toad-light-color, #bdbdbd));
 }`
 
-export class CheckboxView extends GenericView<BooleanModel> {
+export class CheckboxView extends ModelView<BooleanModel> {
   constructor() {
     super()
     
@@ -160,13 +160,13 @@ export class CheckboxView extends GenericView<BooleanModel> {
     this.updateModel()
   }
 
-  updateModel() {
+  override updateModel() {
     if (this.model) {
       this.model.value = this.hasAttribute("checked")
     }
   }
 
-  updateView() {
+  override updateView() {
     if (!this.model) {
       this.setAttribute("disabled", "")
       this.removeAttribute("checked")

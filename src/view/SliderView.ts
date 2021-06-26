@@ -17,9 +17,9 @@
  */
 
 import { NumberModel } from "../model/NumberModel"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 
-export class SliderView extends GenericView<NumberModel> {
+export class SliderView extends ModelView<NumberModel> {
   input: HTMLInputElement
 
   constructor() {
@@ -32,12 +32,12 @@ export class SliderView extends GenericView<NumberModel> {
         .appendChild(this.input)
   }
   
-  updateModel() {
+  override updateModel() {
     if (this.model)
       this.model.value = Number.parseFloat(this.input.value)
   }
 
-  updateView() {
+  override updateView() {
     if (!this.model)
       return
     if (this.model.step === undefined && this.model.min !== undefined && this.model.max !== undefined)

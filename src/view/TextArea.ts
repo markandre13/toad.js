@@ -18,11 +18,11 @@
 
 import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
-import { GenericView } from "./GenericView"
+import { ModelView } from "./ModelView"
 import { TextTool } from "./TextTool"
 import { textAreaStyle } from "./textAreaStyle"
 
-export class TextArea extends GenericView<TextModel> {
+export class TextArea extends ModelView<TextModel> {
 
     content: HTMLElement
 
@@ -125,7 +125,7 @@ export class TextArea extends GenericView<TextModel> {
             TextTool.texttool.update()
     }
     
-    updateModel() {
+    override updateModel() {
         if (this.model) {
             // textarea with it's markup may be expensive, hence we let the model fetch it's data on demand
             this.model.promise = () => {
@@ -134,7 +134,7 @@ export class TextArea extends GenericView<TextModel> {
         }
     }
     
-    updateView() {
+    override updateView() {
         if (!this.model) {
             return
         }

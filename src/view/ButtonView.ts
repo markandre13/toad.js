@@ -88,11 +88,7 @@ export class ButtonView extends ActionView {
     }
   }
 
-
-  updateModel() {
-  }
-
-  updateView() {
+  override updateView() {
     if (this.model && this.model.value) { // FIXME: use updateView only for Model stuff
       if (this.model instanceof HtmlModel)
         this.button.innerHTML = this.model.value
