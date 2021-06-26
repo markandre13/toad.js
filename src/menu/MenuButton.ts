@@ -70,7 +70,7 @@ export class MenuButton extends GenericView<TextModel> {
       MenuButton.buttonDown = true
 
       if (!this.master)
-        throw Error("fuck")
+        throw Error("yikes")
       switch (this.master.state) {
         case MenuState.WAIT:
           this.master.state = MenuState.DOWN
@@ -98,9 +98,9 @@ export class MenuButton extends GenericView<TextModel> {
 
       //if (this.node) console.log("mouseup ", this.node.title)
       if (!this.master)
-        throw Error("fuck")
+        throw Error("yikes")
       if (!this.node)
-        throw Error("fuck")
+        throw Error("yikes")
       switch (this.master.state) {
         case MenuState.DOWN:
           if (this.node.isEnabled() && !this.node.down) {
@@ -149,7 +149,7 @@ export class MenuButton extends GenericView<TextModel> {
       event.stopPropagation()
       //console.log("mouseout ", this.node.title)
       if (!this.master)
-        throw Error("fuck")
+        throw Error("yikes")
       MenuButton.inside = undefined
       switch (this.master.state) {
         case MenuState.WAIT:
@@ -172,7 +172,7 @@ export class MenuButton extends GenericView<TextModel> {
       event.stopPropagation()
       //console.log("mouseover ", this.node.title)
       if (!menuButton.master)
-        throw Error("fuck")
+        throw Error("yikes")
       MenuButton.inside = menuButton
       switch (menuButton.master.state) {
         case MenuState.WAIT:
@@ -184,7 +184,7 @@ export class MenuButton extends GenericView<TextModel> {
           if (!MenuButton.buttonDown)
             break
           if (!this.master)
-            throw Error("fuck")
+            throw Error("yikes")
           if (this.master.active)
             this.master.active.deactivate()
           this.master.state = MenuState.DOWN_N_INSIDE_AGAIN
@@ -198,7 +198,7 @@ export class MenuButton extends GenericView<TextModel> {
 
     this.attachShadow({ mode: 'open' })
     if (!this.shadowRoot)
-      throw Error("fuck")
+      throw Error("yikes")
     this.shadowRoot.appendChild(document.importNode(menuStyle, true))
     if (!this.node.modelId)
       this.shadowRoot.appendChild(document.createTextNode(node.label))
@@ -263,7 +263,7 @@ export class MenuButton extends GenericView<TextModel> {
   updateView(): void {
     if (this.model && this.model.value) { // FIXME: use updateView only for Model stuff
       if (!this.shadowRoot)
-        throw Error("fuck")
+        throw Error("yikes")
       //      console.log("update view with model")
       let span = document.createElement("span")
       if (this.model instanceof HtmlModel)
@@ -283,7 +283,7 @@ export class MenuButton extends GenericView<TextModel> {
     }
 
     if (!this.master)
-      throw Error("fuck")
+      throw Error("yikes")
 
     let active = false
     if (this.master.active == this) {
@@ -296,7 +296,7 @@ export class MenuButton extends GenericView<TextModel> {
           break
         case MenuState.DOWN_N_OUTSIDE:
           if (!this.node)
-            throw Error("fuck")
+            throw Error("yikes")
           active = this.node.down !== undefined && this.node.isEnabled()
           break
       }
@@ -322,7 +322,7 @@ export class MenuButton extends GenericView<TextModel> {
 
   collapse(): void {
     if (!this.master)
-      throw Error("fuck")
+      throw Error("yikes")
     if (this.master.parentButton)
       this.master.parentButton.collapse()
 
@@ -337,7 +337,7 @@ export class MenuButton extends GenericView<TextModel> {
       return
 
     if (!this.shadowRoot)
-      throw Error("fuck")
+      throw Error("yikes")
 
     if (!this.popup) {
       this.popup = new PopupMenu(this.node, this)
@@ -357,9 +357,9 @@ export class MenuButton extends GenericView<TextModel> {
 
   activate(): void {
     if (!this.master)
-      throw Error("fuck")
+      throw Error("yikes")
     if (!this.node)
-      throw Error("fuck")
+      throw Error("yikes")
 
     // if active return
     let oldActive = this.master.active
@@ -374,7 +374,7 @@ export class MenuButton extends GenericView<TextModel> {
 
   deactivate(): void {
     if (!this.master)
-      throw Error("fuck")
+      throw Error("yikes")
     if (this.master.active !== this)
       return
 

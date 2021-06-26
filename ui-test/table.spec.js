@@ -38,7 +38,7 @@ describe("toad", function() {
             case 1: return new toad.TextModel("Author")
             case 2: return new toad.TextModel("Year")
           }
-          throw Error("fuck")
+          throw Error("yikes")
         }
         getFieldModel(col, row) {
           let model = new toad.TextModel(this.data[row][col])

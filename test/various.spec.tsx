@@ -6,12 +6,12 @@ describe("toad.js", function () {
     function getHTMLInputElement(): HTMLInputElement {
         let sr = document.body.children[0].shadowRoot
         if (!sr)
-            throw Error("fuck")
+            throw Error("yikes")
         for (let child of sr.children) {
             if (child.tagName === "INPUT")
                 return child as HTMLInputElement
         }
-        throw Error("fuck")
+        throw Error("yikes")
     }
 
     function getHTMLButtonElement(index?: number): HTMLButtonElement {
@@ -19,12 +19,12 @@ describe("toad.js", function () {
             index = 0
         let sr = document.body.children[index].shadowRoot
         if (!sr)
-            throw Error("fuck")
+            throw Error("yikes")
         for (let child of sr.children) {
             if (child.tagName === "BUTTON")
                 return child as HTMLButtonElement
         }
-        throw Error("fuck")
+        throw Error("yikes")
     }
 
     this.beforeEach(() => {
@@ -241,7 +241,7 @@ describe("toad.js", function () {
 
                 expect(model.modified.callbacks).to.be.an('array')
                 if (!model.modified.callbacks)
-                    throw Error("fuck")
+                    throw Error("yikes")
                 expect(model.modified.callbacks.length).to.equal(1) // FIXME: in new test
             })
 
@@ -297,7 +297,7 @@ describe("toad.js", function () {
 
                 expect(model.modified.callbacks).to.be.an('array')
                 if (!model.modified.callbacks)
-                    throw Error("fuck")
+                    throw Error("yikes")
                 expect(model.modified.callbacks.length).to.equal(1) // FIXME: in new test
             })
 

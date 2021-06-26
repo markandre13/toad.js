@@ -105,7 +105,7 @@ export class Menu extends MenuButtonContainer {
         node = newnode
       }
       if (!node)
-        throw Error("fuck")
+        throw Error("yikes")
       this.layout2nodes(child.children, node)
     }
   }
