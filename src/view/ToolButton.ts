@@ -47,7 +47,7 @@ div {
 `
 
 export class ToolButton extends ModelView<OptionModelBase> {
-    constructor(props?: {
+    constructor(init?: {
         model?: OptionModelBase,
         value: string,
         img: string,
@@ -55,21 +55,21 @@ export class ToolButton extends ModelView<OptionModelBase> {
     }) {
         super()
 
-        if (!props) {
-            props = {
+        if (!init) {
+            init = {
                 value: this.getAttribute("value")!,
                 img: this.getAttribute("img")!,
                 disabled: this.hasAttribute("disabled")
             }
         } else {
-            this.setAttribute("value", props.value)
-            this.setAttribute("img", props.img)
-            if (props.disabled === true)
+            this.setAttribute("value", init.value)
+            this.setAttribute("img", init.img)
+            if (init.disabled === true)
                 this.setAttribute("disabled", "disabled")
         }
 
-        if (props.model)
-            this.setModel(props.model)
+        if (init.model)
+            this.setModel(init.model)
         
         let button = document.createElement("div")
         // button.setAttribute("tabindex", "0")
@@ -83,7 +83,7 @@ export class ToolButton extends ModelView<OptionModelBase> {
         }
 
         let img = document.createElement("img")
-        img.src = props.img
+        img.src = init.img
         button.appendChild(img)
 
         this.attachShadow({mode: 'open'})

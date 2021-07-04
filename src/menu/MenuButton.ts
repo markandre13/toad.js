@@ -221,8 +221,13 @@ export class MenuButton extends ModelView<TextModel> {
     }
 
     if (this.node.modelId !== undefined) {
-      let modelId = "M:" + this.node.modelId
-      globalController.registerView(modelId, this)
+      if (typeof this.node.modelId === "string") {
+        let modelId = "M:" + this.node.modelId
+        globalController.registerView(modelId, this)
+      } else {
+        this.setModel(this.node.modelId)
+      }
+
     }
 
   }

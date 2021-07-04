@@ -19,7 +19,7 @@
 import { View } from "../view/View"
 import { MenuButton } from "./MenuButton"
 import { MenuNode } from "./MenuNode"
-import { MenuButtonContainer } from "./MenuButtonContainer"
+import { MenuButtonContainer } from "./MenuHelper"
 
 export class PopupMenu extends MenuButtonContainer {
   root: MenuNode

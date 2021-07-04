@@ -25,3 +25,13 @@ image.close()
 
 https://www.typescriptlang.org/docs/handbook/decorators.html
 see Metadata
+
+        // control characters: #2e88eb
+        // blue    #b3d7ff
+        // purple  #dfc5df
+        // pink    #fccae2
+        // red     #f5c3c5
+        // orange  #fcd9bb
+        // yellow  #ffeebe
+        // green   #d0eac7
+        // graphit #e0e0e0

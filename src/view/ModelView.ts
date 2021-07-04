@@ -18,12 +18,14 @@
 
 import { Model, InferModelParameter } from "../model/Model"
 import { View } from "./View"
+import { JSX } from "../jsx-runtime"
 
 export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
   model?: M
 
-  constructor() {
-    super()
+  // FIXME: accept 'model' here
+  constructor(init?: JSX.HTMLElementProps) {
+    super(init)
   }
 
   // NOTE: these were 'abstract' but then the 'override' did not work

@@ -20,22 +20,50 @@ import * as dom from "../util/dom"
 import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuHelper"
 import { menuStyle } from "./menuStyle"
+import { HTMLElementProps } from "../jsx-runtime"
+import { TextModel } from "../model/TextModel"
+import { HtmlModel } from "../model/HtmlModel"
+
+interface MenuConfig {
+  name?: string,
+  label?: string,
+  shortcut?: string,
+  type?: string, // ???
+  model?: TextModel | HtmlModel,
+  sub?: MenuConfig[],
+
+  space?: boolean,
+}
+
+interface MenuProps extends HTMLElementProps {
+  config?: MenuConfig[]
+}
 
 export class Menu extends MenuButtonContainer {
   root: MenuNode
   view?: HTMLElement
   _observer?: MutationObserver
   _timer?: number
+  config?: MenuConfig[]
 
-  constructor() {
-    super()
+  constructor(props?: MenuProps) {
+    super(props)
+    this.config = props?.config
     this.vertical = false
     this.root = new MenuNode("", "", undefined, undefined)
-
   }
 
-  connectedCallback() {
+  override connectedCallback() {
+    super.connectedCallback()
     this.tabIndex = 0
+
+    if (this.config) {
+      this.config2nodes(this.config, this.root)
+      this.referenceActions()
+      this.createShadowDOM()
+      console.log(this.root)
+      return
+    }
 
     if (this.children.length === 0) {
       // Chrome, Opera invoke connectedCallback() before the children are conected
@@ -73,11 +101,7 @@ export class Menu extends MenuButtonContainer {
     */
   }
 
-  disconnectedCallback() {
-    //    globalController.sigChanged.remove(this)
-  }
-
-  layout2nodes(children: HTMLCollection, parent: MenuNode): void {
+  protected layout2nodes(children: HTMLCollection, parent: MenuNode): void {
     let node = parent.down
     for (let child of children) {
       let newnode: MenuNode | undefined = undefined
@@ -107,6 +131,31 @@ export class Menu extends MenuButtonContainer {
       if (!node)
         throw Error("yikes")
       this.layout2nodes(child.children, node)
+    }
+  }
+
+  protected config2nodes(config: MenuConfig[], parent: MenuNode): void {
+    let node = parent.down
+    for (let child of config) {
+      let newnode: MenuNode | undefined = undefined
+      if (child.space === true) {
+        newnode = new MenuNode("", "", "", "spacer")
+      } else {
+        newnode = new MenuNode(child.name!, child.label!, child.shortcut, child.type, child.model)
+      }
+      if (newnode) {
+        newnode.parent = parent
+        if (!node)
+          parent.down = newnode
+
+        else
+          node.next = newnode
+        node = newnode
+      }
+      if (!node)
+        throw Error("yikes")
+      if (child.sub)
+        this.config2nodes(child.sub, node)
     }
   }
 

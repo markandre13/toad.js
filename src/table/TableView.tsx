@@ -248,9 +248,9 @@ export class TableView extends View {
 
   updateCompact() {
     if (this.adapter?.isViewCompact()) {
-      this.rootDiv.forEach(child => child.classList.add("compact"))
+      this.rootDiv.forEach(child => (child as Element).classList.add("compact"))
     } else {
-      this.rootDiv.forEach(child => child.classList.remove("compact"))
+      this.rootDiv.forEach(child => (child as Element).classList.remove("compact"))
     }
   }
 

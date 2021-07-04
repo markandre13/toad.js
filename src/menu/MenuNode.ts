@@ -18,13 +18,15 @@
 
 import { MenuButton } from "./MenuButton"
 import { MenuButtonContainer } from "./MenuHelper"
+import { TextModel } from "../model/TextModel"
+import { HtmlModel } from "../model/HtmlModel"
 
 export class MenuNode {
   title: string
   label: string
   shortcut?: string
   type: string
-  modelId?: string
+  modelId?: string | TextModel | HtmlModel
 
   parent?: MenuNode
   down?: MenuNode
@@ -32,7 +34,7 @@ export class MenuNode {
 
   view?: HTMLElement
 
-  constructor(title: string, label: string, shortcut?: string, type?: string, modelId?: string) {
+  constructor(title: string, label: string, shortcut?: string, type?: string, modelId?: string | TextModel | HtmlModel ) {
     this.title = title
     this.label = label
     this.shortcut = shortcut

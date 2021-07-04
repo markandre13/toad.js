@@ -16,10 +16,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { View } from "../view/View"
 import { MenuButton } from "./MenuButton"
 import { MenuState } from "./MenuState"
+import { HTMLElementProps } from "../jsx-runtime"
 
-export class MenuButtonContainer extends HTMLElement {
+export class MenuButtonContainer extends View {
   vertical: boolean
   closeOnClose: boolean
   active?: MenuButton
@@ -27,8 +29,8 @@ export class MenuButtonContainer extends HTMLElement {
   btnmaster?: MenuButton
   parentButton?: MenuButton
 
-  constructor() {
-    super()
+  constructor(props?: HTMLElementProps) {
+    super(props)
     this.vertical = true
     this.closeOnClose = false
     this.state = MenuState.WAIT

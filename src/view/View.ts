@@ -19,6 +19,7 @@
 import { Model } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Controller } from "../controller/Controller"
+import { HTMLElementProps, setInitialProperties } from "../jsx-runtime"
 
 // TODO: do we use this directly or is GenericView it's only subclass?
 export class View extends HTMLElement {
@@ -32,6 +33,11 @@ export class View extends HTMLElement {
         console.trace(`View::define(${name}, ...): attempt to redefine view with different constructor`)
       }
     }
+  }
+
+  constructor(props?: HTMLElementProps) {
+    super()
+    setInitialProperties(this, props)
   }
 
   controller?: Controller

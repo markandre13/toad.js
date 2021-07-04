@@ -1017,9 +1017,15 @@ export function refs<T>(object: T, ...attributes: (keyof T)[]): Reference<T>[] {
     return attributes.map(a => new Reference<T>(object, a))
 }
 
-export class Fragment extends Array<Element> {
+export class Fragment extends Array<Element|Text> {
     constructor(props: any) {
         super(...props?.children)
+        for(let i=0; i<this.length; ++i) {
+            const e = this[i]
+            if (typeof e === "string") {
+                this[i] = document.createTextNode(e)
+            }
+        }
     }
     replaceIn(element: Element | ShadowRoot) {
         while (element.childNodes.length > 0) {
@@ -1062,46 +1068,54 @@ export function jsxs(nameOrConstructor: string | { new(...args: any[]): any }, p
             namespace = "http://www.w3.org/1999/xhtml"
     }
     const tag = document.createElementNS(namespace, name) as HTMLElement | SVGSVGElement
-    if (props !== null) {
-        for (let [key, value] of Object.entries(props)) {
-            switch (key) {
-                case 'model':
-                case 'action':
-                    (tag as any).setModel(value)
-                    break
-                case 'class':
-                    tag.classList.add(value as string) // FIXME: value is whitespace separated list
-                    break
-                case 'style':
-                    for (let [skey, svalue] of Object.entries(value as string)) {
-                        const regex = /[A-Z]/g
-                        skey = skey.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
-                        tag.style.setProperty(skey, svalue as string)
-                    }
-                    break
-                case 'set':
-                    Object.defineProperty(props.set!.object, props.set!.attribute, { value: tag })
-                    break
-                default:
+    setInitialProperties(tag, props, namespace)
+    return tag
+}
+
+export function setInitialProperties(element: HTMLElement | SVGElement, props: any, namespace?: string) {
+    if (props === null || props === undefined)
+        return
+
+    for (let [key, value] of Object.entries(props)) {
+        switch (key) {
+            case 'children':
+                break
+            case 'model':
+            case 'action':
+                (element as any).setModel(value)
+                break
+            case 'class':
+                element.classList.add(value as string) // FIXME: value is whitespace separated list
+                break
+            case 'style':
+                for (let [skey, svalue] of Object.entries(value as string)) {
+                    const regex = /[A-Z]/g
+                    skey = skey.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
+                    element.style.setProperty(skey, svalue as string)
+                }
+                break
+            case 'set':
+                Object.defineProperty(props.set!.object, props.set!.attribute, { value: element })
+                break
+            default:
+                if (typeof value !== "object") {
                     if (namespace === "http://www.w3.org/2000/svg") {
                         const regex = /[A-Z]/g
                         key = key.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
                     }
-                    tag.setAttributeNS(null, key, value as string)
-            }
-        }
-        if (props.children !== undefined) {
-            for (let child of props.children) {
-                if (typeof child === "string") {
-                    tag.appendChild(document.createTextNode(child))
-                } else {
-                    tag.appendChild(child)
+                    element.setAttributeNS(null, key, `${value}`)
                 }
+        }
+    }
+    if (props.children !== undefined) {
+        for (let child of props.children) {
+            if (typeof child === "string") {
+                element.appendChild(document.createTextNode(child))
+            } else {
+                element.appendChild(child)
             }
         }
     }
-    return tag
-
 }
 
 // the FunctionConstructor is a hack for <></>
@@ -1131,3 +1145,4 @@ export function createElement(nameOrConstructor: string | { new(...args: any[]):
     return jsxs(nameOrConstructor, props, key)
 }
 
+export type HTMLElementProps = JSX.HTMLElementProps
