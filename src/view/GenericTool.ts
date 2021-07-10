@@ -60,7 +60,7 @@ export abstract class GenericTool<T extends Model> extends View {
             } 
         }
         if (!closestParent) {
-            console.log(`GenericView.focusIn(${view.nodeName}): couldn't find a parent with GenericTool children`)
+            // console.log(`GenericTool.focusIn(${view.nodeName}): couldn't find a parent with GenericTool children`)
             return
         }
 
