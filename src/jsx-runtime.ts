@@ -915,17 +915,16 @@ export namespace JSX {
             id?: string
 
             // stroke properties
-            stroke?: string
+            stroke?: string | number
             strokeWidth?: string // length percentage
             strokeLinecap?: "butt" | "round" | "square"
             strokeLinejoin?: "miter" | "miter-clip" | "round" | "bevel" | "arcs"
-            strokeMiterlimit?: number
+            strokeMiterlimit?: string | number
             // strokeDasharray?:
             strokeDashoffset?: string // length percentage
 
             cursor?: string
             class?: string
-
 
             // line
             x1: string | number
@@ -933,6 +932,7 @@ export namespace JSX {
             x2: string | number
             y2: string | number
             // pathLength
+            set?: Reference<any>
         }
         rect: {
             x: string | number
@@ -945,6 +945,14 @@ export namespace JSX {
             fill?: string
             cursor?: string
             class?: string
+            set?: Reference<any>
+            onmousedown?: (event: MouseEvent) => void
+            onmousemove?: (event: MouseEvent) => void
+            onmouseup?: (event: MouseEvent) => void
+            onmouseenter?: (event: MouseEvent) => void
+            onmouseleave?: (event: MouseEvent) => void
+            onmouseout?: (event: MouseEvent) => void
+            onmouseover?: (event: MouseEvent) => void
         }
         circle: {
             cx: string | number
@@ -954,6 +962,7 @@ export namespace JSX {
             fill?: string
             cursor?: string
             class?: string
+            set?: Reference<any>
         }
         text: {
             x: string | number
@@ -962,7 +971,17 @@ export namespace JSX {
             fill?: string
             cursor?: string
             class?: string
+            set?: Reference<any>
         }
+        path: {
+            d: string
+            stroke?: string
+            fill?: string
+            cursor?: string
+            class?: string
+            set?: Reference<any>
+        }
+
 
         // split these off
 
@@ -995,7 +1014,7 @@ export class Reference<T> {
     fromString(value: string) {
         const type = typeof (this.object as any)[this.attribute]
         let outValue
-        switch(type) {
+        switch (type) {
             case "string":
                 outValue = value
                 break
@@ -1017,10 +1036,10 @@ export function refs<T>(object: T, ...attributes: (keyof T)[]): Reference<T>[] {
     return attributes.map(a => new Reference<T>(object, a))
 }
 
-export class Fragment extends Array<Element|Text> {
+export class Fragment extends Array<Element | Text> {
     constructor(props: any) {
         super(...props?.children)
-        for(let i=0; i<this.length; ++i) {
+        for (let i = 0; i < this.length; ++i) {
             const e = this[i]
             if (typeof e === "string") {
                 this[i] = document.createTextNode(e)
@@ -1058,10 +1077,12 @@ export function jsxs(nameOrConstructor: string | { new(...args: any[]): any }, p
     const name = nameOrConstructor as string
 
     switch (name) {
-        case 'svg':
-        case 'line':
-        case 'rect':
-        case 'text':
+        case "svg":
+        case "line":
+        case "rect":
+        case "circle":
+        case "path":
+        case "text":
             namespace = "http://www.w3.org/2000/svg"
             break
         default:
@@ -1098,12 +1119,16 @@ export function setInitialProperties(element: HTMLElement | SVGElement, props: a
                 Object.defineProperty(props.set!.object, props.set!.attribute, { value: element })
                 break
             default:
-                if (typeof value !== "object") {
-                    if (namespace === "http://www.w3.org/2000/svg") {
-                        const regex = /[A-Z]/g
-                        key = key.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
+                if (key.substring(0, 2) === "on") {
+                    element.addEventListener(key.substr(2), value as () => void)
+                } else {
+                    if (typeof value !== "object") {
+                        if (namespace === "http://www.w3.org/2000/svg") {
+                            const regex = /[A-Z]/g
+                            key = key.replace(regex, (upperCase) => "-" + upperCase.toLowerCase())
+                        }
+                        element.setAttributeNS(null, key, `${value}`)
                     }
-                    element.setAttributeNS(null, key, `${value}`)
                 }
         }
     }
