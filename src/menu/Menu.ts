@@ -61,7 +61,6 @@ export class Menu extends MenuButtonContainer {
       this.config2nodes(this.config, this.root)
       this.referenceActions()
       this.createShadowDOM()
-      console.log(this.root)
       return
     }
 
