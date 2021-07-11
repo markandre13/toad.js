@@ -21,14 +21,15 @@ import { Model } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Action } from "../model/Action"
 import { ModelView } from "./ModelView"
+import { HTMLElementProps } from "@toad/jsx-runtime"
 
 // FIXME: ActionView should also be a template instead of having a fixed TextModel
 
 export abstract class ActionView extends ModelView<TextModel> {
   action?: Action
 
-  constructor() {
-    super()
+  constructor(init?: HTMLElementProps) {
+    super(init)
   }
 
   override connectedCallback() {

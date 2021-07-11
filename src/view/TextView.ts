@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { HTMLElementProps } from "@toad/jsx-runtime"
 import { TextModel } from "../model/TextModel"
 import { ModelView } from "./ModelView"
 
@@ -43,8 +44,8 @@ input {
 export class TextView extends ModelView<TextModel> {
   input: HTMLInputElement
 
-  constructor() {
-    super()
+  constructor(init?: HTMLElementProps) {
+    super(init)
     this.input = document.createElement("input") as HTMLInputElement
     this.input.oninput = () => { this.updateModel() }
     this.attachShadow({mode: 'open'})

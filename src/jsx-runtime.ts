@@ -1101,8 +1101,16 @@ export function setInitialProperties(element: HTMLElement | SVGElement, props: a
         switch (key) {
             case 'children':
                 break
-            case 'model':
             case 'action':
+                if (value instanceof Function) {
+                    const action = new Action(undefined, "");                   
+                    action.signal.add(value as ()=>void);
+                    (element as any).setModel(action)
+                } else {
+                    (element as any).setModel(value)
+                }
+                break
+            case 'model':
                 (element as any).setModel(value)
                 break
             case 'class':

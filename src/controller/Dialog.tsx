@@ -18,6 +18,8 @@
 
 import { View } from "../view/View"
 import { Controller } from "./Controller"
+import { bind } from "bind-decorator"
+import { Fragment } from "@toad/jsx-runtime"
 
 // HTML Imports Working Draft
 declare global {
@@ -35,22 +37,33 @@ export class Dialog extends Controller {
     super()
   }
 
-  open(href: string): void {
-    let shadow = document.createElement("div")
-    shadow.style.position = "absolute"
-    shadow.style.left = "0"
-    shadow.style.top = "0"
-    shadow.style.right = "0"
-    shadow.style.bottom = "0"
-    shadow.style.backgroundColor = "#aaa"
-    shadow.style.opacity = "0.5"
-    this.shadow = shadow
-    document.body.appendChild(shadow)
+  open(content: HTMLElement | Fragment): void
+  open(href: string): void
+  open(contentOrHref: string | HTMLElement | Fragment) {
+    this.shadow = <div style={{ position: "absolute", left: "0", top: "0", right: "0", bottom: "0", backgroundColor: "#aaa", opacity: "0.5" }} />
+    this.frame = <div style={{
+      position: "absolute", left: "5%", top: "5%", right: "5%", bottom: "5%",
+      padding: "10px",
+      overflow: "auto",
+      backgroundColor: "#fff", border: "solid 2px #000" }} />
+
+    if (typeof contentOrHref === "object") {
+      if (contentOrHref instanceof Fragment) {
+        contentOrHref.appendTo(this.frame!)
+      } else {
+        this.frame!.appendChild(contentOrHref)
+      }
+      document.body.appendChild(this.shadow!)
+      document.body.appendChild(this.frame!)
+      return
+    }
+
+    document.body.appendChild(this.shadow!)
 
     let linkList = document.head.querySelectorAll("link[rel=import]")
     let link
     for (let availableLink of linkList) {
-      if ((availableLink as HTMLLinkElement).href === href) {
+      if ((availableLink as HTMLLinkElement).href === contentOrHref) {
         link = availableLink
         break
       }
@@ -59,27 +72,16 @@ export class Dialog extends Controller {
     if (!link) {
       let link = document.createElement("link")
       link.rel = "import"
-      link.href = href
+      link.href = contentOrHref
       link.onload = (event) => {
         let template = link.import!.querySelector("template")
         if (!template)
-          throw Error("toad.openDialog: failed to find template in '" + href + "'")
+          throw Error("toad.openDialog: failed to find template in '" + contentOrHref + "'")
 
         let content = document.importNode(template.content, true)
         this.registerViews(content)
-
-        let frame = document.createElement("div")
-        frame.style.position = "absolute"
-        frame.style.left = "5%"
-        frame.style.top = "5%"
-        frame.style.right = "5%"
-        frame.style.bottom = "5%"
-        frame.style.backgroundColor = "#fff"
-        frame.style.border = "solid 2px #000"
-
-        frame.appendChild(content)
-        document.body.appendChild(frame)
-        this.frame = frame
+        this.frame!.appendChild(content)
+        document.body.appendChild(this.frame!)
       }
       document.head.appendChild(link)
     } else {
@@ -87,11 +89,13 @@ export class Dialog extends Controller {
     }
   }
 
-  close(): void {
+  @bind close(): void {
     if (this.frame)
       document.body.removeChild(this.frame)
     if (this.shadow)
       document.body.removeChild(this.shadow)
+    this.frame = undefined
+    this.shadow = undefined
   }
 
   registerViews(root: DocumentFragment) {

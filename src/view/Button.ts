@@ -16,6 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { HTMLElementProps } from "@toad/jsx-runtime"
+import { Action } from "@toad/model/Action"
 import { HtmlModel } from "../model/HtmlModel"
 import { ActionView } from "./ActionView"
 
@@ -49,13 +51,13 @@ buttonStyle.textContent=`
   }
 `
 
-export class ButtonView extends ActionView {
+export class Button extends ActionView {
   button: HTMLButtonElement
   _observer?: MutationObserver
   _timer?: number
 
-  constructor() {
-    super()
+  constructor(init?: HTMLElementProps) {
+    super(init)
     this.button = document.createElement("button") as HTMLButtonElement
     this.button.onclick = () => {
       if (this.action)
@@ -89,6 +91,8 @@ export class ButtonView extends ActionView {
   }
 
   override updateView() {
+    if (!this.isConnected)
+      return
     if (this.model && this.model.value) { // FIXME: use updateView only for Model stuff
       if (this.model instanceof HtmlModel)
         this.button.innerHTML = this.model.value

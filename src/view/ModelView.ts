@@ -18,13 +18,13 @@
 
 import { Model, InferModelParameter } from "../model/Model"
 import { View } from "./View"
-import { JSX } from "../jsx-runtime"
+import { HTMLElementProps } from "../jsx-runtime"
 
 export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
   model?: M
 
   // FIXME: accept 'model' here
-  constructor(init?: JSX.HTMLElementProps) {
+  constructor(init?: HTMLElementProps) {
     super(init)
   }
 
@@ -45,6 +45,13 @@ export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends V
       model.modified.add((data: T) => view.updateView(data), view)
 
     this.model = model
-    this.updateView(undefined)
+    if (this.isConnected)
+      this.updateView(undefined)
+  }
+
+  override connectedCallback() {
+    super.connectedCallback()
+    if (this.model)
+      this.updateView(undefined)
   }
 }

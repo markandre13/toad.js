@@ -41,7 +41,7 @@ export { ModelView } from "./view/ModelView"
 export { GenericTool } from "./view/GenericTool"
 export { ActionView } from "./view/ActionView"
 export { SlotView } from "./view/SlotView"
-export { ButtonView } from "./view/ButtonView"
+export { Button } from "./view/Button"
 export { ToolButton } from "./view/ToolButton"
 export { CheckboxView } from "./view/CheckboxView"
 export { SliderView } from "./view/SliderView"
@@ -77,7 +77,7 @@ export { ArrayAdapter } from "./table/ArrayAdapter"
 
 // FIXME: For the JSX stuff, drop the View suffix
 import { View } from "./view/View"
-import { ButtonView } from "./view/ButtonView"
+import { Button } from "./view/Button"
 import { CheckboxView } from "./view/CheckboxView"
 import { SliderView } from "./view/SliderView"
 import { SlotView } from "./view/SlotView"
@@ -101,7 +101,7 @@ let _isInitialized = false
 export function initialize() {
     _isInitialized = true
 
-    View.define("toad-button", ButtonView)
+    View.define("toad-button", Button)
     View.define("toad-checkbox", CheckboxView)
     View.define("toad-slider", SliderView)
     View.define("toad-slot", SlotView)
