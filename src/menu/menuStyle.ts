@@ -41,23 +41,23 @@ menuStyle.textContent=`
   }
   :host(.menu-button.menu-down) {
     padding-right: 20px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='14'><path d='M 0 4 l 10 0 l -5 5 Z' fill='#000' stroke='none'/></svg>");
+    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 4 l 10 0 l -5 5 Z" fill="#000" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
   }
   :host(.menu-button.active.menu-down) {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='14'><path d='M 0 4 l 10 0 l -5 5 Z' fill='#fff' stroke='none'/></svg>");
+    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 4 l 10 0 l -5 5 Z" fill="#fff" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
   }
   :host(.menu-button.menu-side) {
     padding-right: 20px;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='14'><path d='M 0 2 l 0 10 l 5 -5 Z' fill='#000' stroke='none'/></svg>");
+    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 2 l 0 10 l 5 -5 Z" fill="#000" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
   }
   :host(.menu-button.active.menu-side) {
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='15' height='14'><path d='M 0 2 l 0 10 l 5 -5 Z' fill='#fff' stroke='none'/></svg>");
+    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 2 l 0 10 l 5 -5 Z" fill="#fff" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
   }
