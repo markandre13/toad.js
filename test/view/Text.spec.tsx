@@ -1,21 +1,22 @@
-import { expect } from "chai"
-import { TextView, TextModel, NumberModel, bind, unbind, Fragment } from "@toad"
+import { expect } from '@esm-bundle/chai'
+import { Fragment, Text, TextModel, NumberModel, bindModel, unbind } from "@toad"
 
-describe("toad.js", function () {
+describe("view", function () {
 
     beforeEach( () => {
         unbind()
         document.body.innerHTML = ""
     })
 
-    describe("<toad-text>", function () {
+    describe("Text", function () {
+
         describe("NumberModel", function () {
             it("view and model are in sync", function () {
                 const model = new NumberModel(42, { min: 0, max: 100, step: 1 })
 
-                const content = <><toad-text model={model} /></> as Fragment
+                const content = <><Text model={model} /></> as Fragment
                 content.replaceIn(document.body)
-                const view = content[0] as TextView
+                const view = content[0] as Text
 
                 expect(view.value).to.equal(`${model.value}`)
 
@@ -32,10 +33,10 @@ describe("toad.js", function () {
             describe("initialize view from model", function () {
                 it("does so when the model is defined before the view", function () {
                     let model = new TextModel("alpha")
-                    bind("model", model)
+                    bindModel("model", model)
                     document.body.innerHTML = "<toad-text model='model'></toad-text>"
                     let view = document.body.children[0]
-                    console.log(view.nodeName)
+                    // console.log(view.nodeName)
 
                     expect(view.getAttribute("value")).to.equal("alpha")
                 })
@@ -44,7 +45,7 @@ describe("toad.js", function () {
                     document.body.innerHTML = "<toad-text model='model'></toad-text>"
                     let checkbox = document.body.children[0]
                     let model = new TextModel("alpha")
-                    bind("model", model)
+                    bindModel("model", model)
                     
                     expect(checkbox.getAttribute("value")).to.equal("alpha")              
                 })
@@ -53,7 +54,7 @@ describe("toad.js", function () {
             describe("on change sync data between model and view", function () {
                 it("updates the html element when the model changes", function () {
                     let model = new TextModel("alpha")
-                    bind("model", model)
+                    bindModel("model", model)
                     document.body.innerHTML = "<toad-text model='model'></toad-text>"
                     let checkbox = document.body.children[0]
                     expect(checkbox.getAttribute("value")).to.equal("alpha")
@@ -63,18 +64,30 @@ describe("toad.js", function () {
 
                 it("updates the model when the html element changes", function () {
                     let model = new TextModel("alpha")
-                    bind("model", model)
+                    bindModel("model", model)
                     document.body.innerHTML = "<toad-text model='model'></toad-text>"
-                    let view = document.body.children[0] as TextView
+                    let view = document.body.children[0] as Text
                     expect(model.value).to.equal("alpha")
                     view.setAttribute("value", "bravo")
                     expect(model.value).to.equal("bravo")
                 })
             })
+
+            it("unregisters the view from the model when the view is removed from the dom", function () {
+                let model = new TextModel("alfa")
+                bindModel("text", model)
+    
+                expect(model.modified.count()).to.equal(0)
+    
+                document.body.innerHTML = "<toad-text model='text'></toad-text><toad-text model='text'></toad-text>"
+                expect(model.modified.count()).to.equal(2)
+    
+                document.body.removeChild(document.body.children[0])
+                expect(model.modified.count()).to.equal(1)
+    
+                document.body.innerHTML = ""
+                expect(model.modified.count()).to.equal(0)
+            })
         })
-    })
-
-    xdescribe("<toad-text> and TextModel", function () {
-
     })
 })

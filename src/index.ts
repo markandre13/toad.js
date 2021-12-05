@@ -16,17 +16,22 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export { Point, MatrixStruct, Matrix } from "./Matrix"
+export * from "toad.jsx"
+
+export { Matrix } from "./Matrix"
+import type { Point, MatrixStruct } from "./Matrix"
+export { Point, MatrixStruct }
 export { Signal } from "./Signal"
 
 export { Controller } from "./controller/Controller"
 export { Template } from "./controller/Template"
 export { Dialog } from "./controller/Dialog"
-export { bind, action, unbind, globalController, boolean } from "./controller/globalController"
-export * from "./util/animation"
-export * from "./jsx-runtime"
+export { bindModel, action, unbind, globalController } from "./controller/globalController"
+export { Animator, AnimationBase } from "./util/animation"
 
-export { Model, InferModelParameter } from "./model/Model"
+export { Model } from "./model/Model"
+import type { InferModelParameter } from "./model/Model"
+export { InferModelParameter }
 export { Action } from "./model/Action"
 export { GenericModel } from "./model/GenericModel"
 export { TextModel } from "./model/TextModel"
@@ -38,16 +43,16 @@ export { OptionModelBase } from "./model/OptionModelBase"
 
 export { View } from "./view/View"
 export { ModelView } from "./view/ModelView"
-export { GenericTool } from "./view/GenericTool"
-export { ActionView } from "./view/ActionView"
-export { SlotView } from "./view/SlotView"
+export { ActionView, ActionViewProps } from "./view/ActionView"
 export { Button } from "./view/Button"
-export { ToolButton } from "./view/ToolButton"
-export { CheckboxView } from "./view/CheckboxView"
-export { SliderView } from "./view/SliderView"
-export { TextView } from "./view/TextView"
+export { Checkbox } from "./view/Checkbox"
+export { Slider } from "./view/Slider"
+export { Text } from "./view/Text"
 export { TextArea } from "./view/TextArea"
+export { GenericTool } from "./view/GenericTool"
+export { ToolButton } from "./view/ToolButton"
 export { TextTool } from "./view/TextTool"
+export { SlotView } from "./view/SlotView"
 export { ToadIf } from "./view/ToadIf"
 
 export { Menu } from "./menu/Menu"
@@ -69,23 +74,23 @@ export { TableEventType } from "./table/TableEventType"
 export { TableEvent } from "./table/TableEvent"
 export { TreeModel } from "./table/TreeModel"
 export { TreeAdapter } from "./table/TreeAdapter"
-export { TreeNode } from "./table/TreeNode"
+import type { TreeNode } from "./table/TreeNode"
+export { TreeNode }
 export { TreeNodeModel } from "./table/TreeNodeModel"
 
 export { ArrayModel } from "./table/ArrayModel"
 export { ArrayAdapter } from "./table/ArrayAdapter"
 
-// FIXME: For the JSX stuff, drop the View suffix
 import { View } from "./view/View"
-import { Button } from "./view/Button"
-import { CheckboxView } from "./view/CheckboxView"
-import { SliderView } from "./view/SliderView"
-import { SlotView } from "./view/SlotView"
+import { Text } from "./view/Text"
 import { TextArea } from "./view/TextArea"
-import { TextTool } from "./view/TextTool"
-import { TextView } from "./view/TextView"
-import { ToadIf } from "./view/ToadIf"
+import { Button } from "./view/Button"
+import { Checkbox } from "./view/Checkbox"
+import { Slider } from "./view/Slider"
 import { ToolButton } from "./view/ToolButton"
+import { TextTool } from "./view/TextTool"
+import { SlotView } from "./view/SlotView"
+import { ToadIf } from "./view/ToadIf"
 
 import { Menu } from "./menu/Menu"
 import { MenuButton } from "./menu/MenuButton"
@@ -98,18 +103,19 @@ import { TreeNodeCell } from "./table/TreeAdapter"
 
 let _isInitialized = false
 
+// FIXME: try to move these back into their own files
 export function initialize() {
     _isInitialized = true
 
     View.define("toad-button", Button)
-    View.define("toad-checkbox", CheckboxView)
-    View.define("toad-slider", SliderView)
-    View.define("toad-slot", SlotView)
+    View.define("toad-checkbox", Checkbox)
+    View.define("toad-slider", Slider)
     View.define("toad-textarea", TextArea)
-    View.define("toad-texttool", TextTool)
-    View.define("toad-text", TextView)
-    View.define("toad-if", ToadIf)
     View.define("toad-toolbutton", ToolButton)
+    View.define("toad-texttool", TextTool)
+    View.define("toad-text", Text)
+    View.define("toad-if", ToadIf)
+    View.define("toad-slot", SlotView)
 
     View.define("toad-menu", Menu)
     View.define("toad-menubutton", MenuButton)

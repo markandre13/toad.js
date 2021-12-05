@@ -1,15 +1,13 @@
-import { expect, use } from "chai"
-use(require('chai-subset'))
-
+import { expect } from "@esm-bundle/chai"
 import { 
     TableView, 
-    SelectionModel, TextView, TextModel, TableEvent, TableEventType,
-    bind, unbind, TableAdapter, ArrayTableModel
+    SelectionModel, Text, TextModel, TableEvent, TableEventType,
+    bindModel, unbind, TableAdapter, ArrayTableModel
 } from "@toad"
 
-import { setAnimationFrameCount } from "@toad/scrollIntoView"
+import { setAnimationFrameCount } from "src/util/scrollIntoView"
 
-describe("toad.js", function() {
+describe("view", function() {
     describe("table", function() {
         describe("class TableView", function() {
             let scene: VariableRowHeightScene
@@ -88,7 +86,7 @@ class VariableRowHeightScene {
     model: VHTModel
 
     constructor() {
-        try {
+        // try {
         setAnimationFrameCount(0)
         unbind()
         TableAdapter.unbind()
@@ -105,22 +103,22 @@ class VariableRowHeightScene {
             this.data.push(new VariableHeightThingy(e as number))
         })
         this.model = new VHTModel(this.data)
-        bind("model", this.model)
+        bindModel("model", this.model)
 
         this.selectionModel = new SelectionModel()
-        bind("model", this.selectionModel)
+        bindModel("model", this.selectionModel)
 
         document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='model'></toad-table></div>`
         this.table = document.body.children[1].children[0] as TableView
         expect(this.table.tagName).to.equal("TOAD-TABLE")
 
         setAnimationFrameCount(400)
-        }
-        catch(e) {
-            console.log("============================================")
-            console.log(e.trace)
-            throw e
-        }
+        // }
+        // catch(e) {
+        //     console.log("============================================")
+        //     console.log(e.trace)
+        //     throw e
+        // }
     }
 
     sleep(milliseconds: number = 500) {
@@ -228,7 +226,7 @@ class VHTTableAdapter extends TableAdapter<VHTModel> {
         model.modified.add( () => {
             this.setField(col, row, model.value)
         })
-        const view = new TextView()
+        const view = new Text()
         view.setModel(model)
         return view
     }

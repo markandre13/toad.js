@@ -20,7 +20,7 @@ import * as dom from "../util/dom"
 import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuHelper"
 import { menuStyle } from "./menuStyle"
-import { HTMLElementProps } from "../jsx-runtime"
+import { HTMLElementProps } from "toad.jsx"
 import { TextModel } from "../model/TextModel"
 import { HtmlModel } from "../model/HtmlModel"
 

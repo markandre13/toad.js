@@ -1,24 +1,59 @@
 {
-  "compilerOptions": {
-    "target": "es6",
-    "moduleResolution": "node",
-    "traceResolution": false,
-    "declaration": false,
-    "lib": [ "dom", "dom.iterable", "esnext" ],
-    "jsx": "react-jsx",
-    "jsxImportSource": "@toad",
-    "baseUrl": "src",
-    "paths": {
-        "@toad": ["toad"],
-        "@toad/*": ["*"]
+    "compilerOptions": {
+        "target": "es2020",
+        "module": "es6",
+        "moduleResolution": "node",
+        "traceResolution": false,
+        "esModuleInterop": true,
+        "incremental": true,
+        "declaration": true,
+        "outDir": "lib",
+        "baseUrl": ".",
+        "paths": {
+            "@toad": [
+                "src/index"
+            ],
+            "@toad/*": [
+                "src/*"
+            ],
+            "src": [
+                "src/index"
+            ],
+            "src/*": [
+                "src/*"
+            ],
+        },
+        "lib": [
+            "DOM",
+            "DOM.Iterable",
+            "ESNext"
+        ],
+        "jsx": "react-jsx",
+        "jsxImportSource": "toad.jsx/lib",
+        "plugins": [
+            {
+                "transform": "@zerollup/ts-transform-paths",
+                "afterDeclarations": true,
+                "after": true,
+            },
+            {
+                "transform": "@zoltu/typescript-transformer-append-js-extension/output/index.js",
+                "after": true,
+            }
+        ],
+        "forceConsistentCasingInFileNames": true,
+        "resolveJsonModule": true,
+        "removeComments": true,
+        "experimentalDecorators": true,
+        "noImplicitOverride": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "allowJs": false,
+        "noImplicitAny": true,
+        "sourceMap": true
     },
-    "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "noImplicitOverride": true,
-    "strict": true,
-    "strictNullChecks": true,
-    "allowJs": false,
-    "noImplicitAny": true,
-    "sourceMap": true
-  }
+    "include": [
+        "src",
+        "test"
+    ]
 }

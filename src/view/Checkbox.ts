@@ -93,7 +93,7 @@ svg path {
   stroke: var(--checked-marker-color, var(--toad-light-color, #bdbdbd));
 }`
 
-export class CheckboxView extends ModelView<BooleanModel> {
+export class Checkbox extends ModelView<BooleanModel> {
   constructor() {
     super()
     

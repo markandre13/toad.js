@@ -1,10 +1,10 @@
-// tests for <toad-table />'s integration into the page
-import { expect, use } from "chai"
-use(require('chai-subset'))
-
+//
+// test <toad-table />'s integration into the page
+//
+import { expect } from "@esm-bundle/chai"
 import { TestTableScene } from "./TestTableScene"
 
-describe("toad.js", function () {
+describe("view", function () {
     describe("table", function () {
         describe("table should behave like an inline-block", function() {
             it("TestTableScene itself passes the test", async function() {

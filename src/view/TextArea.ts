@@ -36,18 +36,25 @@ export class TextArea extends ModelView<TextModel> {
         content.contentEditable = "true"
         
         content.oninput = (event: Event) => {
-            let firstChild = (event.target as Node).firstChild
-            if (firstChild && firstChild.nodeType === 3) {
-                // if the document starts with text, wrap it into a paragraph
-                document.execCommand("formatBlock", false, `<div>`)
-            }
-            else if (content.innerHTML === "<br>") {
-                content.innerHTML = ""
+            if (this.model instanceof HtmlModel) {
+                let firstChild = (event.target as Node).firstChild
+                if (firstChild && firstChild.nodeType === 3) {
+                    // if the document starts with text, wrap it into a paragraph
+                    document.execCommand("formatBlock", false, `<div>`)
+                }
+                else if (content.innerHTML === "<br>") {
+                    content.innerHTML = ""
+                }
             }
             this.updateModel()
         }
         
         content.onkeydown = (event: KeyboardEvent) => {
+
+            if (!(this.model instanceof HtmlModel)) {
+                return
+            }
+
             if (event.metaKey === true && event.key === "b") {
                 event.preventDefault()
                 document.execCommand("bold", false)
@@ -129,7 +136,11 @@ export class TextArea extends ModelView<TextModel> {
         if (this.model) {
             // textarea with it's markup may be expensive, hence we let the model fetch it's data on demand
             this.model.promise = () => {
-                return this.content.innerHTML
+                if (this.model instanceof HtmlModel) {  
+                    return this.content.innerHTML
+                } else {
+                    return this.content.innerText
+                }
             }
         }
     }

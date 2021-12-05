@@ -1,8 +1,8 @@
-import { expect } from "chai"
+import { expect } from '@esm-bundle/chai'
 import * as dom from "@toad/util/dom"
 import { MenuButton, action, globalController } from "@toad"
 
-describe("toad.js", function() {
+describe("view", function() {
 
     describe("menubar", function() {
         let testData = `

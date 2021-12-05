@@ -21,12 +21,12 @@
 //           try to move code outside by converting them into object of their own
 //           begin with the inputOverlay
 
-import { Fragment, ref } from '../jsx-runtime'
+import { Fragment, ref } from 'toad.jsx'
 
-import * as dom from "../util/dom"
-import { scrollIntoView } from "../scrollIntoView"
-import { Model } from "../model/Model"
-import { View } from "../view/View"
+import * as dom from "src/util/dom"
+import { scrollIntoView } from "src/util/scrollIntoView"
+import { Model } from "src/model/Model"
+import { View } from "src/view/View"
 import { TableModel } from "./TableModel"
 import { SelectionModel } from "./SelectionModel"
 import { TableEditMode } from "./TableEditMode"
@@ -36,7 +36,7 @@ import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 import { tableStyle } from "./private/tableStyle"
 import { InputOverlay } from "./private/InputOverlay"
-import { Animator } from '../util/animation'
+import { Animator } from 'src/util/animation'
 import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertRowAnimation } from './private/InsertRowAnimation'
 
@@ -291,7 +291,9 @@ export class TableView extends View {
     }
     catch (e) {
       console.log("caught exception in updateView")
-      console.log(e.stack)
+      if (e instanceof Error) {
+          console.log(e.stack)
+      }
       throw e
     }
   }

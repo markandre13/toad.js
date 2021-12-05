@@ -18,8 +18,7 @@
 
 import { View } from "../view/View"
 import { Controller } from "./Controller"
-import { bind } from "bind-decorator"
-import { Fragment } from "@toad/jsx-runtime"
+import { Fragment } from "toad.jsx"
 
 // HTML Imports Working Draft
 declare global {
@@ -35,6 +34,7 @@ export class Dialog extends Controller {
 
   constructor() {
     super()
+    this.close = this.close.bind(this)
   }
 
   open(content: HTMLElement | Fragment): void
@@ -89,7 +89,7 @@ export class Dialog extends Controller {
     }
   }
 
-  @bind close(): void {
+  close(): void {
     if (this.frame)
       document.body.removeChild(this.frame)
     if (this.shadow)

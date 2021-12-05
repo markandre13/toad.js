@@ -1,18 +1,18 @@
-import { expect } from "chai"
-import { CheckboxView, BooleanModel, bind, unbind } from "@toad"
+import { expect } from '@esm-bundle/chai'
+import { Checkbox, BooleanModel, bindModel, unbind } from "@toad"
 
-describe("toad.js", function() {
+describe("view", function() {
 
     function clearAll() {
       unbind()
       document.body.innerHTML = ""
     }
 
-    describe("<toad-check> and BooleanModel", function() {
+    describe("checkbox", function() {
         describe("initialize view from model", function() {
             it("does so when the model is defined before the view", function() {
                 let model = new BooleanModel(true)
-                bind("bool", model)
+                bindModel("bool", model)
                 document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
                 let checkbox = document.body.children[0]
    
@@ -20,7 +20,7 @@ describe("toad.js", function() {
                 clearAll()
 
                 model = new BooleanModel(false)
-                bind("bool", model)
+                bindModel("bool", model)
                 document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
                 expect(checkbox.hasAttribute("checked")).to.equal(false)
                 clearAll()
@@ -30,14 +30,14 @@ describe("toad.js", function() {
                 document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
                 let checkbox = document.body.children[0]
                 let model = new BooleanModel(true)
-                bind("bool", model)
+                bindModel("bool", model)
                 expect(checkbox.hasAttribute("checked")).to.equal(true)
                 clearAll()
 
                 document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
                 checkbox = document.body.children[0]
                 model = new BooleanModel(false)
-                bind("bool", model)
+                bindModel("bool", model)
                 expect(checkbox.hasAttribute("checked")).to.equal(false)
                 clearAll()
             })
@@ -47,7 +47,7 @@ describe("toad.js", function() {
 
             it("updates the html element when the model changes", function() {
                 let model = new BooleanModel(true)
-                bind("bool", model)
+                bindModel("bool", model)
                 document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
                 let checkbox = document.body.children[0]
                 expect(checkbox.hasAttribute("checked")).to.equal(true)
@@ -58,9 +58,9 @@ describe("toad.js", function() {
   
             it("updates the model when the html element changes", function() {
                 let model = new BooleanModel(false)
-                bind("bool", model)
+                bindModel("bool", model)
                 document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-                let checkbox = document.body.children[0] as CheckboxView
+                let checkbox = document.body.children[0] as Checkbox
                 expect(model.value).not.to.equal(true)
                 checkbox.setAttribute("checked", "")
                 expect(model.value).to.equal(true)

@@ -1,10 +1,8 @@
-import { expect, use } from "chai"
-use(require('chai-subset'))
-
+import { expect } from '@esm-bundle/chai'
 import { TableEvent, TableEventType } from "@toad"
 import { BookTableScene, Book } from "./BookTableScene"
 
-describe("toad.js", function() {
+describe("view", function() {
     describe("table", function() {
         describe("class ArrayTableModel<T> is an adapter for Array<T>", function() {
             describe("constructor()", function() {

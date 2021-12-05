@@ -16,10 +16,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { bind } from 'bind-decorator'
-
 // TODO: look into cancelAnimationFrame during refactoring
 export class AnimationBase {
+    constructor() {
+        this._firstFrame = this._firstFrame.bind(this)
+        this._animationFrame = this._animationFrame.bind(this)
+    }
+
     static animationFrameCount = 468
 
     start() {
@@ -56,7 +59,7 @@ export class AnimationBase {
         window.requestAnimationFrame(callback)
     }
 
-    @bind protected _firstFrame(time: number) {
+    protected _firstFrame(time: number) {
         this.startTime = time
         this.firstFrame()
         if (this._stop)
@@ -65,7 +68,7 @@ export class AnimationBase {
         this.requestAnimationFrame(this._animationFrame)
     }
 
-    @bind protected _animationFrame(time: number) {
+    protected _animationFrame(time: number) {
         if (this.next) {
             this.next._firstFrame(time)
             return

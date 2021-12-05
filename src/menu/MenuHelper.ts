@@ -19,7 +19,7 @@
 import { View } from "../view/View"
 import { MenuButton } from "./MenuButton"
 import { MenuState } from "./MenuState"
-import { HTMLElementProps } from "../jsx-runtime"
+import { HTMLElementProps } from "toad.jsx"
 
 export class MenuButtonContainer extends View {
   vertical: boolean

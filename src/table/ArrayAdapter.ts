@@ -21,9 +21,9 @@ import { TypedTableAdapter, InferTypedTableModelParameter } from "./TypedTableAd
 import { TableEvent } from "./TableEvent"
 import { TableEventType } from "./TableEventType"
 
-import { Reference } from "../jsx-runtime"
+import { Reference } from "src"
 import { TextModel } from "../model/TextModel"
-import { TextView } from "../view/TextView"
+import { Text } from "../view/Text"
 
 export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
 
@@ -58,7 +58,7 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
         model.modified.add(() => {
             this.setField(col, row, model.value)
         })
-        const view = new TextView()
+        const view = new Text()
         view.setModel(model)
         return view
     }

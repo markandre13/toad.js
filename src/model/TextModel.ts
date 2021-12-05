@@ -19,7 +19,7 @@
 import { Model } from "./Model"
 
 export class TextModel extends Model {
-  _value: string | Function
+  protected _value: string | Function
 
   constructor(value: string) {
     super()

@@ -21,14 +21,18 @@ import { Model } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Action } from "../model/Action"
 import { ModelView } from "./ModelView"
-import { HTMLElementProps } from "@toad/jsx-runtime"
+import { HTMLElementProps } from "toad.jsx"
 
 // FIXME: ActionView should also be a template instead of having a fixed TextModel
+
+export interface ActionViewProps extends HTMLElementProps {
+    action?: Action
+}
 
 export abstract class ActionView extends ModelView<TextModel> {
   action?: Action
 
-  constructor(init?: HTMLElementProps) {
+  constructor(init?: ActionViewProps) {
     super(init)
   }
 
@@ -89,6 +93,16 @@ export abstract class ActionView extends ModelView<TextModel> {
     }
 
     this.updateView()
+  }
+
+  setAction(value: Function|Action) {
+    if (value instanceof Function) {
+        const action = new Action(undefined, "");                   
+        action.signal.add(value as ()=>void);
+        this.setModel(action)
+    } else {
+        this.setModel(value)
+    }
   }
 
   isEnabled(): boolean {

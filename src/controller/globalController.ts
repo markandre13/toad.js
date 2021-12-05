@@ -24,7 +24,7 @@ import { Controller } from "./Controller"
 
 export let globalController = new Controller()
 
-export function bind<T>(modelId: string, model: Model<T>): void {
+export function bindModel<T>(modelId: string, model: Model<T>): void {
   globalController.bind(modelId, model)
 }
 

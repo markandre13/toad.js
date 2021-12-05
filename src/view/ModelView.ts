@@ -18,7 +18,7 @@
 
 import { Model, InferModelParameter } from "../model/Model"
 import { View } from "./View"
-import { HTMLElementProps } from "../jsx-runtime"
+import { HTMLElementProps } from "toad.jsx"
 
 export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
   model?: M

@@ -5,8 +5,9 @@ test/
 ui-test/
 docs/
 polyfill/
-js/
+lib/tsconfig.tsbuildinfo
+lib/test/
 coverage/
-karma.conf.js
 tsconfig.json
+web-test-runner.config.js
 .vscode

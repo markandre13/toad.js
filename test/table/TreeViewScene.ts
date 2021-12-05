@@ -1,5 +1,5 @@
-import { expect } from "chai"
-import { TableView, TableAdapter, TreeAdapter, TreeNode, TreeNodeModel, bind, unbind } from "@toad"
+import { expect } from "@esm-bundle/chai"
+import { TableView, TableAdapter, TreeAdapter, TreeNode, TreeNodeModel, bindModel, unbind } from "@toad"
 
 // ├─ 0
 // │  ├─ 1
@@ -74,7 +74,7 @@ export class TreeViewScene {
         tree.addChildAfter(6)
         tree.addSiblingAfter(7)
         tree.addSiblingAfter(8)
-        bind("tree", tree)
+        bindModel("tree", tree)
         this.tree = tree
 
         TableAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)

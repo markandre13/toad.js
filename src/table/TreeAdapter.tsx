@@ -16,8 +16,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import bind from 'bind-decorator'
-
 import { TreeModel } from "./TreeModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 import { View } from '../view/View'

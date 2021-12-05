@@ -1,11 +1,9 @@
-import { expect, use } from "chai"
-use(require('chai-subset'))
-
+import { expect } from "@esm-bundle/chai"
 import {
     TableAdapter, TypedTableAdapter, TableModel, TreeNodeModel, TreeNode
 } from "@toad"
 
-describe("toad.js", function () {
+describe("view", function () {
     describe("table", function () {
         describe("class TableAdapter is used by TableView to render cells for TableModel", function () {
             describe("TableView requires a TableAdapter to be registered for a TableModel type", function() {

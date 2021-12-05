@@ -1,14 +1,12 @@
-import { expect, use } from "chai"
-use(require('chai-subset'))
+import { expect } from "@esm-bundle/chai"
 
-import { TextView } from "@toad"
-import { findScrollableParent, isScrollable } from "@toad/scrollIntoView"
+import { Text } from "@toad"
+import { findScrollableParent, isScrollable } from "src/util/scrollIntoView"
 import { BookTableScene } from "./BookTableScene"
 import { TreeViewScene } from "./TreeViewScene"
 import { TestRow, TestTableScene } from "./TestTableScene"
-import { table } from "console"
 
-describe("toad.js", function() {
+describe("view", function() {
     describe("table", function() {
         describe("class TableView", function() {
             describe("update view when model changes", function() {
@@ -20,7 +18,7 @@ describe("toad.js", function() {
                         scene.table.focus()
                         scene.mouseDownAtCell(0, 0)
 
-                        const textView = scene.table.editView as TextView
+                        const textView = scene.table.editView as Text
                         textView.value = "XXX"
                         await scene.sleep()
 
@@ -36,7 +34,7 @@ describe("toad.js", function() {
                         scene.table.focus()
                         scene.mouseDownAtCell(0, 0)
 
-                        const textView = scene.table.editView as TextView
+                        const textView = scene.table.editView as Text
                         textView.value = "XXX"
                         await scene.sleep()
 
@@ -442,7 +440,7 @@ describe("toad.js", function() {
                     scene.mouseDownAtCell(0, 3)
                     await scene.sleep(1)
 
-                    let textView = scene.table.editView as TextView
+                    let textView = scene.table.editView as Text
                     expect(textView.value).to.equal("Rendezvous with Rama")
 
                     scene.clickTableToolDeleteRow()
@@ -451,7 +449,7 @@ describe("toad.js", function() {
                     // selection hasn't changed
                     expect(scene.selectionModel.row).to.equal(3) // FIXME: separate test
 
-                    textView = scene.table.editView as TextView
+                    textView = scene.table.editView as Text
                     expect(textView.value).to.equal("2001: A Space Odyssey")
 
                     scene.expectInputOverlayAt(0, 3)

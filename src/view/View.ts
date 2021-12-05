@@ -19,7 +19,7 @@
 import { Model } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Controller } from "../controller/Controller"
-import { HTMLElementProps, setInitialProperties } from "../jsx-runtime"
+import { HTMLElementProps, setInitialProperties } from "toad.jsx"
 
 // TODO: do we use this directly or is GenericView it's only subclass?
 export class View extends HTMLElement {

@@ -19,7 +19,7 @@
 import { NumberModel } from "../model/NumberModel"
 import { ModelView } from "./ModelView"
 
-export class SliderView extends ModelView<NumberModel> {
+export class Slider extends ModelView<NumberModel> {
   input: HTMLInputElement
 
   constructor() {

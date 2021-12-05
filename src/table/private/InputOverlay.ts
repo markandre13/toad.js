@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import * as dom from "../../util/dom"
-import { findScrollableParent } from "../../scrollIntoView"
+import * as dom from "src/util/dom"
+import { findScrollableParent } from "src/util/scrollIntoView"
 
 export class InputOverlay extends HTMLDivElement {
 

@@ -1,10 +1,10 @@
-import { expect } from "chai"
+import { expect } from "@esm-bundle/chai"
 import {
     TableView,
-    SelectionModel, TextView, TextModel, TableEvent, TableEventType,
-    bind, unbind, TableAdapter, ArrayTableModel
+    SelectionModel, Text, TextModel, TableEvent, TableEventType,
+    bindModel as bind, unbind, TableAdapter, ArrayTableModel
 } from "@toad"
-import { setAnimationFrameCount } from "@toad/scrollIntoView"
+import { setAnimationFrameCount } from "src/util/scrollIntoView"
 
 export class BookTableScene {
 
@@ -223,7 +223,7 @@ class BookTableAdapter extends TableAdapter<BookTableModel> {
         model.modified.add(() => {
             this.setField(col, row, model.value)
         })
-        const view = new TextView()
+        const view = new Text()
         view.setModel(model)
         return view
     }

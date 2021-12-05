@@ -1,16 +1,15 @@
-import { expect, use } from "chai"
-use(require('chai-subset'))
+import { expect } from "@esm-bundle/chai"
 
 import { 
     TableView, TableEditMode, 
-    SelectionModel, TextView, 
-    bind, unbind, TableAdapter
+    SelectionModel, Text, 
+    bindModel as bind, unbind, TableAdapter
 } from "@toad"
 
-import { setAnimationFrameCount } from "@toad/scrollIntoView"
+import { setAnimationFrameCount } from "src/util/scrollIntoView"
 import { TestTableAdapter, TestTableModel, TestRow } from "./TestTableScene"
 
-describe("toad.js", function() {
+describe("view", function() {
     describe("table", function() {
         describe("class TableView", function() {
 
@@ -69,19 +68,19 @@ describe("toad.js", function() {
                     expect(row.classList.contains("selected")).to.equal(false)
                     
                     // selection is at initial position
-                    let text = table.inputOverlay.children[0] as TextView
+                    let text = table.inputOverlay.children[0] as Text
                     expect(text.tagName).to.equal("TOAD-TEXT")
                     expect(text.value).to.equal("CELL:0:0")
                     
                     // change selected row
                     selectionModel.row = 1                   
-                    text = table.inputOverlay.children[0] as TextView
+                    text = table.inputOverlay.children[0] as Text
                     expect(text.tagName).to.equal("TOAD-TEXT")
                     expect(text.value).to.equal("CELL:0:1")
                     
                     // change selected column
                     selectionModel.col = 1
-                    text = table.inputOverlay.children[0] as TextView
+                    text = table.inputOverlay.children[0] as Text
                     expect(text.tagName).to.equal("TOAD-TEXT")
                     expect(text.value).to.equal("CELL:1:1")
                 })

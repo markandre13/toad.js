@@ -1,52 +1,36 @@
 {
-  "name": "toad.js",
-  "version": "0.0.19",
-  "description": "The TOAD JavaScript/TypeScript GUI Library",
-  "author": "Mark-André Hopf <mhopf@mark13.org>",
-  "license": "AGPL-3.0",
-  "main": "lib/toad.js",
-  "types": "lib/toad.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/markandre13/toad.js.git"
-  },
-  "scripts": {
-    "build": "rollup --config src/rollup.config.js",
-    "build:watch": "rollup --config src/rollup.config.js --watch",
-    "build:docs": "rollup --config docs/rollup.config.js",
-    "test": "karma start",
-    "test:watch": "karma start --singleRun=false --autoWatch=true | grep -v '^Chrome Headless .* LOG:'",
-    "test:watch:verbose": "karma start --singleRun=false --autoWatch=true",
-    "test:ui": "webpack ; mocha ui-test/bootstrap.js -t 100000 --recursive ui-test",
-    "update": "npx npm-check-updates -u && npm install"
-  },
-  "devDependencies": {
-    "@rollup/plugin-commonjs": "^19.0.0",
-    "@rollup/plugin-node-resolve": "^13.0.0",
-    "@types/chai": "^4.2.19",
-    "@types/chai-subset": "^1.3.3",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "^15.12.4",
-    "bind-decorator": "^1.0.11",
-    "chai": "^4.3.4",
-    "chai-subset": "^1.6.0",
-    "csstype": "^3.0.8",
-    "karma": "^6.3.4",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-mocha": "^2.0.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "karma-sourcemap-loader": "^0.3.8",
-    "karma-typescript": "^5.5.1",
-    "mocha": "^9.0.1",
-    "puppeteer": "^10.0.0",
-    "rollup": "^2.52.3",
-    "rollup-plugin-terser": "^7.0.2",
-    "rollup-plugin-typescript2": "^0.30.0",
-    "ts-loader": "^9.2.3",
-    "typescript": "^4.3.4"
-  },
-  "dependencies": {
-    "@webcomponents/webcomponentsjs": "^2.5.0"
-  }
+    "name": "toad.js",
+    "version": "0.0.20",
+    "description": "The TOAD JavaScript/TypeScript GUI Library",
+    "author": "Mark-André Hopf <mhopf@mark13.org>",
+    "license": "AGPL-3.0",
+    "module": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/markandre13/toad.js.git"
+    },
+    "scripts": {
+        "build": "ttsc",
+        "test": "wtr \"lib/test/**/*.spec.js\"",
+        "build:watch": "ttsc --watch",
+        "test:watch": "wtr \"lib/test/**/*.spec.js\" --watch",
+        "update": "npx npm-check-updates -u && npm install",
+        "build:docs": "rollup --config docs/rollup.config.js"
+    },
+    "devDependencies": {
+        "@esm-bundle/chai": "^4.3.4-fix.0",
+        "@types/chai": "^4.2.22",
+        "@types/chai-subset": "^1.3.3",
+        "@types/mocha": "^9.0.0",
+        "@web/test-runner": "^0.13.22",
+        "@zerollup/ts-transform-paths": "^1.7.18",
+        "@zoltu/typescript-transformer-append-js-extension": "^1.0.1",
+        "ttypescript": "^1.5.13",
+        "typescript": "^4.5.2"
+    },
+    "dependencies": {
+        "@webcomponents/webcomponentsjs": "^2.6.0",
+        "toad.jsx": "^0.0.3"
+    }
 }

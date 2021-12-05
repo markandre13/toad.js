@@ -1,5 +1,4 @@
-
-import { expect } from 'chai'
+import { expect } from '@esm-bundle/chai'
 import { ref } from '@toad'
 
 class Book {
@@ -13,8 +12,8 @@ class Book {
     }
 }
 
-describe("toad.js", function() {
-    describe("Reference", function() {
+describe("jsx", function() {
+    describe("reference", function() {
         it("get()/set() can get/set the referenced value if it's of type string or number", function() {
             const book = new Book("The Moon Is A Harsh Mistress", "Robert A. Heinlein", 1966)
             const title = ref(book, "title")
