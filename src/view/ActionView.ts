@@ -26,7 +26,7 @@ import { HTMLElementProps } from "toad.jsx"
 // FIXME: ActionView should also be a template instead of having a fixed TextModel
 
 export interface ActionViewProps extends HTMLElementProps {
-    action?: Action
+    action?: Action | Function
 }
 
 export abstract class ActionView extends ModelView<TextModel> {
