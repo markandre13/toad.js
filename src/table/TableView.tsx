@@ -21,7 +21,7 @@
 //           try to move code outside by converting them into object of their own
 //           begin with the inputOverlay
 
-import { Fragment, ref } from 'toad.jsx'
+import { Fragment, ref, HTMLElementProps, setInitialProperties } from 'toad.jsx'
 
 import * as dom from "src/util/dom"
 import { scrollIntoView } from "src/util/scrollIntoView"
@@ -44,6 +44,11 @@ enum Log {
   LAYOUT,
   SELECTION,
   USER
+}
+
+interface TableProps extends HTMLElementProps {
+    model?: TableModel
+    selectionModel?: SelectionModel
 }
 
 /*
@@ -103,7 +108,7 @@ export class TableView extends View {
 
   rowAnimationHeight = 0 // TODO: put in testAPI object
 
-  constructor() {
+  constructor(props?: TableProps) {
     super()
 
     this.insideGoTo = false
@@ -197,12 +202,16 @@ export class TableView extends View {
     //   }
     // })
     // resizeObserver.observe(this.bodyDiv)
+
+    if (props) {
+         setInitialProperties(this, props)
+        if (props.selectionModel)
+            this.setModel(props.selectionModel)
+    }
+
   }
 
-  updateModel() {
-  }
-
-  override setModel(model?: Model): void {
+  override setModel(model?: TableModel | SelectionModel): void {
     if (!model) {
       if (this.selectionModel)
         this.selectionModel.modified.remove(this)
@@ -243,7 +252,9 @@ export class TableView extends View {
       this.updateView()
       return
     }
-    throw Error("TableView.setModel(): unexpected model of type " + model.constructor.name)
+    if ((model as any) instanceof Object) {
+        throw Error("TableView.setModel(): unexpected model of type " + (model as Object).constructor.name)
+    }
   }
 
   updateCompact() {

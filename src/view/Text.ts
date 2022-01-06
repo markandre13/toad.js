@@ -16,10 +16,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import type { HTMLElementProps } from "toad.jsx"
 import { TextModel } from "../model/TextModel"
 import { NumberModel } from "../model/NumberModel"
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 
 let textStyle = document.createElement("style")
 textStyle.textContent=`
@@ -41,14 +40,11 @@ input {
   background: #fff;
 }
 `
-interface TextProps extends HTMLElementProps {
-    model?: TextModel | NumberModel
-}
 
-export class Text extends ModelView<TextModel> {
+export class Text extends ModelView<TextModel|NumberModel> {
   input: HTMLInputElement
 
-  constructor(init?: TextProps) {
+  constructor(init?: ModelViewProps<TextModel|NumberModel>) {
     super(init)
     this.input = document.createElement("input") as HTMLInputElement
     this.input.oninput = () => { this.updateModel() }

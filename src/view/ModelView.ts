@@ -20,12 +20,18 @@ import { Model, InferModelParameter } from "../model/Model"
 import { View } from "./View"
 import { HTMLElementProps } from "toad.jsx"
 
+export interface ModelViewProps<M> extends HTMLElementProps {
+    model?: M
+}
+
 export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
   model?: M
 
-  // FIXME: accept 'model' here
-  constructor(init?: HTMLElementProps) {
+  constructor(init?: ModelViewProps<M>) {
     super(init)
+    if (init?.model !== undefined) {
+        this.setModel(init.model)
+    }
   }
 
   // NOTE: these were 'abstract' but then the 'override' did not work

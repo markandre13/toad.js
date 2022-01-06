@@ -17,17 +17,19 @@
  */
 
 import { NumberModel } from "../model/NumberModel"
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 
 export class Slider extends ModelView<NumberModel> {
   input: HTMLInputElement
 
-  constructor() {
-    super()
+  constructor(init?: ModelViewProps<NumberModel>) {
+    super(init)
     this.input = document.createElement("input") as HTMLInputElement
     this.input.type = "range"
     let view = this
-    this.input.oninput = () => { view.updateModel() }
+    this.input.oninput = () => { 
+        view.updateModel()
+    }
     this.attachShadow({mode: 'open'})
         .appendChild(this.input)
   }
