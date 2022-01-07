@@ -4,7 +4,7 @@ import { Slider, NumberModel, TextModel, bindModel as bind } from "@toad"
 describe("view", function () {
     describe("slider", function () {
         describe("NumberModel", function() {
-            it("does so when the model is defined before the view", function () {
+            it("works when the model is defined before the view", function () {
                 let model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
                 bind("number", model)
                 document.body.innerHTML = "<toad-slider model='number'></toad-slider>"
@@ -16,14 +16,15 @@ describe("view", function () {
                 expect(model.modified.callbacks.length).to.equal(1) // FIXME: in new test
             })
 
-            it("does so when the view is defined before the model", function () {
+            it("works when the view is defined before the model", function () {
                 document.body.innerHTML = "<toad-slider model='number'></toad-slider>"
                 let model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
                 bind("number", model)
                 expect(getHTMLInputElement().value).to.equal("0.5")
             })
 
-            it("directly using JSX", async function () {
+            it("works when using JSX", async function () {
+                document.body.innerHTML = ""
                 const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
                 const view = <Slider model={model} />
                 document.body.appendChild(view)

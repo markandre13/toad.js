@@ -26,16 +26,25 @@ describe("view", function () {
                 view.value = "81"
                 expect(view.value).to.equal(`${model.value}`)
             })
+            it("works when using JSX", async function () {
+                const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
+
+                document.body.innerHTML = ""
+                document.body.appendChild(<Text model={model} />)
+
+                let view = document.body.children[0]
+                expect(view.getAttribute("value")).to.equal("0.5")   
+            })
             // range
             // scroll wheel
         })
         describe("TextModel", function () {
             describe("initialize view from model", function () {
                 it("does so when the model is defined before the view", function () {
-                    let model = new TextModel("alpha")
+                    const model = new TextModel("alpha")
                     bindModel("model", model)
                     document.body.innerHTML = "<toad-text model='model'></toad-text>"
-                    let view = document.body.children[0]
+                    const view = document.body.children[0]
                     // console.log(view.nodeName)
 
                     expect(view.getAttribute("value")).to.equal("alpha")
@@ -43,11 +52,23 @@ describe("view", function () {
 
                 it("does so when the view is defined before the model", function () {
                     document.body.innerHTML = "<toad-text model='model'></toad-text>"
-                    let checkbox = document.body.children[0]
-                    let model = new TextModel("alpha")
+                    
+                    const model = new TextModel("alpha")
                     bindModel("model", model)
                     
-                    expect(checkbox.getAttribute("value")).to.equal("alpha")              
+                    const view = document.body.children[0]
+                    expect(view.getAttribute("value")).to.equal("alpha")              
+                })
+
+                it("works when using JSX", async function () {
+                    // const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
+                    const model = new TextModel("alpha")
+
+                    document.body.innerHTML = ""
+                    document.body.appendChild(<Text model={model} />)
+
+                    let view = document.body.children[0]
+                    expect(view.getAttribute("value")).to.equal("alpha")   
                 })
             })
 
