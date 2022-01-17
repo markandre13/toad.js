@@ -17,44 +17,50 @@
  */
 
 import { OptionModelBase } from "../model/OptionModelBase"
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 
 let toolbuttonStyle = document.createElement("style")
 toolbuttonStyle.textContent=`
-div {
+:host {
+    display: inline-block;
+    overflow: hidden;
+    box-sizing: border-box;
     border: 1px solid #e3dbdb;
-    border-radius: 5px;
+    border-radius: 2px;
     background: #e3dbdb;
     width: 32px;
     height: 32px;
-    padding: 3px;
+    margin: 0;
+    padding: 0;
 }
 
-:host([selected]) div {
+:host([selected]) {
     background: #ac9393;
 }
 
-:host([disabled]) div {
+:host([disabled]) {
     opacity: 0.5;
 }
 
-:host([disabled]) div img {
+:host([disabled]) img {
     opacity: 0.5;
 }
 
-:host([checked][disabled]) div {
+:host([checked][disabled]) {
 }
 `
 
-export class ToolButton extends ModelView<OptionModelBase> {
-    constructor(init?: {
-        model?: OptionModelBase,
-        value: string,
-        img: string,
-        disabled?: boolean
-    }) {
-        super()
+export interface ToolButtonProps extends ModelViewProps<OptionModelBase> {
+    value: string,
+    img: string,
+    disabled?: boolean
+}
 
+export class ToolButton extends ModelView<OptionModelBase> {
+    constructor(init?: ToolButtonProps) {
+        super(init)
+
+        // FIXME: this is what lit could take care of, but what we might not need anyway in toad.js
         if (!init) {
             init = {
                 value: this.getAttribute("value")!,
@@ -68,27 +74,32 @@ export class ToolButton extends ModelView<OptionModelBase> {
                 this.setAttribute("disabled", "disabled")
         }
 
-        if (init.model)
-            this.setModel(init.model)
+        // if (init.model)
+        //     this.setModel(init.model)
         
-        let button = document.createElement("div")
+        // let button = document.createElement("div")
         // button.setAttribute("tabindex", "0")
-        button.onmousedown = (event) => {
-            if (this.hasAttribute("disabled"))
+        this.onmousedown = (event) => {
+            console.log(`${this.getAttribute("value")}: mouse down`)
+            if (this.hasAttribute("disabled")) {
+                console.log(`${this.getAttribute("value")}: -> ${this.getAttribute("value")} disabled`)
                 return
-            button.focus()
+            }
+            this.focus()
             event.preventDefault()
-            if (this.model !== undefined)
+            if (this.model !== undefined) {
+                console.log(`${this.getAttribute("value")}: set stringValue '${this.getValue()}'`)
                 this.model.stringValue = this.getValue()
+            }
         }
 
         let img = document.createElement("img")
         img.src = init.img
-        button.appendChild(img)
+        // button.appendChild(img)
 
         this.attachShadow({mode: 'open'})
         this.shadowRoot!.appendChild(document.importNode(toolbuttonStyle, true))
-        this.shadowRoot!.appendChild(button)
+        this.shadowRoot!.appendChild(img) // FIXME: use <slot> when no image was provided
     }
 
     getValue(): string {
@@ -105,6 +116,7 @@ export class ToolButton extends ModelView<OptionModelBase> {
     }
    
     override updateView() {
+        console.log(`${this.getAttribute("value")}: update view`)
         if (this.model === undefined) {
             this.setAttribute("disabled", "")
             this.removeAttribute("selected")
