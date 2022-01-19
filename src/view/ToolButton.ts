@@ -26,7 +26,7 @@ toolbuttonStyle.textContent=`
     overflow: hidden;
     box-sizing: border-box;
     border: 1px solid #e3dbdb;
-    border-radius: 2px;
+    border-radius: 3px;
     background: #e3dbdb;
     width: 32px;
     height: 32px;

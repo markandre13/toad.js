@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,6 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+// function btoa(str: string): string {
+//     return Buffer.from(str).toString("base64")
+// }
+
 export const menuStyle = document.createElement("style")
 menuStyle.textContent=`
   :host(.menu-button) {
@@ -25,19 +29,19 @@ menuStyle.textContent=`
     padding: 7px;
     vertical-align: center;
   
-    background: #fff;
-    color: #000;
+    background: var(--toad-menu-face, #fff);
+    color: var(--toad-menu-type, #000);
     cursor: default;
   }
   :host(.menu-button.active) {
-    background: #000;
-    color: #fff;
+    background: var(--toad-menu-type, #000);
+    color: var(--toad-menu-face, #fff);
   }
   :host(.menu-button.disabled) {
-    color: #888;
+    color: var(--toad-menu-face-disabled, #888);
   }
   :host(.menu-button.active.disabled) {
-    color: #888;
+    color: var(--toad-menu-face-disabled, #888);;
   }
   :host(.menu-button.menu-down) {
     padding-right: 20px;
@@ -71,7 +75,6 @@ menuStyle.textContent=`
     position: fixed;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 2px 5px #888;
+    box-shadow: 2px 2px 5px var(--toad-menu-shadow, #888);;
   }
 `
-
