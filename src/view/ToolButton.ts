@@ -80,15 +80,12 @@ export class ToolButton extends ModelView<OptionModelBase> {
         // let button = document.createElement("div")
         // button.setAttribute("tabindex", "0")
         this.onmousedown = (event) => {
-            console.log(`${this.getAttribute("value")}: mouse down`)
             if (this.hasAttribute("disabled")) {
-                console.log(`${this.getAttribute("value")}: -> ${this.getAttribute("value")} disabled`)
                 return
             }
             this.focus()
             event.preventDefault()
             if (this.model !== undefined) {
-                console.log(`${this.getAttribute("value")}: set stringValue '${this.getValue()}'`)
                 this.model.stringValue = this.getValue()
             }
         }
@@ -116,7 +113,6 @@ export class ToolButton extends ModelView<OptionModelBase> {
     }
    
     override updateView() {
-        console.log(`${this.getAttribute("value")}: update view`)
         if (this.model === undefined) {
             this.setAttribute("disabled", "")
             this.removeAttribute("selected")
