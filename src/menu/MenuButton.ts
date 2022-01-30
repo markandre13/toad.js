@@ -385,3 +385,5 @@ export class MenuButton extends ModelView<TextModel> {
     this.updateView()
   }
 }
+
+MenuButton.define("toad-menubutton", MenuButton)

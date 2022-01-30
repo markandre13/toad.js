@@ -180,3 +180,5 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
         // </>
     }
 }
+
+View.define("toad-treenodecell", TreeNodeCell)

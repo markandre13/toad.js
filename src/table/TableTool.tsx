@@ -273,3 +273,4 @@ export class TableTool extends GenericTool<Model> {
     //     //        this.buttonJustifyFull.classList.toggle("active", document.queryCommandState("justifyFull"))
     // }
 }
+View.define("toad-tabletool", TableTool)

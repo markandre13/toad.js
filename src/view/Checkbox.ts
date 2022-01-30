@@ -181,4 +181,4 @@ export class Checkbox extends ModelView<BooleanModel> {
   }
 }
 
-
+Checkbox.define("toad-checkbox", Checkbox)

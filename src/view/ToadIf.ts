@@ -30,4 +30,4 @@ export class ToadIf extends ModelView<BooleanModel> {
   }
 }
 
-
+ToadIf.define("toad-if", ToadIf)

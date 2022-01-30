@@ -51,3 +51,5 @@ export class Slider extends ModelView<NumberModel> {
     this.input.value = String(this.model.value)
   }
 }
+
+Slider.define("toad-slider", Slider)

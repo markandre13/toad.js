@@ -35,3 +35,4 @@ export class SlotView extends ModelView<TextModel> {
   }
 }
 
+SlotView.define("toad-slot", SlotView)

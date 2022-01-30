@@ -16,5 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { View } from "../view/View"
 export class MenuEntry extends HTMLElement {}
 
+View.define("toad-menuentry", MenuEntry)

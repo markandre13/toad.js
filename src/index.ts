@@ -23,10 +23,10 @@ import type { Point, MatrixStruct } from "./Matrix"
 export { Point, MatrixStruct }
 export { Signal } from "./Signal"
 
-export { Controller } from "./controller/Controller"
-export { Template } from "./controller/Template"
-export { Dialog } from "./controller/Dialog"
-export { bindModel, action, unbind, globalController } from "./controller/globalController"
+export { Controller } from "./controller/Controller"
+export { Template } from "./controller/Template"
+export { Dialog } from "./controller/Dialog"
+export { bindModel, action, unbind, globalController } from "./controller/globalController"
 export { Animator, AnimationBase } from "./util/animation"
 
 export { Model } from "./model/Model"
@@ -81,54 +81,3 @@ export { TreeNodeModel } from "./table/TreeNodeModel"
 export { ArrayModel } from "./table/ArrayModel"
 export { ArrayAdapter } from "./table/ArrayAdapter"
 
-import { View } from "./view/View"
-import { Text } from "./view/Text"
-import { TextArea } from "./view/TextArea"
-import { Button } from "./view/Button"
-import { Checkbox } from "./view/Checkbox"
-import { Slider } from "./view/Slider"
-import { ToolButton } from "./view/ToolButton"
-import { TextTool } from "./view/TextTool"
-import { SlotView } from "./view/SlotView"
-import { ToadIf } from "./view/ToadIf"
-
-import { Menu } from "./menu/Menu"
-import { MenuButton } from "./menu/MenuButton"
-import { MenuEntry } from "./menu/MenuEntry"
-import { MenuSpacer } from "./menu/MenuSpacer"
-
-import { TableView } from "./table/TableView"
-import { TableTool } from "./table/TableTool"
-import { TreeNodeCell } from "./table/TreeAdapter"
-
-let _isInitialized = false
-
-// FIXME: try to move these back into their own files
-export function initialize() {
-    _isInitialized = true
-
-    View.define("toad-button", Button)
-    View.define("toad-checkbox", Checkbox)
-    View.define("toad-slider", Slider)
-    View.define("toad-textarea", TextArea)
-    View.define("toad-toolbutton", ToolButton)
-    View.define("toad-texttool", TextTool)
-    View.define("toad-text", Text)
-    View.define("toad-if", ToadIf)
-    View.define("toad-slot", SlotView)
-
-    View.define("toad-menu", Menu)
-    View.define("toad-menubutton", MenuButton)
-    View.define("toad-menuentry", MenuEntry)
-    View.define("toad-menuspacer", MenuSpacer)
-
-    View.define("toad-table", TableView)
-    View.define("toad-tabletool", TableTool)
-    View.define("toad-treenodecell", TreeNodeCell)
-}
-
-export function isInitialized() {
-    return _isInitialized
-}
-
-initialize()

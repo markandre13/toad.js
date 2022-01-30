@@ -1068,3 +1068,4 @@ export class TableView extends View {
   }
 }
 
+TableView.define("toad-table", TableView)
