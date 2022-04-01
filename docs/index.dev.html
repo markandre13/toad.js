@@ -5,26 +5,69 @@
     <title>Introduction to toad.js</title>
     <meta name="description" content="An introduction to the TOAD TypeScript GUI Library (toad.js).">
     <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>"/>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin"/>
+    <link rel="stylesheet" href="../style/tx-static.css"/>
+    <link rel="stylesheet" href="../style/tx-dark.css"/>
+    <link rel="stylesheet" href="../style/tx.css"/>
+    <link id="tx-calendar" rel="stylesheet" type="text/css" href="../style/tx-calendar.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-button.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-text.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-helptext.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-label.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-form.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-checkbox.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-switch.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-radio.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-slider.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-search.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-searchwithin.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-combobox.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-menu.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-tabs.css" />
+
     <script type="application/javascript" src="../polyfill/webcomponents-hi-sd-ce.js"></script>
     <script type="module" src="../lib/docs/main.js"></script>
     <style>
-      :root {
-        --toad-font-family: "Trebuchet MS", Futura, Helvetica Neue, Helvetica, Arial, sans-serif;
-        --toad-font-size: 12px;
-        --toad-outline-color: #9eccfb;
-        --toad-selection-color: #0069d4;
-      }
-      body {
-        font-family: var(--toad-font-family);
-        font-size: var(--toad-font-size);
-      }
-      h3 {
-        padding: 2px;
-        color: rgb(0,112,172);
-        border-bottom: rgb(0,112,172) solid 2px;
-      }
-    </style>
+    :root {
+        /* rounding: 4px desktop, 5px mobile */
+        /* Use one column per page, with a width no longer than 80 characters (or 40 CJK characters) wide. Have line lengths at a maximum of 50-75 charac
 
+        --toad-font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        --toad-font-size: calc((12/16) * 1rem);
+        --toad-font-size-info: calc((11/16) * 1rem);
+
+        --toad-fg-color: var(--tx-gray-700);
+        --toad-bg-color: var(--tx-gray-50);
+        --toad-placeholder-fg-color: var(--tx-gray-600);
+        --toad-placeholder-fg-color-hover: var(--tx-gray-900);
+
+        --toad-fg-color-disabled: var(--tx-gray-500);
+        --toad-bg-color-disabled: var(--tx-gray-100);
+
+        /* Edit */
+        --toad-edit-font-size: calc((12/16) * 1rem);
+        --toad-edit-font-weight: 400;
+
+        --toad-edit-fg-color: var(--tx-gray-800);
+        --toad-edit-fg-color-disabled: var(--tx-gray-500);
+
+        --toad-edit-bg-color: var(--tx-gray-50);
+        --toad-edit-bg-color-disabled: var(--tx-gray-100);
+
+        --toad-selection-color: var(--tx-global-blue-500);
+        --toad-warning-color: var(--tx-global-red-600);
+
+        /* Border/Outline */
+
+        /* outline indicates that the element has the focus */
+        --toad-outline-color: var(--tx-blue-500);
+        --toad-border-color: var(--tx-gray-400);
+        --toad-border-color-hover: var(--tx-gray-500);
+        --toad-border-width: 1px;
+        --toad-border-radius: 4px;
+    }
+    </style>
     <template id="my-code-button">
       <style>
         toad-button {
@@ -37,7 +80,24 @@
     </template>
   </head>
 
-  <body onload="example.main()">
+  <body>
+    <svg id="tx-icons" style="display: none;">
+        <path id="exclamation"
+            d="M17.127 2.579L.4 32.512A1 1 0 001.272 34h33.456a1 1 0 00.872-1.488L18.873 2.579a1 1 0 00-1.746 0zM20 29.5a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5h3a.5.5 0 01.5.5zm0-6a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5v-12a.5.5 0 01.5-.5h3a.5.5 0 01.5.5z">
+        </path>
+        <path id="checkmark"
+            d="M3.5 9.5a.999.999 0 01-.774-.368l-2.45-3a1 1 0 111.548-1.264l1.657 2.028 4.68-6.01A1 1 0 019.74 2.114l-5.45 7a1 1 0 01-.777.386z">
+        </path>
+        <path id="cross"
+            d="M6.548 5L9.63 1.917A1.094 1.094 0 008.084.371L5.001 3.454 1.917.37A1.094 1.094 0 00.371 1.917L3.454 5 .37 8.085A1.094 1.094 0 101.917 9.63l3.084-3.083L8.084 9.63a1.094 1.094 0 101.547-1.546z">
+        </path>
+        <path id="chevron"
+            d="M3 9.95a.875.875 0 01-.615-1.498L5.88 5 2.385 1.547A.875.875 0 013.615.302L7.74 4.377a.876.876 0 010 1.246L3.615 9.698A.872.872 0 013 9.95z">
+        </path>
+        <path id="search"
+            d="M33.173 30.215L25.4 22.443a12.826 12.826 0 10-2.957 2.957l7.772 7.772a2.1 2.1 0 002.958-2.958zM6 15a9 9 0 119 9 9 9 0 01-9-9z">
+        </path>
+    </svg>
 
     <p style="text-align: center">
       <img src="toad.gif" alt="TOAD" /><br />

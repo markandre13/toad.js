@@ -1,0 +1,67 @@
+:root {
+  font-size: 100%;
+  text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+}
+body {
+  font-family: "IBM Plex Sans", Helvetica, Arial, sans-serif;
+  font-size: calc((12/16) * 1rem);
+  font-weight: 400;
+  line-height: 1.5;
+}
+p {
+    margin: calc((6/16) * 1rem) 0;
+}
+b      { font-weight: 500; }
+strong { font-weight: 500; }
+h1 {
+  font-size: calc((24/16) * 1rem);
+  font-weight: 600;
+}
+h2 { 
+  font-size: calc((22/16) * 1rem);
+  font-weight: 600;
+}
+h3 {
+  font-size: calc((18/16) * 1rem);
+  font-weight: 500;
+}
+h4 {
+  font-size: calc((14/16) * 1rem);
+  font-weight: 500;
+}
+pre {
+  font-family: "IBM Plex Mono", Courier, monospaced;
+  font-size: calc((12/16) * 1rem);
+  font-weight: 300;
+  line-height: 1.1; /* 1.5625rem 25px */
+}
+
+/*
+ * COLOR
+ */
+body {
+    background: var(--tx-gray-100);
+    color: var(--tx-gray-800);
+}
+a:link { 
+    color: var(--tx-gray-900);
+    font-weight: bold;
+    text-decoration: none;
+    text-decoration-style: solid;
+    cursor: auto;
+}
+a:hover {
+    text-decoration: underline; 
+}
+a:visited { 
+    color: var(--tx-gray-900);
+    cursor: auto;
+}
+a:link:active, a:visited:active { 
+     color: var(--tx-gray-900);
+}
+/* a:link::before {
+  content: "→";
+  text-decoration: none;
+} */

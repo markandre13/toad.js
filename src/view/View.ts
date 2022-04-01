@@ -42,6 +42,21 @@ export class View extends HTMLElement {
 
   controller?: Controller
 
+  attachStyle(name: string) {
+    if (this.shadowRoot === null) {
+        console.trace(`this.shadowRoot === null`)
+        return
+    }
+    for(let i = 0; i < document.styleSheets.length; ++i) {
+        const style = document.styleSheets.item(i)
+        if (style!.href && style!.href.endsWith(`/tx-${name}.css`)) {
+            this.shadowRoot.appendChild(document.importNode(style!.ownerNode!, true))
+            return
+        }
+    }
+    console.log(`failed to locate tx-${name}.css in document`)
+}
+
   setModel(model?: Model<any>): void {
     console.trace(`Please note that View.setModel(model) has no implementation.`)
   }

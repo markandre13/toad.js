@@ -30,8 +30,10 @@ export class Slider extends ModelView<NumberModel> {
     this.input.oninput = () => { 
         view.updateModel()
     }
+    this.classList.add("tx-slider")
     this.attachShadow({mode: 'open'})
-        .appendChild(this.input)
+    this.attachStyle("slider")
+    this.shadowRoot!.appendChild(this.input)
   }
   
   override updateModel() {

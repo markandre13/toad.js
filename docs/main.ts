@@ -26,7 +26,9 @@ import {
     bindModel as bind, action, refs
 } from '@toad'
 
-window.onload = () => { main() }
+window.onload = () => { 
+    main() 
+}
 
 //
 // <toad-text>

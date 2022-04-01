@@ -19,44 +19,52 @@
 import { HtmlModel } from "../model/HtmlModel"
 import { ActionView, ActionViewProps } from "./ActionView"
 
-let buttonStyle = document.createElement("style")
-buttonStyle.textContent=`
-  button {
-    border: none;
-    background-color: var(--toad-primary-color, #0052cc);
-    color: #ffffff;
-    border-radius: 3px;
-    font-size: 14px;
-    font-weight: bold;
-    height: 32px;
-    line-height: 32px;
-    min-width: 24px;
-    text-shadow: none;
-    padding: 0 10px;
-    margin-right: 4px;
-  }
+import { button, span } from "../util/lsx"
+
+// let buttonStyle = document.createElement("style")
+// buttonStyle.textContent=`
+//   button {
+//     border: none;
+//     background-color: var(--toad-primary-color, #0052cc);
+//     color: #ffffff;
+//     border-radius: 3px;
+//     font-size: 14px;
+//     font-weight: bold;
+//     height: 32px;
+//     line-height: 32px;
+//     min-width: 24px;
+//     text-shadow: none;
+//     padding: 0 10px;
+//     margin-right: 4px;
+//   }
   
-  button:hover {
-    background-color: #0065ff;
-  }
+//   button:hover {
+//     background-color: #0065ff;
+//   }
   
-  button:hover:active {
-    background-color: #0049b0;
-  }
+//   button:hover:active {
+//     background-color: #0049b0;
+//   }
   
-  button:disabled, button:disabled:active {
-    background-color: #888;
-  }
-`
+//   button:disabled, button:disabled:active {
+//     background-color: #888;
+//   }
+// `
 
 export class Button extends ActionView {
   button: HTMLButtonElement
+  label: HTMLSpanElement
   _observer?: MutationObserver
   _timer?: number
 
   constructor(init?: ActionViewProps) {
     super(init)
-    this.button = document.createElement("button") as HTMLButtonElement
+
+    this.button = button(
+        this.label = span()
+    )
+    this.button.classList.add("tx-button")
+    this.label.classList.add("tx-label")
     this.button.onclick = () => {
       if (this.action)
         this.action.trigger()
@@ -64,7 +72,7 @@ export class Button extends ActionView {
     this.button.disabled = true
     
     this.attachShadow({mode: 'open'})
-    this.shadowRoot!.appendChild(document.importNode(buttonStyle, true))
+    this.attachStyle("button")
     this.shadowRoot!.appendChild(this.button)
   }
 
@@ -93,11 +101,11 @@ export class Button extends ActionView {
       return
     if (this.model && this.model.value) { // FIXME: use updateView only for Model stuff
       if (this.model instanceof HtmlModel)
-        this.button.innerHTML = this.model.value
+        this.label.innerHTML = this.model.value
       else
-        this.button.innerText = this.model.value
+        this.label.innerText = this.model.value
     } else {
-      this.button.innerHTML = this.innerHTML
+      this.label.innerHTML = this.innerHTML
     }
 
     this.button.disabled = !this.isEnabled()

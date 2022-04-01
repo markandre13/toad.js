@@ -17,6 +17,7 @@
  */
 
 export * from "toad.jsx"
+export * from "./util/lsx"
 
 export { Matrix } from "./Matrix"
 import type { Point, MatrixStruct } from "./Matrix"

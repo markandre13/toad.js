@@ -1,0 +1,44 @@
+.tx-text {
+    display: inline-block;
+    box-shadow: none;
+    box-sizing: border-box;
+    color: var(--toad-edit-fg-color);
+    background-color: var(--toad-edit-bg-color);
+
+    /* we'll use the border instead of an outline to indicate the focus */
+    outline: none;
+    border-width: var(--toad-border-width);
+    border-style: solid;
+    border-color: var(--toad-border-color);
+    border-radius: var(--toad-border-radius);
+
+    font-weight: var(--toad-edit-font-weight);
+    font-size: var(--toad-edit-font-size);
+    line-height: 18px;
+
+    padding: 4px 8px 4px 8px;
+    text-indent: 0;
+    vertical-align: top;
+    margin: 0;
+    overflow: visible;
+    text-overflow: ellipsis;
+}
+.tx-text:hover {
+    border-color: var(--toad-border-color-hover);
+}
+.tx-text:disabled {
+    color: var(--toad-fg-color-disabled);
+    background-color: var(--toad-bg-color-disabled);
+    border-color: var(--toad-bg-color-disabled);
+}
+.tx-text::placeholder {
+    color: var(--toad-placeholder-fg-color);
+    font-style: italic;
+    font-weight: 300;
+}
+.tx-text:hover::placeholder {
+    color: var(--toad-placeholder-fg-color-hover);
+}
+.tx-text:focus {
+    border-color: var(--toad-outline-color);
+}
