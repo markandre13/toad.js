@@ -23,8 +23,10 @@ import {
 
     ArrayModel, ArrayAdapter, TableAdapter,
     TreeNode, TreeNodeModel, TreeAdapter,
-    bind, action, refs
+    bindModel as bind, action, refs
 } from '@toad'
+
+window.onload = () => { main() }
 
 //
 // <toad-text>
