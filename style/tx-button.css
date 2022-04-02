@@ -4,47 +4,53 @@
     color: var(--tx-gray-800);
     transition: background-color 130ms ease-in-out;
     background-color: var(--tx-gray-300);
-    border: 2px;
+    border: 0 none;
     height: 28px;
     border-radius: 16px;
     box-shadow: none;
 }
-.tx-button.tx-default {
+
+:host(.tx-default) > .tx-button {
     color: var(--tx-gray-50);
     background-color: var(--tx-gray-800);
 }
 
-.tx-button.tx-accent {
+/* accent */
+
+:host(.tx-accent) > .tx-button {
     color: var(--tx-static-white);
     background-color: var(--tx-static-blue-600);
 }
-.tx-button.tx-accent:hover, .tx-button.tx-accent:active {
+
+:host(.tx-accent) > .tx-button:hover, :host(.tx-accent) > .tx-button:active {
     color: var(--tx-static-white);
     background-color: var(--tx-static-blue-700);
 }
-.tx-button.tx-accent:hover:active {
+:host(.tx-accent) > .tx-button:hover:active {
     color: var(--tx-static-white);
-    background-color: var(--tx-static-blue-700);
+    background-color: var(--tx-static-blue-500);
 }
 
-.tx-button.tx-negative {
+/* negative */
+
+:host(.tx-negative) > .tx-button {
     color: var(--tx-static-white);
     background-color: var(--tx-static-red-600);
 }
-.tx-button.tx-negative:hover, .tx-button.tx-negative:active {
+:host(.tx-negative) > :hover, :host(.tx-negative) > :active {
     color: var(--tx-static-white);
     background-color: var(--tx-static-red-700);
 }
-.tx-button.tx-negative:hover:active {
+:host(.tx-negative) > :hover:active {
     color: var(--tx-static-white);
-    background-color: var(--tx-static-red-700);
+    background-color: var(--tx-static-red-500);
 }
 
 .tx-button:hover, .tx-button:active {
     color: var(--tx-gray-900);
     background-color: var(--tx-gray-400);
 }
-.tx-button.tx-default:hover, .tx-button.tx-default:hover:active {
+:host(.tx-default) > .tx-button:hover, :host(.tx-default) > .tx-button:hover:active {
     color: var(--tx-gray-50);
     background-color: var(--tx-gray-900);
 }
@@ -56,9 +62,10 @@
 
 .tx-button:hover:active > span {
     transition: transform 130ms ease-in-out;
-    transform: translateX(1px) translateY(1px);
+    transform: translate(1px, 1px);
 }
-.tx-button.tx-default:active {
+
+:host(.tx-default) > .tx-button:active {
     color: var(--tx-gray-50);
     background-color: var(--tx-gray-900);
 }
@@ -73,5 +80,4 @@
     /* align children in the center */
     text-align: center;
 }
-
 

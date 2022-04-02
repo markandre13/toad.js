@@ -6,11 +6,11 @@
     <meta name="description" content="An introduction to the TOAD TypeScript GUI Library (toad.js).">
     <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>"/>
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin"/>
-    <link rel="stylesheet" href="../style/tx-static.css"/>
-    <link rel="stylesheet" href="../style/tx-dark.css"/>
-    <link rel="stylesheet" href="../style/tx.css"/>
-    <link id="tx-calendar" rel="stylesheet" type="text/css" href="../style/tx-calendar.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin"/>
+    <link rel="stylesheet" type="text/css" href="../style/tx-static.css"/>
+    <link rel="stylesheet" type="text/css" href="../style/tx-dark.css"/>
+    <link rel="stylesheet" type="text/css" href="../style/tx.css"/>
+    <link id="tx-calendar" type="text/css" rel="stylesheet" href="../style/tx-calendar.css" />
     <link rel="stylesheet" type="text/css" href="../style/tx-button.css" />
     <link rel="stylesheet" type="text/css" href="../style/tx-text.css" />
     <link rel="stylesheet" type="text/css" href="../style/tx-helptext.css" />
@@ -31,7 +31,7 @@
     <style>
     :root {
         /* rounding: 4px desktop, 5px mobile */
-        /* Use one column per page, with a width no longer than 80 characters (or 40 CJK characters) wide. Have line lengths at a maximum of 50-75 charac
+        /* Use one column per page, with a width no longer than 80 characters (or 40 CJK characters) wide. Have line lengths at a maximum of 50-75 characters */
 
         --toad-font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
         --toad-font-size: calc((12/16) * 1rem);
@@ -78,7 +78,8 @@
         <toad-button action="action" model="label"></toad-button>
       </p>
     </template>
-  </head>
+
+</head>
 
   <body>
     <svg id="tx-icons" style="display: none;">
@@ -244,6 +245,11 @@
     </toad-if>
 
     <h3>&lt;toad-button&gt;</h3>
+
+    <toad-button class="tx-default">Default</toad-button>
+    <toad-button class="tx-accent">Accent</toad-button>
+    <toad-button class="tx-negative">Negative</toad-button>
+
     <toad-button action="hitMe">Hit me!</toad-button>
     <toad-button action="hitMeMore" model="hello">I get my text from the
     model registered as 'hello'</toad-button>
@@ -252,6 +258,9 @@
     <toad-if model="button-condition">
     <h4>HTML</h4>
     <pre>
+      &lt;toad-button class="tx-default"&gt;Default&lt;/toad-button&gt;
+      &lt;toad-button class="tx-accent"&gt;Accent&lt;/toad-button&gt;
+      &lt;toad-button class="tx-negative"&gt;Negative&lt;/toad-button&gt;
       &lt;toad-button action="hitMe"&gt;Hit me!&lt;/toad-button&gt;
       &lt;toad-button action="hitMeMore" model="hello"&gt;I get my text from the model registered as 'hello'&lt;/toad-button&gt;</pre>
     <h4>TypeScript</h4>
@@ -268,7 +277,9 @@
     
     <h3>&lt;toad-checkbox&gt; and &lt;toad-if&gt;</h3>
     The answer to life, the universe and everything?
+
     <toad-checkbox model="onoff"></toad-checkbox>
+    <toad-checkbox model="on"></toad-checkbox>
     <toad-if model="onoff">
       <p>What is 6 &times; 7?</p>
     </toad-if>

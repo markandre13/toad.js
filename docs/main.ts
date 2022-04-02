@@ -65,6 +65,9 @@ var hitMeMore = action("hitMeMore", () => {
 let onoff = new BooleanModel(false)
 bind("onoff", onoff)
 
+let on = new BooleanModel(true)
+bind("on", on)
+
 //
 // <toad-slider>
 //

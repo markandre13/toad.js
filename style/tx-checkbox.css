@@ -1,4 +1,4 @@
-.tx-checkbox {
+:host(.tx-checkbox) {
     display: inline-block;
     position: relative;
     box-shadow: none;
@@ -10,7 +10,7 @@
     width: 14px;
 }
 
-.tx-checkbox > input {
+:host(.tx-checkbox) > input {
     box-sizing: border-box;
     width: 14px;
     height: 14px;
@@ -26,14 +26,19 @@
     -webkit-appearance: none;
 }
 
+/* this is a svg 2 feature, works with firefox, chrome and edge, but not safari */
+/* :host(.tx-checkbox) > svg > path {
+    d: path("M3.5 9.5a.999.999 0 01-.774-.368l-2.45-3a1 1 0 111.548-1.264l1.657 2.028 4.68-6.01A1 1 0 019.74 2.114l-5.45 7a1 1 0 01-.777.386z");
+} */
+
 /* focus ring */
-.tx-checkbox > input:focus-visible {
+:host(.tx-checkbox) > input:focus-visible {
     outline: 2px solid;
     outline-color: var(--toad-outline-color);
     outline-offset: 2px;
 }
 
-.tx-checkbox > svg {
+:host(.tx-checkbox) > svg {
     position: absolute;
     left: 2px;
     top: 2px;
@@ -44,24 +49,24 @@
     pointer-events: none;
 }
 
-.tx-checkbox > input:hover {
+:host(.tx-checkbox) > input:hover {
     border-color: var(--tx-gray-800);
 }
-/* .tx-checkbox > input:focus {
+.tx-checkbox > input:focus {
     border-color: var(--toad-outline-color);
-} */
+}
 
-.tx-checkbox > input:checked {
+:host(.tx-checkbox) > input:checked {
     background-color: var(--tx-gray-700);
 }
-.tx-checkbox > input:hover:checked {
+:host(.tx-checkbox) > input:hover:checked {
     background-color: var(--tx-gray-800);
 }
 
-.tx-checkbox > input:disabled {
+:host(.tx-checkbox) > input:disabled {
     color: var(--tx-gray-400);
     border-color: var(--tx-gray-400);
 }
-.tx-checkbox > input:checked:disabled {
+:host(.tx-checkbox) > input:checked:disabled {
     background-color: var(--tx-gray-400);
 }

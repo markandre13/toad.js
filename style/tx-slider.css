@@ -6,14 +6,13 @@
  *
  * https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-thumb
  *
- * FIXME: try to use -web-kit, -moz to implement the track and get rid of the outer div
  */
 
 :host(.tx-slider) {
     height: 14px;
     position: relative;
     width: 270px;
-    border: 1px solid #f00;
+    display: inline-block;
 }
 :host(.tx-slider) > input {
     position: absolute;
