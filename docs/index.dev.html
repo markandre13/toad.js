@@ -275,15 +275,22 @@
       })</pre>
     </toad-if>
     
-    <h3>&lt;toad-checkbox&gt; and &lt;toad-if&gt;</h3>
+    <h3>&lt;toad-checkbox&gt;, &lt;toad-switch&gt; and &lt;toad-if&gt;</h3>
     The answer to life, the universe and everything?
 
+    <br />
     <toad-checkbox model="onoff"></toad-checkbox>
     <toad-checkbox model="on"></toad-checkbox>
+    <br />
+    <toad-switch model="onoff"></toad-switch>
+    <toad-switch model="on"></toad-switch>
+    <br />
+
     <toad-if model="onoff">
       <p>What is 6 &times; 7?</p>
     </toad-if>
-    
+
+
     <my-code-button condition="checkbox-condition"></my-code-button>
     <toad-if model="checkbox-condition">
     <h4>HTML</h4>

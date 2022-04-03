@@ -1,12 +1,12 @@
 /* a div on top serves as the container for elements used for the switch*/
-.tx-switch {
+:host(.tx-switch) {
     display: inline-flex;
     align-items: flex-start;
     position: relative;
     vertical-align: top;
 }
 /* an invisible checkbox will overlay everything, handling input and state */
-.tx-switch > input {
+:host(.tx-switch) > input {
     display: inline-block;
     position: absolute;
     left: 0;
@@ -20,7 +20,7 @@
     z-index: 1;
 }
 /* the span provides the visual appearance */
-.tx-switch > span {
+:host(.tx-switch) > span {
     display: block;
     position: relative;
     left: 0;
@@ -38,14 +38,14 @@
 }
 
 /* focus ring */
-.tx-switch > input:focus-visible + span {
+:host(.tx-switch) > input:focus-visible + span {
     outline: 2px solid;
     outline-color: var(--toad-outline-color);
     outline-offset: 2px;
 }
 
 /* this is the knob on the switch */
-.tx-switch > span:before {
+:host(.tx-switch) > span:before {
     display: block;
     position: absolute;
     left: 0;
@@ -61,31 +61,31 @@
     /* 'transform' usually can be GPU acclerated while 'left' can not */
     transition: transform 130ms ease-in-out;
 }
-.tx-switch > input:hover + span:before {
+:host(.tx-switch) > input:hover + span:before {
     border-color: var(--tx-gray-900);
 }
 
-.tx-switch > input:checked + span:before {
+:host(.tx-switch) > input:checked + span:before {
     /* border-color: var(--tx-gray-700); */
     transform: translateX(calc(100% - 2px));
 }
 
-.tx-switch > input:checked + span {
+:host(.tx-switch) > input:checked + span {
     background: var(--tx-gray-700);
 }
-.tx-switch > input:checked:hover + span {
+:host(.tx-switch) > input:checked:hover + span {
     background: var(--tx-gray-900);
 }
-.tx-switch > input:hover + span + label {
+:host(.tx-switch) > input:hover + span + label {
     color: var(--tx-gray-900);
 }
 
-.tx-switch > input:checked:disabled + span {
+:host(.tx-switch) > input:checked:disabled + span {
     background: var(--tx-gray-400);
 }
-.tx-switch > input:disabled + span:before {
+:host(.tx-switch) > input:disabled + span:before {
     border-color: var(--tx-gray-400);
 }
-.tx-switch > input:disabled + span + label {
+:host(.tx-switch) > input:disabled + span + label {
     color: var(--tx-gray-400);
 }
