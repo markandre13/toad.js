@@ -64,8 +64,6 @@ export class PopupMenu extends MenuButtonContainer {
   }
 }
 
-View.define("toad-popupmenu", PopupMenu)
-
 export function placePopupVertical(parent: HTMLElement, popup: HTMLElement): void {
   let parentBoundary = parent.getBoundingClientRect()
 
@@ -117,3 +115,5 @@ export function placePopupHorizontal(parent: HTMLElement, popup: HTMLElement): v
 
 //  window.addEventListener("mouseup", new PopupListener(popup), true)
 }
+
+View.define("tx-popupmenu", PopupMenu)

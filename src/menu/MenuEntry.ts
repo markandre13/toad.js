@@ -19,4 +19,4 @@
 import { View } from "../view/View"
 export class MenuEntry extends HTMLElement {}
 
-View.define("toad-menuentry", MenuEntry)
+View.define("tx-menuentry", MenuEntry)

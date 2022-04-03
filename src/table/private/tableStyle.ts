@@ -24,8 +24,8 @@ tableStyle.textContent = `
   border: 1px #ccc solid;
   border-radius: 3px;
   outline-offset: -2px;
-  font-family: var(--toad-font-family, sans-serif);
-  font-size: var(--toad-font-size, 12px);
+  font-family: var(--tx-font-family);
+  font-size: var(--tx-font-size);
   background: #fff;
 }
 :host:focus .cells tr.selected,
@@ -91,10 +91,10 @@ tableStyle.textContent = `
 }
 
 .cells tr:nth-child(even) {
-  background: var(--toad-table-even-row, #f5f5f5);
+  background: var(--tx-table-even-row, #f5f5f5);
 }
 .cells tr:nth-child(odd) {
-  background: var(--toad-table-odd-row, #ffffff);
+  background: var(--tx-table-odd-row, #ffffff);
 }
 
 .cells td:nth-child(1) {

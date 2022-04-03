@@ -41,7 +41,7 @@
 /* focus ring */
 .tx-radio > input:focus-visible + span {
     outline: 2px solid;
-    outline-color: var(--toad-outline-color);
+    outline-color: var(--tx-outline-color);
     outline-offset: 2px;
 }
 /* this is the knob on the switch */

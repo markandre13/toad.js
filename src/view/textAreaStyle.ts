@@ -79,8 +79,8 @@ svg .strokeFill {
 }
 
 div.textarea {
-  font-family: var(--toad-font-family, sans-serif);
-  font-size: var(--toad-font-size, 12px);
+  font-family: var(--tx-font-family);
+  font-size: var(--tx-font-size);
   border: 1px #ccc solid;
   border-radius: 3px;
   margin: 2px;

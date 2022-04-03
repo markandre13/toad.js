@@ -132,4 +132,4 @@ export class ToolButton extends ModelView<OptionModelBase> {
     }
 }
 
-ToolButton.define("toad-toolbutton", ToolButton)
+ToolButton.define("tx-toolbutton", ToolButton)

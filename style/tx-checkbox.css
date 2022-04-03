@@ -20,9 +20,9 @@
     border: 2px solid;
     border-radius: 2px;
     border-color: var(--tx-gray-700);
-    /* border-radius: var(--toad-border-radius); */
-    color: var(--toad-edit-fg-color);
-    background-color: var(--toad-edit-bg-color);
+    /* border-radius: var(--tx-border-radius); */
+    color: var(--tx-edit-fg-color);
+    background-color: var(--tx-edit-bg-color);
     -webkit-appearance: none;
 }
 
@@ -34,7 +34,7 @@
 /* focus ring */
 :host(.tx-checkbox) > input:focus-visible {
     outline: 2px solid;
-    outline-color: var(--toad-outline-color);
+    outline-color: var(--tx-outline-color);
     outline-offset: 2px;
 }
 
@@ -43,7 +43,7 @@
     left: 2px;
     top: 2px;
     stroke: none;
-    fill: var(--toad-edit-bg-color);
+    fill: var(--tx-edit-bg-color);
     width: 10px;
     height: 10px;
     pointer-events: none;
@@ -53,7 +53,7 @@
     border-color: var(--tx-gray-800);
 }
 .tx-checkbox > input:focus {
-    border-color: var(--toad-outline-color);
+    border-color: var(--tx-outline-color);
 }
 
 :host(.tx-checkbox) > input:checked {

@@ -35,4 +35,4 @@ export class SlotView extends ModelView<TextModel> {
   }
 }
 
-SlotView.define("toad-slot", SlotView)
+SlotView.define("tx-slot", SlotView)

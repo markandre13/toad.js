@@ -143,4 +143,4 @@ export class InputOverlay extends HTMLDivElement {
     this.style.height = ""
   }
 }
-// window.customElements.define("toad-table-inputoverlay", InputOverlay, { extends: 'div' })
+// window.customElements.define("tx-table-inputoverlay", InputOverlay, { extends: 'div' })

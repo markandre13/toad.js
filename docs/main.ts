@@ -31,14 +31,14 @@ window.onload = () => {
 }
 
 //
-// <toad-text>
+// <tx-text>
 //
 
 let textModel = new TextModel("")
 bind("hello", textModel)
 
 //
-// <toad-texttool> & <toad-textarea>
+// <tx-texttool> & <tx-textarea>
 //
 let markupModel = new HtmlModel("")
 markupModel.modified.add(() => {
@@ -47,7 +47,7 @@ markupModel.modified.add(() => {
 bind("markup", markupModel)
 
 //
-// <toad-button>
+// <tx-button>
 //
 action("hitMe", () => {
     textModel.value = "Hit me too!"
@@ -59,17 +59,26 @@ var hitMeMore = action("hitMeMore", () => {
 })
 
 //
-// <toad-checkbox> and <toad-if>
+// <tx-checkbox>, <tx-switch> and <tx-if>
 //
 
-let onoff = new BooleanModel(false)
-bind("onoff", onoff)
+const off = new BooleanModel(false)
+bind("off", off)
 
-let on = new BooleanModel(true)
+const on = new BooleanModel(true)
 bind("on", on)
 
+const offDisabled = new BooleanModel(false)
+offDisabled.enabled = false
+bind("offDisabled", off)
+
+const onDisabled = new BooleanModel(true)
+onDisabled.enabled = false
+bind("onDisabled", on)
+
+
 //
-// <toad-slider>
+// <tx-slider>
 //
 
 let size = new NumberModel(42, { min: 0, max: 99 })

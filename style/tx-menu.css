@@ -27,7 +27,7 @@
     border-color: var(--tx-gray-100);
 }
 .tx-menu > li:focus {
-    border-left-color: var(--toad-outline-color);
+    border-left-color: var(--tx-outline-color);
 }
 .tx-menu > li[role=separator] {
     display: block;

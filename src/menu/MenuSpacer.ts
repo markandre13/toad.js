@@ -19,4 +19,4 @@
 import { View } from "../view/View"
 export class MenuSpacer extends HTMLElement {}
 
-View.define("toad-menuspacer", MenuSpacer)
+View.define("tx-menuspacer", MenuSpacer)

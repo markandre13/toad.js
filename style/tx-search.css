@@ -32,8 +32,8 @@
     background: var(--tx-gray-50);
 
     color: var(--tx-gray-900);  
-    font-weight: var(--toad-edit-font-weight);
-    font-size: var(--toad-edit-font-size);
+    font-weight: var(--tx-edit-font-weight);
+    font-size: var(--tx-edit-font-size);
     line-height: 18px;
 }
 /* the button is transparent so that the border of the input field remains visible */
@@ -76,10 +76,10 @@
 }
 
 .tx-search > div > input:focus {
-    border-color: var(--toad-outline-color);
+    border-color: var(--tx-outline-color);
 }
 .tx-search > button:focus > svg {
-    fill: var(--toad-outline-color);
+    fill: var(--tx-outline-color);
 }
 
 .tx-search > div > input:disabled {

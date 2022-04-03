@@ -386,4 +386,4 @@ export class MenuButton extends ModelView<TextModel> {
   }
 }
 
-MenuButton.define("toad-menubutton", MenuButton)
+MenuButton.define("tx-menubutton", MenuButton)

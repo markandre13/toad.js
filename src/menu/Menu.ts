@@ -211,4 +211,4 @@ export class Menu extends MenuButtonContainer {
   }
 }
 
-Menu.define("toad-menu", Menu)
+Menu.define("tx-menu", Menu)

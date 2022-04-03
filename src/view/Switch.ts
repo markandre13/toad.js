@@ -71,4 +71,4 @@ export class Switch extends ModelView<BooleanModel> {
     }
 }
 
-Switch.define("toad-switch", Switch)
+Switch.define("tx-switch", Switch)

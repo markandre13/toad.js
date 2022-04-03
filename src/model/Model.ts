@@ -22,8 +22,20 @@ export type InferModelParameter<M> = M extends Model<infer T> ? T : never
 
 export abstract class Model<T = void> {
   modified: Signal<T>
+  _enabled = true
 
   constructor() {
     this.modified = new Signal<T>()
+  }
+
+  set enabled(enabled: boolean) {
+    if (this._enabled == enabled)
+      return
+    this._enabled = enabled
+    this.modified.trigger(undefined as any)
+  }
+  
+  get enabled(): boolean {
+    return this._enabled
   }
 }

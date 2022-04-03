@@ -48,12 +48,12 @@
 /* focus ring */
 :host(.tx-slider) > input:focus::-webkit-slider-thumb {
     outline: 2px solid;
-    outline-color: var(--toad-outline-color);
+    outline-color: var(--tx-outline-color);
     outline-offset: 2px;
 }
 :host(.tx-slider) > input:focus::-moz-range-thumb {
     outline: 2px solid;
-    outline-color: var(--toad-outline-color);
+    outline-color: var(--tx-outline-color);
     outline-offset: 2px;
 }
 

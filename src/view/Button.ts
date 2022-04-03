@@ -84,4 +84,4 @@ export class Button extends ActionView {
     }
 }
 
-Button.define("toad-button", Button)
+Button.define("tx-button", Button)

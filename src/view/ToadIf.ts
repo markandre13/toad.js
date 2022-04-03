@@ -19,7 +19,7 @@
 import { BooleanModel } from "../model/BooleanModel"
 import { ModelView } from "./ModelView"
 
-// <toad-if> requires correct HTML otherwise <toad-if> and it's content might
+// <tx-if> requires correct XHTML otherwise <tx-if> and it's content might
 // be separated by stuff like an </p> inserted automatically by the browser
 // so one should use stuff like htmltidy or htmlhint
 export class ToadIf extends ModelView<BooleanModel> {
@@ -30,4 +30,4 @@ export class ToadIf extends ModelView<BooleanModel> {
   }
 }
 
-ToadIf.define("toad-if", ToadIf)
+ToadIf.define("tx-if", ToadIf)

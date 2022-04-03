@@ -23,9 +23,9 @@
 export const menuStyle = document.createElement("style")
 menuStyle.textContent=`
   :host(.menu-button) {
-    font-family: var(--toad-font-family, sans-serif);
-    font-size: var(--toad-edit-font-size);
-    font-weight: var(--toad-edit-font-weight);
+    font-family: var(--tx-font-family);
+    font-size: var(--tx-edit-font-size);
+    font-weight: var(--tx-edit-font-weight);
     padding: 7px;
     vertical-align: center;
   

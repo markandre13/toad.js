@@ -54,4 +54,4 @@ export class Slider extends ModelView<NumberModel> {
   }
 }
 
-Slider.define("toad-slider", Slider)
+Slider.define("tx-slider", Slider)

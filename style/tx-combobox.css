@@ -19,12 +19,12 @@
     background-color: var(--tx-gray-50);
 
     color: var(--tx-gray-900);  
-    font-weight: var(--toad-edit-font-weight);
-    font-size: var(--toad-edit-font-size);
+    font-weight: var(--tx-edit-font-weight);
+    font-size: var(--tx-edit-font-size);
     line-height: 18px;
 }
 .tx-combobox > input::placeholder {
-    color: var(--toad-placeholder-fg-color);
+    color: var(--tx-placeholder-fg-color);
     font-style: italic;
     font-weight: 300;
 }
@@ -64,20 +64,20 @@
 }
 
 .tx-combobox > input:focus {
-    border-color: var(--toad-outline-color);
+    border-color: var(--tx-outline-color);
 }
 .tx-combobox > input:focus + button {
-    border-color: var(--toad-outline-color);
+    border-color: var(--tx-outline-color);
 }
 /* spectrum use a 1px focus ring when the focus was set by mouse
  * and a 2px focus ring when the focus was set by keyboard
  * no clue how to do that with css
  *
 /* .tx-combobox > input:focus-visible {
-    outline: 1px solid var(--toad-outline-color);
+    outline: 1px solid var(--tx-outline-color);
 }
 .tx-combobox > input:focus-visible + button {
-    outline: 1px solid var(--toad-outline-color);
+    outline: 1px solid var(--tx-outline-color);
     border-left: none;
 } */
 

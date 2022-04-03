@@ -40,7 +40,7 @@
 /* focus ring */
 :host(.tx-switch) > input:focus-visible + span {
     outline: 2px solid;
-    outline-color: var(--toad-outline-color);
+    outline-color: var(--tx-outline-color);
     outline-offset: 2px;
 }
 

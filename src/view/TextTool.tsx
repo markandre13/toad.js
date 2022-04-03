@@ -248,4 +248,4 @@ export class TextTool extends ModelView<Model> {
     }
 }
 
-TextTool.define("toad-texttool", TextTool)
+TextTool.define("tx-texttool", TextTool)

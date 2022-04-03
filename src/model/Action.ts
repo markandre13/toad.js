@@ -23,8 +23,6 @@ export class Action extends Model {
   signal: Signal
   title: string
   
-  _enabled: boolean
-
   constructor(parent: HTMLElement | undefined, title: string) {
     super()
     this.signal = new Signal()
@@ -38,17 +36,6 @@ export class Action extends Model {
 
   get value(): any {
     throw Error("Action.value can not return a value")
-  }
-
-  set enabled(enabled: boolean) {
-    if (this._enabled == enabled)
-      return
-    this._enabled = enabled
-    this.modified.trigger()
-  }
-  
-  get enabled(): boolean {
-    return this._enabled
   }
   
   trigger(data?: any): void {

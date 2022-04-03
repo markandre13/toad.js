@@ -78,4 +78,4 @@ export class Text extends ModelView<TextModel|NumberModel> {
   }
 }
 
-Text.define("toad-text", Text)
+Text.define("tx-text", Text)

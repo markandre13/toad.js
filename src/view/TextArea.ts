@@ -165,4 +165,4 @@ export class TextArea extends ModelView<TextModel> {
     }
 }
 
-TextArea.define("toad-textarea", TextArea)
+TextArea.define("tx-textarea", TextArea)

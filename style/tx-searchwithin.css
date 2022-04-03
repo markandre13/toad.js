@@ -33,8 +33,8 @@
     overflow: hidden;
 
     color: var(--tx-gray-900);  
-    font-weight: var(--toad-edit-font-weight);
-    font-size: var(--toad-edit-font-size);
+    font-weight: var(--tx-edit-font-weight);
+    font-size: var(--tx-edit-font-size);
     /* line-height: 18px; */
     text-align: center;
 
@@ -87,8 +87,8 @@
     overflow: visible;
     background: var(--tx-gray-50);
     color: var(--tx-gray-900);  
-    font-weight: var(--toad-edit-font-weight);
-    font-size: var(--toad-edit-font-size);
+    font-weight: var(--tx-edit-font-weight);
+    font-size: var(--tx-edit-font-size);
     line-height: 18px;
 
     margin-left: -1px;
@@ -135,7 +135,7 @@
     border-color: var(--tx-gray-500);
 }
 .tx-searchwithin > div > input:focus {
-    border-color: var(--toad-outline-color);
+    border-color: var(--tx-outline-color);
 }
 
 .tx-searchwithin > button:first-child:hover {
@@ -147,10 +147,10 @@
 }
 
 .tx-searchwithin > button:first-child:focus {
-    border-color: var(--toad-outline-color);
+    border-color: var(--tx-outline-color);
 }
 .tx-searchwithin > button:last-child:focus > svg {
-    fill: var(--toad-outline-color);
+    fill: var(--tx-outline-color);
 }
 
 .tx-searchwithin > div > input:disabled {
