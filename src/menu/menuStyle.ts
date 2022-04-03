@@ -24,28 +24,31 @@ export const menuStyle = document.createElement("style")
 menuStyle.textContent=`
   :host(.menu-button) {
     font-family: var(--toad-font-family, sans-serif);
-    font-size: 14px;
-    font-weight: bold;
+    font-size: var(--toad-edit-font-size);
+    font-weight: var(--toad-edit-font-weight);
     padding: 7px;
     vertical-align: center;
   
-    background: var(--toad-menu-face, #fff);
-    color: var(--toad-menu-type, #000);
+    background: var(--tx-gray-200);
+    color: var(--tx-gray-900);
     cursor: default;
   }
+  :host(.menu-button:hover) {
+    background: var(--tx-gray-300);
+  }
   :host(.menu-button.active) {
-    background: var(--toad-menu-type, #000);
-    color: var(--toad-menu-face, #fff);
+    background: var(--tx-gray-400);
+    color: var(--tx-gray-900);
   }
   :host(.menu-button.disabled) {
-    color: var(--toad-menu-face-disabled, #888);
+    color: var(--tx-gray-500);
   }
   :host(.menu-button.active.disabled) {
-    color: var(--toad-menu-face-disabled, #888);;
+    color: var(--tx-gray-700);
   }
   :host(.menu-button.menu-down) {
     padding-right: 20px;
-    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 4 l 10 0 l -5 5 Z" fill="#000" stroke="none"/></svg>')}");
+    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 4 l 10 0 l -5 5 Z" fill="#fff" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
   }
@@ -56,7 +59,7 @@ menuStyle.textContent=`
   }
   :host(.menu-button.menu-side) {
     padding-right: 20px;
-    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 2 l 0 10 l 5 -5 Z" fill="#000" stroke="none"/></svg>')}");
+    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 2 l 0 10 l 5 -5 Z" fill="#fff" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
   }
@@ -70,11 +73,12 @@ menuStyle.textContent=`
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
+    background-color: var(--tx-gray-200);
   }
   .menu-popup {
     position: fixed;
     display: flex;
     flex-direction: column;
-    box-shadow: 2px 2px 5px var(--toad-menu-shadow, #888);;
+    box-shadow: 2px 2px 5px var(--tx-gray-50);
   }
 `

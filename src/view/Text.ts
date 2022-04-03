@@ -20,36 +20,16 @@ import { TextModel } from "../model/TextModel"
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 
-let textStyle = document.createElement("style")
-textStyle.textContent=`
-input {
-  font-family: var(--toad-font-family, sans-serif);
-  font-size: var(--toad-font-size, 12px);
-  border: 1px #ccc solid;
-  border-radius: 3px;
-  margin: 2px;
-  padding: 4px 5px;
-}
-
-:host(.embedded) input {
-  border: none 0;
-  border-radius: 0;
-  padding: 0;
-  margin: 2px;
-  width: 100%;
-  background: #fff;
-}
-`
-
 export class Text extends ModelView<TextModel|NumberModel> {
   input: HTMLInputElement
 
   constructor(init?: ModelViewProps<TextModel|NumberModel>) {
     super(init)
-    this.input = document.createElement("input") as HTMLInputElement
+    this.input = document.createElement("input")
+    this.input.classList.add("tx-text")
     this.input.oninput = () => { this.updateModel() }
     this.attachShadow({mode: 'open'})
-    this.shadowRoot!.appendChild(document.importNode(textStyle, true))
+    this.attachStyle("text")
     this.shadowRoot!.appendChild(this.input)
   }
   
@@ -97,6 +77,5 @@ export class Text extends ModelView<TextModel|NumberModel> {
     this.updateModel() // FIXME: do we need this?
   }
 }
-
 
 Text.define("toad-text", Text)

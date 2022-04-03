@@ -1,5 +1,5 @@
 .tx-text {
-    display: inline-block;
+    /* display: inline-block; */
     box-shadow: none;
     box-sizing: border-box;
     color: var(--toad-edit-fg-color);

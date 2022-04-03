@@ -32,7 +32,7 @@ export class TextArea extends ModelView<TextModel> {
         // FIXME: when model is not HtmlModel but TextModel, use <textarea> instead of <div contenteditable>
         let content = document.createElement("div")
         this.content = content
-        content.classList.add("textarea")
+        content.classList.add("tx-text")
         content.contentEditable = "true"
         
         content.oninput = (event: Event) => {
@@ -123,7 +123,7 @@ export class TextArea extends ModelView<TextModel> {
         }
 
         this.attachShadow({mode: 'open'})
-        this.shadowRoot!.appendChild(document.importNode(textAreaStyle, true))
+        this.attachStyle("text")
         this.shadowRoot!.appendChild(content)
     }
     
