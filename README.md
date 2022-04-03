@@ -3,6 +3,10 @@
    WebComponent/TypeScript Edition
 </p>
 
+<p align="center">
+  <a href="https://markandre13.github.io/toad.js/">Take look at the upcoming 0.1.0 release! 👀</a>
+</p>
+
 ## Welcome to the TOAD GUI Library
 
 TOAD is a collection of Views and [Presentation/View Models](https://martinfowler.com/eaaDev/PresentationModel.html)
@@ -27,7 +31,6 @@ But it _should_ basically work on any other modern browser.
 Please see Github for more information:
 
 * [README](https://github.com/markandre13/toad.js#readme)
-* [Demo](https://markandre13.github.io/toad.js/)
 
 [toad.js](https://github.com/markandre13/toad.js#readme) is based on my experience creating the TOAD C++ GUI library ([UNIX/X11](https://github.com/markandre13/toad-x11#readme), [macOS/Cocoa](https://github.com/markandre13/toad-macosx#readme)), dozen other UI libraries I looked up to for inspiration as well as the various applications written with it
 over mode than two decades.
