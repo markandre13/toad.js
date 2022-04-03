@@ -16,61 +16,30 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
-import { ModelView } from "./ModelView"
+import { BooleanView } from "./BooleanView"
 
 import { input, svg, path } from "../util/lsx"
 
-export class Checkbox extends ModelView<BooleanModel> {
-    input: HTMLInputElement
+export class Checkbox extends BooleanView {
 
     constructor() {
         super()
 
         this.classList.add("tx-checkbox")
 
-        this.attachShadow({ mode: 'open' })
-        this.attachStyle("checkbox")
-
         this.input = input()
         this.input.type = "checkbox"
-        const s = svg(
-            path("M3.5 9.5a.999.999 0 01-.774-.368l-2.45-3a1 1 0 111.548-1.264l1.657 2.028 4.68-6.01A1 1 0 019.74 2.114l-5.45 7a1 1 0 01-.777.386z")
-        )
-
         this.input.onchange = () => {
             this.updateModel()
         }
+        const checkmark = svg(
+            path("M3.5 9.5a.999.999 0 01-.774-.368l-2.45-3a1 1 0 111.548-1.264l1.657 2.028 4.68-6.01A1 1 0 019.74 2.114l-5.45 7a1 1 0 01-.777.386z")
+        )
+
+        this.attachShadow({ mode: 'open' })
+        this.attachStyle("checkbox")
         this.shadowRoot!.appendChild(this.input)
-        this.shadowRoot!.appendChild(s)
-        console.log(this)
-    }
-
-    override setModel(model?: BooleanModel) {
-        if (model !== undefined && !(model instanceof BooleanModel)) {
-            throw Error(`CheckBoxView.setModel(): model is not of type BooleanModel`)
-        }
-        super.setModel(model)
-    }
-
-    override updateModel() {
-        if (this.model) {
-            this.model.value = this.input.checked
-        }
-    }
-
-    override updateView() {
-        if (!this.model) {
-            this.input.setAttribute("disabled", "")
-            //   this.input.removeAttribute("checked")
-            return
-        }
-        this.input.removeAttribute("disabled")
-
-        if (this.model.value)
-            this.input.setAttribute("checked", "")
-        else
-            this.input.removeAttribute("checked")
+        this.shadowRoot!.appendChild(checkmark)
     }
 }
 

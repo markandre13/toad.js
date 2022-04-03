@@ -63,19 +63,16 @@ var hitMeMore = action("hitMeMore", () => {
 //
 
 const off = new BooleanModel(false)
-bind("off", off)
-
 const on = new BooleanModel(true)
-bind("on", on)
-
 const offDisabled = new BooleanModel(false)
 offDisabled.enabled = false
-bind("offDisabled", off)
-
 const onDisabled = new BooleanModel(true)
 onDisabled.enabled = false
-bind("onDisabled", on)
 
+bind("off", off)
+bind("on", on)
+bind("offDisabled", offDisabled)
+bind("onDisabled", onDisabled)
 
 //
 // <tx-slider>

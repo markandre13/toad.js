@@ -21,21 +21,21 @@ import { Signal } from "../Signal"
 export type InferModelParameter<M> = M extends Model<infer T> ? T : never
 
 export abstract class Model<T = void> {
-  modified: Signal<T>
-  _enabled = true
+    modified: Signal<T>
+    protected _enabled = true
 
-  constructor() {
-    this.modified = new Signal<T>()
-  }
+    constructor() {
+        this.modified = new Signal<T>()
+    }
 
-  set enabled(enabled: boolean) {
-    if (this._enabled == enabled)
-      return
-    this._enabled = enabled
-    this.modified.trigger(undefined as any)
-  }
-  
-  get enabled(): boolean {
-    return this._enabled
-  }
+    set enabled(enabled: boolean) {
+        if (this._enabled == enabled)
+            return
+        this._enabled = enabled
+        this.modified.trigger(undefined as any)
+    }
+
+    get enabled(): boolean {
+        return this._enabled
+    }
 }

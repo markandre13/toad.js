@@ -105,10 +105,10 @@ export class Menu extends MenuButtonContainer {
     for (let child of children) {
       let newnode: MenuNode | undefined = undefined
       switch (child.nodeName) {
-        case "TOAD-MENUSPACER":
+        case "TX-MENUSPACER":
           newnode = new MenuNode("", "", "", "spacer")
           break
-        case "TOAD-MENUENTRY":
+        case "TX-MENUENTRY":
           newnode = new MenuNode(
             dom.attribute(child, "name"),
             dom.attribute(child, "label"),

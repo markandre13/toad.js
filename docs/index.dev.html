@@ -28,46 +28,7 @@
 
     <script type="application/javascript" src="../polyfill/webcomponents-hi-sd-ce.js"></script>
     <script type="module" src="../lib/docs/main.js"></script>
-    <style>
-    :root {
-        /* rounding: 4px desktop, 5px mobile */
-        /* Use one column per page, with a width no longer than 80 characters (or 40 CJK characters) wide. Have line lengths at a maximum of 50-75 characters */
 
-        --tx-font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        --tx-font-size: calc((12/16) * 1rem);
-        --tx-font-size-info: calc((11/16) * 1rem);
-
-        --tx-fg-color: var(--tx-gray-700);
-        --tx-bg-color: var(--tx-gray-50);
-        --tx-placeholder-fg-color: var(--tx-gray-600);
-        --tx-placeholder-fg-color-hover: var(--tx-gray-900);
-
-        --tx-fg-color-disabled: var(--tx-gray-500);
-        --tx-bg-color-disabled: var(--tx-gray-100);
-
-        /* Edit */
-        --tx-edit-font-size: calc((12/16) * 1rem);
-        --tx-edit-font-weight: 400;
-
-        --tx-edit-fg-color: var(--tx-gray-800);
-        --tx-edit-fg-color-disabled: var(--tx-gray-500);
-
-        --tx-edit-bg-color: var(--tx-gray-50);
-        --tx-edit-bg-color-disabled: var(--tx-gray-100);
-
-        --tx-selection-color: var(--tx-global-blue-500);
-        --tx-warning-color: var(--tx-global-red-600);
-
-        /* Border/Outline */
-
-        /* outline indicates that the element has the focus */
-        --tx-outline-color: var(--tx-blue-500);
-        --tx-border-color: var(--tx-gray-400);
-        --tx-border-color-hover: var(--tx-gray-500);
-        --tx-border-width: 1px;
-        --tx-border-radius: 4px;
-    }
-    </style>
     <template id="my-code-button">
       <style>
         tx-button {
@@ -82,24 +43,6 @@
 </head>
 
   <body>
-    <svg id="tx-icons" style="display: none;">
-        <path id="exclamation"
-            d="M17.127 2.579L.4 32.512A1 1 0 001.272 34h33.456a1 1 0 00.872-1.488L18.873 2.579a1 1 0 00-1.746 0zM20 29.5a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5v-3a.5.5 0 01.5-.5h3a.5.5 0 01.5.5zm0-6a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5v-12a.5.5 0 01.5-.5h3a.5.5 0 01.5.5z">
-        </path>
-        <path id="checkmark"
-            d="M3.5 9.5a.999.999 0 01-.774-.368l-2.45-3a1 1 0 111.548-1.264l1.657 2.028 4.68-6.01A1 1 0 019.74 2.114l-5.45 7a1 1 0 01-.777.386z">
-        </path>
-        <path id="cross"
-            d="M6.548 5L9.63 1.917A1.094 1.094 0 008.084.371L5.001 3.454 1.917.37A1.094 1.094 0 00.371 1.917L3.454 5 .37 8.085A1.094 1.094 0 101.917 9.63l3.084-3.083L8.084 9.63a1.094 1.094 0 101.547-1.546z">
-        </path>
-        <path id="chevron"
-            d="M3 9.95a.875.875 0 01-.615-1.498L5.88 5 2.385 1.547A.875.875 0 013.615.302L7.74 4.377a.876.876 0 010 1.246L3.615 9.698A.872.872 0 013 9.95z">
-        </path>
-        <path id="search"
-            d="M33.173 30.215L25.4 22.443a12.826 12.826 0 10-2.957 2.957l7.772 7.772a2.1 2.1 0 002.958-2.958zM6 15a9 9 0 119 9 9 9 0 01-9-9z">
-        </path>
-    </svg>
-
     <p style="text-align: center">
       <img src="toad.gif" alt="TOAD" /><br />
       WebComponent/TypeScript Edition
@@ -276,21 +219,53 @@
     </tx-if>
     
     <h3>&lt;tx-checkbox&gt;, &lt;tx-switch&gt; and &lt;tx-if&gt;</h3>
-    The answer to life, the universe and everything?
 
     <table>
         <tr>
+            <th></th>
+            <th colspan="2">enabled</th>
+            <th colspan="2">disabled</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th>false</th>
+            <th>true</th>
+            <th>false</th>
+            <th>true</th>
+        </tr>
+        <tr>
+            <th>checkbox</th>
             <td>
                 <tx-checkbox model="off"></tx-checkbox>
             </td>
-    <tx-checkbox model="on"></tx-checkbox>
+            <td>
+                <tx-checkbox model="on"></tx-checkbox>
+            </td>
+            <td>
+                <tx-checkbox model="offDisabled"></tx-checkbox>
+            </td>
+            <td>
+                <tx-checkbox model="onDisabled"></tx-checkbox>
+            </td>
         </tr>
-    <br />
-    <tx-switch model="off"></tx-switch>
-    <tx-switch model="on"></tx-switch>
-    <br />
+        <tr>
+            <th>switch</th>
+            <td>
+                <tx-switch model="off"></tx-switch>
+            </td>
+            <td>
+                <tx-switch model="on"></tx-switch>
+            </td>
+            <td>
+                <tx-switch model="offDisabled"></tx-switch>
+            </td>
+            <td>
+                <tx-switch model="onDisabled"></tx-switch>
+            </td>
+        </tr>
     </table>
 
+    The answer to life, the universe and everything?
     <tx-if model="off">
       <p>What is 6 &times; 7?</p>
     </tx-if>

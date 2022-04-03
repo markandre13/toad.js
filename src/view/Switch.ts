@@ -16,58 +16,26 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
-import { ModelView } from "./ModelView"
 
 import { input, span } from "../util/lsx"
+import { BooleanView } from "./BooleanView"
 
-export class Switch extends ModelView<BooleanModel> {
-    input: HTMLInputElement
-
+export class Switch extends BooleanView {
     constructor() {
         super()
 
         this.classList.add("tx-switch")
 
-        this.attachShadow({ mode: 'open' })
-        this.attachStyle("switch")
-
         this.input = input()
         this.input.type = "checkbox"
-
         this.input.onchange = () => {
             this.updateModel()
         }
+
+        this.attachShadow({ mode: 'open' })
+        this.attachStyle("switch")
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(span())
-        console.log(this)
-    }
-
-    override setModel(model?: BooleanModel) {
-        if (model !== undefined && !(model instanceof BooleanModel)) {
-            throw Error(`CheckBoxView.setModel(): model is not of type BooleanModel`)
-        }
-        super.setModel(model)
-    }
-
-    override updateModel() {
-        if (this.model) {
-            this.model.value = this.input.checked
-        }
-    }
-
-    override updateView() {
-        if (!this.model) {
-            this.input.setAttribute("disabled", "")
-            //   this.input.removeAttribute("checked")
-            return
-        }
-        this.input.removeAttribute("disabled")
-
-        if (this.model.value)
-            this.input.setAttribute("checked", "")
-        else
-            this.input.removeAttribute("checked")
     }
 }
 
