@@ -1,15 +1,17 @@
 <!doctype html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8">
     <title>Introduction to toad.js</title>
     <meta name="description" content="An introduction to the TOAD TypeScript GUI Library (toad.js).">
-    <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>"/>
+    <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>" />
 
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin"/>
-    <link rel="stylesheet" type="text/css" href="../style/tx-static.css"/>
-    <link rel="stylesheet" type="text/css" href="../style/tx-dark.css"/>
-    <link rel="stylesheet" type="text/css" href="../style/tx.css"/>
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-static.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-dark.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx.css" />
     <link id="tx-calendar" type="text/css" rel="stylesheet" href="../style/tx-calendar.css" />
     <link rel="stylesheet" type="text/css" href="../style/tx-button.css" />
     <link rel="stylesheet" type="text/css" href="../style/tx-text.css" />
@@ -30,91 +32,212 @@
     <script type="module" src="../lib/docs/main.js"></script>
 
     <template id="my-code-button">
-      <style>
-        tx-button {
-          --tx-primary-color: #800;
-        }
-      </style>
-      <p>
-        <tx-button action="action" model="label"></tx-button>
-      </p>
+        <style>
+            tx-button {
+                --tx-primary-color: #800;
+            }
+        </style>
+        <p>
+            <tx-button action="action" model="label"></tx-button>
+        </p>
     </template>
 
 </head>
 
-  <body>
+<body>
     <p style="text-align: center">
-      <img src="toad.gif" alt="TOAD" /><br />
-      WebComponent/TypeScript Edition
+        <img src="toad.gif" alt="TOAD" /><br />
+        WebComponent/TypeScript Edition
     </p>
-    
-    <h3>Introduction</h3>
+
+    <h2>Introduction</h2>
 
     <p>
-      <a href="https://github.com/markandre13/toad.js#readme">toad.js</a> brings some of the ideas from the TOAD C++ GUI library
-      (<a href="https://github.com/markandre13/tx-x11#readme">UNIX/X11</a>, <a href="https://github.com/markandre13/tx-macosx#readme">macOS/Cocoa</a>)
-      to the web.
-    </p>
-    
-    <ul>
-      <li>intended for the development of
-          <a href="https://en.wikipedia.org/wiki/Progressive_Web_Apps">Progressive
-          Web Apps</a></li>
-      <li>
-        supports the separation of frontend (view) and business domain (model) code via the MVC pattern
-      </li>
-      <li>
-        allows to bind view and model either via HTML or JSX
-      </li>
-      <li>
-        not a HTML template library like Handlebars, Angular, React or Vue but a collection of ready-made 
-        view and model classes
-      </li>
-    </ul>
-    
-    <p>
-      toad.js makes use of new web technologes like Custom Elements, Shadow
-      DOM and JSX.
+        toad.js aims to separate the frontend implementation inside the browser into three horizontal layers.
     </p>
 
     <p>
-      Development is happening in my spare time and focused on Safari, the Desktop and to support the development of
-      <a href="https://github.com/markandre13/workflow#readme">workflow</a>
-      and
-      <a href="https://github.com/markandre13/makehuman.js#readme">makehuman.js</a>.
-      But it should basically work on any other modern browser.
+
     </p>
+
+    <style>
+        table.borders {
+            border-collapse: collapse;
+        }
+
+        table.borders td,
+        table.borders th {
+            border: 1px solid #fff;
+            padding: 5px;
+        }
+    </style>
+
+    <table class="borders">
+        <tr>
+            <th>
+                Layer
+            </th>
+            <th>
+                Description
+            </th>
+        </tr>
+        <tr>
+            <td>
+                <div style="text-align: center">
+                    <b>View Layer</b>
+                </div>
+            </td>
+            <td>
+                <p>
+                    Defines the <u>visible structure and look</u> of the application. Usually written in HTML or
+                    similar.
+                </p>
+                <p>
+                    Create this layer in direct collaboration between User, Coder and UX.
+                </p>
+                <p>
+                    Draft it with pen and paper, then write it down in code and use Hot Module
+                    Replacement and Fast Refresh to see what it looks in the browser.
+                </p>
+                <p>
+                    Drafting the UI in Photoshop, Abstract, Figma or similar is an Agile Anti-Pattern.
+                </p>
+                <p>
+                    Do not define behaviour in this layer, avoid using JavaScript. Rely on HTML elements
+                    conforming to the desired Design System (look) which reference the Application Layer.
+                </p>
+                <p>
+                    E.g.
+                </p>
+                <pre>  Flavour: &lt;tx-popupmenu model="flavour"&gt;&lt;/tx-popupmenu&gt; 
+  Bottle Size: &lt;tx-text model="volume"&gt;&lt;/tx-text&gt; liters
+  &lt;tx-button action="fillBottle"&gt;Fill bottle&lt;/tx-button&gt;</pre>
+                <p>
+                    You should be able to write HTML which does not need to be covered by tests.
+                    The HTML elements on the other hand should be covered by tests running in 
+                    a variety of browsers. Since they are highly reusable and need to adhere to
+                    the selected Design System, their creation and maintance maybe done by a
+                    separate team.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="text-align: center">
+                    <b>Presentation Layer</b><br />
+                    (aka. Application Model/Layer, ViewModel, Controller, ...)
+                </div>
+            </td>
+            <td>
+                <p>
+                    Defines the <u>behaviour</u> of the application's user interface.
+                </p>
+                <p>
+                    This layer can tested outside a browser as there are no Views in this
+                    layer. This architecture approach can be directly traced back to
+                    Xerox Parc's SmallTalk system and it's later refinement in Visual Works
+                    SmallTalk.
+                </p>
+                <p>   
+                    See also the article on the <a href="https://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a>
+                    by Martin Fowler.
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="text-align: center">
+                    <b>Domain Layer</b><br />
+                    (aka. Domain Model, Model, ...)
+                </div>
+            </td>
+            <td>
+                <p>
+                    Defines the <u>data and behaviour of the domain</u>.
+                </p>
+                <p>E.g. the flavours available in the Soda machine,
+                    minimum to maximum bottle size and a function to start dispensing the soda into the bottle.
+                </p>
+                <p>
+                    This layer can tested outside a browser.
+                </p>
+            </td>
+        </tr>
+    </table>
+
+    <!------------------------------------------------------------------------->
+
+    <h2>Action Model</h2>
+
+    <p>
+        Actions are models without <em>values</em> (aside from properties like <em>enabled</em>, <em>label</em>, etc.)
+    </p>
+
+    <p>
+        An Action's <em>modfied</em> signal will be triggered on a user interaction, e.g. a push button being pressed.
+    </p>
+
+    <h3>&lt;tx-button&gt;</h3>
+
+    <tx-button class="tx-default">Default</tx-button>
+    <tx-button class="tx-accent">Accent</tx-button>
+    <tx-button class="tx-negative">Negative</tx-button>
+
+    <tx-button action="hitMe">Hit me!</tx-button>
+    <tx-button action="hitMeMore" model="hello">I get my text from the
+        model registered as 'hello'</tx-button>
+
+    <my-code-button condition="button-condition"></my-code-button>
+    <tx-if model="button-condition">
+        <h4>HTML</h4>
+        <pre>
+      &lt;tx-button class="tx-default"&gt;Default&lt;/tx-button&gt;
+      &lt;tx-button class="tx-accent"&gt;Accent&lt;/tx-button&gt;
+      &lt;tx-button class="tx-negative"&gt;Negative&lt;/tx-button&gt;
+      &lt;tx-button action="hitMe"&gt;Hit me!&lt;/tx-button&gt;
+      &lt;tx-button action="hitMeMore" model="hello"&gt;I get my text from the model registered as 'hello'&lt;/tx-button&gt;</pre>
+        <h4>TypeScript</h4>
+        <pre>
+      toad.action("hitMe", () =&gt; {
+          textModel.value = "Hit me too!"
+          hitMeMore.enabled = true
+      })
+      var hitMeMore = toad.action("hitMeMore", () =&gt; {
+          textModel.value = "You hit me!"
+          hitMeMore.enabled = false
+      })</pre>
+    </tx-if>
 
     <h3>&lt;tx-menu&gt;</h3>
-    
+
     <tx-menu>
-      <tx-menuentry name="file" label="File">
-        <tx-menuentry name="new" label="New">
-          <tx-menuentry name="empty" label="Empty"></tx-menuentry>
-          <tx-menuentry name="template" label="From Template"></tx-menuentry>
-          <tx-menuentry name="upload" label="Upload"></tx-menuentry>
+        <tx-menuentry name="file" label="File">
+            <tx-menuentry name="new" label="New">
+                <tx-menuentry name="empty" label="Empty"></tx-menuentry>
+                <tx-menuentry name="template" label="From Template"></tx-menuentry>
+                <tx-menuentry name="upload" label="Upload"></tx-menuentry>
+            </tx-menuentry>
+            <tx-menuentry name="open" label="Open"></tx-menuentry>
+            <tx-menuentry name="close" label="Close"></tx-menuentry>
+            <tx-menuentry name="logout" label="Logout"></tx-menuentry>
         </tx-menuentry>
-        <tx-menuentry name="open" label="Open"></tx-menuentry>
-        <tx-menuentry name="close" label="Close"></tx-menuentry>
-        <tx-menuentry name="logout" label="Logout"></tx-menuentry>
-      </tx-menuentry>
-      <tx-menuentry name="edit" label="Edit">
-        <tx-menuentry name="cut" label="Cut" shortcut="Ctrl+X"></tx-menuentry>
-        <tx-menuentry name="copy" label="Copy" shortcut="Ctrl+C"></tx-menuentry>
-        <tx-menuentry name="paste" label="Paste" shortcut="Ctrl+V"></tx-menuentry>
-      </tx-menuentry>
-      <tx-menuspacer></tx-menuspacer>
-      <tx-menuentry name="help" label="Help"></tx-menuentry>
-      <tx-menuentry name="settings" label="Settings">
-        <tx-menuentry name="account" label="Account"></tx-menuentry>
-        <tx-menuentry name="system" label="System"></tx-menuentry>
-      </tx-menuentry>
+        <tx-menuentry name="edit" label="Edit">
+            <tx-menuentry name="cut" label="Cut" shortcut="Ctrl+X"></tx-menuentry>
+            <tx-menuentry name="copy" label="Copy" shortcut="Ctrl+C"></tx-menuentry>
+            <tx-menuentry name="paste" label="Paste" shortcut="Ctrl+V"></tx-menuentry>
+        </tx-menuentry>
+        <tx-menuspacer></tx-menuspacer>
+        <tx-menuentry name="help" label="Help"></tx-menuentry>
+        <tx-menuentry name="settings" label="Settings">
+            <tx-menuentry name="account" label="Account"></tx-menuentry>
+            <tx-menuentry name="system" label="System"></tx-menuentry>
+        </tx-menuentry>
     </tx-menu>
 
     <my-code-button condition="menu-condition"></my-code-button>
     <tx-if model="menu-condition">
-    <h4>HTML</h4>
-    <pre>
+        <h4>HTML</h4>
+        <pre>
       &lt;tx-menu&gt;
         &lt;tx-menuentry name="file" label="File"&gt;
           &lt;tx-menuentry name="new" label="New"&gt;
@@ -138,8 +261,8 @@
           &lt;tx-menuentry name="system" label="System"&gt;&lt;/tx-menuentry&gt;
         &lt;/tx-menuentry&gt;
       &lt;/tx-menu&gt;</pre>
-    <h4>TypeScript</h4>
-    <pre>
+        <h4>TypeScript</h4>
+        <pre>
       toad.action("file|logout", () =&gt; {
         alert("You are about to logout")
       })
@@ -148,37 +271,41 @@
       })</pre>
     </tx-if>
 
+    <!------------------------------------------------------------------------->
+
+    <h2>Text Model</h2>
+
     <h3>&lt;tx-text&gt;</h3>
     <tx-text model="hello"></tx-text>
     <tx-text model="hello"></tx-text>
 
     <my-code-button condition="text-condition"></my-code-button>
     <tx-if model="text-condition">
-    <h4>HTML</h4>
-    <pre>
+        <h4>HTML</h4>
+        <pre>
       &lt;tx-text model="hello"&gt;&lt;/tx-text&gt;
       &lt;tx-text model="hello"&gt;&lt;/tx-text&gt;</pre>
-    <h4>TypeScript</h4>
-    <pre>
+        <h4>TypeScript</h4>
+        <pre>
       let textModel = new toad.TextModel("")
       toad.bind("hello", textModel)</pre>
     </tx-if>
-    
+
     <h3>&lt;tx-texttool&gt; &amp; &lt;tx-textarea&gt;</h3>
     <tx-texttool></tx-texttool>
     <tx-textarea model="markup"></tx-textarea>
     <pre id="rawhtml"></pre>
-        
+
     <my-code-button condition="textarea-condition"></my-code-button>
     <tx-if model="textarea-condition">
-    <h4>HTML</h4>
-    <pre>
+        <h4>HTML</h4>
+        <pre>
       &lt;tx-texttool&gt;&lt;/tx-texttool&gt;
       &lt;tx-textarea model="markup"&gt;&lt;/tx-textarea&gt;
       &lt;pre id="rawhtml"&gt;&lt;/pre&gt;
     </pre>
-    <h4>TypeScript</h4>
-    <pre>
+        <h4>TypeScript</h4>
+        <pre>
       let markupModel = new toad.HtmlModel("")
       markupModel.modified.add( () =&gt; {
         document.getElementById("rawhtml").innerText = markupModel.value
@@ -187,37 +314,12 @@
     </pre>
     </tx-if>
 
-    <h3>&lt;tx-button&gt;</h3>
+    <!------------------------------------------------------------------------->
 
-    <tx-button class="tx-default">Default</tx-button>
-    <tx-button class="tx-accent">Accent</tx-button>
-    <tx-button class="tx-negative">Negative</tx-button>
+    <h2>Boolean Model</h2>
 
-    <tx-button action="hitMe">Hit me!</tx-button>
-    <tx-button action="hitMeMore" model="hello">I get my text from the
-    model registered as 'hello'</tx-button>
+    A Boolean can either be <em>true</em> or <em>false</em>.
 
-    <my-code-button condition="button-condition"></my-code-button>
-    <tx-if model="button-condition">
-    <h4>HTML</h4>
-    <pre>
-      &lt;tx-button class="tx-default"&gt;Default&lt;/tx-button&gt;
-      &lt;tx-button class="tx-accent"&gt;Accent&lt;/tx-button&gt;
-      &lt;tx-button class="tx-negative"&gt;Negative&lt;/tx-button&gt;
-      &lt;tx-button action="hitMe"&gt;Hit me!&lt;/tx-button&gt;
-      &lt;tx-button action="hitMeMore" model="hello"&gt;I get my text from the model registered as 'hello'&lt;/tx-button&gt;</pre>
-    <h4>TypeScript</h4>
-    <pre>
-      toad.action("hitMe", () =&gt; {
-          textModel.value = "Hit me too!"
-          hitMeMore.enabled = true
-      })
-      var hitMeMore = toad.action("hitMeMore", () =&gt; {
-          textModel.value = "You hit me!"
-          hitMeMore.enabled = false
-      })</pre>
-    </tx-if>
-    
     <h3>&lt;tx-checkbox&gt;, &lt;tx-switch&gt; and &lt;tx-if&gt;</h3>
 
     <table>
@@ -267,57 +369,71 @@
 
     The answer to life, the universe and everything?
     <tx-if model="off">
-      <p>What is 6 &times; 7?</p>
+        <p>What is 6 &times; 7?</p>
     </tx-if>
-
 
     <my-code-button condition="checkbox-condition"></my-code-button>
     <tx-if model="checkbox-condition">
-    <h4>HTML</h4>
-    <pre>
+        <h4>HTML</h4>
+        <pre>
       The answer to life, the universe and everything?
       &lt;tx-checkbox model="onoff">&lt;/tx-checkbox&gt;
       &lt;tx-if model="onoff"&gt;
         &lt;p>What is 6 &amp;times; 7?&lt;/p&gt;
       &lt;/tx-if&gt;</pre>
-    <h4>TypeScript</h4>
-    <pre>
+        <h4>TypeScript</h4>
+        <pre>
       let onoff = new toad.BooleanModel(false)
       toad.bind("onoff", onoff)</pre>
     </tx-if>
-    
+
+    <!------------------------------------------------------------------------->
+
+    <h2>Option Model</h2>
+
+    An Option is a list of values out of which one (and only one) can be selected.
+
+    <h3>&lt;tx-radiobutton&gt; &amp; &lt;tx-popupmenu&gt;</h3>
+
+    <h3>&lt;tx-combobox&gt;</h3>
+
+    <h3>&lt;tx-search&gt;</h3>
+
+    text model
+    text and option model
+
     <h3>&lt;tx-slider&gt;</h3>
     <tx-text model="size"></tx-text>
     <tx-slider model="size"></tx-slider>
-    
+
     <my-code-button condition="slider-condition"></my-code-button>
     <tx-if model="slider-condition">
-    <h4>HTML</h4>
-    <pre>
+        <h4>HTML</h4>
+        <pre>
       &lt;tx-text model="size"&gt;&lt;/tx-text&gt;
       &lt;tx-slider model="size"&gt;&lt;/tx-slider&gt;</pre>
-    <h4>JavaScipt</h4>
-    <pre>
+        <h4>JavaScipt</h4>
+        <pre>
       let size = new toad.NumberModel(42, {min: 0, max: 99})
       toad.bind("size", size)</pre>
     </tx-if>
 
     <h3>&lt;tx-table&gt; from array</h3>
     <div style="display: inline-block; width: 45%; border: inset;">
-      <b style="font-size: 150%">Alice</b>
-      <tx-tabletool></tx-tabletool>
-      <tx-table model="books"></tx-table>
+        <b style="font-size: 150%">Alice</b>
+        <tx-tabletool></tx-tabletool>
+        <tx-table model="books"></tx-table>
     </div>
     <div style="display: inline-block; width: 45%; border: inset;">
-      <b style="font-size: 150%">Bob</b>
-      <tx-tabletool></tx-tabletool>
-      <tx-table model="books"></tx-table>
+        <b style="font-size: 150%">Bob</b>
+        <tx-tabletool></tx-tabletool>
+        <tx-table model="books"></tx-table>
     </div>
-    
+
     <my-code-button condition="table-condition"></my-code-button>
     <tx-if model="table-condition">
-    <h4>HTML</h4>
-    <pre>
+        <h4>HTML</h4>
+        <pre>
       &lt;div style="display: inline-block; width: 45%; border: inset;"&gt;
         &lt;b style="font-size: 150%"&gt;Alice&lt;/b&gt;
         &lt;tx-tabletool&gt;&lt;/tx-tabletool&gt;
@@ -328,9 +444,9 @@
         &lt;tx-tabletool&gt;&lt;/tx-tabletool&gt;
         &lt;tx-table model="books"&gt;&lt;/tx-table&gt;
       &lt;/div&gt;</pre>
-      
-    <h4>TypeScript</h4>
-    <pre>
+
+        <h4>TypeScript</h4>
+        <pre>
       class Book {
         title: string = ""
         author: string = ""
@@ -361,16 +477,16 @@
     <h3>&lt;tx-table&gt; from tree</h3>
     <tx-tabletool></tx-tabletool>
     <tx-table model="tree"></tx-table>
-    
+
     <my-code-button condition="tree-condition"></my-code-button>
     <tx-if model="tree-condition">
-    <h4>HTML</h4>
-    <pre>
+        <h4>HTML</h4>
+        <pre>
       &lt;tx-tabletool>&lt;/tx-tabletool&gt;
       &lt;tx-table model="tree"&gt;&lt;/tx-table&gt;</pre>
-      
-    <h4>TypeScript</h4>
-    <pre>
+
+        <h4>TypeScript</h4>
+        <pre>
       class MyNode implements TreeNode {
         label: string
         next?: MyNode
@@ -398,5 +514,6 @@
       model.addSiblingAfter(0)
       bind("tree", model)</pre>
     </tx-if>
-  </body>
+</body>
+
 </html>
