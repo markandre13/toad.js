@@ -17,8 +17,7 @@
  */
 
 import {
-    TextModel, HtmlModel, NumberModel, BooleanModel,
-
+    TextModel, HtmlModel, NumberModel, BooleanModel, EnumModel,
     Template,
 
     ArrayModel, ArrayAdapter, TableAdapter,
@@ -73,6 +72,28 @@ bind("off", off)
 bind("on", on)
 bind("offDisabled", offDisabled)
 bind("onDisabled", onDisabled)
+
+//
+// EnumModel
+//
+
+enum Flavour {
+    BLUEBERRY,
+    GRAPE, 
+    TANGERINE,
+    LIME,
+    STRAWBERRY,
+    BONDIBLUE
+}
+
+const flavour = new EnumModel<Flavour>(Flavour)
+flavour.value = Flavour.GRAPE
+bind("flavour", flavour)
+
+const flavourDisabled = new EnumModel<Flavour>(Flavour)
+flavourDisabled.enabled = false
+flavourDisabled.value = Flavour.TANGERINE
+bind("flavourDisabled", flavourDisabled)
 
 //
 // <tx-slider>

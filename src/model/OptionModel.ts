@@ -19,23 +19,28 @@
 import { OptionModelBase } from "./OptionModelBase"
 
 export class OptionModel<T> extends OptionModelBase {
-  private _map: Map<string, T>
+    private stringToType = new Map<string, T>()
+    private typeToString = new Map<T, string>()
 
-  constructor() {
-    super()
-    this._map = new Map<string, T>()
-  }
+    add(id: string, value: T) {
+        this.stringToType.set(id, value)
+        this.typeToString.set(value, id)
+    }
 
-  add(id: string, value: T) {
-    this._map.set(id, value)
-  }
+    override isValidStringValue(stringValue: string): boolean {
+        return this.stringToType.has(stringValue)
+    }
 
-  override isValidStringValue(stringValue: string): boolean {
-    return this._map.has(stringValue)
-  }
+    get value(): T {
+        return this.stringToType.get(this.stringValue)!
+    }
 
-  get value(): T {
-    return this._map.get(this.stringValue)!
-  }
-
+    set value(value: T) {
+        if (!this.typeToString.has(value)) {
+            this.add(`${value}`, value)
+            this.stringValue = `${value}`
+        } else {
+            this.stringValue = this.typeToString.get(value)!
+        }
+    }
 }

@@ -45,6 +45,7 @@
 </head>
 
 <body>
+
     <p style="text-align: center">
         <img src="toad.gif" alt="TOAD" /><br />
         WebComponent/TypeScript Edition
@@ -103,8 +104,8 @@
                     Drafting the UI in Photoshop, Abstract, Figma or similar is an Agile Anti-Pattern.
                 </p>
                 <p>
-                    Do not define behaviour in this layer, avoid using JavaScript. Rely on HTML elements
-                    conforming to the desired Design System (look) which reference the Application Layer.
+                    Do not define behaviour in this layer, avoid using JavaScript. Instead use HTML elements
+                    (Views) which reference a model (ViewModel) in the the Application Layer.
                 </p>
                 <p>
                     E.g.
@@ -114,10 +115,16 @@
   &lt;tx-button action="fillBottle"&gt;Fill bottle&lt;/tx-button&gt;</pre>
                 <p>
                     You should be able to write HTML which does not need to be covered by tests.
-                    The HTML elements on the other hand should be covered by tests running in 
+                    The HTML elements on the other hand should be covered by tests running in
                     a variety of browsers. Since they are highly reusable and need to adhere to
                     the selected Design System, their creation and maintance maybe done by a
                     separate team.
+                </p>
+                <p>
+                    The views included in toad.js are implemented as WebComponents taking
+                    inspiration from Adobe's <a href="https://spectrum.adobe.com">Spectrum</a>
+                    Design System/Style Guide and use IBM's <a href="https://www.ibm.com/plex/">Plex</a>
+                    font family.
                 </p>
             </td>
         </tr>
@@ -125,7 +132,7 @@
             <td>
                 <div style="text-align: center">
                     <b>Presentation Layer</b><br />
-                    (aka. Application Model/Layer, ViewModel, Controller, ...)
+                    (aka. ViewModel, Application Model, Controller, ...)
                 </div>
             </td>
             <td>
@@ -134,12 +141,11 @@
                 </p>
                 <p>
                     This layer can tested outside a browser as there are no Views in this
-                    layer. This architecture approach can be directly traced back to
-                    Xerox Parc's SmallTalk system and it's later refinement in Visual Works
-                    SmallTalk.
+                    layer.
                 </p>
-                <p>   
-                    See also the article on the <a href="https://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a>
+                <p>
+                    See also the article on the <a
+                        href="https://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a>
                     by Martin Fowler.
                 </p>
             </td>
@@ -273,7 +279,7 @@
 
     <!------------------------------------------------------------------------->
 
-    <h2>Text Model</h2>
+    <h2>Text &amp HTML Model</h2>
 
     <h3>&lt;tx-text&gt;</h3>
     <tx-text model="hello"></tx-text>
@@ -334,6 +340,7 @@
             <th>true</th>
             <th>false</th>
             <th>true</th>
+            <th>when to use</th>
         </tr>
         <tr>
             <th>checkbox</th>
@@ -349,6 +356,9 @@
             <td>
                 <tx-checkbox model="onDisabled"></tx-checkbox>
             </td>
+            <td>
+                multiple choice lists
+            </td>
         </tr>
         <tr>
             <th>switch</th>
@@ -363,6 +373,9 @@
             </td>
             <td>
                 <tx-switch model="onDisabled"></tx-switch>
+            </td>
+            <td>
+                switching something on/off
             </td>
         </tr>
     </table>
@@ -389,11 +402,64 @@
 
     <!------------------------------------------------------------------------->
 
-    <h2>Option Model</h2>
+    <h2>Option and Enum Model</h2>
 
-    An Option is a list of values out of which one (and only one) can be selected.
+    A list of values out of which one (and only one) can be selected.
 
     <h3>&lt;tx-radiobutton&gt; &amp; &lt;tx-popupmenu&gt;</h3>
+
+    <table>
+        <tr>
+            <th></th>
+            <th colspan="3">
+                enabled
+            </th>
+            <th colspan="3">
+                disabled
+            </th>
+        </tr>
+        <tr>
+            <th rowspan="2">radiobutton</th>
+            <td>
+                <tx-radiobutton model="flavour" value="BLUEBERRY"></tx-radiobutton> Blueberry
+            </td>
+            <td>
+                <tx-radiobutton model="flavour" value="GRAPE"></tx-radiobutton> Grape
+            </td>
+            <td>
+                <tx-radiobutton model="flavour" value="TANGERINE"></tx-radiobutton> Tangerine
+            </td>
+            <td>
+                <tx-radiobutton model="flavourDisabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
+            </td>
+            <td>
+                <tx-radiobutton model="flavourDisabled" value="GRAPE"></tx-radiobutton> Grape
+            </td>
+            <td>
+                <tx-radiobutton model="flavourDisabled" value="TANGERINE"></tx-radiobutton> Tangerine
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <tx-radiobutton model="flavour" value="LIME"></tx-radiobutton> Lime
+            </td>
+            <td>
+                <tx-radiobutton model="flavour" value="STRAWBERRY"></tx-radiobutton> Strawberry
+            </td>
+            <td>
+                <tx-radiobutton model="flavour" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
+            </td>
+            <td>
+                <tx-radiobutton model="flavourDisabled" value="LIME"></tx-radiobutton> Lime
+            </td>
+            <td>
+                <tx-radiobutton model="flavourDisabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
+            </td>
+            <td>
+                <tx-radiobutton model="flavourDisabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
+            </td>
+        </tr>
+    </table>
 
     <h3>&lt;tx-combobox&gt;</h3>
 
@@ -402,7 +468,11 @@
     text model
     text and option model
 
-    <h3>&lt;tx-slider&gt;</h3>
+    <!------------------------------------------------------------------------->
+
+    <h2>Number Model</h2>
+
+    <h3>&lt;tx-text&gt; &amp; &lt;tx-slider&gt;</h3>
     <tx-text model="size"></tx-text>
     <tx-slider model="size"></tx-slider>
 
@@ -417,6 +487,10 @@
       let size = new toad.NumberModel(42, {min: 0, max: 99})
       toad.bind("size", size)</pre>
     </tx-if>
+
+    <!------------------------------------------------------------------------->
+
+    <h2>Array &amp; Tree</h2>
 
     <h3>&lt;tx-table&gt; from array</h3>
     <div style="display: inline-block; width: 45%; border: inset;">
@@ -514,6 +588,7 @@
       model.addSiblingAfter(0)
       bind("tree", model)</pre>
     </tx-if>
+
 </body>
 
 </html>

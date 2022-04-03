@@ -1,12 +1,12 @@
 /* a div on top serves as the container for elements used for the switch*/
-.tx-radio {
+:host(.tx-radio) {
     display: inline-flex;
     align-items: flex-start;
     position: relative;
     vertical-align: top;
 }
 /* an invisible radiobutton will overlay everything, handling input and state */
-.tx-radio > input {
+:host(.tx-radio) > input {
     display: inline-block;
     position: absolute;
     left: 0;
@@ -21,7 +21,7 @@
 }
 
 /* the span provides the visual appearance */
-.tx-radio > span {
+:host(.tx-radio) > span {
     display: block;
     position: relative;
     left: 0;
@@ -39,13 +39,13 @@
 }
 
 /* focus ring */
-.tx-radio > input:focus-visible + span {
+:host(.tx-radio) > input:focus-visible + span {
     outline: 2px solid;
     outline-color: var(--tx-outline-color);
     outline-offset: 2px;
 }
 /* this is the knob on the switch */
-.tx-radio > span:before {
+:host(.tx-radio) > span:before {
     display: block;
     position: absolute;
     left: 0px;
@@ -61,19 +61,19 @@
     /* 'transform' usually can be GPU acclerated while 'left' can not */
     transition: opacity 130ms ease-in-out;
 }
-.tx-radio > input:checked + span:before {
+:host(.tx-radio) > input:checked + span:before {
     background: var(--tx-gray-700);
 }
-.tx-radio > input:checked:hover + span:before {
+:host(.tx-radio) > input:checked:hover + span:before {
     background: var(--tx-gray-900);
 }
-.tx-radio > input:hover + span {
+:host(.tx-radio) > input:hover + span {
     border-color: var(--tx-gray-900);
 }
 
-.tx-radio > input:checked:disabled + span:before {
+:host(.tx-radio) > input:checked:disabled + span:before {
     background: var(--tx-gray-500);
 }
-.tx-radio > input:disabled + span {
+:host(.tx-radio) > input:disabled + span {
     border-color: var(--tx-gray-500);
 }
