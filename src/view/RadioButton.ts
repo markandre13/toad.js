@@ -29,6 +29,9 @@ export interface RadioButtonProps extends ModelViewProps<OptionModelBase> {
 export class RadioButton extends ModelView<OptionModelBase> {
     input: HTMLInputElement
 
+    static radioGroupCounter = 0
+    static radioGroups = new WeakMap<OptionModelBase, number>()
+
     constructor(init?: RadioButtonProps) {
         super(init)
         this.classList.add("tx-radio")
@@ -37,7 +40,6 @@ export class RadioButton extends ModelView<OptionModelBase> {
         this.input.type = "radio"
 
         // need to set input's name & value from the user provided attributes
-        this.input.name = "XXX"
         this.input.value = this.getAttribute("value")!
         let view = this
         this.input.onchange = () => {
@@ -57,6 +59,17 @@ export class RadioButton extends ModelView<OptionModelBase> {
     }
 
     override updateView() {
+        if (this.model) {
+            let radioGroup = RadioButton.radioGroups.get(this.model)
+            if (radioGroup === undefined) {
+                radioGroup = ++RadioButton.radioGroupCounter
+                RadioButton.radioGroups.set(this.model, radioGroup)
+            }
+            this.input.name = `radioGroup${radioGroup}`
+        } else {
+            this.input.name = ""
+        }
+
         if (!this.model || !this.model.enabled) {
             this.input.setAttribute("disabled", "")
         } else {
