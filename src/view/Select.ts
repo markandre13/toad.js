@@ -92,6 +92,7 @@ export class Select extends ModelView<OptionModelBase> {
     }
 
     open() {
+        let view = this
         let u
         this.popup = div(
             u = ul(
@@ -103,16 +104,19 @@ export class Select extends ModelView<OptionModelBase> {
                     )
                     l.tabIndex = 0
                     l.ariaRoleDescription = "option"
+                    l.onclick = () => {
+                        view.select(idx)
+                    }
                     this.children[idx]
                     return l
                 })
             )
         )
-        this.popup.style.position = "fixed"
-
+        this.popup.classList.add("tx-popover")
+        this.popup.style.position = "fixed" // this does not scroll well
+        this.popup.style.zIndex = "99"
         u.ariaRoleDescription = "listbox"
         u.classList.add("tx-menu")
-
         this.shadowRoot!.appendChild(this.popup)
 
         placePopupVertical(this, this.popup)
@@ -120,7 +124,13 @@ export class Select extends ModelView<OptionModelBase> {
 
     close() {
         this.shadowRoot!.removeChild(this.popup!)
+        // document.body.removeChild(this.popup!)
         this.popup = undefined
+    }
+
+    select(index: number) {
+        this.model!.stringValue = (this.children[index] as HTMLOptionElement).value
+        this.close()
     }
 }
 

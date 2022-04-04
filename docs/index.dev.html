@@ -482,14 +482,14 @@
                 </tx-select>
             </td>
             <td colspan="3">
-                <!-- <tx-select model="flavourDisabled">
+                <tx-select model="flavourDisabled">
                     <option value="BLUEBERRY">Blueberry</option>
                     <option value="GRAPE">Grape</option>
                     <option value="TANGERINE">Tangerine</option>
                     <option value="LIME">Lime</option>
                     <option value="STRAWBERRY">Strawberry</option>
                     <option value="BONDIBLUE">Bondi Blue</option>
-                </tx-select> -->
+                </tx-select>
             </td>
             <td rowspan="2">
                 limited screen space, select with two clicks acceptable
@@ -499,7 +499,7 @@
             <th>
                 combobox
             </th>
-            <!-- <td colspan="3">
+            <td colspan="3">
                 <tx-select model="flavour">
                     <option value="BLUEBERRY">Blueberry</option>
                     <option value="GRAPE">Grape</option>
@@ -518,7 +518,7 @@
                     <option value="STRAWBERRY">Strawberry</option>
                     <option value="BONDIBLUE">Bondi Blue</option>
                 </tx-select>
-            </td> -->
+            </td>
         </tr>
         <tr>
             <th>
@@ -659,6 +659,48 @@
       model.addSiblingAfter(0)
       bind("tree", model)</pre>
     </tx-if>
+
+    <!------------------------------------------------------------------------->
+
+    <!--
+        https://wpf-tutorial.com/tabcontrol/using-the-tabcontrol/
+
+        <tx-folder>
+            <tx-file>
+            </tx-file>
+            <tx-file>
+                <tx-tab>
+                </tx-tab>
+                ...
+            </tx-file>
+
+
+            <tx-tab header="label">
+                ... content
+            </tx-tab>
+            <tx-tab>
+                <></label>
+            </tx-tab>
+        </tx-folder>
+
+        Angular Material
+
+        <tab-group>
+            <tab label="">content</tab>
+            <tab>
+                <template tab-label>
+                <template>
+                content
+            </tab>
+        </tab-group>
+
+        https://www.w3.org/TR/wai-aria-practices-1.1/#tabpanel
+        https://www.w3.org/TR/wai-aria-practices-1.1/examples/tabs/tabs-1/tabs.html
+        tablist: parent for tabs
+           tab: label
+           tabpanel: content
+
+    -->
 
 </body>
 
