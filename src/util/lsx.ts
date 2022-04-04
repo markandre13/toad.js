@@ -39,7 +39,7 @@ export function element<T>(type: string, children: Element[]): T {
     }
     return element as unknown as T
 }
-export function array(times: number, create:(idx:number) => Element) {
+export function array(times: number, create:(idx:number) => Element): Element[] {
     let a = []
     for (let i = 0; i < times; ++i) {
         const c = create(i)
@@ -51,17 +51,20 @@ export function array(times: number, create:(idx:number) => Element) {
     }
     return a
 }
-export function text(text: string) { return document.createTextNode(text) }
+export function text(text: string): Text { return document.createTextNode(text) }
 export const div = (...children: Element[]) => element<HTMLDivElement>("div", children)
 export const span = (...children: Element[]) => element<HTMLSpanElement>("span", children)
 export const input = (...children: Element[]) => element<HTMLInputElement>("input", children)
 export const button = (...children: Element[]) => element<HTMLButtonElement>("button", children)
-export const table = (...children: Element[]) => element("table", children)
-export const thead = (...children: Element[]) => element("thead", children)
-export const th = (...children: Element[]) => element("th", children)
-export const tbody = (...children: Element[]) => element("tbody", children)
-export const td = (...children: Element[]) => element("td", children)
-export const tr = (...children: Element[]) => element("tr", children)
+export const ul = (...children: Element[]) => element<HTMLUListElement>("ul", children)
+export const ol = (...children: Element[]) => element<HTMLOListElement>("ol", children)
+export const li = (...children: (Element|Text)[]) => element<HTMLLIElement>("li", children as Element[])
+export const table = (...children: Element[]) => element<HTMLTableElement>("table", children)
+export const thead = (...children: Element[]) => element<HTMLHeadElement>("thead", children)
+export const th = (...children: Element[]) => element<HTMLTableCellElement>("th", children)
+export const tbody = (...children: Element[]) => element<HTMLBodyElement>("tbody", children)
+export const td = (...children: Element[]) => element<HTMLTableCellElement>("td", children)
+export const tr = (...children: Element[]) => element<HTMLTableRowElement>("tr", children)
 
 const ns = "http://www.w3.org/2000/svg"
 export function svg(child: Element) {

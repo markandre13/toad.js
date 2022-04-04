@@ -1,10 +1,10 @@
-.tx-combobox {
+:host(.tx-combobox) {
     display: inline-flex;
     align-items: flex-start;
     position: relative;
     vertical-align: top;
 }
-.tx-combobox > input {
+:host(.tx-combobox) > input {
     box-sizing: border-box;
     width: 100%;
     height: 32px;
@@ -23,13 +23,13 @@
     font-size: var(--tx-edit-font-size);
     line-height: 18px;
 }
-.tx-combobox > input::placeholder {
+:host(.tx-combobox) > input::placeholder {
     color: var(--tx-placeholder-fg-color);
     font-style: italic;
     font-weight: 300;
 }
 
-.tx-combobox > button {
+:host(.tx-combobox) > button {
     position: absolute;
     right: 0;
     display: flex;
@@ -47,49 +47,49 @@
     border-radius: 0 4px 4px 0;
     border: 1px solid var(--tx-gray-400);
 }
-.tx-combobox > button > svg {
+:host(.tx-combobox) > button > svg {
     fill: var(--tx-gray-700);
     transform: rotate(90deg) translate(5px, 8px);
 }
 
-.tx-combobox > input:hover {
+:host(.tx-combobox) > input:hover {
     border-color: var(--tx-gray-500);
 }
-.tx-combobox > button:hover {
+:host(.tx-combobox) > button:hover {
     border-color: var(--tx-gray-500);
     background-color: var(--tx-gray-50);
 }
-.tx-combobox > button:hover > svg {
+:host(.tx-combobox) > button:hover > svg {
     fill: var(--tx-gray-900);
 }
 
-.tx-combobox > input:focus {
+:host(.tx-combobox) > input:focus {
     border-color: var(--tx-outline-color);
 }
-.tx-combobox > input:focus + button {
+:host(.tx-combobox) > input:focus + button {
     border-color: var(--tx-outline-color);
 }
 /* spectrum use a 1px focus ring when the focus was set by mouse
  * and a 2px focus ring when the focus was set by keyboard
  * no clue how to do that with css
  *
-/* .tx-combobox > input:focus-visible {
+/* :host(.tx-combobox) > input:focus-visible {
     outline: 1px solid var(--tx-outline-color);
 }
-.tx-combobox > input:focus-visible + button {
+:host(.tx-combobox) > input:focus-visible + button {
     outline: 1px solid var(--tx-outline-color);
     border-left: none;
 } */
 
-.tx-combobox > input:disabled {
+:host(.tx-combobox) > input:disabled {
     color: var(--tx-gray-700);
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-.tx-combobox > input:disabled + button {
+:host(.tx-combobox) > input:disabled + button {
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-.tx-combobox > input:disabled + button > svg {
+:host(.tx-combobox) > input:disabled + button > svg {
     fill: var(--tx-gray-400);
 }

@@ -7,6 +7,9 @@
     <meta name="description" content="An introduction to the TOAD TypeScript GUI Library (toad.js).">
     <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>" />
 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin" />
     <link rel="stylesheet" type="text/css" href="../style/tx-static.css" />
@@ -417,6 +420,7 @@
             <th colspan="3">
                 disabled
             </th>
+            <th>when to use</th>
         </tr>
         <tr>
             <th rowspan="2">radiobutton</th>
@@ -438,6 +442,10 @@
             <td>
                 <tx-radiobutton model="flavourDisabled" value="TANGERINE"></tx-radiobutton> Tangerine
             </td>
+            <td rowspan="2">
+                enough space to display all options,<br />
+                select with one click
+            </td>
         </tr>
         <tr>
             <td>
@@ -458,6 +466,69 @@
             <td>
                 <tx-radiobutton model="flavourDisabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
             </td>
+        </tr>
+        <tr>
+            <th>
+                select
+            </th>
+            <td colspan="3">
+                <tx-select model="flavour">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select>
+            </td>
+            <td colspan="3">
+                <!-- <tx-select model="flavourDisabled">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select> -->
+            </td>
+            <td rowspan="2">
+                limited screen space, select with two clicks acceptable
+            </td>
+        </tr>
+        <tr>
+            <th>
+                combobox
+            </th>
+            <!-- <td colspan="3">
+                <tx-select model="flavour">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select>
+            </td>
+            <td colspan="3">
+                <tx-select model="flavourDisabled">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select>
+            </td> -->
+        </tr>
+        <tr>
+            <th>
+                search
+            </th>
+        </tr>
+        <tr>
+            <th>
+                search within
+            </th>
         </tr>
     </table>
 
