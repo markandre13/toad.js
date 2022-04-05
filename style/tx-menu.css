@@ -26,6 +26,10 @@
     background-color: var(--tx-gray-100);
     border-color: var(--tx-gray-100);
 }
+.tx-menu > li.tx-hover {
+    background-color: var(--tx-gray-100);
+    border-color: var(--tx-gray-100);
+}
 .tx-menu > li:focus {
     border-left-color: var(--tx-outline-color);
 }

@@ -7,8 +7,12 @@
     <meta name="description" content="An introduction to the TOAD TypeScript GUI Library (toad.js).">
     <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>" />
 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin" />
+    <link rel="stylesheet" type="text/css" href=" https://fonts.googleapis.com/css?family=Titan+One">
     <link rel="stylesheet" type="text/css" href="style/tx-static.css" />
     <link rel="stylesheet" type="text/css" href="style/tx-dark.css" />
     <link rel="stylesheet" type="text/css" href="style/tx.css" />
@@ -30,6 +34,19 @@
 
     <script type="application/javascript" src="webcomponents-hi-sd-ce.js"></script>
     <script type="module" src="main.js"></script>
+
+    <style>
+        a:link {
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            cursor: auto;
+        }
+
+        a:link::before {
+            content: "→";
+            text-decoration: none;
+        }
+    </style>
 
     <template id="my-code-button">
         <style>
@@ -56,150 +73,212 @@
     release from the master branch on github which:
 
     <ul>
-      <li>
-         provides a new look with a dark and light theme based on Adobe's
-         Spectrum Design system
-      </li>
-      <li>
-         changes the prefix of the customer web components from "toad-" to "tx-"
-      </li>
-      <li>
-         adds various new views like switch, radio button, popup menus,
-         comboboxes, search fields, horizontal and vertical tabs, etc.
-      </li>
+        <li>
+            provides a new look with a dark and light theme based on Adobe's
+            Spectrum Design system
+        </li>
+        <li>
+            changes the prefix of the web components from "toad-" to "tx-"
+        </li>
+        <li>
+            adds various new views like switch, radio button, popup menus,
+            comboboxes, search fields, horizontal and vertical tabs, etc.
+        </li>
     </ul>
 
     <h2>Introduction</h2>
-    
 
     <p>
-        toad.js aims to separate the frontend implementation inside the browser into three horizontal layers.
+        A typical toad.js user interface divides the code running in the browser
+        into three horizontal layers to ease testing and modification.
     </p>
-
     <p>
-
+        The dependencies between these layers go only in one direction: Interface → Application → Domain.
+    </p>
+    <p>
+        Let's jump right into an example:
     </p>
 
     <style>
-        table.borders {
-            border-collapse: collapse;
+        .soda {
+            font-family: 'Titan One';
+            font-size: 24px;
+            background-color: #f80;
         }
 
-        table.borders td,
-        table.borders th {
-            border: 1px solid #fff;
-            padding: 5px;
+        .foo h1 {
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .foo td {
+            vertical-align: top;
+        }
+
+        .code {
+            padding: 10px;
+            border: 1px solid var(--tx-gray-900);
+            background-color: var(--tx-static-gray-900);
+            color: var(--tx-static-white);
+            max-width: fit-content;
         }
     </style>
 
-    <table class="borders">
+    <table class="soda" style="border-style: outset; border-color: #d60;">
         <tr>
-            <th>
-                Layer
-            </th>
-            <th>
-                Description
-            </th>
-        </tr>
-        <tr>
-            <td>
-                <div style="text-align: center">
-                    <b>View Layer</b>
-                </div>
-            </td>
-            <td>
-                <p>
-                    Defines the <u>visible structure and look</u> of the application. Usually written in HTML or
-                    similar.
-                </p>
-                <p>
-                    Create this layer in direct collaboration between User, Coder and UX.
-                </p>
-                <p>
-                    Draft it with pen and paper, then write it down in code and use Hot Module
-                    Replacement and Fast Refresh to see what it looks in the browser.
-                </p>
-                <p>
-                    Drafting the UI in Photoshop, Abstract, Figma or similar is an Agile Anti-Pattern.
-                </p>
-                <p>
-                    Do not define behaviour in this layer, avoid using JavaScript. Instead use HTML elements
-                    (Views) which reference a model (ViewModel) in the the Application Layer.
-                </p>
-                <p>
-                    E.g.
-                </p>
-                <pre>  Flavour: &lt;tx-popupmenu model="flavour"&gt;&lt;/tx-popupmenu&gt; 
-  Bottle Size: &lt;tx-text model="volume"&gt;&lt;/tx-text&gt; liters
-  &lt;tx-button action="fillBottle"&gt;Fill bottle&lt;/tx-button&gt;</pre>
-                <p>
-                    You should be able to write HTML which does not need to be covered by tests.
-                    The HTML elements on the other hand should be covered by tests running in
-                    a variety of browsers. Since they are highly reusable and need to adhere to
-                    the selected Design System, their creation and maintance maybe done by a
-                    separate team.
-                </p>
-                <p>
-                    The views included in toad.js are implemented as WebComponents taking
-                    inspiration from Adobe's <a href="https://spectrum.adobe.com">Spectrum</a>
-                    Design System/Style Guide and use IBM's <a href="https://www.ibm.com/plex/">Plex</a>
-                    font family.
-                </p>
+            <td colspan="2"
+                style="text-align: center; color: #0f0; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;">
+                The Soda Machine
             </td>
         </tr>
         <tr>
-            <td>
-                <div style="text-align: center">
-                    <b>Presentation Layer</b><br />
-                    (aka. ViewModel, Application Model, Controller, ...)
-                </div>
+            <td style="color: #f00; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;">
+                Flavour
             </td>
             <td>
-                <p>
-                    Defines the <u>behaviour</u> of the application's user interface.
-                </p>
-                <p>
-                    This layer can tested outside a browser as there are no Views in this
-                    layer.
-                </p>
-                <p>
-                    See also the article on the <a
-                        href="https://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a>
-                    by Martin Fowler.
-                </p>
+                <tx-select model="flavour">
+                    <option value="CLASSIC">Classic</option>
+                    <option value="CHERRY">Cherry</option>
+                    <option value="VANILLA">Vanilla</option>
+                </tx-select>
+            </td>
+        </tr>
+        <tr style="color: #08f;">
+            <td style=" -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;">Quantity</td>
+            <td>
+                <tx-text model="quantity"></tx-text> <span
+                    style=" -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;"> ml</span>
             </td>
         </tr>
         <tr>
-            <td>
-                <div style="text-align: center">
-                    <b>Domain Layer</b><br />
-                    (aka. Domain Model, Model, ...)
-                </div>
-            </td>
-            <td>
-                <p>
-                    Defines the <u>data and behaviour of the domain</u>.
-                </p>
-                <p>E.g. the flavours available in the Soda machine,
-                    minimum to maximum bottle size and a function to start dispensing the soda into the bottle.
-                </p>
-                <p>
-                    This layer can tested outside a browser.
-                </p>
+            <td colspan="2"
+                style="text-align: center;  -webkit-text-stroke-width: 0; -webkit-text-stroke-color: none; ">
+                <tx-button action="fill" class="tx-negative">Fill Bottle</tx-button>
             </td>
         </tr>
     </table>
+
+    <h3>The Interface Layer</h3>
+
+    <p>
+        The Interface Layer defines what the user sees and interact with using CSS/HTML.
+    </p>
+
+    <p>
+        Here is the simplified HTML for "The Soda Machine" above:
+    </p>
+
+    <pre
+        class="code">                   The Soda Machine
+
+Flavour  <span style="color: var(--tx-static-orange-400);">&lt;tx-select</span> model=<span style="color: var(--tx-static-green-400)">"flavour"</span><span style="color: var(--tx-static-orange-400);">&gt;
+             &lt;option</span> value=<span style="color: var(--tx-static-green-400)">"CLASSIC"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Classic<span style="color: var(--tx-static-orange-400);">&lt;/option&gt;
+             &lt;option</span> value=<span style="color: var(--tx-static-green-400)">"CHERRY"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Cherry<span style="color: var(--tx-static-orange-400);">&lt;/option&gt;
+             &lt;option</span> value=<span style="color: var(--tx-static-green-400)">"VANILLA"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Vanilla<span style="color: var(--tx-static-orange-400);">&lt;/option&gt;
+         &lt;/tx-select&gt;</span>
+
+Quantity <span style="color: var(--tx-static-orange-400);">&lt;tx-text</span> model=<span style="color: var(--tx-static-green-400)">"quantity"</span><span style="color: var(--tx-static-orange-400);">&gt;&lt;/tx-text></span> ml
+
+<span style="color: var(--tx-static-orange-400);">&lt;tx-button</span> action=<span style="color: var(--tx-static-green-400)">"fill"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Fill Bottle<span style="color: var(--tx-static-orange-400);">&lt;/tx-button&gt;</span></pre>
+
+    <ul>
+        <li>
+            The tx-* HTML Tags are <a href="https://www.webcomponents.org/introduction">Web Components</a> provided
+            by toad.js and are used instead of the
+            standard HTML Tags.
+        </li>
+        <li>
+            The <em>model</em> and <em>action</em> attributes reference values and functions
+            in the next layer, the Application Layer.
+        </li>
+        <li>
+            It is also possible to use JSX instead of HTML so that the IDE can provide feedback that the referenced
+            values and functions exits and have a type suitable to be viewed and edited by the HTML Tag.
+        </li>
+        <li>
+            The View Layer can be maintained by a UX designer without the help of a coder as the tx-* HTML tags do not
+            need any code. (Actually, they don't even have event attributes like <em>onmousedown</em> or
+            <em>onkeydown</em>.)
+        </li>
+        <li>
+            These HTML Tags are also commonly known as <a
+                href="https://en.wikipedia.org/wiki/Graphical_widget">Widgets</a>, Views, Windows or (User Interface)
+            Components.
+        </li>
+    </ul>
+
+    <h3>The Application Layer</h3>
+
+    The Application Layer controls how the application behaves.
+
+    <pre class="code"><span style="color: var(--tx-static-orange-600);">const</span> flavour = <span style="color: var(--tx-static-orange-600);">new</span> <span style="color: var(--tx-static-orange-400);">EnumModel</span>&lt;<span style="color: var(--tx-static-orange-400);">Flavour</span>&gt;(Flavour)
+flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<span style="color: var(--tx-static-green-400);">CLASSIC</span>
+<span style="color: var(--tx-static-orange-400);">bind</span>(<span style="color: var(--tx-static-green-400)">"flavour"</span>, flavour)
+
+<span style="color: var(--tx-static-orange-600);">const</span> quantity = <span style="color: var(--tx-static-orange-600);">new</span> <span style="color: var(--tx-static-orange-400);">NumberModel</span>(
+    defaultSize,
+    {<span style="color: var(--tx-static-red-400);">min</span>: <span style="color: var(--tx-static-blue-400);">0</span>, <span style="color: var(--tx-static-red-400);">max</span>: <span style="color: var(--tx-static-blue-400);">1500</span>})
+<span style="color: var(--tx-static-orange-400);">bind</span>(<span style="color: var(--tx-static-green-400)">"quantity"</span>, quantity)
+
+<span style="color: var(--tx-static-orange-400);">action</span>(<span style="color: var(--tx-static-green-400)">"fill"</span>, () => {
+    <span style="color: var(--tx-static-orange-400);">fillBottle</span>(quantity.<span style="color: var(--tx-static-red-400);">value</span>, flavour.<span style="color: var(--tx-static-red-400);">value</span>/<span style="color: var(--tx-static-blue-400);">1000.0</span>))
+    quantity.<span style="color: var(--tx-static-red-400);">value</span> = defaultSize
+})</pre>
+
+    <ul>
+        <li>
+            The classes EnumModel, NumberModel and Action are provided by toad.js
+            and can also be disabled/enabled, validate input, provide error messages, etc.<br />
+            These <em>Models</em> are also commonly known as either
+            <ul>
+                <li>
+                    <a href="https://en.wikipedia.org/wiki/Model–view–viewmodel">View Models</a>,
+                    meaning they are a model (representation) of a View of the layer above (View Layer) or,
+                </li>
+                <li>
+                    <a href="https://wiki.c2.com/?ValueModel">Value Models</a>, meaning they are
+                    a model (representation) of a value of the layer below (Domain Layer).
+                </li>
+            </ul>
+        </li>
+        <li>
+            The Application Layer does not need CSS/HTML and can be tested outside the browser so that tests do not have
+            to deal with the complexity of the browser's handling of HTML, events, etc.
+        </li>
+    </ul>
+
+    <h3>The Domain Layer</h3>
+
+    The Domain Layer contains code and data which is indepent of how the user interface looks or
+    behaves.
+
+    <pre class="code"><span style="color: var(--tx-static-orange-600);">enum</span> <span style="color: var(--tx-static-orange-400);">Flavour</span> {
+    <span style="color: var(--tx-static-green-400);">CLASSIC</span>, <span style="color: var(--tx-static-green-400);">CHERRY</span>, <span style="color: var(--tx-static-green-400);">VANILLA</span>
+}
+<span style="color: var(--tx-static-orange-600);">const</span> defaultSize = <span style="color: var(--tx-static-blue-400);">0.33</span>
+<span style="color: var(--tx-static-orange-600);">function</span> <span style="color: var(--tx-static-red-400);">fillBottle</span>(flavour: <span style="color: var(--tx-static-orange-400);">Flavour</span>, litre: <span style="color: var(--tx-static-orange-400);">number</span>) {
+    <span style="color: var(--tx-static-orange-400);">fetch</span>(<span style="color: var(--tx-static-green-400)">`http://127.0.0.1/fill/</span>${flavour}<span style="color: var(--tx-static-green-400)">/</span>${litre}<span style="color: var(--tx-static-green-400)">`</span>)
+}</pre>
+
+    <ul>
+        <li>
+            The code and data in this Layer are also known as the
+            <a href="https://en.wikipedia.org/wiki/Domain_model">Domain Model</a>.
+        </li>
+    </ul>
 
     <!------------------------------------------------------------------------->
 
     <h2>Action Model</h2>
 
     <p>
-        Actions are models without <em>values</em> (aside from properties like <em>enabled</em>, <em>label</em>, etc.)
+        Actions are models without <em>values</em> (aside from properties like <em>enabled</em>, <em>label</em>,
+        etc.)
     </p>
 
     <p>
-        An Action's <em>modfied</em> signal will be triggered on a user interaction, e.g. a push button being pressed.
+        An Action's <em>modfied</em> signal will be triggered on a user interaction, e.g. a push button being
+        pressed.
     </p>
 
     <h3>&lt;tx-button&gt;</h3>
@@ -436,17 +515,18 @@
             <th colspan="3">
                 disabled
             </th>
+            <th>when to use</th>
         </tr>
         <tr>
             <th rowspan="2">radiobutton</th>
             <td>
-                <tx-radiobutton model="flavour" value="BLUEBERRY"></tx-radiobutton> Blueberry
+                <tx-radiobutton model="flavourEnabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
             </td>
             <td>
-                <tx-radiobutton model="flavour" value="GRAPE"></tx-radiobutton> Grape
+                <tx-radiobutton model="flavourEnabled" value="GRAPE"></tx-radiobutton> Grape
             </td>
             <td>
-                <tx-radiobutton model="flavour" value="TANGERINE"></tx-radiobutton> Tangerine
+                <tx-radiobutton model="flavourEnabled" value="TANGERINE"></tx-radiobutton> Tangerine
             </td>
             <td>
                 <tx-radiobutton model="flavourDisabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
@@ -457,16 +537,19 @@
             <td>
                 <tx-radiobutton model="flavourDisabled" value="TANGERINE"></tx-radiobutton> Tangerine
             </td>
+            <td rowspan="2">
+                enough space to display all options
+            </td>
         </tr>
         <tr>
             <td>
-                <tx-radiobutton model="flavour" value="LIME"></tx-radiobutton> Lime
+                <tx-radiobutton model="flavourEnabled" value="LIME"></tx-radiobutton> Lime
             </td>
             <td>
-                <tx-radiobutton model="flavour" value="STRAWBERRY"></tx-radiobutton> Strawberry
+                <tx-radiobutton model="flavourEnabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
             </td>
             <td>
-                <tx-radiobutton model="flavour" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
+                <tx-radiobutton model="flavourEnabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
             </td>
             <td>
                 <tx-radiobutton model="flavourDisabled" value="LIME"></tx-radiobutton> Lime
@@ -478,14 +561,70 @@
                 <tx-radiobutton model="flavourDisabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
             </td>
         </tr>
+        <tr>
+            <th>
+                select
+            </th>
+            <td colspan="3">
+                <tx-select model="flavourEnabled">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select>
+            </td>
+            <td colspan="3">
+                <tx-select model="flavourDisabled">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select>
+            </td>
+            <td rowspan="2">
+                limited screen space
+            </td>
+        </tr>
+        <tr>
+            <th>
+                combobox
+            </th>
+            <td colspan="3">
+                <tx-select model="flavourEnabled">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select>
+            </td>
+            <td colspan="3">
+                <tx-select model="flavourDisabled">
+                    <option value="BLUEBERRY">Blueberry</option>
+                    <option value="GRAPE">Grape</option>
+                    <option value="TANGERINE">Tangerine</option>
+                    <option value="LIME">Lime</option>
+                    <option value="STRAWBERRY">Strawberry</option>
+                    <option value="BONDIBLUE">Bondi Blue</option>
+                </tx-select>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                search
+            </th>
+        </tr>
+        <tr>
+            <th>
+                search within
+            </th>
+        </tr>
     </table>
-
-    <h3>&lt;tx-combobox&gt;</h3>
-
-    <h3>&lt;tx-search&gt;</h3>
-
-    text model
-    text and option model
 
     <!------------------------------------------------------------------------->
 
@@ -607,6 +746,48 @@
       model.addSiblingAfter(0)
       bind("tree", model)</pre>
     </tx-if>
+
+    <!------------------------------------------------------------------------->
+
+    <!--
+        https://wpf-tutorial.com/tabcontrol/using-the-tabcontrol/
+
+        <tx-folder>
+            <tx-file>
+            </tx-file>
+            <tx-file>
+                <tx-tab>
+                </tx-tab>
+                ...
+            </tx-file>
+
+
+            <tx-tab header="label">
+                ... content
+            </tx-tab>
+            <tx-tab>
+                <></label>
+            </tx-tab>
+        </tx-folder>
+
+        Angular Material
+
+        <tab-group>
+            <tab label="">content</tab>
+            <tab>
+                <template tab-label>
+                <template>
+                content
+            </tab>
+        </tab-group>
+
+        https://www.w3.org/TR/wai-aria-practices-1.1/#tabpanel
+        https://www.w3.org/TR/wai-aria-practices-1.1/examples/tabs/tabs-1/tabs.html
+        tablist: parent for tabs
+           tab: label
+           tabpanel: content
+
+    -->
 
 </body>
 
