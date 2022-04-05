@@ -25,6 +25,7 @@ import { placePopupVertical } from "@toad/menu/PopupMenu"
 export class Select extends ModelView<OptionModelBase> {
     input: HTMLInputElement
     popup?: HTMLElement
+    hover?: HTMLLIElement
 
     constructor() {
         super()
@@ -44,11 +45,38 @@ export class Select extends ModelView<OptionModelBase> {
         b.tabIndex = -1
         s.style.width = "100%"
         s.style.height = "100%"
-        b.onclick = () => {
+
+        b.onpointerdown = (ev: PointerEvent) => {
+            ev.preventDefault()
+            this.input.focus()
+            this.open()
+            b.setPointerCapture(ev.pointerId)
+        }
+        b.onpointermove = (ev: PointerEvent) => {
             if (this.popup === undefined) {
-                this.open()
+                return
+            }
+            const e = this.shadowRoot!.elementFromPoint(ev.clientX, ev.clientY)
+            let newHover
+            if (e instanceof HTMLLIElement) { // FIXME: this only works when there are no tags within the LI
+                newHover = e
             } else {
-                this.close()
+                newHover = undefined
+            }
+            if (this.hover !== newHover) {
+                if (this.hover) {
+                    this.hover.classList.remove("tx-hover")
+                }
+                this.hover = newHover
+                if (this.hover) {
+                    this.hover.classList.add("tx-hover")
+                }
+            }
+        }
+        b.onpointerup = (ev: PointerEvent) => {
+            this.close() // FIXME: keep popup open when pointerup is within button
+            if (this.hover) {
+                this.select(parseInt(this.hover.dataset["idx"]!))
             }
         }
         this.classList.add("tx-combobox")
@@ -104,6 +132,7 @@ export class Select extends ModelView<OptionModelBase> {
                     )
                     l.tabIndex = 0
                     l.ariaRoleDescription = "option"
+                    l.dataset["idx"] = `${idx}`
                     l.onclick = () => {
                         view.select(idx)
                     }
@@ -123,9 +152,11 @@ export class Select extends ModelView<OptionModelBase> {
     }
 
     close() {
-        this.shadowRoot!.removeChild(this.popup!)
-        // document.body.removeChild(this.popup!)
-        this.popup = undefined
+        if (this.popup) {
+            this.shadowRoot!.removeChild(this.popup!)
+            // document.body.removeChild(this.popup!)
+            this.popup = undefined
+        }
     }
 
     select(index: number) {
