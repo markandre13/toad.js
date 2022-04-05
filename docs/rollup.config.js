@@ -8,7 +8,7 @@ export default {
       name: 'example',
       file: 'docs/main.js',
       format: 'iife',
-      sourcemap: true
+      sourcemap: false
     },
     plugins: [
         typescript({

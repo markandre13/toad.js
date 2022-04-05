@@ -16,7 +16,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { View } from "./View"
 import { ModelView } from "./ModelView"
 import { OptionModelBase } from "@toad/model/OptionModelBase"
 import { input, button, svg, path, div, ul, li, array, text } from "@toad/util/lsx"
@@ -101,7 +100,7 @@ export class Select extends ModelView<OptionModelBase> {
             this.input.removeAttribute("disabled")
         }
 
-        if (this.model) {
+        if (this.model !== undefined) {
             this.input.value = this.displayName(this.model.stringValue)
         }
     }
@@ -116,6 +115,17 @@ export class Select extends ModelView<OptionModelBase> {
                 }
             }
         }
+        let all = ""
+        for (let i = 0; i < this.children.length; ++i) {
+            const child = this.children[i]
+            if (child.nodeName === "OPTION") {
+                const option = child as HTMLOptionElement
+                all = `${all} '${option.value}'`
+            }
+        }
+
+        console.log(`Select(model=${this.getAttribute("model")}).displayName('${value}'): not in${all} of`)
+        console.trace(this) 
         return ""
     }
 
@@ -160,8 +170,8 @@ export class Select extends ModelView<OptionModelBase> {
     }
 
     select(index: number) {
-        this.model!.stringValue = (this.children[index] as HTMLOptionElement).value
         this.close()
+        this.model!.stringValue = (this.children[index] as HTMLOptionElement).value
     }
 }
 

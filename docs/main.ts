@@ -19,7 +19,6 @@
 import {
     TextModel, HtmlModel, NumberModel, BooleanModel, EnumModel,
     Template,
-
     ArrayModel, ArrayAdapter, TableAdapter,
     TreeNode, TreeNodeModel, TreeAdapter,
     bindModel as bind, action, refs
@@ -28,6 +27,23 @@ import {
 window.onload = () => { 
     main() 
 }
+
+//
+// Soda Machine
+//
+const defaultSize = 0.33
+enum Flavour {
+    CLASSIC, CHERRY, VANILLA
+}
+const flavour = new EnumModel<Flavour>(Flavour)
+flavour.value = Flavour.CLASSIC
+bind("flavour", flavour)
+const quantity = new NumberModel(defaultSize, {min: 0, max: 1500})
+bind("quantity", quantity)
+action("fill", () => {
+    alert(`filling bottle with ${quantity.value}ml of ${Flavour[flavour.value]} soda.`)
+    quantity.value = defaultSize
+})
 
 //
 // <tx-text>
@@ -77,8 +93,8 @@ bind("onDisabled", onDisabled)
 // EnumModel
 //
 
-enum Flavour {
-    BLUEBERRY,
+enum Color {
+    BLUEBERRY = 0,
     GRAPE, 
     TANGERINE,
     LIME,
@@ -86,13 +102,13 @@ enum Flavour {
     BONDIBLUE
 }
 
-const flavour = new EnumModel<Flavour>(Flavour)
-flavour.value = Flavour.GRAPE
-bind("flavour", flavour)
+const flavourEnabled = new EnumModel<Color>(Color)
+flavourEnabled.value = Color.GRAPE
+bind("flavourEnabled", flavourEnabled)
 
-const flavourDisabled = new EnumModel<Flavour>(Flavour)
+const flavourDisabled = new EnumModel<Color>(Color)
 flavourDisabled.enabled = false
-flavourDisabled.value = Flavour.TANGERINE
+flavourDisabled.value = Color.TANGERINE
 bind("flavourDisabled", flavourDisabled)
 
 //
