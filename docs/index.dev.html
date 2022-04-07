@@ -46,6 +46,12 @@
             content: "→";
             text-decoration: none;
         }
+
+        figure {
+            text-align: center;
+            font-style: italic;
+            max-width: 400px;
+        }
     </style>
 
     <template id="my-code-button">
@@ -202,8 +208,8 @@ Quantity <span style="color: var(--tx-static-orange-400);">&lt;tx-text</span> mo
         </li>
         <li>
             These HTML Tags are also commonly known as <a
-                href="https://en.wikipedia.org/wiki/Graphical_widget">Widgets</a>, Views, Windows or (User Interface)
-            Components.
+                href="https://en.wikipedia.org/wiki/Graphical_widget">Widgets</a>, Views, Windows or User
+            Interface <a href="https://en.wikipedia.org/wiki/Component-based_software_engineering">Components</a>.
         </li>
     </ul>
 
@@ -227,19 +233,35 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
 
     <ul>
         <li>
-            The classes EnumModel, NumberModel and Action are provided by toad.js
-            and can also be disabled/enabled, validate input, provide error messages, etc.<br />
-            These <em>Models</em> are also commonly known as either
+            <p>
+                A <em>Model</em> is a thing which represents another thing and is used instead of it.
+            </p>
+            <figure>
+                <img width="360" height="232"
+                    alt="Doc Brown in the movie 'Back to the Future' in front of an amazingly over-detailed model of the city centre of Hill Valley."
+                    src="./model.jpg" />
+                <figcaption>
+                    "Please excuse the crudity of this model. I didn't have time to build it to scale or to paint it." –
+                    Dr. Emmett Lathrop Brown, Ph.D.
+                </figcaption>
+            </figure>
+            <p>
+                The <em>models</em> in the Application Layer are commonly known as
+            </p>
             <ul>
                 <li>
                     <a href="https://en.wikipedia.org/wiki/Model–view–viewmodel">View Models</a>,
-                    meaning they are a model (representation) of a View of the layer above (View Layer) or,
+                    meaning they are a model of a <em>View</em> in the layer above (View Layer) or,
                 </li>
                 <li>
                     <a href="https://wiki.c2.com/?ValueModel">Value Models</a>, meaning they are
-                    a model (representation) of a value of the layer below (Domain Layer).
+                    a model of a value in the layer below (Domain Layer).
                 </li>
             </ul>
+        </li>
+        <li>
+            The classes EnumModel, NumberModel and Action are <em>models</em> provided by toad.js
+            and can also be disabled/enabled, validate input, provide error messages, etc.<br />
         </li>
         <li>
             The Application Layer does not need CSS/HTML and can be tested outside the browser so that tests do not have
@@ -249,8 +271,10 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
 
     <h3>The Domain Layer</h3>
 
-    The Domain Layer contains code and data which is indepent of how the user interface looks or
-    behaves.
+    <p>
+        The Domain Layer contains all the code and data regarding what the application is actually about (minus the user
+        interface).
+    </p>
 
     <pre class="code"><span style="color: var(--tx-static-orange-600);">enum</span> <span style="color: var(--tx-static-orange-400);">Flavour</span> {
     <span style="color: var(--tx-static-green-400);">CLASSIC</span>, <span style="color: var(--tx-static-green-400);">CHERRY</span>, <span style="color: var(--tx-static-green-400);">VANILLA</span>
@@ -262,7 +286,7 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
 
     <ul>
         <li>
-            The code and data in this Layer are also known as the
+            The code and data in this Layer are also known as
             <a href="https://en.wikipedia.org/wiki/Domain_model">Domain Model</a>.
         </li>
     </ul>
