@@ -42,10 +42,15 @@ export class Select extends ModelView<OptionModelBase> {
             )
         )
         b.tabIndex = -1
+        b.style.outline = "none"
         s.style.width = "100%"
         s.style.height = "100%"
 
         b.onpointerdown = (ev: PointerEvent) => {
+            if (this.popup) {
+                this.close()
+                return
+            }
             ev.preventDefault()
             this.input.focus()
             this.open()
@@ -73,10 +78,23 @@ export class Select extends ModelView<OptionModelBase> {
             }
         }
         b.onpointerup = (ev: PointerEvent) => {
-            this.close() // FIXME: keep popup open when pointerup is within button
             if (this.hover) {
-                this.select(parseInt(this.hover.dataset["idx"]!))
+                const idx = parseInt(this.hover.dataset["idx"]!)
+                this.close()
+                this.select(idx)
+                return
             }
+
+            const e = this.shadowRoot!.elementFromPoint(ev.clientX, ev.clientY)
+            if (b.contains(e)) {
+                b.focus()
+                return
+            }
+
+            this.close()
+        }
+        b.onblur = (ev: FocusEvent) => {
+            this.close()
         }
         this.classList.add("tx-combobox")
         this.attachShadow({ mode: 'open' })
@@ -162,7 +180,8 @@ export class Select extends ModelView<OptionModelBase> {
     }
 
     close() {
-        if (this.popup) {
+        this.hover = undefined
+        if (this.popup !== undefined) {
             this.shadowRoot!.removeChild(this.popup!)
             // document.body.removeChild(this.popup!)
             this.popup = undefined
