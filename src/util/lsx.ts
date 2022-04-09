@@ -54,6 +54,7 @@ export function array(times: number, create:(idx:number) => Element): Element[] 
 export function text(text: string): Text { return document.createTextNode(text) }
 export const div = (...children: Element[]) => element<HTMLDivElement>("div", children)
 export const span = (...children: Element[]) => element<HTMLSpanElement>("span", children)
+export const form = (...children: Element[]) => element<HTMLFormElement>("form", children)
 export const input = (...children: Element[]) => element<HTMLInputElement>("input", children)
 export const button = (...children: Element[]) => element<HTMLButtonElement>("button", children)
 export const ul = (...children: Element[]) => element<HTMLUListElement>("ul", children)
