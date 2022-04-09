@@ -75,6 +75,28 @@
         WebComponent/TypeScript Edition
     </p>
 
+    <tx-tabs>
+        <!-- short variant with external content -->
+        <tx-tab label="Explore" href="morph.html"></tx-tab>
+
+        <!-- short variant with local content -->
+        <tx-tab label="Flights">Yoo!</tx-tab>
+        <tx-tab label="Trips">Yoo!</tx-tab>
+
+        <!-- no other variant yet -->
+    </tx-tabs>
+
+    <tx-tabs vertical>
+        <!-- short variant with external content -->
+        <tx-tab label="Explore" href="morph.html"></tx-tab>
+
+        <!-- short variant with local content -->
+        <tx-tab label="Flights">Yoo!</tx-tab>
+        <tx-tab label="Trips">Yoo!</tx-tab>
+
+        <!-- no other variant yet -->
+    </tx-tabs>
+
     <u>Please note</u>: The package available on npmjs.com is still on
     version 0.0.x while this page previews the upcoming toad.js 0.1.0
     release from the master branch on github which:
@@ -833,6 +855,36 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
 
     <!--
         https://wpf-tutorial.com/tabcontrol/using-the-tabcontrol/
+       
+        terminology in the physical world:
+        o a TAB is a label on top of either a FILE FOLDER containing pages or on a PAGE itself
+          TAB aka FOLDER TAB
+          FILE FOLDER aka FILE aka FOLDER
+        o FILE BOX
+        o 
+
+        we might also want to link tabs to the url for bookmarking (when there's a router available)
+
+        <tx-tab-group>
+
+            short variant with external content
+            <tx-tab label="..." href="..."></tx-tab>
+
+            short variant with local content
+            <tx-tab label="...">{content}</tx-tab>
+
+            ;; no other variant yet
+
+        </tx-tab-group>
+
+        <tx-file-box>
+            <tx-file>
+                <tx-tab>hello</tx-tab>
+            </tx-file>
+        </tx-file-box>
+
+        <tx-folder>
+        </tx-folder>
 
         <tx-folder>
             <tx-file>

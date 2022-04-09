@@ -58,6 +58,8 @@ export { TextTool } from "./view/TextTool"
 export { SlotView } from "./view/SlotView"
 export { ToadIf } from "./view/ToadIf"
 
+export { Tabs } from "./view/Tab"
+
 export { Menu } from "./menu/Menu"
 export { MenuButton } from "./menu/MenuButton"
 export { MenuSpacer } from "./menu/MenuSpacer"
