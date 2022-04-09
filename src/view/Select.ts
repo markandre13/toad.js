@@ -23,6 +23,7 @@ import { placePopupVertical } from "@toad/menu/PopupMenu"
 
 export class Select extends ModelView<OptionModelBase> {
     input: HTMLInputElement
+    button: HTMLButtonElement
     popup?: HTMLElement
     hover?: HTMLLIElement
 
@@ -30,9 +31,18 @@ export class Select extends ModelView<OptionModelBase> {
         super()
         this.input = input()
         this.input.type = "text"
+
+        // popup vs. combobox
+        this.asPopupMenu()
+
         let view = this
         this.input.oninput = () => {
             view.updateModel()
+        }
+        this.input.onblur = (ev: FocusEvent) => { // ?? but pointerdown moved the focus to the input...?
+            if (this.hover === undefined) {
+                this.close()
+            }
         }
 
         let s
@@ -41,6 +51,7 @@ export class Select extends ModelView<OptionModelBase> {
                 path("M3 9.95a.875.875 0 01-.615-1.498L5.88 5 2.385 1.547A.875.875 0 013.615.302L7.74 4.377a.876.876 0 010 1.246L3.615 9.698A.872.872 0 013 9.95z")
             )
         )
+        this.button = b
         b.tabIndex = -1
         b.style.outline = "none"
         s.style.width = "100%"
@@ -48,6 +59,7 @@ export class Select extends ModelView<OptionModelBase> {
 
         b.onpointerdown = (ev: PointerEvent) => {
             if (this.popup) {
+                // console.log(`button pointerdown`)
                 this.close()
                 return
             }
@@ -87,15 +99,19 @@ export class Select extends ModelView<OptionModelBase> {
 
             const e = this.shadowRoot!.elementFromPoint(ev.clientX, ev.clientY)
             if (b.contains(e)) {
-                b.focus()
+                this.input.focus()
                 return
             }
 
             this.close()
         }
-        b.onblur = (ev: FocusEvent) => {
-            this.close()
-        }
+
+        this.keydown = this.keydown.bind(this)
+        this.input.onkeydown = this.keydown
+
+        this.wheel = this.wheel.bind(this)
+        this.input.onwheel = this.button.onwheel = this.wheel
+
         this.classList.add("tx-combobox")
         this.attachShadow({ mode: 'open' })
         this.attachStyle("combobox")
@@ -104,14 +120,55 @@ export class Select extends ModelView<OptionModelBase> {
         this.shadowRoot!.appendChild(b)
     }
 
+    keydown(ev: KeyboardEvent) {
+        // TODO: open popup and navigate it with keys
+        ev.preventDefault()
+        switch(ev.key) {
+            case "ArrowUp":
+                this.previousItem()
+                break
+            case "ArrowDown":
+                this.nextItem()
+                break
+        }
+    }
+
+    wheel(ev: WheelEvent) {
+        ev.preventDefault()
+        // TODO:
+        // wacom tablets may fire multiple wheel events to increase scroll speed
+        // we do not want this because here we want to flip from one item to the next
+        // hence we might wanna look at the timestamp
+        if (ev.deltaY > 0) {
+            this.nextItem()
+        }
+        if (ev.deltaY < 0) {
+            this.previousItem()
+        }
+    }
+
+    // make text field non-editable
+    asPopupMenu() {
+        this.input.readOnly = true
+        for (let property of ["user-select", "-webkit-user-select", "-webkit-touch-callout", "-khtml-user-select"]) {
+            this.input.style.setProperty(property, "none")
+        }
+    }
+
+    // make text field editable
+    asComboBox() {
+        this.input.readOnly = false
+        for (let property of ["user-select", "-webkit-user-select", "-webkit-touch-callout", "-khtml-user-select"]) {
+            this.input.style.removeProperty(property)
+        }
+    }
+
     override updateModel() {
         // if (this.model)
         //   this.model.value = Number.parseFloat(this.input.value)
     }
 
     override updateView() {
-        if (!this.model)
-            return
         if (!this.model || !this.model.enabled) {
             this.input.setAttribute("disabled", "")
         } else {
@@ -119,6 +176,7 @@ export class Select extends ModelView<OptionModelBase> {
         }
 
         if (this.model !== undefined) {
+            // console.log(`Select.updateView() to ${this.model.stringValue}`)
             this.input.value = this.displayName(this.model.stringValue)
         }
     }
@@ -161,7 +219,14 @@ export class Select extends ModelView<OptionModelBase> {
                     l.tabIndex = 0
                     l.ariaRoleDescription = "option"
                     l.dataset["idx"] = `${idx}`
+                    l.onpointerdown = (ev: PointerEvent) => {
+                        // console.log(`list pointer down ${idx}`)
+                        this.button.setPointerCapture(ev.pointerId)
+                        this.hover = l
+                        ev.preventDefault()
+                    }
                     l.onclick = () => {
+                        // console.log(`list click ${idx}`)
                         view.select(idx)
                     }
                     this.children[idx]
@@ -183,14 +248,49 @@ export class Select extends ModelView<OptionModelBase> {
         this.hover = undefined
         if (this.popup !== undefined) {
             this.shadowRoot!.removeChild(this.popup!)
-            // document.body.removeChild(this.popup!)
             this.popup = undefined
         }
     }
 
     select(index: number) {
+        // console.log(`Select.select(${index})`)
         this.close()
         this.model!.stringValue = (this.children[index] as HTMLOptionElement).value
+    }
+
+    getIndex(): number | undefined {
+        const v = this.model?.stringValue
+        for(let i=0; i<this.children.length; ++i) {
+            if ((this.children[i] as HTMLOptionElement).value === v)
+                return i
+        }
+        return undefined
+    }
+
+    nextItem() {
+        let index = this.getIndex()
+        if (index === undefined) {
+            index = 0
+        } else {
+            ++index
+        }
+        if (index >= this.children.length) {
+            return
+        }
+        this.select(index)
+    }
+
+    previousItem() {
+        let index = this.getIndex()
+        if (index === undefined) {
+            index = this.children.length - 1
+        } else {
+            --index
+        }
+        if (index < 0) {
+            return
+        }
+        this.select(index)
     }
 }
 

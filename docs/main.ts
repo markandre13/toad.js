@@ -24,25 +24,44 @@ import {
     bindModel as bind, action, refs
 } from '@toad'
 
-window.onload = () => { 
-    main() 
+window.onload = () => {
+    main()
 }
 
 //
 // Soda Machine
 //
-const defaultSize = 0.33
+const soda = document.getElementById("soda")!
+
+soda.onanimationend = () => {
+    soda.classList.remove("animated")
+}
+
+const defaultSize = 330
 enum Flavour {
     CLASSIC, CHERRY, VANILLA
 }
+
 const flavour = new EnumModel<Flavour>(Flavour)
 flavour.value = Flavour.CLASSIC
 bind("flavour", flavour)
-const quantity = new NumberModel(defaultSize, {min: 0, max: 1500})
+const quantity = new NumberModel(defaultSize, { min: 0, max: 1500 })
 bind("quantity", quantity)
 action("fill", () => {
-    alert(`filling bottle with ${quantity.value}ml of ${Flavour[flavour.value]} soda.`)
-    quantity.value = defaultSize
+    const height = quantity.value / quantity.max!
+    document.documentElement.style.setProperty("--soda-height", `${height}`)
+    switch (flavour.value) {
+        case Flavour.CLASSIC:
+            document.documentElement.style.setProperty("--soda-color", "#420")
+            break
+        case Flavour.CHERRY:
+            document.documentElement.style.setProperty("--soda-color", "#d44")
+            break
+        case Flavour.VANILLA:
+            document.documentElement.style.setProperty("--soda-color", "#d80")
+            break
+    }
+    soda.classList.add("animated")
 })
 
 //
@@ -95,7 +114,7 @@ bind("onDisabled", onDisabled)
 
 enum Color {
     BLUEBERRY = 0,
-    GRAPE, 
+    GRAPE,
     TANGERINE,
     LIME,
     STRAWBERRY,

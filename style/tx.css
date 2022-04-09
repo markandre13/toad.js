@@ -67,7 +67,7 @@ h4 {
 pre {
   font-family: "IBM Plex Mono", Courier, monospaced;
   font-size: calc((12/16) * 1rem);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.1; /* 1.5625rem 25px */
 }
 
