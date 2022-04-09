@@ -130,6 +130,10 @@ flavourDisabled.enabled = false
 flavourDisabled.value = Color.TANGERINE
 bind("flavourDisabled", flavourDisabled)
 
+const customFlavour = new TextModel("")
+bind("customFlavour", customFlavour)
+const customFlavourDisabled = new TextModel("")
+bind("customFlavourDisabled", customFlavourDisabled)
 //
 // <tx-slider>
 //
@@ -238,3 +242,4 @@ class MyCodeButton extends HTMLElement {
     }
 }
 window.customElements.define("my-code-button", MyCodeButton)
+

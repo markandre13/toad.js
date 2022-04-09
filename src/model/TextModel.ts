@@ -21,7 +21,7 @@ import { Model } from "./Model"
 export class TextModel extends Model {
   protected _value: string | Function
 
-  constructor(value: string) {
+  constructor(value: string = "") {
     super()
     this._value = value
   }

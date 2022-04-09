@@ -20,12 +20,15 @@ import { ModelView } from "./ModelView"
 import { OptionModelBase } from "@toad/model/OptionModelBase"
 import { input, button, svg, path, div, ul, li, array, text } from "@toad/util/lsx"
 import { placePopupVertical } from "@toad/menu/PopupMenu"
+import { TextModel } from "@toad/model/TextModel"
+import { globalController } from "../controller/globalController"
 
 export class Select extends ModelView<OptionModelBase> {
     input: HTMLInputElement
     button: HTMLButtonElement
     popup?: HTMLElement
     hover?: HTMLLIElement
+    text?: TextModel // TODO: | NumberModel
 
     constructor() {
         super()
@@ -39,6 +42,7 @@ export class Select extends ModelView<OptionModelBase> {
         this.input.oninput = () => {
             view.updateModel()
         }
+
         this.input.onblur = (ev: FocusEvent) => { // ?? but pointerdown moved the focus to the input...?
             if (this.hover === undefined) {
                 this.close()
@@ -120,10 +124,49 @@ export class Select extends ModelView<OptionModelBase> {
         this.shadowRoot!.appendChild(b)
     }
 
+    // TODO: this override to make it possible to use multiple 'model' attributes
+    //       but this should be rather a feature of View
+    override connectedCallback(): void {
+        if (this.controller)
+            return
+        super.connectedCallback()
+
+        const text = this.getAttribute("text")
+        if (text !== null) {
+            // console.log(`Select.connectedCallback(): register for model ${text}`)
+            globalController.registerView(`M:${text}`, this)
+            this.asComboBox()
+            this.updateModel()
+        }
+    }
+
+    override setModel(model?: OptionModelBase): void {
+        if (!model) {
+            if (this.text) {
+                this.text.modified.remove(this)
+                this.text = undefined
+            }
+            super.setModel(model)
+            return
+        }
+
+        if (model instanceof OptionModelBase) {
+            super.setModel(model)
+        }
+        if (model instanceof TextModel) {
+            this.text = model
+            this.text.modified.add( () => {
+                this.input.value = this.text!.value
+            }, this)
+        }
+    }
+
     keydown(ev: KeyboardEvent) {
         // TODO: open popup and navigate it with keys
-        ev.preventDefault()
-        switch(ev.key) {
+        if (this.input.readOnly) {
+            ev.preventDefault()
+        }
+        switch (ev.key) {
             case "ArrowUp":
                 this.previousItem()
                 break
@@ -135,6 +178,7 @@ export class Select extends ModelView<OptionModelBase> {
 
     wheel(ev: WheelEvent) {
         ev.preventDefault()
+        this.input.focus()
         // TODO:
         // wacom tablets may fire multiple wheel events to increase scroll speed
         // we do not want this because here we want to flip from one item to the next
@@ -164,7 +208,10 @@ export class Select extends ModelView<OptionModelBase> {
     }
 
     override updateModel() {
-        // if (this.model)
+        if (this.text) {
+            this.text.value = this.input.value
+        }
+        // if (this.text)
         //   this.model.value = Number.parseFloat(this.input.value)
     }
 
@@ -178,6 +225,7 @@ export class Select extends ModelView<OptionModelBase> {
         if (this.model !== undefined) {
             // console.log(`Select.updateView() to ${this.model.stringValue}`)
             this.input.value = this.displayName(this.model.stringValue)
+            this.updateModel() // for the text model
         }
     }
 
@@ -199,9 +247,12 @@ export class Select extends ModelView<OptionModelBase> {
                 all = `${all} '${option.value}'`
             }
         }
+        if (all.length === 0) {
+            all = " empty option list"
+        }
 
-        console.log(`Select(model=${this.getAttribute("model")}).displayName('${value}'): not in${all} of`)
-        console.trace(this) 
+        console.log(`'${value}' is not in${all} of <tx-select model="${this.getAttribute("model")}">`)
+        console.trace(this)
         return ""
     }
 
@@ -253,14 +304,23 @@ export class Select extends ModelView<OptionModelBase> {
     }
 
     select(index: number) {
-        // console.log(`Select.select(${index})`)
+        if (this.model === undefined) {
+            console.log(`<tx-select model='${this.getAttribute("model")}'> has no model`)
+            return
+        }
         this.close()
-        this.model!.stringValue = (this.children[index] as HTMLOptionElement).value
+        const option = this.children[index]
+        if (!(option instanceof HTMLOptionElement)) {
+            console.log(`<tx-select>: unpexected element <${option.nodeName.toLowerCase()}> instead of <option>`)
+            return
+        }
+
+        this.model!.stringValue = option.value
     }
 
     getIndex(): number | undefined {
         const v = this.model?.stringValue
-        for(let i=0; i<this.children.length; ++i) {
+        for (let i = 0; i < this.children.length; ++i) {
             if ((this.children[i] as HTMLOptionElement).value === v)
                 return i
         }

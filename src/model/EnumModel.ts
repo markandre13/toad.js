@@ -24,9 +24,12 @@ export class EnumModel<T extends Object> extends OptionModelBase {
     protected _value!: T
 
     // TODO: find a way to replace 'any' with something like 'typeof T'
-    constructor(enumClass: any) {
+    constructor(enumClass: any, value?: T) {
         super()
         this.enumClass = enumClass
+        if (value !== undefined) {
+            this._value = value
+        }
     }
 
     get value() {

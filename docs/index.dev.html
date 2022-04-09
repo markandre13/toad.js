@@ -107,6 +107,10 @@
     </p>
 
     <style>
+        table td, table th {
+            white-space: nowrap;
+        }
+
         .soda {
             font-family: 'Titan One';
             font-size: 24px;
@@ -655,8 +659,8 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
                     <option value="BONDIBLUE">Bondi Blue</option>
                 </tx-select>
             </td>
-            <td rowspan="2">
-                limited screen space
+            <td>
+                limited screen space, move through options with scroll wheel
             </td>
         </tr>
         <tr>
@@ -664,7 +668,7 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
                 combobox
             </th>
             <td colspan="3">
-                <tx-select model="flavourEnabled">
+                <tx-select model="flavourEnabled" text="customFlavour">
                     <option value="BLUEBERRY">Blueberry</option>
                     <option value="GRAPE">Grape</option>
                     <option value="TANGERINE">Tangerine</option>
@@ -674,7 +678,7 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
                 </tx-select>
             </td>
             <td colspan="3">
-                <tx-select model="flavourDisabled">
+                <tx-select model="flavourDisabled" text="customFlavourDisabled">
                     <option value="BLUEBERRY">Blueberry</option>
                     <option value="GRAPE">Grape</option>
                     <option value="TANGERINE">Tangerine</option>
@@ -682,6 +686,9 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
                     <option value="STRAWBERRY">Strawberry</option>
                     <option value="BONDIBLUE">Bondi Blue</option>
                 </tx-select>
+            </td>
+            <td>
+                combination of select and text
             </td>
         </tr>
         <tr>
@@ -856,7 +863,6 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
         tablist: parent for tabs
            tab: label
            tabpanel: content
-
     -->
 
 </body>
