@@ -21,12 +21,12 @@ tableStyle.textContent = `
 :host {
   position: relative;
   display: inline-block;
-  border: 1px #ccc solid;
+  border: 1px solid var(--tx-gray-300);
   border-radius: 3px;
   outline-offset: -2px;
   font-family: var(--tx-font-family);
   font-size: var(--tx-font-size);
-  background: #fff;
+  background: var(--tx-gray-50);
 }
 :host:focus .cells tr.selected,
 :host:focus .cells td.selected {
@@ -61,7 +61,8 @@ tableStyle.textContent = `
   border: none 0px;
 }
 .colhead > table, .rowhead > table {
-  background: #e0e0e0;
+  color: var(--tx-gray-700);
+  background: var(--tx-gray-100);
 }
 
 .colhead th,
@@ -76,7 +77,7 @@ tableStyle.textContent = `
   /* this might not be always desirable; */
   white-space: nowrap; 
 
-  border: solid 1px #ccc;
+  border: solid 1px var(--tx-gray-300);
 }
 
 .colhead th, .rowhead th {
@@ -91,10 +92,10 @@ tableStyle.textContent = `
 }
 
 .cells tr:nth-child(even) {
-  background: var(--tx-table-even-row, #f5f5f5);
+  background: var(--tx-gray-50);
 }
 .cells tr:nth-child(odd) {
-  background: var(--tx-table-odd-row, #ffffff);
+  background: var(--tx-gray-100);
 }
 
 .cells td:nth-child(1) {
@@ -136,7 +137,7 @@ tableStyle.textContent = `
 
 .inputDiv { 
   position: relative;
-  background: #fff;
+  background: var(--tx-gray-50);
   border: none;
   opacity: 0;
 }
