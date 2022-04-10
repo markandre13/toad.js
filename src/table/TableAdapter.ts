@@ -22,6 +22,9 @@ import { TypedTableAdapter } from "./TypedTableAdapter"
 
 export class TableAdapter<T extends TableModel> {
     model?: T
+    constructor(model: T) {
+        this.model = model
+    }
     get colCount(): number {
         return this.model === undefined ? 0 : this.model.colCount
     }

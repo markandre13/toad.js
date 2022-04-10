@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2022 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,43 +17,10 @@
  */
 
 import {
-    ArrayModel, ArrayAdapter, TableAdapter, View,
-    bindModel as bind, refs
+    TableModel, TableAdapter, View
 } from '@toad'
 
 import { span, div, text } from '@toad/util/lsx'
-
-window.onload = () => {
-    initializeBooks()
-}
-
-class Book {
-    title: string = ""
-    author: string = ""
-    year: number = 1970
-}
-
-const bookList = [
-    { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
-    { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
-    { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
-    { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
-    { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
-    { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
-    { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
-    { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
-]
-
-class BookAdapter extends ArrayAdapter<ArrayModel<Book>> {
-    override getColumnHeads() { return ["Title", "Author", "Year"] }
-    override getRow(book: Book) { return refs(book, "title", "author", "year") }
-}
-
-function initializeBooks() {
-    TableAdapter.register(BookAdapter, ArrayModel, Book)
-    const model = new ArrayModel<Book>(bookList, Book)
-    bind("books", model)
-}
 
 export let tableStyle = document.createElement("style")
 tableStyle.textContent = `
@@ -71,12 +38,16 @@ tableStyle.textContent = `
   background: var(--tx-gray-50);
 }
 
-.body > span {
+.body > span, .measure > span {
     position: absolute;
+    border: solid #fff 1px;
+    border-bottom: none;
+    border-right: none;
+    padding: 0 2px 0 2px;
+    margin: 0;
 }
 
 .measure {
-    width: 4096px;
     position: absolute;
     opacity: 0;
 }
@@ -89,11 +60,45 @@ function random(max: number) {
     return Math.floor(Math.random() * max)
 }
 
-// NEXT:
-// [ ] use the tokens to create a normal table more
-// [ ] let the table set the cells into a grid
+class MyModel extends TableModel {
+    starname: string[]
+    constructor() {
+        super()
+        this.starname = new Array(this.colCount * this.rowCount)
+        for (let i = 0; i < this.starname.length; ++i) {
+            let name = ""
+            const l = random(5) + 1
+            for (let j = 0; j < l; ++j) {
+                name += token[random(token.length)]
+            }
+            this.starname[i] = name
+        }
+    }
+    get colCount() {
+        return 4
+    }
+    get rowCount() {
+        return 16
+    }
+    get(col: number, row: number) {
+        return this.starname[col + row * this.colCount]
+    }
+}
+
+class MyAdapter extends TableAdapter<MyModel> {
+    override getDisplayCell(col: number, row: number) {
+        return text(
+            this.model!.get(col, row)
+        )
+    }
+    // getEditorCell(col: number, row: number): Node | undefined { return undefined }
+}
 
 export class Table extends View {
+
+    model: TableModel
+    adapter: TableAdapter<any>
+
     root: HTMLDivElement
     body: HTMLDivElement
     measure: HTMLDivElement
@@ -102,7 +107,7 @@ export class Table extends View {
 
     constructor() {
         super()
-        this.measured = this.measured.bind(this)
+        this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
 
         this.root = div(
             this.body = div()
@@ -111,14 +116,15 @@ export class Table extends View {
         this.measure = div()
         this.measure.classList.add("measure")
 
-        for (let i = 0; i < 256; ++i) {
-            let name = ""
-            const l = random(5) + 1
-            for (let j = 0; j < l; ++j) {
-                name += token[random(token.length)]
+        const model = new MyModel()
+        this.model = model
+        this.adapter = new MyAdapter(model)
+
+        for (let row = 0; row < this.model.rowCount; ++row) {
+            for (let col = 0; col < this.model.colCount; ++col) {
+                const cell = this.adapter.getDisplayCell(col, row) // what about undefined & Node[] ???
+                this.measure.appendChild(span(cell as Node))
             }
-            const d = span(text(name))
-            this.measure.append(d)
         }
 
         this.attachShadow({ mode: 'open' })
@@ -126,38 +132,49 @@ export class Table extends View {
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
 
-        setTimeout(this.measured, 0)
+        setTimeout(this.arrangeAllMeasuredInGrid, 0)
     }
 
-    measured() {
-        // for(let i=0; i<this.measure.children.length; ++i) {
-        //     const child = this.measure.children[i]
-        //     const bounds = child.getBoundingClientRect()
-        //     console.log(`${bounds.width} x ${bounds.height} ${child.innerHTML}`)
-        // }
+    arrangeAllMeasuredInGrid() {
+        const colInfo = Array<number>(this.model.colCount)
+        const rowInfo = Array<number>(this.model.rowCount)
+        colInfo.fill(0)
+        rowInfo.fill(0)
 
-        let x = 0, y = 0
-        while (this.measure.children.length > 0) {
-            const child = this.measure.children[0] as HTMLSpanElement
-            const bounds = child.getBoundingClientRect()
-
-            child.style.left = `${x}px`
-            child.style.top = `${y}px`
-
-            x += Math.ceil(bounds.width) + 10
-            if (x > 200) {
-                x = 0
-                y += Math.ceil(bounds.height)
+        for (let row = 0; row < this.model.rowCount; ++row) {
+            let rowHeight = 0
+            for (let col = 0; col < this.model.colCount; ++col) {
+                const child = this.measure.children[col + row + this.model.colCount] as HTMLSpanElement
+                const bounds = child.getBoundingClientRect()
+                rowHeight = Math.max(rowHeight, bounds.height)
             }
-
-            this.body.appendChild(child)
+            rowInfo[row] = Math.ceil(rowHeight)
         }
-        // setTimeout(()=>{
-        //     for(let i=0; i<this.body.children.length; ++i) {
-        //         const child = this.body.children[i]
-        //         console.log(`${child.clientWidth} x ${child.clientHeight} ${child.innerHTML}`)
-        //     }
-        // }, 0)
+
+        for (let col = 0; col < this.model.colCount; ++col) {
+            let colWidth = 0
+            for (let row = 0; row < this.model.rowCount; ++row) {
+                const child = this.measure.children[col + row + this.model.colCount] as HTMLSpanElement
+                const bounds = child.getBoundingClientRect()
+                colWidth = Math.max(colWidth, bounds.width)
+            }
+            colInfo[col] = Math.ceil(colWidth)
+        }
+
+        let y = 0
+        for (let row = 0; row < this.model.rowCount; ++row) {
+            let x = 0
+            for (let col = 0; col < this.model.colCount; ++col) {
+                const child = this.measure.children[0] as HTMLSpanElement
+                child.style.left = `${x}px`
+                child.style.top = `${y}px`
+                child.style.width = `${colInfo[col]}px`
+                child.style.height = `${rowInfo[row]}px`
+                this.body.appendChild(child)
+                x += colInfo[col]
+            }
+            y += rowInfo[row]
+        }
     }
 
 }
