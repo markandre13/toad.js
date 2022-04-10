@@ -101,7 +101,7 @@ export class TableView extends View {
 
   private log(what: Log, msg: string) {
     // if (what == Log.USER)
-      console.log(msg)
+    //   console.log(msg)
   }
 
   private animator = new Animator()

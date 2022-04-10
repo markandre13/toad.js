@@ -25,39 +25,39 @@ export interface ModelViewProps<M> extends HTMLElementProps {
 }
 
 export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
-  model?: M
+    model?: M
 
-  constructor(init?: ModelViewProps<M>) {
-    super(init)
-    if (init?.model !== undefined) {
-        this.setModel(init.model)
+    constructor(init?: ModelViewProps<M>) {
+        super(init)
+        if (init?.model !== undefined) {
+            this.setModel(init.model)
+        }
     }
-  }
 
-  // NOTE: these were 'abstract' but then the 'override' did not work
-  updateModel(): void {}
-  updateView(data?: T): void {}
+    // NOTE: these were 'abstract' but then the 'override' did not work
+    updateModel(): void { }
+    updateView(data?: T): void { }
 
-  override setModel(model?: M): void {
-    if (model === this.model)
-      return
+    override setModel(model?: M): void {
+        if (model === this.model)
+            return
 
-    const view = this
+        const view = this
 
-    if (this.model)
-      this.model.modified.remove(view)
+        if (this.model)
+            this.model.modified.remove(view)
 
-    if (model)
-      model.modified.add((data: T) => view.updateView(data), view)
+        if (model)
+            model.modified.add((data: T) => view.updateView(data), view)
 
-    this.model = model
-    if (this.isConnected)
-      this.updateView(undefined)
-  }
+        this.model = model
+        if (this.isConnected)
+            this.updateView(undefined)
+    }
 
-  override connectedCallback() {
-    super.connectedCallback()
-    if (this.model)
-      this.updateView(undefined)
-  }
+    override connectedCallback() {
+        super.connectedCallback()
+        if (this.model)
+            this.updateView(undefined)
+    }
 }

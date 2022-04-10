@@ -20,7 +20,6 @@ import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
 import { ModelView } from "./ModelView"
 import { TextTool } from "./TextTool"
-import { textAreaStyle } from "./textAreaStyle"
 
 export class TextArea extends ModelView<TextModel> {
 

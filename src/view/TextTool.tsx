@@ -31,8 +31,8 @@ export class TextTool extends ModelView<Model> {
     buttonH2: HTMLElement
     buttonH3: HTMLElement
     buttonH4: HTMLElement
-    buttonUnorderedList: HTMLElement
-    buttonOrderedList: HTMLElement
+    // buttonUnorderedList: HTMLElement
+    // buttonOrderedList: HTMLElement
 
     buttonBold: HTMLElement
     buttonItalic: HTMLElement
@@ -188,40 +188,42 @@ export class TextTool extends ModelView<Model> {
         // toolbar.appendChild(this.buttonJustifyFull)
         // toolbar.appendChild(document.createTextNode(" "))
 
-        this.buttonUnorderedList = <button class="left">
-            <svg style={{display: "block"}} viewBox="0 0 17 11.5" width="17" height="11.5">
-                <circle cx="4.5" cy="1.5" r="0.8" class="strokeFill" />
-                <line x1="7" y1="1.5" x2="17" y2="1.5" class="stroke" />
-                <circle cx="4.5" cy="5.5" r="0.8" class="strokeFill" />
-                <line x1="7" y1="5.5" x2="17" y2="5.5" class="stroke" />
-                <circle cx="4.5" cy="9.5" r="0.8" class="strokeFill" />
-                <line x1="7" y1="9.5" x2="17" y2="9.5" class="stroke" />
-            </svg>
-        </button>
-        this.buttonUnorderedList.onclick = (event) => {
-            document.execCommand("insertUnorderedList", false)
-            this.update()
-        }
-        toolbar.appendChild(this.buttonUnorderedList)
+        // this seems to cause the textarea to be recreated and an endless loop?
+        // this.buttonUnorderedList = <button class="left">
+        //     <svg style={{display: "block"}} viewBox="0 0 17 11.5" width="17" height="11.5">
+        //         <circle cx="4.5" cy="1.5" r="0.8" class="strokeFill" />
+        //         <line x1="7" y1="1.5" x2="17" y2="1.5" class="stroke" />
+        //         <circle cx="4.5" cy="5.5" r="0.8" class="strokeFill" />
+        //         <line x1="7" y1="5.5" x2="17" y2="5.5" class="stroke" />
+        //         <circle cx="4.5" cy="9.5" r="0.8" class="strokeFill" />
+        //         <line x1="7" y1="9.5" x2="17" y2="9.5" class="stroke" />
+        //     </svg>
+        // </button>
+        // this.buttonUnorderedList.onclick = (event) => {
+        //     document.execCommand("insertUnorderedList", false)
+        //     this.update()
+        // }
+        // toolbar.appendChild(this.buttonUnorderedList)
 
-        this.buttonOrderedList = <button class="right">
-            <svg style={{ display: "block" }} viewBox="0 0 17 11.5" width="17" height="11.5">
-                <line x1="4.5" y1="0" x2="4.5" y2="3" class="stroke" />
-                <line x1="7" y1="1.5" x2="17" y2="1.5" class="stroke" />
-                <line x1="2.5" y1="4" x2="2.5" y2="7" class="stroke" />
-                <line x1="4.5" y1="4" x2="4.5" y2="7" class="stroke" />
-                <line x1="7" y1="5.5" x2="17" y2="5.5" class="stroke" />
-                <line x1="0.5" y1="8" x2="0.5" y2="11" stroke="#000" />
-                <line x1="2.5" y1="8" x2="2.5" y2="11" class="stroke" />
-                <line x1="4.5" y1="8" x2="4.5" y2="11" class="stroke" />
-                <line x1="7" y1="9.5" x2="17" y2="9.5" class="stroke" />
-            </svg>
-        </button>
-        this.buttonOrderedList.onclick = () => {
-            document.execCommand("insertOrderedList", false)
-            this.update()
-        }
-        toolbar.appendChild(this.buttonOrderedList)
+        // this seems to cause the textarea to be recreated and an endless loop?
+        // this.buttonOrderedList = <button class="right">
+        //     <svg style={{ display: "block" }} viewBox="0 0 17 11.5" width="17" height="11.5">
+        //         <line x1="4.5" y1="0" x2="4.5" y2="3" class="stroke" />
+        //         <line x1="7" y1="1.5" x2="17" y2="1.5" class="stroke" />
+        //         <line x1="2.5" y1="4" x2="2.5" y2="7" class="stroke" />
+        //         <line x1="4.5" y1="4" x2="4.5" y2="7" class="stroke" />
+        //         <line x1="7" y1="5.5" x2="17" y2="5.5" class="stroke" />
+        //         <line x1="0.5" y1="8" x2="0.5" y2="11" stroke="#000" />
+        //         <line x1="2.5" y1="8" x2="2.5" y2="11" class="stroke" />
+        //         <line x1="4.5" y1="8" x2="4.5" y2="11" class="stroke" />
+        //         <line x1="7" y1="9.5" x2="17" y2="9.5" class="stroke" />
+        //     </svg>
+        // </button>
+        // this.buttonOrderedList.onclick = () => {
+        //     document.execCommand("insertOrderedList", false)
+        //     this.update()
+        // }
+        // toolbar.appendChild(this.buttonOrderedList)
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.appendChild(document.importNode(textAreaStyle, true))
