@@ -21,18 +21,20 @@ textAreaStyle.textContent=`
 
 /* try to follow material ui: when active render button labels in black, otherwise in gray */
 svg .fill {
-  fill: #ccc;
-  stroke: #ccc;
+  fill: var(--tx-gray-700);
+  stroke: var(--tx-gray-700);
 }
 svg .stroke {
   fill: none;
-  stroke: #ccc;
+  stroke: var(--tx-gray-700);
 }
 svg .strokeFill {
-  fill: #fff;
-  stroke: #ccc;
+  fill: var(--tx-gray-200);
+  stroke: var(--tx-gray-700);
 }
 
+/*
+these don't seem to be in use anymore
 .toolbar.active svg .fill {
   fill: #000;
   stroke: #000;
@@ -45,11 +47,12 @@ svg .strokeFill {
   fill: #fff;
   stroke: #000;
 }
+*/
 
 .toolbar button {
-    background: #fff;
-    color: #000;
-    border: 1px #ccc;
+    background: var(--tx-gray-75);
+    color: var(--tx-gray-800);
+    border: 1px var(--tx-gray-400);
     border-style: solid solid solid none;
     padding: 5;
     margin: 0;
@@ -58,7 +61,7 @@ svg .strokeFill {
 }
 
 .toolbar button:active:hover {
-  background: linear-gradient(to bottom, #7abcff 0%,#0052cc 100%,#4096ee 100%);
+    background: linear-gradient(to bottom, var(--tx-gray-600) 0%,var(--tx-gray-50) 100%,var(--tx-gray-500) 100%);
 }
 
 .toolbar button.left {
@@ -67,21 +70,21 @@ svg .strokeFill {
 }
 
 .toolbar button.right {
-    border: 1px #ccc;
+    border: 1px var(--tx-gray-400);
     border-style: solid solid solid none;
     border-radius: 0 3px 3px 0;
 }
 
 .toolbar button.active {
-    background: linear-gradient(to bottom, #7abcff 0%,#0052cc 100%,#4096ee 100%);
-    border: 1px #0052cc solid;
-    color: #fff;
+    background: linear-gradient(to bottom, var(--tx-gray-600) 0%,var(--tx-gray-50) 100%,var(--tx-gray-500) 100%);
+    border: 1px var(--tx-global-blue-500) solid;
+    color: var(--tx-gray-900);
 }
 
 div.textarea {
   font-family: var(--tx-font-family);
   font-size: var(--tx-font-size);
-  border: 1px #ccc solid;
+  border: 1px var(--tx-gray-400) solid;
   border-radius: 3px;
   margin: 2px;
   padding: 4px 5px;

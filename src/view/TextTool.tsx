@@ -129,11 +129,11 @@ export class TextTool extends ModelView<Model> {
 
         this.buttonJustifyLeft = <button class="left">
             <svg viewBox="0 0 10 9" width="10" height="9">
-                <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-                <line x1="0" y1="2.5" x2="6" y2="2.5" stroke="#000" />
-                <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-                <line x1="0" y1="6.5" x2="6" y2="6.5" stroke="#000" />
-                <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+                <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
+                <line x1="0" y1="2.5" x2="6" y2="2.5" class="stroke" />
+                <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
+                <line x1="0" y1="6.5" x2="6" y2="6.5" class="stroke" />
+                <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
             </svg>
         </button>
         this.buttonJustifyLeft.onclick = () => {
@@ -144,11 +144,11 @@ export class TextTool extends ModelView<Model> {
 
         this.buttonJustifyCenter = <button>
             <svg viewBox="0 0 10 9" width="10" height="9">
-                <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-                <line x1="2" y1="2.5" x2="8" y2="2.5" stroke="#000" />
-                <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-                <line x1="2" y1="6.5" x2="8" y2="6.5" stroke="#000" />
-                <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+                <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
+                <line x1="2" y1="2.5" x2="8" y2="2.5" class="stroke" />
+                <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
+                <line x1="2" y1="6.5" x2="8" y2="6.5" class="stroke" />
+                <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
             </svg>
         </button>
         this.buttonJustifyCenter.onclick = () => {
@@ -159,11 +159,11 @@ export class TextTool extends ModelView<Model> {
 
         this.buttonJustifyRight = <button class="right">
             <svg viewBox="0 0 10 9" width="10" height="9">
-                <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-                <line x1="4" y1="2.5" x2="10" y2="2.5" stroke="#000" />
-                <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-                <line x1="4" y1="6.5" x2="10" y2="6.5" stroke="#000" />
-                <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+                <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
+                <line x1="4" y1="2.5" x2="10" y2="2.5" class="stroke" />
+                <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
+                <line x1="4" y1="6.5" x2="10" y2="6.5" class="stroke" />
+                <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
             </svg>
         </button>
         this.buttonJustifyRight.onclick = () => {
@@ -174,11 +174,11 @@ export class TextTool extends ModelView<Model> {
 
         // this.buttonJustifyFull = <button class="right">
         //     <svg viewBox="0 0 10 9" width="10" height="9">
-        //         <line x1="0" y1="0.5" x2="10" y2="0.5" stroke="#000" />
-        //         <line x1="0" y1="2.5" x2="10" y2="2.5" stroke="#000" />
-        //         <line x1="0" y1="4.5" x2="10" y2="4.5" stroke="#000" />
-        //         <line x1="0" y1="6.5" x2="10" y2="6.5" stroke="#000" />
-        //         <line x1="0" y1="8.5" x2="10" y2="8.5" stroke="#000" />
+        //         <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
+        //         <line x1="0" y1="2.5" x2="10" y2="2.5" class="stroke" />
+        //         <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
+        //         <line x1="0" y1="6.5" x2="10" y2="6.5" class="stroke" />
+        //         <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
         //     </svg>
         // </button>
         // this.buttonJustifyFull.onclick = () => {
@@ -190,12 +190,12 @@ export class TextTool extends ModelView<Model> {
 
         this.buttonUnorderedList = <button class="left">
             <svg style={{display: "block"}} viewBox="0 0 17 11.5" width="17" height="11.5">
-                <circle cx="4.5" cy="1.5" r="0.8" stroke="#000" fill="#000" />
-                <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000" />
-                <circle cx="4.5" cy="5.5" r="0.8" stroke="#000" fill="#000" />
-                <line x1="7" y1="5.5" x2="17" y2="5.5" stroke="#000" />
-                <circle cx="4.5" cy="9.5" r="0.8" stroke="#000" fill="#000" />
-                <line x1="7" y1="9.5" x2="17" y2="9.5" stroke="#000" />
+                <circle cx="4.5" cy="1.5" r="0.8" class="strokeFill" />
+                <line x1="7" y1="1.5" x2="17" y2="1.5" class="stroke" />
+                <circle cx="4.5" cy="5.5" r="0.8" class="strokeFill" />
+                <line x1="7" y1="5.5" x2="17" y2="5.5" class="stroke" />
+                <circle cx="4.5" cy="9.5" r="0.8" class="strokeFill" />
+                <line x1="7" y1="9.5" x2="17" y2="9.5" class="stroke" />
             </svg>
         </button>
         this.buttonUnorderedList.onclick = (event) => {
@@ -206,15 +206,15 @@ export class TextTool extends ModelView<Model> {
 
         this.buttonOrderedList = <button class="right">
             <svg style={{ display: "block" }} viewBox="0 0 17 11.5" width="17" height="11.5">
-                <line x1="4.5" y1="0" x2="4.5" y2="3" stroke="#000" />
-                <line x1="7" y1="1.5" x2="17" y2="1.5" stroke="#000" />
-                <line x1="2.5" y1="4" x2="2.5" y2="7" stroke="#000" />
-                <line x1="4.5" y1="4" x2="4.5" y2="7" stroke="#000" />
-                <line x1="7" y1="5.5" x2="17" y2="5.5" stroke="#000" />
+                <line x1="4.5" y1="0" x2="4.5" y2="3" class="stroke" />
+                <line x1="7" y1="1.5" x2="17" y2="1.5" class="stroke" />
+                <line x1="2.5" y1="4" x2="2.5" y2="7" class="stroke" />
+                <line x1="4.5" y1="4" x2="4.5" y2="7" class="stroke" />
+                <line x1="7" y1="5.5" x2="17" y2="5.5" class="stroke" />
                 <line x1="0.5" y1="8" x2="0.5" y2="11" stroke="#000" />
-                <line x1="2.5" y1="8" x2="2.5" y2="11" stroke="#000" />
-                <line x1="4.5" y1="8" x2="4.5" y2="11" stroke="#000" />
-                <line x1="7" y1="9.5" x2="17" y2="9.5" stroke="#000" />
+                <line x1="2.5" y1="8" x2="2.5" y2="11" class="stroke" />
+                <line x1="4.5" y1="8" x2="4.5" y2="11" class="stroke" />
+                <line x1="7" y1="9.5" x2="17" y2="9.5" class="stroke" />
             </svg>
         </button>
         this.buttonOrderedList.onclick = () => {
