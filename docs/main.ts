@@ -17,141 +17,15 @@
  */
 
 import {
-    TextModel, HtmlModel, NumberModel, BooleanModel, EnumModel,
-    Template,
-    ArrayModel, ArrayAdapter, TableAdapter,
-    TreeNode, TreeNodeModel, TreeAdapter,
-    bindModel as bind, action, refs
+    ArrayModel, ArrayAdapter, TableAdapter, View,
+    bindModel as bind, refs
 } from '@toad'
 
+import { span, div, text } from '@toad/util/lsx'
+
 window.onload = () => {
-    main()
+    initializeBooks()
 }
-
-//
-// Soda Machine
-//
-const soda = document.getElementById("soda")!
-
-soda.onanimationend = () => {
-    soda.classList.remove("animated")
-}
-
-const defaultSize = 330
-enum Flavour {
-    CLASSIC, CHERRY, VANILLA
-}
-
-const flavour = new EnumModel<Flavour>(Flavour)
-flavour.value = Flavour.CLASSIC
-bind("flavour", flavour)
-const quantity = new NumberModel(defaultSize, { min: 0, max: 1500 })
-bind("quantity", quantity)
-action("fill", () => {
-    const height = quantity.value / quantity.max!
-    document.documentElement.style.setProperty("--soda-height", `${height}`)
-    switch (flavour.value) {
-        case Flavour.CLASSIC:
-            document.documentElement.style.setProperty("--soda-color", "#420")
-            break
-        case Flavour.CHERRY:
-            document.documentElement.style.setProperty("--soda-color", "#d44")
-            break
-        case Flavour.VANILLA:
-            document.documentElement.style.setProperty("--soda-color", "#d80")
-            break
-    }
-    soda.classList.add("animated")
-})
-
-//
-// <tx-text>
-//
-
-let textModel = new TextModel("")
-bind("hello", textModel)
-
-//
-// <tx-texttool> & <tx-textarea>
-//
-let markupModel = new HtmlModel("")
-markupModel.modified.add(() => {
-    document.getElementById("rawhtml")!.innerText = markupModel.value
-})
-bind("markup", markupModel)
-
-//
-// <tx-button>
-//
-action("hitMe", () => {
-    textModel.value = "Hit me too!"
-    hitMeMore.enabled = true
-})
-var hitMeMore = action("hitMeMore", () => {
-    textModel.value = "You hit me!"
-    hitMeMore.enabled = false
-})
-
-//
-// <tx-checkbox>, <tx-switch> and <tx-if>
-//
-
-const off = new BooleanModel(false)
-const on = new BooleanModel(true)
-const offDisabled = new BooleanModel(false)
-offDisabled.enabled = false
-const onDisabled = new BooleanModel(true)
-onDisabled.enabled = false
-
-bind("off", off)
-bind("on", on)
-bind("offDisabled", offDisabled)
-bind("onDisabled", onDisabled)
-
-//
-// EnumModel
-//
-
-enum Color {
-    BLUEBERRY = 0,
-    GRAPE,
-    TANGERINE,
-    LIME,
-    STRAWBERRY,
-    BONDIBLUE
-}
-
-const flavourEnabled = new EnumModel<Color>(Color)
-flavourEnabled.value = Color.GRAPE
-bind("flavourEnabled", flavourEnabled)
-
-const flavourDisabled = new EnumModel<Color>(Color)
-flavourDisabled.enabled = false
-flavourDisabled.value = Color.TANGERINE
-bind("flavourDisabled", flavourDisabled)
-
-const customFlavour = new TextModel("")
-bind("customFlavour", customFlavour)
-const customFlavourDisabled = new TextModel("")
-bind("customFlavourDisabled", customFlavourDisabled)
-//
-// <tx-slider>
-//
-
-let size = new NumberModel(42, { min: 0, max: 99 })
-bind("size", size)
-
-// <toad-menu>
-action("file|logout", () => {
-    alert("You are about to logout")
-})
-action("help", () => {
-    alert("Please.")
-})
-
-//
-// Books
-//
 
 class Book {
     title: string = ""
@@ -181,65 +55,110 @@ function initializeBooks() {
     bind("books", model)
 }
 
-//
-// Tree
-//
+export let tableStyle = document.createElement("style")
+tableStyle.textContent = `
+:host {
+    width: 200px;
+    height: 200px;
 
-class MyNode implements TreeNode {
-    label: string
-    next?: MyNode
-    down?: MyNode
-    static counter = 0
-    constructor() {
-        this.label = `#${MyNode.counter++}`
-    }
+  position: relative;
+  display: inline-block;
+  border: 1px solid var(--tx-gray-300);
+  border-radius: 3px;
+  outline-offset: -2px;
+  font-family: var(--tx-font-family);
+  font-size: var(--tx-font-size);
+  background: var(--tx-gray-50);
 }
 
-class MyTreeAdapter extends TreeAdapter<MyNode> {
-    override getDisplayCell(col: number, row: number) {
-        return this.model && this.treeCell(row, this.model.rows[row].node.label)
-    }
+.body > span {
+    position: absolute;
 }
 
-function initializeTree(): void {
-    TreeAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
-    let model = new TreeNodeModel(MyNode)
-    model.addSiblingAfter(0)
-    model.addChildAfter(0)
-    model.addChildAfter(1)
-    model.addSiblingAfter(2)
-    model.addSiblingAfter(1)
-    model.addChildAfter(4)
-    model.addSiblingAfter(0)
-    bind("tree", model)
+.measure {
+    width: 4096px;
+    position: absolute;
+    opacity: 0;
+}
+`
+
+// https://www.bbcelite.com/deep_dives/printing_text_tokens.html
+const token = ["AL", "LE", "XE", "GE", "ZA", "CE", "BI", "SO", "US", "ES", "AR", "MA", "IN", "DI", "RE", "AÖ", "ER", "AT", "EN", "BE", "RA", "LA", "VE", "TI", "ED", "OR", "QU", "AN", "TE", "IS", "RI", "ON"]
+// [0 to max[]
+function random(max: number) {
+    return Math.floor(Math.random() * max)
 }
 
-export function main(): void {
-    initializeBooks()
-    initializeTree()
-}
+// NEXT:
+// [ ] use the tokens to create a normal table more
+// [ ] let the table set the cells into a grid
 
-class MyCodeButton extends HTMLElement {
-    condition = new BooleanModel(false)
+export class Table extends View {
+    root: HTMLDivElement
+    body: HTMLDivElement
+    measure: HTMLDivElement
+
+    cells: HTMLSpanElement[][] = []
+
     constructor() {
         super()
-        let template = new Template("my-code-button") // FIXME: how about inlining the HTML?
-        let label = template.text("label", "Show Code")
-        template.action("action", () => {
-            if (this.condition.value) {
-                this.condition.value = false
-                label.value = "Show Code"
-            } else {
-                this.condition.value = true
-                label.value = "Hide Code"
-            }
-        })
-        this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(template.root)
-    }
-    connectedCallback() {
-        bind(this.getAttribute("condition")!, this.condition) // FIXME: bind to parents context
-    }
-}
-window.customElements.define("my-code-button", MyCodeButton)
+        this.measured = this.measured.bind(this)
 
+        this.root = div(
+            this.body = div()
+        )
+        this.body.classList.add("body")
+        this.measure = div()
+        this.measure.classList.add("measure")
+
+        for (let i = 0; i < 256; ++i) {
+            let name = ""
+            const l = random(5) + 1
+            for (let j = 0; j < l; ++j) {
+                name += token[random(token.length)]
+            }
+            const d = span(text(name))
+            this.measure.append(d)
+        }
+
+        this.attachShadow({ mode: 'open' })
+        this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
+        this.shadowRoot!.appendChild(this.root)
+        this.shadowRoot!.appendChild(this.measure)
+
+        setTimeout(this.measured, 0)
+    }
+
+    measured() {
+        // for(let i=0; i<this.measure.children.length; ++i) {
+        //     const child = this.measure.children[i]
+        //     const bounds = child.getBoundingClientRect()
+        //     console.log(`${bounds.width} x ${bounds.height} ${child.innerHTML}`)
+        // }
+
+        let x = 0, y = 0
+        while (this.measure.children.length > 0) {
+            const child = this.measure.children[0] as HTMLSpanElement
+            const bounds = child.getBoundingClientRect()
+
+            child.style.left = `${x}px`
+            child.style.top = `${y}px`
+
+            x += Math.ceil(bounds.width) + 10
+            if (x > 200) {
+                x = 0
+                y += Math.ceil(bounds.height)
+            }
+
+            this.body.appendChild(child)
+        }
+        // setTimeout(()=>{
+        //     for(let i=0; i<this.body.children.length; ++i) {
+        //         const child = this.body.children[i]
+        //         console.log(`${child.clientWidth} x ${child.clientHeight} ${child.innerHTML}`)
+        //     }
+        // }, 0)
+    }
+
+}
+Table.define("tx-table2", Table)

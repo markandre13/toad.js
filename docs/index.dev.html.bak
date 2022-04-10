@@ -1,0 +1,879 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Introduction to toad.js</title>
+    <meta name="description" content="An introduction to the TOAD TypeScript GUI Library (toad.js).">
+    <meta name="copyright" content="Mark-André Hopf <mhopf@mark13.org>" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin" />
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400&subset=latin" />
+    <link rel="stylesheet" type="text/css" href=" https://fonts.googleapis.com/css?family=Titan+One">
+    <link rel="stylesheet" type="text/css" href="../style/tx-static.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-dark.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx.css" />
+    <link id="tx-calendar" type="text/css" rel="stylesheet" href="../style/tx-calendar.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-button.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-text.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-helptext.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-label.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-form.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-checkbox.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-switch.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-radio.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-slider.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-search.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-searchwithin.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-combobox.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-menu.css" />
+    <link rel="stylesheet" type="text/css" href="../style/tx-tabs.css" />
+
+    <script type="application/javascript" src="../polyfill/webcomponents-hi-sd-ce.js"></script>
+    <script type="module" src="../lib/docs/main.js"></script>
+
+    <style>
+        a:link {
+            text-decoration: underline;
+            text-decoration-style: dashed;
+            cursor: auto;
+        }
+
+        a:link::before {
+            content: "→";
+            text-decoration: none;
+        }
+
+        figure {
+            text-align: center;
+            font-style: italic;
+            max-width: 400px;
+        }
+    </style>
+
+    <template id="my-code-button">
+        <style>
+            tx-button {
+                --tx-primary-color: #800;
+            }
+        </style>
+        <p>
+            <tx-button action="action" model="label"></tx-button>
+        </p>
+    </template>
+
+</head>
+
+<body>
+
+    <p style="text-align: center">
+        <img src="toad.gif" alt="TOAD" /><br />
+        WebComponent/TypeScript Edition
+    </p>
+
+    <tx-tabs style="width: 100%">
+        <tx-tab label="Introduction">
+
+            <u>Please note</u>: The package available on npmjs.com is still on
+            version 0.0.x while this page previews the upcoming toad.js 0.1.0
+            release from the master branch on github which:
+
+            <ul>
+                <li>
+                    provides a new look with a dark and light theme based on Adobe's
+                    Spectrum Design system
+                </li>
+                <li>
+                    changes the prefix of the web components from "toad-" to "tx-"
+                </li>
+                <li>
+                    adds various new views like switch, radio button, popup menus,
+                    comboboxes, search fields, horizontal and vertical tabs, etc.
+                </li>
+            </ul>
+
+            <h2>Introduction</h2>
+
+            <p>
+                A typical toad.js user interface divides the code running in the browser
+                into three horizontal layers to ease testing and modification.
+            </p>
+            <p>
+                The dependencies between these layers go only in one direction: Interface → Application → Domain.
+            </p>
+            <p>
+                Let's jump right into an example:
+            </p>
+
+            <style>
+                table td,
+                table th {
+                    white-space: nowrap;
+                }
+
+                .soda {
+                    font-family: 'Titan One';
+                    font-size: 24px;
+                    background-color: #f80;
+                }
+
+                .foo h1 {
+                    text-align: center;
+                    font-size: 16px;
+                }
+
+                .foo td {
+                    vertical-align: top;
+                }
+
+                .code {
+                    padding: 10px;
+                    border: 1px solid var(--tx-gray-900);
+                    background-color: var(--tx-static-gray-900);
+                    color: var(--tx-static-white);
+                    max-width: fit-content;
+                }
+            </style>
+
+            <table class="soda" style="border-style: outset; border-color: #d80;">
+                <tr>
+                    <td colspan="2"
+                        style="text-align: center; color: #0f0; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;">
+                        The Soda Machine
+                    </td>
+                    <td rowspan="4">
+                        <svg width="54" height="150" viewBox="0 0 54 150">
+                            <clipPath id="soda">
+                                <rect x="0" y="150" width="50" height="150" />
+                            </clipPath>
+                            <path id="bottleShape"
+                                d="M 40 150 Q 50 150 50 140 L 50 20 Q 50 10 40 10 Q 35 10 35 5 L 35 0 L 15 0 L 15 5 Q 15 10 10 10 Q 0 10 0 20 L 0 140 Q 0 150 10 150 Z" />
+
+                            <rect x="10" y="30" width="20" height="20" fill="#0f0" />
+                            <path
+                                d="M 40 150 Q 50 150 50 140 L 50 20 Q 50 10 40 10 Q 35 10 35 5 L 35 0 L 15 0 L 15 5 Q 15 10 10 10 Q 0 10 0 20 L 0 140 Q 0 150 10 150 Z"
+                                fill="#8df" />
+                            <use clip-path="url(#soda)" href="#bottleShape" fill="var(--soda-color)" />
+                        </svg>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color: #f00; -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;">
+                        Flavour
+                    </td>
+                    <td>
+                        <tx-select model="flavour">
+                            <option value="CLASSIC">Classic</option>
+                            <option value="CHERRY">Cherry</option>
+                            <option value="VANILLA">Vanilla</option>
+                        </tx-select>
+                    </td>
+                </tr>
+                <tr style="color: #08f;">
+                    <td style=" -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;">Quantity</td>
+                    <td>
+                        <tx-text model="quantity"></tx-text> <span
+                            style=" -webkit-text-stroke-width: 1px; -webkit-text-stroke-color: #000;"> ml</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"
+                        style="text-align: center;  -webkit-text-stroke-width: 0; -webkit-text-stroke-color: none; ">
+                        <tx-button action="fill" class="tx-negative">Fill Bottle</tx-button>
+                    </td>
+                </tr>
+            </table>
+
+            <style>
+                :root {
+                    --soda-height: 1;
+                    --soda-color: #800;
+                }
+
+                @keyframes fillBottle {
+                    0% {
+                        transform: translateY(0px);
+                    }
+
+                    80% {
+                        transform: translateY(calc(var(--soda-height) * -130px));
+                    }
+
+                    98% {
+                        transform: translateY(calc(var(--soda-height) * -130px));
+                    }
+
+                    100% {
+                        transform: translateY(0px);
+                    }
+
+                }
+
+                .animated {
+                    animation: fillBottle 5s;
+                }
+            </style>
+
+            <h3>The Interface Layer</h3>
+
+            <p>
+                The Interface Layer defines what the user sees and interacts with using CSS/HTML.
+            </p>
+
+            <p>
+                Here is the simplified HTML for "The Soda Machine" above:
+            </p>
+
+            <pre
+                class="code">                   The Soda Machine
+
+Flavour  <span style="color: var(--tx-static-orange-400);">&lt;tx-select</span> model=<span style="color: var(--tx-static-green-400)">"flavour"</span><span style="color: var(--tx-static-orange-400);">&gt;
+             &lt;option</span> value=<span style="color: var(--tx-static-green-400)">"CLASSIC"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Classic<span style="color: var(--tx-static-orange-400);">&lt;/option&gt;
+             &lt;option</span> value=<span style="color: var(--tx-static-green-400)">"CHERRY"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Cherry<span style="color: var(--tx-static-orange-400);">&lt;/option&gt;
+             &lt;option</span> value=<span style="color: var(--tx-static-green-400)">"VANILLA"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Vanilla<span style="color: var(--tx-static-orange-400);">&lt;/option&gt;
+         &lt;/tx-select&gt;</span>
+
+Quantity <span style="color: var(--tx-static-orange-400);">&lt;tx-text</span> model=<span style="color: var(--tx-static-green-400)">"quantity"</span><span style="color: var(--tx-static-orange-400);">&gt;&lt;/tx-text></span> ml
+
+<span style="color: var(--tx-static-orange-400);">&lt;tx-button</span> action=<span style="color: var(--tx-static-green-400)">"fill"</span><span style="color: var(--tx-static-orange-400);">&gt;</span>Fill Bottle<span style="color: var(--tx-static-orange-400);">&lt;/tx-button&gt;</span></pre>
+
+            <ul>
+                <li>
+                    The tx-* HTML Tags are <a href="https://www.webcomponents.org/introduction">Web Components</a>
+                    provided
+                    by toad.js and are used instead of the
+                    standard HTML Tags.
+                </li>
+                <li>
+                    The <em>model</em> and <em>action</em> attributes reference values and functions
+                    in the next layer, the Application Layer.
+                </li>
+                <li>
+                    It is also possible to use JSX instead of HTML so that the IDE can provide feedback that the
+                    referenced
+                    values and functions exits and have a type suitable to be viewed and edited by the HTML Tag.
+                </li>
+                <li>
+                    The View Layer can be maintained by a UX designer without the help of a coder as the tx-* HTML tags
+                    do not
+                    need any code. (Actually, they don't even have event attributes like <em>onmousedown</em> or
+                    <em>onkeydown</em>.)
+                </li>
+                <li>
+                    These HTML Tags are also commonly known as <a
+                        href="https://en.wikipedia.org/wiki/Graphical_widget">Widgets</a>, Views, Windows or User
+                    Interface <a
+                        href="https://en.wikipedia.org/wiki/Component-based_software_engineering">Components</a>.
+                </li>
+            </ul>
+
+            <h3>The Application Layer</h3>
+
+            The Application Layer controls how the application behaves.
+
+            <pre class="code"><span style="color: var(--tx-static-orange-600);">const</span> flavour = <span style="color: var(--tx-static-orange-600);">new</span> <span style="color: var(--tx-static-orange-400);">EnumModel</span>&lt;<span style="color: var(--tx-static-orange-400);">Flavour</span>&gt;(Flavour)
+flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<span style="color: var(--tx-static-green-400);">CLASSIC</span>
+<span style="color: var(--tx-static-orange-400);">bind</span>(<span style="color: var(--tx-static-green-400)">"flavour"</span>, flavour)
+
+<span style="color: var(--tx-static-orange-600);">const</span> quantity = <span style="color: var(--tx-static-orange-600);">new</span> <span style="color: var(--tx-static-orange-400);">NumberModel</span>(
+    defaultSize,
+    {<span style="color: var(--tx-static-red-400);">min</span>: <span style="color: var(--tx-static-blue-400);">0</span>, <span style="color: var(--tx-static-red-400);">max</span>: <span style="color: var(--tx-static-blue-400);">1500</span>})
+<span style="color: var(--tx-static-orange-400);">bind</span>(<span style="color: var(--tx-static-green-400)">"quantity"</span>, quantity)
+
+<span style="color: var(--tx-static-orange-400);">action</span>(<span style="color: var(--tx-static-green-400)">"fill"</span>, () => {
+    <span style="color: var(--tx-static-orange-400);">fillBottle</span>(quantity.<span style="color: var(--tx-static-red-400);">value</span>, flavour.<span style="color: var(--tx-static-red-400);">value</span>/<span style="color: var(--tx-static-blue-400);">1000.0</span>))
+    quantity.<span style="color: var(--tx-static-red-400);">value</span> = defaultSize
+})</pre>
+
+            <ul>
+                <li>
+                    <p>
+                        A <em>Model</em> is a thing which represents another thing and is used instead of it.
+                    </p>
+                    <figure>
+                        <img width="360" height="232"
+                            alt="Doc Brown in the movie 'Back to the Future' in front of an amazingly over-detailed model of the city centre of Hill Valley."
+                            src="./model.jpg" />
+                        <figcaption>
+                            "Please excuse the crudity of this model. I didn't have time to build it to scale or to
+                            paint it." –
+                            Dr. Emmett Lathrop Brown, Ph.D.
+                        </figcaption>
+                    </figure>
+                    <p>
+                        The <em>models</em> in the Application Layer are commonly known as
+                    </p>
+                    <ul>
+                        <li>
+                            <a href="https://en.wikipedia.org/wiki/Model–view–viewmodel">View Models</a>,
+                            meaning they are a model of a <em>View</em> in the layer above (View Layer) or,
+                        </li>
+                        <li>
+                            <a href="https://wiki.c2.com/?ValueModel">Value Models</a>, meaning they are
+                            a model of a value in the layer below (Domain Layer).
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    The classes EnumModel, NumberModel and Action are <em>models</em> provided by toad.js
+                    and can also be disabled/enabled, validate input, provide error messages, etc.<br />
+                </li>
+                <li>
+                    The Application Layer does not need CSS/HTML and can be tested outside the browser so that tests do
+                    not have
+                    to deal with the complexity of the browser's handling of HTML, events, etc.
+                </li>
+            </ul>
+
+            <h3>The Domain Layer</h3>
+
+            <p>
+                The Domain Layer contains all the code and data regarding what the application is actually about (minus
+                the user
+                interface).
+            </p>
+
+            <pre class="code"><span style="color: var(--tx-static-orange-600);">enum</span> <span style="color: var(--tx-static-orange-400);">Flavour</span> {
+    <span style="color: var(--tx-static-green-400);">CLASSIC</span>, <span style="color: var(--tx-static-green-400);">CHERRY</span>, <span style="color: var(--tx-static-green-400);">VANILLA</span>
+}
+<span style="color: var(--tx-static-orange-600);">const</span> defaultSize = <span style="color: var(--tx-static-blue-400);">0.33</span>
+<span style="color: var(--tx-static-orange-600);">function</span> <span style="color: var(--tx-static-red-400);">fillBottle</span>(flavour: <span style="color: var(--tx-static-orange-400);">Flavour</span>, litre: <span style="color: var(--tx-static-orange-400);">number</span>) {
+    <span style="color: var(--tx-static-orange-400);">fetch</span>(<span style="color: var(--tx-static-green-400)">`http://127.0.0.1/fill/</span>${flavour}<span style="color: var(--tx-static-green-400)">/</span>${litre}<span style="color: var(--tx-static-green-400)">`</span>)
+}</pre>
+
+            <ul>
+                <li>
+                    The code and data in this Layer are also known as
+                    <a href="https://en.wikipedia.org/wiki/Domain_model">Domain Model</a>.
+                </li>
+            </ul>
+
+            <!------------------------------------------------------------------------->
+
+        </tx-tab>
+        <tx-tab label="Action">
+
+            <p>
+                Actions are models without <em>values</em> (aside from properties like <em>enabled</em>, <em>label</em>,
+                etc.)
+            </p>
+
+            <p>
+                An Action's <em>modfied</em> signal will be triggered on a user interaction, e.g. a push button being
+                pressed.
+            </p>
+
+            <h3>&lt;tx-button&gt;</h3>
+
+            <tx-button class="tx-default">Default</tx-button>
+            <tx-button class="tx-accent">Accent</tx-button>
+            <tx-button class="tx-negative">Negative</tx-button>
+
+            <tx-button action="hitMe">Hit me!</tx-button>
+            <tx-button action="hitMeMore" model="hello">I get my text from the
+                model registered as 'hello'</tx-button>
+
+            <my-code-button condition="button-condition"></my-code-button>
+            <tx-if model="button-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;tx-button class="tx-default"&gt;Default&lt;/tx-button&gt;
+      &lt;tx-button class="tx-accent"&gt;Accent&lt;/tx-button&gt;
+      &lt;tx-button class="tx-negative"&gt;Negative&lt;/tx-button&gt;
+      &lt;tx-button action="hitMe"&gt;Hit me!&lt;/tx-button&gt;
+      &lt;tx-button action="hitMeMore" model="hello"&gt;I get my text from the model registered as 'hello'&lt;/tx-button&gt;</pre>
+                <h4>TypeScript</h4>
+                <pre>
+      toad.action("hitMe", () =&gt; {
+          textModel.value = "Hit me too!"
+          hitMeMore.enabled = true
+      })
+      var hitMeMore = toad.action("hitMeMore", () =&gt; {
+          textModel.value = "You hit me!"
+          hitMeMore.enabled = false
+      })</pre>
+            </tx-if>
+
+            <h3>&lt;tx-menu&gt;</h3>
+
+            <tx-menu>
+                <tx-menuentry name="file" label="File">
+                    <tx-menuentry name="new" label="New">
+                        <tx-menuentry name="empty" label="Empty"></tx-menuentry>
+                        <tx-menuentry name="template" label="From Template"></tx-menuentry>
+                        <tx-menuentry name="upload" label="Upload"></tx-menuentry>
+                    </tx-menuentry>
+                    <tx-menuentry name="open" label="Open"></tx-menuentry>
+                    <tx-menuentry name="close" label="Close"></tx-menuentry>
+                    <tx-menuentry name="logout" label="Logout"></tx-menuentry>
+                </tx-menuentry>
+                <tx-menuentry name="edit" label="Edit">
+                    <tx-menuentry name="cut" label="Cut" shortcut="Ctrl+X"></tx-menuentry>
+                    <tx-menuentry name="copy" label="Copy" shortcut="Ctrl+C"></tx-menuentry>
+                    <tx-menuentry name="paste" label="Paste" shortcut="Ctrl+V"></tx-menuentry>
+                </tx-menuentry>
+                <tx-menuspacer></tx-menuspacer>
+                <tx-menuentry name="help" label="Help"></tx-menuentry>
+                <tx-menuentry name="settings" label="Settings">
+                    <tx-menuentry name="account" label="Account"></tx-menuentry>
+                    <tx-menuentry name="system" label="System"></tx-menuentry>
+                </tx-menuentry>
+            </tx-menu>
+
+            <my-code-button condition="menu-condition"></my-code-button>
+            <tx-if model="menu-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;tx-menu&gt;
+        &lt;tx-menuentry name="file" label="File"&gt;
+          &lt;tx-menuentry name="new" label="New"&gt;
+            &lt;tx-menuentry name="empty" label="Empty"&gt;&lt;/tx-menuentry&gt;
+            &lt;tx-menuentry name="template" label="From Template"&gt;&lt;/tx-menuentry&gt;
+            &lt;tx-menuentry name="upload" label="Upload"&gt;&lt;/tx-menuentry&gt;
+          &lt;/tx-menuentry&gt;
+          &lt;tx-menuentry name="open" label="Open"&gt;&lt;/tx-menuentry&gt;
+          &lt;tx-menuentry name="close" label="Close"&gt;&lt;/tx-menuentry&gt;
+          &lt;tx-menuentry name="logout" label="Logout"&gt;&lt;/tx-menuentry&gt;
+        &lt;/tx-menuentry&gt;
+        &lt;tx-menuentry name="edit" label="Edit"&gt;
+          &lt;tx-menuentry name="cut" label="Cut" shortcut="Ctrl+X"&gt;&lt;/tx-menuentry&gt;
+          &lt;tx-menuentry name="copy" label="Copy" shortcut="Ctrl+C"&gt;&lt;/tx-menuentry&gt;
+          &lt;tx-menuentry name="paste" label="Paste" shortcut="Ctrl+V"&gt;&lt;/tx-menuentry&gt;
+        &lt;/tx-menuentry&gt;
+        &lt;tx-menuspacer&gt;&lt;/tx-menuspacer&gt;
+        &lt;tx-menuentry name="help" label="Help"&gt;&lt;/tx-menuentry&gt;
+        &lt;tx-menuentry name="settings" label="Settings"&gt;
+          &lt;tx-menuentry name="account" label="Account"&gt;&lt;/tx-menuentry&gt;
+          &lt;tx-menuentry name="system" label="System"&gt;&lt;/tx-menuentry&gt;
+        &lt;/tx-menuentry&gt;
+      &lt;/tx-menu&gt;</pre>
+                <h4>TypeScript</h4>
+                <pre>
+      toad.action("file|logout", () =&gt; {
+        alert("You are about to logout")
+      })
+      toad.action("help", () =&gt; {
+        alert("Please.")
+      })</pre>
+            </tx-if>
+
+        </tx-tab>
+
+        <tx-tab label="Text">
+
+            <h3>&lt;tx-text&gt;</h3>
+            <tx-text model="hello"></tx-text>
+            <tx-text model="hello"></tx-text>
+
+            <my-code-button condition="text-condition"></my-code-button>
+            <tx-if model="text-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;tx-text model="hello"&gt;&lt;/tx-text&gt;
+      &lt;tx-text model="hello"&gt;&lt;/tx-text&gt;</pre>
+                <h4>TypeScript</h4>
+                <pre>
+      let textModel = new toad.TextModel("")
+      toad.bind("hello", textModel)</pre>
+            </tx-if>
+
+            <h3>&lt;tx-texttool&gt; &amp; &lt;tx-textarea&gt;</h3>
+            <tx-texttool></tx-texttool>
+            <tx-textarea model="markup"></tx-textarea>
+            <h3>Raw HTML</h3>
+            <pre style="margin: 0px; padding: 10px; border: solid var(--tx-gray-600) 1px;" id="rawhtml"></pre>
+
+            <my-code-button condition="textarea-condition"></my-code-button>
+            <tx-if model="textarea-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;tx-texttool&gt;&lt;/tx-texttool&gt;
+      &lt;tx-textarea model="markup"&gt;&lt;/tx-textarea&gt;
+      &lt;pre id="rawhtml"&gt;&lt;/pre&gt;
+    </pre>
+                <h4>TypeScript</h4>
+                <pre>
+      let markupModel = new toad.HtmlModel("")
+      markupModel.modified.add( () =&gt; {
+        document.getElementById("rawhtml").innerText = markupModel.value
+      })
+      toad.bind("markup", markupModel)
+    </pre>
+            </tx-if>
+
+        </tx-tab>
+        <tx-tab label="Boolean">
+
+            A Boolean can either be <em>true</em> or <em>false</em>.
+
+            <h3>&lt;tx-checkbox&gt;, &lt;tx-switch&gt; and &lt;tx-if&gt;</h3>
+
+            <table>
+                <tr>
+                    <th></th>
+                    <th colspan="2">enabled</th>
+                    <th colspan="2">disabled</th>
+                </tr>
+                <tr>
+                    <th></th>
+                    <th>false</th>
+                    <th>true</th>
+                    <th>false</th>
+                    <th>true</th>
+                    <th>when to use</th>
+                </tr>
+                <tr>
+                    <th>checkbox</th>
+                    <td>
+                        <tx-checkbox model="off"></tx-checkbox>
+                    </td>
+                    <td>
+                        <tx-checkbox model="on"></tx-checkbox>
+                    </td>
+                    <td>
+                        <tx-checkbox model="offDisabled"></tx-checkbox>
+                    </td>
+                    <td>
+                        <tx-checkbox model="onDisabled"></tx-checkbox>
+                    </td>
+                    <td>
+                        multiple choice lists
+                    </td>
+                </tr>
+                <tr>
+                    <th>switch</th>
+                    <td>
+                        <tx-switch model="off"></tx-switch>
+                    </td>
+                    <td>
+                        <tx-switch model="on"></tx-switch>
+                    </td>
+                    <td>
+                        <tx-switch model="offDisabled"></tx-switch>
+                    </td>
+                    <td>
+                        <tx-switch model="onDisabled"></tx-switch>
+                    </td>
+                    <td>
+                        switching something on/off
+                    </td>
+                </tr>
+            </table>
+
+            The answer to life, the universe and everything?
+            <tx-if model="off">
+                <p>What is 6 &times; 7?</p>
+            </tx-if>
+
+            <my-code-button condition="checkbox-condition"></my-code-button>
+            <tx-if model="checkbox-condition">
+                <h4>HTML</h4>
+                <pre>
+      The answer to life, the universe and everything?
+      &lt;tx-checkbox model="onoff">&lt;/tx-checkbox&gt;
+      &lt;tx-if model="onoff"&gt;
+        &lt;p>What is 6 &amp;times; 7?&lt;/p&gt;
+      &lt;/tx-if&gt;</pre>
+                <h4>TypeScript</h4>
+                <pre>
+      let onoff = new toad.BooleanModel(false)
+      toad.bind("onoff", onoff)</pre>
+            </tx-if>
+
+            <!------------------------------------------------------------------------->
+
+        </tx-tab>
+        <tx-tab label="Choice">
+
+            A list of values out of which one (and only one) can be selected.
+
+            <h3>&lt;tx-radiobutton&gt; &amp; &lt;tx-popupmenu&gt;</h3>
+
+            <table>
+                <tr>
+                    <th></th>
+                    <th colspan="3">
+                        enabled
+                    </th>
+                    <th colspan="3">
+                        disabled
+                    </th>
+                    <th>when to use</th>
+                </tr>
+                <tr>
+                    <th rowspan="2">radiobutton</th>
+                    <td>
+                        <tx-radiobutton model="flavourEnabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourEnabled" value="GRAPE"></tx-radiobutton> Grape
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourEnabled" value="TANGERINE"></tx-radiobutton> Tangerine
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourDisabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourDisabled" value="GRAPE"></tx-radiobutton> Grape
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourDisabled" value="TANGERINE"></tx-radiobutton> Tangerine
+                    </td>
+                    <td rowspan="2">
+                        enough space to display all options
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <tx-radiobutton model="flavourEnabled" value="LIME"></tx-radiobutton> Lime
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourEnabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourEnabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourDisabled" value="LIME"></tx-radiobutton> Lime
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourDisabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
+                    </td>
+                    <td>
+                        <tx-radiobutton model="flavourDisabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        select
+                    </th>
+                    <td colspan="3">
+                        <tx-select model="flavourEnabled">
+                            <option value="BLUEBERRY">Blueberry</option>
+                            <option value="GRAPE">Grape</option>
+                            <option value="TANGERINE">Tangerine</option>
+                            <option value="LIME">Lime</option>
+                            <option value="STRAWBERRY">Strawberry</option>
+                            <option value="BONDIBLUE">Bondi Blue</option>
+                        </tx-select>
+                    </td>
+                    <td colspan="3">
+                        <tx-select model="flavourDisabled">
+                            <option value="BLUEBERRY">Blueberry</option>
+                            <option value="GRAPE">Grape</option>
+                            <option value="TANGERINE">Tangerine</option>
+                            <option value="LIME">Lime</option>
+                            <option value="STRAWBERRY">Strawberry</option>
+                            <option value="BONDIBLUE">Bondi Blue</option>
+                        </tx-select>
+                    </td>
+                    <td>
+                        limited screen space, move through options with scroll wheel
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        combobox
+                    </th>
+                    <td colspan="3">
+                        <tx-select model="flavourEnabled" text="customFlavour">
+                            <option value="BLUEBERRY">Blueberry</option>
+                            <option value="GRAPE">Grape</option>
+                            <option value="TANGERINE">Tangerine</option>
+                            <option value="LIME">Lime</option>
+                            <option value="STRAWBERRY">Strawberry</option>
+                            <option value="BONDIBLUE">Bondi Blue</option>
+                        </tx-select>
+                    </td>
+                    <td colspan="3">
+                        <tx-select model="flavourDisabled" text="customFlavourDisabled">
+                            <option value="BLUEBERRY">Blueberry</option>
+                            <option value="GRAPE">Grape</option>
+                            <option value="TANGERINE">Tangerine</option>
+                            <option value="LIME">Lime</option>
+                            <option value="STRAWBERRY">Strawberry</option>
+                            <option value="BONDIBLUE">Bondi Blue</option>
+                        </tx-select>
+                    </td>
+                    <td>
+                        combination of select and text
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        search
+                    </th>
+                    <td colspan="3">
+                        <tx-search></tx-search>
+                    </td>
+                    <td colspan="3"></td>
+                    <td>(not ready yet for use)</td>
+                </tr>
+                <tr>
+                    <th>
+                        search within
+                    </th>
+                </tr>
+            </table>
+
+        </tx-tab>
+        <tx-tab label="Number">
+
+            <h3>&lt;tx-text&gt; &amp; &lt;tx-slider&gt;</h3>
+            <tx-text model="size"></tx-text>
+            <tx-slider model="size"></tx-slider>
+
+            <my-code-button condition="slider-condition"></my-code-button>
+            <tx-if model="slider-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;tx-text model="size"&gt;&lt;/tx-text&gt;
+      &lt;tx-slider model="size"&gt;&lt;/tx-slider&gt;</pre>
+                <h4>JavaScipt</h4>
+                <pre>
+      let size = new toad.NumberModel(42, {min: 0, max: 99})
+      toad.bind("size", size)</pre>
+            </tx-if>
+
+        </tx-tab>
+        <tx-tab label="Array & Tree">
+
+            <p>
+                <u>Please note:</u> The table's layout algorithm is rather tricky and, as you can see here, doesn't work within tabs. Hence
+                the tx-table element is currently being redesigned and rewritten.
+            </p>
+
+            <h3>&lt;tx-table&gt; from array</h3>
+            <div style="display: inline-block; width: 45%; border: inset;">
+                <b style="font-size: 150%">Alice</b>
+                <tx-tabletool></tx-tabletool>
+                <tx-table model="books"></tx-table>
+            </div>
+            <div style="display: inline-block; width: 45%; border: inset;">
+                <b style="font-size: 150%">Bob</b>
+                <tx-tabletool></tx-tabletool>
+                <tx-table model="books"></tx-table>
+            </div>
+
+            <my-code-button condition="table-condition"></my-code-button>
+            <tx-if model="table-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;div style="display: inline-block; width: 45%; border: inset;"&gt;
+        &lt;b style="font-size: 150%"&gt;Alice&lt;/b&gt;
+        &lt;tx-tabletool&gt;&lt;/tx-tabletool&gt;
+        &lt;tx-table model="books"&gt;&lt;/tx-table&gt;
+      &lt;/div&gt;
+      &lt;div style="display: inline-block; width: 45%; border: inset;"&gt;
+        &lt;b style="font-size: 150%"&gt;Bob&lt;/b&gt;
+        &lt;tx-tabletool&gt;&lt;/tx-tabletool&gt;
+        &lt;tx-table model="books"&gt;&lt;/tx-table&gt;
+      &lt;/div&gt;</pre>
+
+                <h4>TypeScript</h4>
+                <pre>
+      class Book {
+        title: string = ""
+        author: string = ""
+        year: number = 1970
+      }
+  
+      const bookList = [
+          { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
+          { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
+          { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
+          { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
+          { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
+          { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
+          { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
+          { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
+      ]
+      
+      class BookAdapter extends ArrayAdapter&lt;ArrayModel&lt;Book&gt;&gt; {
+          override getColumnHeads() { return ["Title", "Author", "Year"] }
+          override getRow(book: Book) { return refs(book, "title", "author", "year") }
+      }
+      
+      TableAdapter.register(BookAdapter, ArrayModel, Book)
+      const model = new ArrayModel&lt;Book&gt;(bookList, Book)
+      bind("books", model)</pre>
+            </tx-if>
+
+            <h3>&lt;tx-table&gt; from tree</h3>
+            <tx-tabletool></tx-tabletool>
+            <tx-table model="tree"></tx-table>
+
+            <my-code-button condition="tree-condition"></my-code-button>
+            <tx-if model="tree-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;tx-tabletool>&lt;/tx-tabletool&gt;
+      &lt;tx-table model="tree"&gt;&lt;/tx-table&gt;</pre>
+
+                <h4>TypeScript</h4>
+                <pre>
+      class MyNode implements TreeNode {
+        label: string
+        next?: MyNode
+        down?: MyNode
+        static counter = 0
+        constructor() {
+            this.label = `#${MyNode.counter++}`
+        }
+      }
+      
+      class MyTreeAdapter extends TreeAdapter&lt;MyNode&gt; {
+          override getDisplayCell(col: number, row: number) {
+              return this.model && this.treeCell(row, this.model.rows[row].node.label)
+          }
+      }
+    
+      TreeAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
+      let model = new TreeNodeModel(MyNode)
+      model.addSiblingAfter(0)
+      model.addChildAfter(0)
+      model.addChildAfter(1)
+      model.addSiblingAfter(2)
+      model.addSiblingAfter(1)
+      model.addChildAfter(4)
+      model.addSiblingAfter(0)
+      bind("tree", model)</pre>
+            </tx-if>
+        </tx-tab>
+
+
+        <tx-tab label="Tabs">
+
+            <h2>Horizontal</h2>
+
+            <tx-tabs style="width: 100%">
+                <tx-tab label="Explore">So much to see. So little time.</tx-tab>
+                <tx-tab label="Flights">Jump. Up and down.</tx-tab>
+                <tx-tab label="Trips">Take a trip dude. Odyssey of the Mind</tx-tab>
+
+                <!-- prefix
+              
+                <tx-label>...</tx-label>
+                <tx-tab>...</tx-label>
+                -->
+
+            </tx-tabs>
+
+            <h2>Vertical</h2>
+
+            <tx-tabs style="width: 100%" vertical>
+                <tx-tab label="Explore">So much to see. So little time.</tx-tab>
+                <tx-tab label="Flights">Jump. Up and down.</tx-tab>
+                <tx-tab label="Trips">Take a trip dude. Odyssey of the Mind</tx-tab>
+            </tx-tabs>
+        </tx-tab>
+    </tx-tabs>
+
+</body>
+
+</html>
