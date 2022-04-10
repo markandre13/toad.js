@@ -43,7 +43,7 @@ describe("view", function () {
                 it("does so when the model is defined before the view", function () {
                     const model = new TextModel("alpha")
                     bindModel("model", model)
-                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
                     const view = document.body.children[0]
                     // console.log(view.nodeName)
 
@@ -51,7 +51,7 @@ describe("view", function () {
                 })
 
                 it("does so when the view is defined before the model", function () {
-                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
                     
                     const model = new TextModel("alpha")
                     bindModel("model", model)
@@ -76,7 +76,7 @@ describe("view", function () {
                 it("updates the html element when the model changes", function () {
                     let model = new TextModel("alpha")
                     bindModel("model", model)
-                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
                     let checkbox = document.body.children[0]
                     expect(checkbox.getAttribute("value")).to.equal("alpha")
                     model.value = "bravo"
@@ -86,7 +86,7 @@ describe("view", function () {
                 it("updates the model when the html element changes", function () {
                     let model = new TextModel("alpha")
                     bindModel("model", model)
-                    document.body.innerHTML = "<toad-text model='model'></toad-text>"
+                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
                     let view = document.body.children[0] as Text
                     expect(model.value).to.equal("alpha")
                     view.setAttribute("value", "bravo")
@@ -100,7 +100,7 @@ describe("view", function () {
     
                 expect(model.modified.count()).to.equal(0)
     
-                document.body.innerHTML = "<toad-text model='text'></toad-text><toad-text model='text'></toad-text>"
+                document.body.innerHTML = "<tx-text model='text'></tx-text><tx-text model='text'></tx-text>"
                 expect(model.modified.count()).to.equal(2)
     
                 document.body.removeChild(document.body.children[0])

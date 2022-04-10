@@ -49,9 +49,9 @@ export class TestTableScene {
         this.selectionModel = new SelectionModel()
         bind("books", this.selectionModel)
 
-        document.body.innerHTML = options.html !== undefined ? options.html : `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='books'></toad-table></div>`
-        this.table = document.querySelector("toad-table") as TableView
-        expect(this.table.tagName).to.equal("TOAD-TABLE")
+        document.body.innerHTML = options.html !== undefined ? options.html : `<tx-tabletool></tx-tabletool><div style="width: 480px"><tx-table model='books'></tx-table></div>`
+        this.table = document.querySelector("tx-table") as TableView
+        expect(this.table.tagName).to.equal("TX-TABLE")
 
         setAnimationFrameCount(400)
     }
@@ -193,7 +193,7 @@ export class TestTableScene {
     }
 
     clickTableToolAddRowBelow() {
-        const button = document.querySelector("toad-tabletool")!
+        const button = document.querySelector("tx-tabletool")!
             .shadowRoot!.querySelector("button[title='add row below']")!
         const e = new MouseEvent("click", {
             bubbles: true,
@@ -203,7 +203,7 @@ export class TestTableScene {
     }
 
     clickTableToolAddRowAbove() {
-        const button = document.querySelector("toad-tabletool")!
+        const button = document.querySelector("tx-tabletool")!
             .shadowRoot!.querySelector("button[title='add row above']")!
         const e = new MouseEvent("click", {
             bubbles: true,
@@ -213,7 +213,7 @@ export class TestTableScene {
     }
 
     clickTableToolDeleteRow() {
-        const button = document.querySelector("toad-tabletool")!
+        const button = document.querySelector("tx-tabletool")!
             .shadowRoot!.querySelector("button[title='delete row']")!
         const e = new MouseEvent("click", {
             bubbles: true,

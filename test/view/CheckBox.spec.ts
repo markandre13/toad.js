@@ -1,70 +1,78 @@
 import { expect } from '@esm-bundle/chai'
-import { Checkbox, BooleanModel, bindModel, unbind } from "@toad"
+import { BooleanModel, bindModel, unbind } from "@toad"
 
-describe("view", function() {
+describe("view", function () {
 
-    function clearAll() {
-      unbind()
-      document.body.innerHTML = ""
+    this.afterEach(() => {
+        unbind()
+        document.body.innerHTML = ""
+    })
+
+    function isChecked() {
+        let checkbox = document.body.children[0].shadowRoot!.children[0] as HTMLInputElement
+        return checkbox.checked
     }
 
-    describe("checkbox", function() {
-        describe("initialize view from model", function() {
-            it("does so when the model is defined before the view", function() {
-                let model = new BooleanModel(true)
-                bindModel("bool", model)
-                document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-                let checkbox = document.body.children[0]
-   
-                expect(checkbox.hasAttribute("checked")).to.equal(true)
-                clearAll()
+    function setChecked(checked: boolean) {
+        let checkbox = document.body.children[0].shadowRoot!.children[0] as HTMLInputElement
+        checkbox.checked = checked
+        checkbox.dispatchEvent(new Event("change"))
+    }
 
-                model = new BooleanModel(false)
-                bindModel("bool", model)
-                document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-                expect(checkbox.hasAttribute("checked")).to.equal(false)
-                clearAll()
+    describe("checkbox", function () {
+        describe("initialize view from model", function () {
+            describe("does so when the model is defined before the view", function () {
+                it("true", function () {
+                    const model = new BooleanModel(true)
+                    bindModel("bool", model)
+                    document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
+                    expect(isChecked()).to.equal(true)
+                })
+
+                it("false", function () {
+                    const model = new BooleanModel(false)
+                    bindModel("bool", model)
+                    document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
+                    expect(isChecked()).to.equal(false)
+                })
             })
 
-            it("does so when the view is defined before the model", function() {
-                document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-                let checkbox = document.body.children[0]
-                let model = new BooleanModel(true)
-                bindModel("bool", model)
-                expect(checkbox.hasAttribute("checked")).to.equal(true)
-                clearAll()
+            describe("does so when the view is defined before the model", function () {
+                it("true", function () {
+                    document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
+                    const model = new BooleanModel(true)
+                    bindModel("bool", model)
+                    expect(isChecked()).to.equal(true)
+                })
 
-                document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-                checkbox = document.body.children[0]
-                model = new BooleanModel(false)
-                bindModel("bool", model)
-                expect(checkbox.hasAttribute("checked")).to.equal(false)
-                clearAll()
+                it("false", function () {
+                    document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
+                    const model = new BooleanModel(false)
+                    bindModel("bool", model)
+                    expect(isChecked()).to.equal(false)
+                })
             })
         })
 
-        describe("on change sync data between model and view", function() {
+        describe("on change sync data between model and view", function () {
 
-            it("updates the html element when the model changes", function() {
-                let model = new BooleanModel(true)
+            it("updates the html element when the model changes", function () {
+                const model = new BooleanModel(true)
                 bindModel("bool", model)
-                document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-                let checkbox = document.body.children[0]
-                expect(checkbox.hasAttribute("checked")).to.equal(true)
+                document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
+                expect(isChecked()).to.equal(true)
+
                 model.value = false
-                expect(checkbox.hasAttribute("checked")).to.equal(false)
-                clearAll()
+                expect(isChecked()).to.equal(false)
             })
-  
-            it("updates the model when the html element changes", function() {
+
+            it("updates the model when the html element changes", function () {
                 let model = new BooleanModel(false)
                 bindModel("bool", model)
-                document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
-                let checkbox = document.body.children[0] as Checkbox
-                expect(model.value).not.to.equal(true)
-                checkbox.setAttribute("checked", "")
+                document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
+
+                setChecked(true)
                 expect(model.value).to.equal(true)
-                clearAll()
             })
         })
     })

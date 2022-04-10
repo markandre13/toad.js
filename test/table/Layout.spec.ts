@@ -1,5 +1,5 @@
 //
-// test <toad-table />'s integration into the page
+// test <tx-table />'s integration into the page
 //
 import { expect } from "@esm-bundle/chai"
 import { TestTableScene } from "./TestTableScene"
@@ -23,7 +23,7 @@ describe("view", function () {
                 document.body.innerHTML = `${frameFrag}${frameStyle}">${TestTableScene.createHTML(tableStyle)}</div>`
 
                 const scene = new TestTableScene({
-                    html: `${frameFrag}${frameStyle}"><toad-table model='books' style="${tableStyle}"></toad-table></div>`
+                    html: `${frameFrag}${frameStyle}"><tx-table model='books' style="${tableStyle}"></tx-table></div>`
                 })
                 await scene.sleep(10)
 
@@ -41,7 +41,7 @@ describe("view", function () {
                 const expectedBounds = document.querySelector("span")?.getBoundingClientRect()!
 
                 const scene = new TestTableScene({
-                    html: `${frameFrag}${frameStyle}"><toad-table model='books' style="${tableStyle}"></toad-table></div>`
+                    html: `${frameFrag}${frameStyle}"><tx-table model='books' style="${tableStyle}"></tx-table></div>`
                 })
                 await scene.sleep(10)
 
@@ -66,7 +66,7 @@ describe("view", function () {
                 const expectedBounds = document.querySelector("span")?.getBoundingClientRect()!
 
                 const scene = new TestTableScene({
-                    html: `${frameFrag}${frameStyle}"><toad-table model='books' style="${tableStyle}"></toad-table></div>`
+                    html: `${frameFrag}${frameStyle}"><tx-table model='books' style="${tableStyle}"></tx-table></div>`
                 })
                 await scene.sleep(10)
 
@@ -86,7 +86,7 @@ describe("view", function () {
                 const expectedBounds = document.querySelector("span")?.getBoundingClientRect()!
 
                 const scene = new TestTableScene({
-                    html: `${frameFrag}${frameStyle}"><toad-table model='books' style="${tableStyle}"></toad-table></div>`
+                    html: `${frameFrag}${frameStyle}"><tx-table model='books' style="${tableStyle}"></tx-table></div>`
                 })
                 await scene.sleep(10)
 
@@ -104,7 +104,7 @@ describe("view", function () {
                 const expectedBounds = document.querySelector("span")?.getBoundingClientRect()!
 
                 const scene = new TestTableScene({
-                    html: `${frameFrag}${frameStyle}"><toad-table model='books' style="${tableStyle}"></toad-table></div>`
+                    html: `${frameFrag}${frameStyle}"><tx-table model='books' style="${tableStyle}"></tx-table></div>`
                 })
                 await scene.sleep(10)
 
@@ -121,7 +121,7 @@ describe("view", function () {
                 const expectedBounds = document.querySelector("span")?.getBoundingClientRect()!
 
                 const scene = new TestTableScene({
-                    html: `${frameFrag}${frameStyle}"><toad-table model='books' style="${tableStyle}"></toad-table></div>`
+                    html: `${frameFrag}${frameStyle}"><tx-table model='books' style="${tableStyle}"></tx-table></div>`
                 })
                 await scene.sleep(10)
 
@@ -132,7 +132,7 @@ describe("view", function () {
 
             it("when neither table nor parent have a size, use a default", async function() {
                 const scene = new TestTableScene({
-                    html: `<div><toad-table model='books'></toad-table></div>`
+                    html: `<div><tx-table model='books'></tx-table></div>`
                 })
                 await scene.sleep(10)
 

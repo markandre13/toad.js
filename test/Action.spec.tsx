@@ -3,7 +3,7 @@ import { action, Action, Button } from "@toad"
 
 describe("action", function () {
     it("button created before action", function () {
-        document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
+        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
 
         let flag = false
 
@@ -23,7 +23,7 @@ describe("action", function () {
             flag = true
         })
 
-        document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
+        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
 
         getHTMLButtonElement().dispatchEvent(new Event("click"))
 
@@ -53,7 +53,7 @@ describe("action", function () {
             flag = true
         })
 
-        document.body.innerHTML = `<toad-button action="logon">Log on</toad-button><toad-button action="logon">Log on</toad-button>`
+        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button><tx-button action="logon">Log on</tx-button>`
 
         getHTMLButtonElement(0).dispatchEvent(new Event("click"))
         expect(flag).to.equal(true)
@@ -77,7 +77,7 @@ describe("action", function () {
             flag1 = true
         })
 
-        document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
+        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
         getHTMLButtonElement().dispatchEvent(new Event("click"))
 
         console.log(`flag0 = ${flag0}`)
@@ -88,7 +88,7 @@ describe("action", function () {
     })
 
     it.skip("button without action is disabled", function () {
-        document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
+        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
 
         let button = getHTMLButtonElement()
 
@@ -100,7 +100,7 @@ describe("action", function () {
             console.log("LOGON")
         })
 
-        document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
+        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
 
         let button = getHTMLButtonElement()
 
@@ -121,7 +121,7 @@ describe("action", function () {
             console.log("LOGON")
         })
 
-        document.body.innerHTML = `<toad-button action="logon">Log on</toad-button>`
+        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
 
         let button = getHTMLButtonElement()
 

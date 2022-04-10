@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { Fragment, TextArea, TextModel, HtmlModel, NumberModel, bindModel, unbind } from "@toad"
+import { TextModel, HtmlModel, bindModel, unbind } from "@toad"
 
 describe("view", function () {
 
@@ -8,69 +8,27 @@ describe("view", function () {
         document.body.innerHTML = ""
     })
 
+    function getTextArea() {
+        return document.body.children[0].shadowRoot?.children[0]! as HTMLTextAreaElement
+    }
+
     function getTextAreaText() {
-        return document.body.children[0].shadowRoot?.children[1].innerHTML
-    }
-
-    function setTextAreaText(text: string) {
-        // return document.body.children[0].shadowRoot?.children[1].innerHTML
-    }
-
-    function sendArrowUp() {
-        // const inp = document.body.children[0].shadowRoot?.children[1]
-        // console.log(inp)
-        // const e = new KeyboardEvent("keydown", {
-        //     bubbles: true,
-        //     key: "A"
-        // })
-        // // inp?.dispatchEvent(e)
-        // if (inp !== undefined) {
-        //     console.log("set innerHTML")
-        //     inp.innerHTML = "xxx"
-        // }
-        // console.log(inp)
+        return getTextArea().innerHTML
     }
 
     describe("TextArea", function () {
-
-        xit("plain old textarea", function () {
-            document.body.innerHTML = "<textarea>alpha</textarea>"
-            const textarea = document.body.children[0] as HTMLTextAreaElement
-
-            textarea.oninput = (event: Event) => {
-                console.log(event)
-            }
-
-            textarea.focus()
-
-            textarea.dispatchEvent(new KeyboardEvent("keydown", {key: 'a', code: 'keyA'}))
-            textarea.dispatchEvent(new KeyboardEvent("keypress", {key: 'a', code: 'keyA'}))
-            textarea.value = textarea.value + "A"
-            textarea.dispatchEvent(new InputEvent(
-                "input", {
-                bubbles: true,
-                inputType: "insertText",
-                data: "A",
-            }))
-            textarea.dispatchEvent(new KeyboardEvent("keyup", {key: 'a', code: 'keyA'}))
-
-            // console.log(getTextAreaText())
-
-            // expect(getTextAreaText()).to.equal("bravo")
-
-        })
 
         describe("TextModel", function () {
             describe("initialize view from model", function () {
                 it("does so when the model is defined before the view", function () {
                     let model = new TextModel("alpha")
                     bindModel("model", model)
-                    document.body.innerHTML = "<toad-textarea model='model'></toad-textarea>"
+                    document.body.innerHTML = "<tx-textarea model='model'></tx-textarea>"
                     expect(getTextAreaText()).to.equal("alpha")
                 })
 
                 it("does so when the view is defined before the model", function () {
-                    document.body.innerHTML = "<toad-textarea model='model'></toad-textarea>"
+                    document.body.innerHTML = "<tx-textarea model='model'></tx-textarea>"
                     let model = new TextModel("alpha")
                     bindModel("model", model)
                     expect(getTextAreaText()).to.equal("alpha")
@@ -82,7 +40,7 @@ describe("view", function () {
                     it("updates the html element when the model changes", function () {
                         let model = new TextModel("alpha")
                         bindModel("model", model)
-                        document.body.innerHTML = "<toad-textarea model='model'></toad-textarea>"
+                        document.body.innerHTML = "<tx-textarea model='model'></tx-textarea>"
                         expect(getTextAreaText()).to.equal("alpha")
                         model.value = "bravo"
                         expect(getTextAreaText()).to.equal("bravo")
@@ -91,9 +49,9 @@ describe("view", function () {
                     it("updates the model when the html element changes", function () {
                         let model = new TextModel("alph")
                         bindModel("model", model)
-                        document.body.innerHTML = "<toad-textarea model='model'></toad-textarea>"
+                        document.body.innerHTML = "<tx-textarea model='model'></tx-textarea>"
 
-                        const textarea = document.body.children[0].shadowRoot?.children[1]! as HTMLTextAreaElement        
+                        const textarea = getTextArea()
                         textarea.focus()
                         textarea.dispatchEvent(new KeyboardEvent("keydown", {key: 'a', code: 'keyA'}))
                         textarea.dispatchEvent(new KeyboardEvent("keypress", {key: 'a', code: 'keyA'}))
@@ -113,7 +71,7 @@ describe("view", function () {
                     it("updates the html element when the model changes", function () {
                         let model = new HtmlModel("alpha")
                         bindModel("model", model)
-                        document.body.innerHTML = "<toad-textarea model='model'></toad-textarea>"
+                        document.body.innerHTML = "<tx-textarea model='model'></tx-textarea>"
                         expect(getTextAreaText()).to.equal("alpha")
                         model.value = "bravo"
                         expect(getTextAreaText()).to.equal("bravo")
@@ -122,9 +80,9 @@ describe("view", function () {
                     it("updates the model when the html element changes", function () {
                         let model = new HtmlModel("alph")
                         bindModel("model", model)
-                        document.body.innerHTML = "<toad-textarea model='model'></toad-textarea>"
+                        document.body.innerHTML = "<tx-textarea model='model'></tx-textarea>"
 
-                        const textarea = document.body.children[0].shadowRoot?.children[1]! as HTMLTextAreaElement        
+                        const textarea = getTextArea()
                         textarea.focus()
                         textarea.dispatchEvent(new KeyboardEvent("keydown", {key: 'a', code: 'keyA'}))
                         textarea.dispatchEvent(new KeyboardEvent("keypress", {key: 'a', code: 'keyA'}))
@@ -149,7 +107,7 @@ describe("view", function () {
 
                 expect(model.modified.count()).to.equal(0)
 
-                document.body.innerHTML = "<toad-textarea model='text'></toad-text><toad-text model='text'></toad-textarea>"
+                document.body.innerHTML = "<tx-textarea model='text'></tx-textarea><tx-textarea model='text'></tx-textarea>"
                 expect(model.modified.count()).to.equal(2)
 
                 document.body.removeChild(document.body.children[0])

@@ -6,7 +6,7 @@ import { BookTableScene } from "./BookTableScene"
 import { TreeViewScene } from "./TreeViewScene"
 import { TestRow, TestTableScene } from "./TestTableScene"
 
-describe("view", function() {
+describe("view", function() { 
     describe("table", function() {
         describe("class TableView", function() {
             describe("update view when model changes", function() {

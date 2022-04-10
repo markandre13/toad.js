@@ -6,27 +6,27 @@ describe("view", function() {
 
     describe("menubar", function() {
         let testData = `
-  <toad-menu>
-    <toad-menuentry name="file" label="File">
-      <toad-menuentry name="new" label="New"></toad-menuentry>
-      <toad-menuentry name="open" label="Open"></toad-menuentry>
-      <toad-menuentry name="close" label="Close"></toad-menuentry>
-      <toad-menuentry name="quit" label="Quit"></toad-menuentry>
-    </toad-menuentry>
-    <toad-menuentry name="edit" label="Edit">
-      <toad-menuentry name="undo" label="Undo" shortcut="Ctrl+Z"></toad-menuentry>
-      <toad-menuentry name="redo" label="Redo" shortcut="Ctrl+Y"></toad-menuentry>
-      <toad-menuentry name="cut" label="Cut" shortcut="Ctrl+X"></toad-menuentry>
-      <toad-menuentry name="copy" label="Copy" shortcut="Ctrl+C"></toad-menuentry>
-      <toad-menuentry name="paste" label="Paste" shortcut="Ctrl+V"></toad-menuentry>
-      <toad-menuentry name="delete" label="Delete" shortcut="Del"></toad-menuentry>
-      <toad-menuentry name="search" label="Search">
-        <toad-menuentry name="searchDialog" label="Search..."></toad-menuentry>
-        <toad-menuentry name="forward" label="Forward"></toad-menuentry>
-        <toad-menuentry name="backward" label="Backward"></toad-menuentry>
-      </toad-menuentry>
-    </toad-menuentry>
-  </toad-menu>`
+  <tx-menu>
+    <tx-menuentry name="file" label="File">
+      <tx-menuentry name="new" label="New"></tx-menuentry>
+      <tx-menuentry name="open" label="Open"></tx-menuentry>
+      <tx-menuentry name="close" label="Close"></tx-menuentry>
+      <tx-menuentry name="quit" label="Quit"></tx-menuentry>
+    </tx-menuentry>
+    <tx-menuentry name="edit" label="Edit">
+      <tx-menuentry name="undo" label="Undo" shortcut="Ctrl+Z"></tx-menuentry>
+      <tx-menuentry name="redo" label="Redo" shortcut="Ctrl+Y"></tx-menuentry>
+      <tx-menuentry name="cut" label="Cut" shortcut="Ctrl+X"></tx-menuentry>
+      <tx-menuentry name="copy" label="Copy" shortcut="Ctrl+C"></tx-menuentry>
+      <tx-menuentry name="paste" label="Paste" shortcut="Ctrl+V"></tx-menuentry>
+      <tx-menuentry name="delete" label="Delete" shortcut="Del"></tx-menuentry>
+      <tx-menuentry name="search" label="Search">
+        <tx-menuentry name="searchDialog" label="Search..."></tx-menuentry>
+        <tx-menuentry name="forward" label="Forward"></tx-menuentry>
+        <tx-menuentry name="backward" label="Backward"></tx-menuentry>
+      </tx-menuentry>
+    </tx-menuentry>
+  </tx-menu>`
 
         describe("click interaction", function() {
     
@@ -441,7 +441,7 @@ describe("view", function() {
             if (!node)
                 node = document.body
             
-            if (node.nodeName === "TOAD-MENUBUTTON") {
+            if (node.nodeName === "TX-MENUBUTTON") {
                 let btn = node as MenuButton
                 if (btn.node && btn.node.title === title)
                     return btn

@@ -26,21 +26,21 @@ describe("view", function() {
                     const model = new TestTableModel()
                     bind("data", model)
                     
-                    document.body.innerHTML = "<toad-table model='data'></toad-table>"
+                    document.body.innerHTML = "<tx-table model='data'></tx-table>"
                     
                     const table = document.body.children[0] as TableView
-                    expect(table.tagName).to.equal("TOAD-TABLE")                  
+                    expect(table.tagName).to.equal("TX-TABLE")                  
                     const cell = table.getCellAt(0, 0)!
                     expect(cell.innerText).to.equal("CELL:0:0")
                 })
                 it("initializes when the VIEW is defined BEFORE the MODEL", function() {
-                    document.body.innerHTML = "<toad-table model='data'></toad-table>"
+                    document.body.innerHTML = "<tx-table model='data'></tx-table>"
 
                     const model = new TestTableModel()
                     bind("data", model)
                     
                     const table = document.body.children[0] as TableView
-                    expect(table.tagName).to.equal("TOAD-TABLE")
+                    expect(table.tagName).to.equal("TX-TABLE")
                     const cell = table.getCellAt(0, 0)!
                     expect(cell.innerText).to.equal("CELL:0:0")
                 })
@@ -53,9 +53,9 @@ describe("view", function() {
                     const selectionModel = new SelectionModel()
                     expect(selectionModel.mode).to.equal(TableEditMode.EDIT_CELL)
                     bind("books", selectionModel)
-                    document.body.innerHTML = "<toad-table model='books'></toad-table>"
+                    document.body.innerHTML = "<tx-table model='books'></tx-table>"
                     
-                    const table = document.querySelector("toad-table") as TableView
+                    const table = document.querySelector("tx-table") as TableView
                    
                     // check that the table works
 
@@ -69,19 +69,19 @@ describe("view", function() {
                     
                     // selection is at initial position
                     let text = table.inputOverlay.children[0] as Text
-                    expect(text.tagName).to.equal("TOAD-TEXT")
+                    expect(text.tagName).to.equal("TX-TEXT")
                     expect(text.value).to.equal("CELL:0:0")
                     
                     // change selected row
                     selectionModel.row = 1                   
                     text = table.inputOverlay.children[0] as Text
-                    expect(text.tagName).to.equal("TOAD-TEXT")
+                    expect(text.tagName).to.equal("TX-TEXT")
                     expect(text.value).to.equal("CELL:0:1")
                     
                     // change selected column
                     selectionModel.col = 1
                     text = table.inputOverlay.children[0] as Text
-                    expect(text.tagName).to.equal("TOAD-TEXT")
+                    expect(text.tagName).to.equal("TX-TEXT")
                     expect(text.value).to.equal("CELL:1:1")
                 })
 
@@ -91,10 +91,10 @@ describe("view", function() {
                     const selectionModel = new SelectionModel()
                     selectionModel.mode = TableEditMode.SELECT_ROW
                     bind("books", selectionModel)
-                    document.body.innerHTML = "<toad-table model='books'></toad-table>"
+                    document.body.innerHTML = "<tx-table model='books'></tx-table>"
                     
                     const table = document.body.children[0] as TableView
-                    expect(table.tagName).to.equal("TOAD-TABLE")
+                    expect(table.tagName).to.equal("TX-TABLE")
                     
                     const cell0 = table.getCellAt(0, 0)!
                     const cell1 = table.getCellAt(0, 1)!
@@ -121,7 +121,7 @@ describe("view", function() {
                 it("updates the html element when the model changes", function() {
                     let model = new BooleanModel(true)
                     bind("bool", model)
-                    document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
+                    document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
                     let checkbox = document.body.children[0]
                     expect(checkbox.hasAttribute("checked")).to.equal(true)
                     model.value = false
@@ -132,7 +132,7 @@ describe("view", function() {
                 it("updates the model when the html element changes", function() {
                     let model = new BooleanModel(false)
                     bind("bool", model)
-                    document.body.innerHTML = "<toad-checkbox model='bool'></toad-checkbox>"
+                    document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
                     let checkbox = document.body.children[0] as CheckboxView
                     expect(model.value).not.to.equal(true)
                     checkbox.setAttribute("checked", "")

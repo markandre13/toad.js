@@ -108,9 +108,9 @@ class VariableRowHeightScene {
         this.selectionModel = new SelectionModel()
         bindModel("model", this.selectionModel)
 
-        document.body.innerHTML = `<toad-tabletool></toad-tabletool><div style="width: 480px"><toad-table model='model'></toad-table></div>`
+        document.body.innerHTML = `<tx-tabletool></tx-tabletool><div style="width: 480px"><tx-table model='model'></tx-table></div>`
         this.table = document.body.children[1].children[0] as TableView
-        expect(this.table.tagName).to.equal("TOAD-TABLE")
+        expect(this.table.tagName).to.equal("TX-TABLE")
 
         setAnimationFrameCount(400)
         // }

@@ -79,9 +79,9 @@ export class TreeViewScene {
 
         TableAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
 
-        document.body.innerHTML = `<toad-tabletool></toad-tabletool><toad-table model="tree"></toad-table>`
+        document.body.innerHTML = `<tx-tabletool></tx-tabletool><tx-table model="tree"></tx-table>`
         this.table = document.body.children[1] as TableView
-        expect(this.table.tagName).to.equal("TOAD-TABLE")
+        expect(this.table.tagName).to.equal("TX-TABLE")
     }
 
     sleep(milliseconds: number = 500) {
