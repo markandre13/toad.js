@@ -16,7 +16,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 import { input, span } from "../util/lsx"
 import { BooleanView } from "./BooleanView"
 
