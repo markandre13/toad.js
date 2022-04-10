@@ -2,7 +2,8 @@ import { View } from "../view/View"
 import { ul, li, span, text, div } from "../util/lsx"
 
 export class Tabs extends View {
-    // input: HTMLInputElement
+    markerLine: HTMLDivElement
+    content: HTMLDivElement
 
     constructor() {
         super()
@@ -13,78 +14,70 @@ export class Tabs extends View {
         if (this.hasAttribute("vertical")) {
             this.classList.add("tx-vertical")
         }
-        const u = ul()
 
         let firstTab: HTMLElement | undefined
-
+        const tabContainer = ul()
         for (let i = 0; i < this.children.length; ++i) {
             const child = this.children[i]
             if (child.nodeName !== "TX-TAB") {
                 console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
                 continue
             }
-            let l, s
-            u.appendChild(
-                l = li(
-                    s = span(
+            let tabLabel
+            tabContainer.appendChild(
+                li(
+                    tabLabel = span(
                         text(child.getAttribute("label")!) as any
                     )
                 )
             )
-            s.onmousedown = this.setTab
+            tabLabel.onmousedown = this.setTab
             if (firstTab === undefined) {
-                firstTab = s
+                firstTab = tabLabel
             }
         }
 
-        let d
-
         this.attachShadow({ mode: 'open' })
         this.attachStyle("tabs")
-        this.shadowRoot!.appendChild(u)
-        this.shadowRoot!.appendChild(d = div())
+        this.shadowRoot!.appendChild(tabContainer)
+        this.shadowRoot!.appendChild(this.markerLine = div())
+        this.shadowRoot!.appendChild(this.content = div())
+        this.markerLine.classList.add("line")
+        this.content.classList.add("content")
 
         if (firstTab !== undefined) {
             this.setTab(firstTab)
         }
-
     }
 
-    setTab(eventOrTab: any) {
-        let tab: any
-        if (eventOrTab.target === undefined) {
+    setTab(eventOrTab: MouseEvent | HTMLElement) {
+        let tab: HTMLElement
+        if (eventOrTab instanceof HTMLElement) {
             tab = eventOrTab;
         } else {
-            let event = eventOrTab;
-            tab = event.target;
-            if (event.stopPropagation) event.stopPropagation();
-            if (event.preventDefault) event.preventDefault();
-            event.cancelBubble = true;
-            event.returnValue = false;
+            let event = eventOrTab
+            tab = event.target as HTMLElement
+            event.stopPropagation()
+            event.preventDefault()
+            event.cancelBubble = true
         }
 
-        let list = tab.parentElement.parentElement
-        let line = list.nextSibling
-        while (line.nodeName !== "DIV") {
-            line = line.nextSibling
-        }
-
-        // let container = list.parentElement
+        const line = this.markerLine
         if (this.hasAttribute("vertical")) {
-            line.style.top = tab.offsetTop + "px";
-            line.style.height = tab.clientHeight + "px";
+            line.style.top = `${tab.offsetTop}px`
+            line.style.height = `${tab.clientHeight}px`
         } else {
-            line.style.left = tab.offsetLeft + "px";
-            line.style.width = tab.clientWidth + "px";
+            line.style.left = `${tab.offsetLeft}px`
+            line.style.width = `${tab.clientWidth}px`
         }
 
-        let tabs = tab.parentElement.parentElement.querySelectorAll("li > span")
+        const tabs = tab.parentElement!.parentElement!.querySelectorAll("li > span")
         tabs.forEach((t: any) => {
             t.classList.remove("active")
         })
         tab.classList.add("active")
 
-        return false
+        this.content.innerHTML = "ZACK!!"
     }
 }
 
