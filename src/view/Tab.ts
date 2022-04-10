@@ -17,7 +17,7 @@
  */
 
 import { View } from "../view/View"
-import { ul, li, span, text, div } from "../util/lsx"
+import { ul, li, span, text, div, slot } from "../util/lsx"
 
 export class Tabs extends View {
     markerLine: HTMLElement
@@ -45,13 +45,12 @@ export class Tabs extends View {
                 console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
                 continue
             }
-            const panel = div()
-
+            const tab = child as Tab
             let tabLabel: HTMLElement
             tabContainer.appendChild(
                 li(
                     tabLabel = span(
-                        text(child.getAttribute("label")!) as any
+                        text(tab.getAttribute("label")!) as any
                     )
                 )
             )
@@ -59,24 +58,14 @@ export class Tabs extends View {
                 ev.stopPropagation()
                 ev.preventDefault()
                 ev.cancelBubble = true
-                this.setTab(tabLabel, panel)
+                this.setTab(tabLabel, tab)
             }
-
-            // for (let j = 0; j < child.childNodes.length; ++j) {
-            //     panel.appendChild(child.childNodes[j])
-            // }
-            while(child.childNodes.length > 0) {
-                panel.appendChild(child.childNodes[0])
-            }
-            
-            // panel.innerHTML = child.innerHTML
-            this.content.appendChild(panel)
 
             if (this.activeTab === undefined) {
                 this.activeTab = tabLabel
-                this.activePanel = panel
+                this.activePanel = tab
             } else {
-                panel.style.display = "none"
+                tab.style.display = "none"
             }
         }
 
@@ -84,7 +73,7 @@ export class Tabs extends View {
         this.attachStyle("tabs")
         this.shadowRoot!.appendChild(tabContainer)
         this.shadowRoot!.appendChild(this.markerLine = div())
-        this.shadowRoot!.appendChild(this.content)
+        this.shadowRoot!.appendChild(this.content = div(slot()))
         this.markerLine.classList.add("line")
         this.content.classList.add("content")
 
