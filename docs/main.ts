@@ -16,6 +16,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*
+
+this is the 2nd version of the table
+* stop using <table> internally...
+  => perform layout without fighting <table>'s own layout algorithm
+  => required tracking of all cell width x height makes it possible
+     to adjust table to content without flicker
+  => makes it possible to use sparse tables in case of huge datasets
+  => simplifies implementation of row/column insert/delete animation
+* stop using an input overlay
+* custom scrollbars matching the theme(?) (how do other libraries do that?)
+
+NEXT STEPS:
+[ ] row & column headers
+[ ] manually resize (also to check the performance of this layout strategy)
+
+*/
+
 import {
     TableModel, TableAdapter, View
 } from '@toad'
@@ -27,15 +45,23 @@ tableStyle.textContent = `
 :host {
     width: 200px;
     height: 200px;
+    position: relative;
+    display: inline-block;
+    border: 1px solid var(--tx-gray-300);
+    border-radius: 3px;
+    outline-offset: -2px;
+    font-family: var(--tx-font-family);
+    font-size: var(--tx-font-size);
+    background: var(--tx-gray-50);
+}
 
-  position: relative;
-  display: inline-block;
-  border: 1px solid var(--tx-gray-300);
-  border-radius: 3px;
-  outline-offset: -2px;
-  font-family: var(--tx-font-family);
-  font-size: var(--tx-font-size);
-  background: var(--tx-gray-50);
+.body {
+    overflow: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 }
 
 .body > span, .measure > span {
@@ -112,7 +138,8 @@ export class Table extends View {
         this.root = div(
             this.body = div()
         )
-        this.body.classList.add("body")
+        this.root.className = "root"
+        this.body.className = "body"
         this.measure = div()
         this.measure.classList.add("measure")
 
