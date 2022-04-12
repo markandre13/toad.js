@@ -45,6 +45,7 @@ export class TableAdapter<T extends TableModel> {
     // data is used for TypeTableModel
     // Map<model, Map<data, adapter>>
     private static modelToAdapter = new Map<new(...args: any[]) => TableModel, Map<new(...args: any[])=> any, new()=> TableAdapter<any>>>()
+
     static register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
     static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel): void
     static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel, data?: any): void
