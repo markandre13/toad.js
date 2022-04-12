@@ -44,12 +44,11 @@ export class TableAdapter<T extends TableModel> {
     // FIXME: convert the comments below into clean code
     // data is used for TypeTableModel
     // Map<model, Map<data, adapter>>
-    private static modelToAdapter = new Map<new(...args: any[]) => TableModel, Map<new(...args: any[])=> any, new()=> TableAdapter<any>>>()
+    private static modelToAdapter = new Map<new (...args: any[]) => TableModel, Map<new (...args: any[]) => any, new () => TableAdapter<any>>>()
 
-    static register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
-    static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel): void
-    static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel, data?: any): void
-    {
+    static register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new (...args: any[]) => A, model: new (...args: any[]) => C, data: new (...args: any[]) => T): void
+    static register(adapter: new () => TableAdapter<any>, model: new (...args: any[]) => TableModel): void
+    static register(adapter: new () => TableAdapter<any>, model: new (...args: any[]) => TableModel, data?: any): void {
         // console.log("TableAdapter.register() ============")
         // console.log(adapter)
         // console.log(model)
@@ -69,19 +68,19 @@ export class TableAdapter<T extends TableModel> {
         TableAdapter.modelToAdapter.clear()
     }
 
-    static lookup(model: TableModel): (new() => TableAdapter<any>) {
+    static lookup(model: TableModel): (new () => TableAdapter<any>) {
         // console.log("TableAdapter.lookup() ============")
 
         let dataType: any
-        if(model instanceof TypedTableModel) {
+        if (model instanceof TypedTableModel) {
             dataType = model.nodeClass
         } else {
             dataType = undefined
         }
-        
+
         let adapter = TableAdapter.modelToAdapter.get(Object.getPrototypeOf(model).constructor)?.get(dataType)
         if (adapter === undefined) {
-            for(let baseClass of TableAdapter.modelToAdapter.keys()) {
+            for (let baseClass of TableAdapter.modelToAdapter.keys()) {
                 if (model instanceof baseClass) {
                     adapter = TableAdapter.modelToAdapter.get(baseClass)?.get(dataType)
                     break
@@ -91,11 +90,15 @@ export class TableAdapter<T extends TableModel> {
 
         if (adapter === undefined) {
             let msg = `TableAdapter.lookup(): Did not find an adapter for model of type ${model.constructor.name}`
-            msg += `\n    Requested adapter: model=${model.constructor.name}, type=${dataType.name}\n    Available adapters:`
-            for (const [modelX, typeToAdapterX] of TableAdapter.modelToAdapter) {
-                for(const [typeX, adapterX] of typeToAdapterX) {
-                    // msg += `\n model=${model?.constructor.name}, type=${type.name}`
-                    msg += `\n        model=${modelX.name}, type=${typeX}`
+            msg += `\n    Requested adapter: model=${model.constructor.name}, type=${dataType?.name}\n    Available adapters:`
+            if (TableAdapter.modelToAdapter.size === 0) {
+                msg+=" none."
+            } else {
+                for (const [modelX, typeToAdapterX] of TableAdapter.modelToAdapter) {
+                    for (const [typeX, adapterX] of typeToAdapterX) {
+                        // msg += `\n model=${model?.constructor.name}, type=${type.name}`
+                        msg += `\n        model=${modelX.name}, type=${typeX}`
+                    }
                 }
             }
             throw Error(msg)

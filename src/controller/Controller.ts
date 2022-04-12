@@ -70,9 +70,6 @@ export class Controller {
     }
 
     registerView(modelId: string, view: View): void {
-
-        console.log(`registerView('${modelId}', ...)`)
-
         if (view.controller && view.controller !== this) {
             console.log("error: attempt to register view more than once at different controllers")
             return
