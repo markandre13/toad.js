@@ -19,7 +19,7 @@
 import {
     TableModel, TableAdapter, TableEvent, SelectionModel, View, bindModel
 } from '@toad'
-import { span, div, text } from '@toad/util/lsx'
+import { span, div } from '@toad/util/lsx'
 
 export let tableStyle = document.createElement("style")
 tableStyle.textContent = `
@@ -34,6 +34,7 @@ tableStyle.textContent = `
     background: var(--tx-gray-50);
 
     /* not sure about these */
+    /*
     width: 100%;
     width: -moz-available;
     width: -webkit-fill-available;
@@ -42,6 +43,10 @@ tableStyle.textContent = `
     height: -moz-available;
     height: -webkit-fill-available;
     height: fill-available;
+    */
+
+    height: 200px;
+    width: 200px;
 }
 
 .body {
@@ -89,22 +94,6 @@ tableStyle.textContent = `
     border-right: none;
     padding: 0 2px 0 2px;
     margin: 0;
-}
-
-/* rotate3d, transform3d /*
-/* https://www.smashingmagazine.com/2016/12/gpu-animation-doing-it-right/ */
-
-
-.body > .C1, .body > .C2, body > .C3 {
-    transform: translateX(30px);
-/*
-    animation: move 1s linear infinite;
-*/
-}
-
-@keyframes move {
-    from { transform: translateX(0); }
-    to { transform: translateX(70px); }
 }
 
 .measure {

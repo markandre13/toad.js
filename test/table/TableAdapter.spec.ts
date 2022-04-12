@@ -13,7 +13,7 @@ describe("view", function () {
                         get rowCount(): number { return 1 }
                     }
                     class FubarTableAdapter extends TableAdapter<FoobarTableModel> { }
-                    TableAdapter.register(FubarTableAdapter, FubarTableModel)
+                    TableAdapter.register(FubarTableAdapter as any, FubarTableModel)
 
                     // works when the table model is exactly the type being registered
                     const model0 = new FubarTableModel()
