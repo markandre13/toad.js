@@ -49,13 +49,18 @@ tableStyle.textContent = `
     width: 200px;
 }
 
+.body, .cols, .rows {
+    position: absolute;
+}
+
 .body {
     overflow: auto;
-    position: absolute;
-    left: 0;
-    top: 0;
     right: 0;
     bottom: 0;
+}
+
+.cols, .rows {
+    overflow: hidden;
 }
 
 /*
@@ -77,23 +82,32 @@ tableStyle.textContent = `
     border-radius: 5px;
 }
 .body::-webkit-scrollbar-track {
-    background: var(--tx-gray-200);
+    background: #1e1e1e;
 }
 .body::-webkit-scrollbar-corner {
-    background: var(--tx-gray-200);
+    background: #1e1e1e;
 }
 .body::-webkit-scrollbar-thumb {
-    background: var(--tx-gray-700);
+    background: var(--tx-gray-500);
 }
 
-.body > span, .measure > span {
+.body > span, .cols > span, .rows > span, .measure > span {
     position: absolute;
     white-space: nowrap;
-    border: solid #fff 1px;
+    border: solid 1px var(--tx-gray-200);
     border-bottom: none;
     border-right: none;
     padding: 0 2px 0 2px;
     margin: 0;
+    background-color: #080808;
+    font-weight: 400;
+}
+
+/* #0e2035 for selection background */
+
+.cols > span.head, .rows > span.head, .measure > span.head {
+    background: #1e1e1e;
+    font-weight: 600;
 }
 
 .measure {
@@ -110,6 +124,8 @@ export class Table extends View {
 
     root: HTMLDivElement
     body: HTMLDivElement
+    colHeads?: HTMLDivElement
+    rowHeads?: HTMLDivElement
     measure: HTMLDivElement
 
     constructor() {
@@ -123,6 +139,15 @@ export class Table extends View {
         this.body.className = "body"
         this.measure = div()
         this.measure.classList.add("measure")
+
+        this.body.onscroll = () => {
+            if (this.colHeads) {
+                this.colHeads.scrollLeft = this.body.scrollLeft
+            }
+            if (this.rowHeads) {
+                this.rowHeads.scrollTop = this.body.scrollTop
+            }
+          }
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
@@ -158,7 +183,7 @@ export class Table extends View {
         if (model instanceof TableModel) {
             this.model = model
             // this.model.modified.add((event: TableEvent) => { this.modelChanged(event) }, this)
-            const adapter = TableAdapter.lookup(model) as new(model: TableModel) => TableAdapter<any>
+            const adapter = TableAdapter.lookup(model) as new (model: TableModel) => TableAdapter<any>
             try {
                 this.adapter = new adapter(model)
             }
@@ -179,6 +204,42 @@ export class Table extends View {
     }
 
     prepareCells() {
+        let columnHeaders = new Array(this.model!.colCount)
+        for (let col = 0; col < this.model!.colCount; ++col) {
+            const content = this.adapter!.getColumnHead(col)
+            if (this.colHeads === undefined && content !== undefined) {
+                this.colHeads = div()
+                this.colHeads.className = "cols"
+                this.root.appendChild(this.colHeads)
+            }
+            columnHeaders[col] = content
+        }
+        if (this.colHeads) {
+            for (let col = 0; col < this.model!.colCount; ++col) {
+                const cell = span(columnHeaders[col])
+                cell.className = "head"
+                this.measure.appendChild(cell)
+            }
+        }
+
+        let rowHeaders = new Array(this.model!.rowCount)
+        for (let row = 0; row < this.model!.rowCount; ++row) {
+            const content = this.adapter!.getRowHead(row)
+            if (this.rowHeads === undefined && content !== undefined) {
+                this.rowHeads = div()
+                this.rowHeads.className = "rows"
+                this.root.appendChild(this.rowHeads)
+            }
+            rowHeaders[row] = content
+        }
+        if (this.rowHeads) {
+            for (let row = 0; row < this.model!.rowCount; ++row) {
+                const cell = span(rowHeaders[row])
+                cell.className = "head"
+                this.measure.appendChild(cell)
+            }
+        }
+
         for (let row = 0; row < this.model!.rowCount; ++row) {
             for (let col = 0; col < this.model!.colCount; ++col) {
                 const cell = span(
@@ -191,45 +252,105 @@ export class Table extends View {
     }
 
     arrangeAllMeasuredInGrid() {
-        const colInfo = Array<number>(this.model!.colCount)
-        const rowInfo = Array<number>(this.model!.rowCount)
-        colInfo.fill(0)
-        rowInfo.fill(0)
+        let idx = 0
+
+        let colHeadHeight = 0
+        const colWidth = Array<number>(this.model!.colCount)
+        if (this.colHeads) {
+            for (let col = 0; col < this.model!.colCount; ++col) {
+                const child = this.measure.children[idx++]
+                const bounds = child.getBoundingClientRect()
+                colWidth[col] = Math.ceil(bounds.width)
+                colHeadHeight = Math.max(colHeadHeight, bounds.height)
+            }
+        } else {
+            colWidth.fill(0)
+        }
+
+        let rowHeadWidth = 0
+        const rowHeight = Array<number>(this.model!.rowCount)
+        if (this.rowHeads) {
+            for (let row = 0; row < this.model!.rowCount; ++row) {
+                const child = this.measure.children[idx++]
+                const bounds = child.getBoundingClientRect()
+                rowHeight[row] = Math.ceil(bounds.height)
+                rowHeadWidth = Math.max(rowHeadWidth, bounds.width)
+            }
+        } else {
+            rowHeight.fill(0)
+        }
 
         for (let row = 0; row < this.model!.rowCount; ++row) {
-            let rowHeight = 0
+            let rh = rowHeight[row]
             for (let col = 0; col < this.model!.colCount; ++col) {
                 const child = this.measure.children[col + row * this.model!.colCount] as HTMLSpanElement
                 const bounds = child.getBoundingClientRect()
-                rowHeight = Math.max(rowHeight, bounds.height)
+                rh = Math.max(rh, bounds.height)
             }
-            rowInfo[row] = Math.ceil(rowHeight)
+            rowHeight[row] = Math.ceil(rh)
         }
 
         for (let col = 0; col < this.model!.colCount; ++col) {
-            let colWidth = 0
+            let cw = colWidth[col]
             for (let row = 0; row < this.model!.rowCount; ++row) {
                 const child = this.measure.children[col + row * this.model!.colCount] as HTMLSpanElement
                 const bounds = child.getBoundingClientRect()
-                colWidth = Math.max(colWidth, bounds.width)
+                cw = Math.max(cw, bounds.width)
             }
-            colInfo[col] = Math.ceil(colWidth)
+            colWidth[col] = Math.ceil(cw)
         }
 
-        let y = 0
+        let x, y
+        if (this.colHeads) {
+            x = 0
+            for (let col = 0; col < this.model!.colCount; ++col) {
+                const child = this.measure.children[0] as HTMLSpanElement
+                child.style.left = `${x}px`
+                child.style.top = `0px`
+                child.style.width = `${colWidth[col]}px`
+                child.style.height = `${colHeadHeight}px`
+                this.colHeads.appendChild(child)
+                x += colWidth[col]
+            }
+            this.colHeads.style.left = `${rowHeadWidth}px`
+            this.colHeads.style.top = `0px`
+            this.colHeads.style.width = `100%`
+            this.colHeads.style.height = `${colHeadHeight}px`
+        }
+
+        if (this.rowHeads) {
+            y = 0
+            for (let row = 0; row < this.model!.rowCount; ++row) {
+                const child = this.measure.children[0] as HTMLSpanElement
+                child.style.left = `0px`
+                child.style.top = `${y}px`
+                child.style.width = `${rowHeadWidth}px`
+                child.style.height = `${rowHeight[row]}px`
+                this.rowHeads.appendChild(child)
+                y += rowHeight[row]
+            }
+            this.rowHeads.style.left = `0px`
+            this.rowHeads.style.top = `${colHeadHeight}px`
+            this.rowHeads.style.width = `${rowHeadWidth}px`
+            this.rowHeads.style.height = `100%`
+        }
+
+        y = 0
         for (let row = 0; row < this.model!.rowCount; ++row) {
-            let x = 0
+            x = 0
             for (let col = 0; col < this.model!.colCount; ++col) {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`
-                child.style.width = `${colInfo[col]}px`
-                child.style.height = `${rowInfo[row]}px`
+                child.style.width = `${colWidth[col]}px`
+                child.style.height = `${rowHeight[row]}px`
                 this.body.appendChild(child)
-                x += colInfo[col]
+                x += colWidth[col]
             }
-            y += rowInfo[row]
+            y += rowHeight[row]
         }
+        this.body.style.left = `${rowHeadWidth}px`
+        this.body.style.top = `${colHeadHeight}px`
     }
 
 }

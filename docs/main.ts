@@ -128,6 +128,25 @@ class MyAdapter extends TableAdapter<MyModel> {
         super(model)
     }
 
+    // getColumnHead(col: number): Node | undefined { return undefined }
+    // getRowHead(row: number): Node | undefined { return undefined }
+    // getDisplayCell(col: number, row: number): Node | Node[] | undefined { return undefined }
+    // getEditorCell(col: number, row: number): Node | undefined { return undefined }
+
+    override getColumnHead(col: number): Node | undefined {
+        // return text(String.fromCharCode(col))
+        switch(col) {
+            case 0: return text("Name")
+            case 1: return text("Government")
+            case 2: return text("Economy")
+            case 3: return text("Species")
+        }
+    }
+
+    override getRowHead(row: number): Node | undefined {
+        return text(`${row+1}`)
+    }
+
     override getDisplayCell(col: number, row: number) {
         return text(
             this.model!.get(col, row)
