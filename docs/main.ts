@@ -29,8 +29,8 @@ this is the 2nd version of the table
 * custom scrollbars matching the theme(?) (how do other libraries do that?)
 
 NEXT STEPS:
-[ ] let Table2 use model & adapter similar to the old table
-[ ] row & column headers
+[X] let Table2 use model & adapter similar to the old table
+[X] row & column headers
 [ ] grab between col headers to get to initiate a resize
 [ ] to resize a column with CSS
     => plan:

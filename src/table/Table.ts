@@ -204,6 +204,7 @@ export class Table extends View {
     }
 
     prepareCells() {
+        // column headers
         let columnHeaders = new Array(this.model!.colCount)
         for (let col = 0; col < this.model!.colCount; ++col) {
             const content = this.adapter!.getColumnHead(col)
@@ -222,6 +223,7 @@ export class Table extends View {
             }
         }
 
+        // row headers
         let rowHeaders = new Array(this.model!.rowCount)
         for (let row = 0; row < this.model!.rowCount; ++row) {
             const content = this.adapter!.getRowHead(row)
@@ -240,6 +242,7 @@ export class Table extends View {
             }
         }
 
+        // body
         for (let row = 0; row < this.model!.rowCount; ++row) {
             for (let col = 0; col < this.model!.colCount; ++col) {
                 const cell = span(
@@ -254,6 +257,7 @@ export class Table extends View {
     arrangeAllMeasuredInGrid() {
         let idx = 0
 
+        // calculate column widths and column header height
         let colHeadHeight = 0
         const colWidth = Array<number>(this.model!.colCount)
         if (this.colHeads) {
@@ -267,6 +271,17 @@ export class Table extends View {
             colWidth.fill(0)
         }
 
+        for (let col = 0; col < this.model!.colCount; ++col) {
+            let cw = colWidth[col]
+            for (let row = 0; row < this.model!.rowCount; ++row) {
+                const child = this.measure.children[col + row * this.model!.colCount] as HTMLSpanElement
+                const bounds = child.getBoundingClientRect()
+                cw = Math.max(cw, bounds.width)
+            }
+            colWidth[col] = Math.ceil(cw)
+        }
+
+        // calculate row widths and row header width
         let rowHeadWidth = 0
         const rowHeight = Array<number>(this.model!.rowCount)
         if (this.rowHeads) {
@@ -290,16 +305,7 @@ export class Table extends View {
             rowHeight[row] = Math.ceil(rh)
         }
 
-        for (let col = 0; col < this.model!.colCount; ++col) {
-            let cw = colWidth[col]
-            for (let row = 0; row < this.model!.rowCount; ++row) {
-                const child = this.measure.children[col + row * this.model!.colCount] as HTMLSpanElement
-                const bounds = child.getBoundingClientRect()
-                cw = Math.max(cw, bounds.width)
-            }
-            colWidth[col] = Math.ceil(cw)
-        }
-
+        // place column heads
         let x, y
         if (this.colHeads) {
             x = 0
@@ -312,12 +318,22 @@ export class Table extends View {
                 this.colHeads.appendChild(child)
                 x += colWidth[col]
             }
+
+            const filler = span()
+            filler.className = "head"
+            filler.style.left = `${x}px`
+            filler.style.top = `0`
+            filler.style.width = `256px`
+            filler.style.height = `${colHeadHeight}px`
+            this.colHeads.appendChild(filler)
+
             this.colHeads.style.left = `${rowHeadWidth}px`
-            this.colHeads.style.top = `0px`
-            this.colHeads.style.width = `100%`
+            this.colHeads.style.top = `0`
+            this.colHeads.style.right = `0`
             this.colHeads.style.height = `${colHeadHeight}px`
         }
 
+        // place row heads
         if (this.rowHeads) {
             y = 0
             for (let row = 0; row < this.model!.rowCount; ++row) {
@@ -329,12 +345,22 @@ export class Table extends View {
                 this.rowHeads.appendChild(child)
                 y += rowHeight[row]
             }
+
+            const filler = span()
+            filler.className = "head"
+            filler.style.left = `0px`
+            filler.style.top = `${y}px`
+            filler.style.width = `${rowHeadWidth}px`
+            filler.style.height = `256px`
+            this.rowHeads.appendChild(filler)
+
             this.rowHeads.style.left = `0px`
             this.rowHeads.style.top = `${colHeadHeight}px`
             this.rowHeads.style.width = `${rowHeadWidth}px`
-            this.rowHeads.style.height = `100%`
+            this.rowHeads.style.bottom = `0`
         }
 
+        // place body cells
         y = 0
         for (let row = 0; row < this.model!.rowCount; ++row) {
             x = 0
