@@ -143,6 +143,9 @@ export class Table extends View {
     constructor() {
         super()
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
+        this.handleDown = this.handleDown.bind(this)
+        this.handleMove = this.handleMove.bind(this)
+        this.handleUp = this.handleUp.bind(this)
 
         this.root = div(
             this.body = div()
@@ -354,26 +357,9 @@ export class Table extends View {
                 handle.style.top = `0px`
                 handle.style.width = `5px`
                 handle.style.height = `${colHeadHeight}px`
-                let x0 = x
-                let delta: number | undefined = undefined
-                handle.onpointerdown = (ev: PointerEvent) => {
-                    ev.preventDefault()
-                    handle.setPointerCapture(ev.pointerId)
-                    handle.style.backgroundColor = "#f00"
-                    handle.style.opacity = "1"
-                    delta = ev.clientX - x0
-                }
-                handle.onpointermove = (ev: PointerEvent) => {
-                    if (delta !== undefined) {
-                        handle.style.left = `${ev.clientX - delta}px`
-                        x0 = ev.clientX - delta
-                    }
-                }
-                handle.onpointerup = (ev: PointerEvent) => {
-                    if (delta !== undefined) {
-                        handle.style.opacity = "0"
-                    }
-                }
+                handle.onpointerdown = this.handleDown
+                handle.onpointermove = this.handleMove
+                handle.onpointerup = this.handleUp
                 this.colHeads.appendChild(handle)
             }
         }
@@ -422,6 +408,31 @@ export class Table extends View {
         }
         this.body.style.left = `${rowHeadWidth}px`
         this.body.style.top = `${colHeadHeight}px`
+    }
+
+    handle?: HTMLSpanElement
+    delta?: number
+
+    handleDown(ev: PointerEvent) {
+        ev.preventDefault()
+        this.handle = ev.target as HTMLSpanElement
+
+        this.handle.setPointerCapture(ev.pointerId)
+        this.handle.style.backgroundColor = "#f00"
+        this.handle.style.opacity = "1"
+        const left = this.handle.style.left
+        this.delta = ev.clientX - parseFloat(left.substring(0, left.length - 2))
+    }
+    handleMove(ev: PointerEvent) {
+        if (this.delta !== undefined) {
+            this.handle!.style.left = `${ev.clientX - this.delta}px`
+        }
+    }
+    handleUp(ev: PointerEvent) {
+        if (this.delta !== undefined) {
+            this.handle!.style.left = `${ev.clientX - this.delta}px`
+            this.handle!.style.opacity = "0"
+        }
     }
 
 }
