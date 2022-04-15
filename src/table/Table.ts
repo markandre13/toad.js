@@ -102,6 +102,18 @@ tableStyle.textContent = `
     background-color: #080808;
     font-weight: 400;
 }
+.cols > span.handle, .rows > span.handle {
+    padding: 0;
+    border: 0 none;
+    opacity: 0;
+}
+
+.cols > span.handle {
+    cursor: col-resize;
+}
+.rows > span.handle {
+    cursor: row-resize;
+}
 
 /* #0e2035 for selection background */
 
@@ -331,6 +343,39 @@ export class Table extends View {
             this.colHeads.style.top = `0`
             this.colHeads.style.right = `0`
             this.colHeads.style.height = `${colHeadHeight}px`
+
+            // if resizeableColumns
+            x = -2
+            for (let col = 0; col < this.model!.colCount - 1; ++col) {
+                x += colWidth[col]
+                const handle = span()
+                handle.className = "handle"
+                handle.style.left = `${x}px`
+                handle.style.top = `0px`
+                handle.style.width = `5px`
+                handle.style.height = `${colHeadHeight}px`
+                let x0 = x
+                let delta: number | undefined = undefined
+                handle.onpointerdown = (ev: PointerEvent) => {
+                    ev.preventDefault()
+                    handle.setPointerCapture(ev.pointerId)
+                    handle.style.backgroundColor = "#f00"
+                    handle.style.opacity = "1"
+                    delta = ev.clientX - x0
+                }
+                handle.onpointermove = (ev: PointerEvent) => {
+                    if (delta !== undefined) {
+                        handle.style.left = `${ev.clientX - delta}px`
+                        x0 = ev.clientX - delta
+                    }
+                }
+                handle.onpointerup = (ev: PointerEvent) => {
+                    if (delta !== undefined) {
+                        handle.style.opacity = "0"
+                    }
+                }
+                this.colHeads.appendChild(handle)
+            }
         }
 
         // place row heads
