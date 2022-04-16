@@ -143,6 +143,8 @@ export class Table extends View {
     protected handle?: HTMLSpanElement // if set, the handle between the column/row headers currently grabbed/moved
     protected delta0?: number // helper variable while moving something, e.g. the handle
     protected delta1?: number // helper variable while moving something, e.g. the handle
+    protected delta2?: number // helper variable while moving something, e.g. the handle
+    protected delta3?: number // helper variable while moving something, e.g. the handle
     protected splitBody?: HTMLDivElement // if set, left/lower half of body being moved
 
     constructor() {
@@ -422,35 +424,48 @@ export class Table extends View {
     protected handleDown(ev: PointerEvent) {
         ev.preventDefault()
         this.handle = ev.target as HTMLSpanElement
+        const h = this.getHandleId()
 
         this.handle.setPointerCapture(ev.pointerId)
         this.handle.style.backgroundColor = "#f00"
         this.handle.style.opacity = "1"
-        const left = this.handle.style.left
-        this.delta0 = ev.clientX - parseFloat(left.substring(0, left.length - 2))
-        this.delta1 = ev.clientX
+        const leftOfHandle = this.handle.style.left
+
+        this.delta3 = ev.clientX
+
+        this.delta0 = ev.clientX - parseFloat(leftOfHandle.substring(0, leftOfHandle.length - 2))   // delta for handle
+
+        const leftOfBody = this.body.style.left
+        const x = parseFloat(leftOfBody.substring(0, leftOfBody.length - 2)) // incooperate this into delta1
+        this.delta1 = ev.clientX - x                                                   // delta for split body
+
+        const widthOfColumn = (this.colHeads!.children[h-1] as HTMLSpanElement).style.width
+        this.delta2 = ev.clientX - parseFloat(widthOfColumn.substring(0, widthOfColumn.length - 2))// delta for resized column's width
+
         this.splitVertical()
     }
     protected handleMove(ev: PointerEvent) {
         if (this.handle !== undefined) {
-            const left = this.body.style.left
-            const x = parseFloat(left.substring(0, left.length - 2))
-
             this.handle!.style.left = `${ev.clientX - this.delta0!}px`
-            this.splitBody!.style.left = `${ev.clientX - this.delta1! + x}px`
+            this.splitBody!.style.left = `${ev.clientX - this.delta1!}px`
+            const h = this.getHandleId();
+            (this.colHeads!.children[h-1] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
+            for(let row=0; row<this.model!.rowCount; ++row) {
+                (this.body.children[h-1 + row * h] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
+            }
         }
     }
     protected handleUp(ev: PointerEvent) {
         if (this.handle !== undefined) {
-            this.handle!.style.left = `${ev.clientX - this.delta0!}px`
-            this.splitBody!.style.left = `${ev.clientX - this.delta1!}px`
+            this.handleMove(ev)
             this.handle!.style.opacity = "0"
-            this.joinVertical()
+            this.joinVertical(ev.clientX - this.delta3!)
             this.handle = undefined
         }
     }
-
+    
     // create 'splitBody' and move the right half of 'body' into it to begin animation
+    // TODO: split/join only the visible area
     splitVertical() {
         // initialize splitBody
         this.splitBody = div()
@@ -474,7 +489,7 @@ export class Table extends View {
     }
 
     // move 'splitBody' back into 'body' to end animation
-    joinVertical() {
+    joinVertical(delta: number) {
         const handle = this.getHandleId()
         const splitBodyWidth = this.model!.colCount - handle
         let idx = handle
@@ -486,7 +501,11 @@ export class Table extends View {
                 beforeChild = null
             }
             for (let i = 0; i < splitBodyWidth; ++i) {
-                this.body.insertBefore(this.splitBody!.children[0], beforeChild)
+                const cell = this.splitBody!.children[0] as HTMLSpanElement
+                const leftOfCell = cell.style.left
+                const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
+                cell.style.left = `${left + delta}px`
+                this.body.insertBefore(cell, beforeChild)
             }
             idx += this.model!.colCount
         }
