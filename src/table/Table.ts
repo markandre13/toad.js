@@ -130,15 +130,20 @@ tableStyle.textContent = `
 
 export class Table extends View {
 
-    model?: TableModel
-    selection?: SelectionModel
-    adapter?: TableAdapter<any>
+    protected model?: TableModel
+    protected selection?: SelectionModel
+    protected adapter?: TableAdapter<any>
 
-    root: HTMLDivElement
-    body: HTMLDivElement
-    colHeads?: HTMLDivElement
-    rowHeads?: HTMLDivElement
-    measure: HTMLDivElement
+    protected root: HTMLDivElement // div containing everything
+    protected body: HTMLDivElement // the table body
+    protected colHeads?: HTMLDivElement // if set, div containing the column heads
+    protected rowHeads?: HTMLDivElement // if set, div containign the row heads
+    protected measure: HTMLDivElement // invisible div used to measure cells
+
+    protected handle?: HTMLSpanElement // if set, the handle between the column/row headers currently grabbed/moved
+    protected delta0?: number // helper variable while moving something, e.g. the handle
+    protected delta1?: number // helper variable while moving something, e.g. the handle
+    protected splitBody?: HTMLDivElement // if set, left/lower half of body being moved
 
     constructor() {
         super()
@@ -162,7 +167,7 @@ export class Table extends View {
             if (this.rowHeads) {
                 this.rowHeads.scrollTop = this.body.scrollTop
             }
-          }
+        }
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
@@ -410,10 +415,11 @@ export class Table extends View {
         this.body.style.top = `${colHeadHeight}px`
     }
 
-    handle?: HTMLSpanElement
-    delta?: number
+    //
+    // Column/Row Resize
+    //
 
-    handleDown(ev: PointerEvent) {
+    protected handleDown(ev: PointerEvent) {
         ev.preventDefault()
         this.handle = ev.target as HTMLSpanElement
 
@@ -421,18 +427,81 @@ export class Table extends View {
         this.handle.style.backgroundColor = "#f00"
         this.handle.style.opacity = "1"
         const left = this.handle.style.left
-        this.delta = ev.clientX - parseFloat(left.substring(0, left.length - 2))
+        this.delta0 = ev.clientX - parseFloat(left.substring(0, left.length - 2))
+        this.delta1 = ev.clientX
+        this.splitVertical()
     }
-    handleMove(ev: PointerEvent) {
-        if (this.delta !== undefined) {
-            this.handle!.style.left = `${ev.clientX - this.delta}px`
+    protected handleMove(ev: PointerEvent) {
+        if (this.handle !== undefined) {
+            const left = this.body.style.left
+            const x = parseFloat(left.substring(0, left.length - 2))
+
+            this.handle!.style.left = `${ev.clientX - this.delta0!}px`
+            this.splitBody!.style.left = `${ev.clientX - this.delta1! + x}px`
         }
     }
-    handleUp(ev: PointerEvent) {
-        if (this.delta !== undefined) {
-            this.handle!.style.left = `${ev.clientX - this.delta}px`
+    protected handleUp(ev: PointerEvent) {
+        if (this.handle !== undefined) {
+            this.handle!.style.left = `${ev.clientX - this.delta0!}px`
+            this.splitBody!.style.left = `${ev.clientX - this.delta1!}px`
             this.handle!.style.opacity = "0"
+            this.joinVertical()
+            this.handle = undefined
         }
+    }
+
+    // create 'splitBody' and move the right half of 'body' into it to begin animation
+    splitVertical() {
+        // initialize splitBody
+        this.splitBody = div()
+        this.splitBody.className = "body"
+        this.splitBody.style.left = this.body.style.left
+        this.splitBody.style.top = this.body.style.top
+        this.root.appendChild(this.splitBody)
+
+        // move cells into splitBody
+        const handle = this.getHandleId()
+        const bodyWidth = handle
+        const splitBodyWidth = this.model!.colCount - handle
+        let idx = handle
+
+        for (let row = 0; row < this.model!.rowCount; ++row) {
+            for (let i = 0; i < splitBodyWidth; ++i) {
+                this.splitBody.appendChild(this.body.children[idx])
+            }
+            idx += bodyWidth
+        }
+    }
+
+    // move 'splitBody' back into 'body' to end animation
+    joinVertical() {
+        const handle = this.getHandleId()
+        const splitBodyWidth = this.model!.colCount - handle
+        let idx = handle
+        for (let row = 0; row < this.model!.rowCount; ++row) {
+            let beforeChild
+            if (idx < this.body.children.length) {
+                beforeChild = this.body.children[idx]
+            } else {
+                beforeChild = null
+            }
+            for (let i = 0; i < splitBodyWidth; ++i) {
+                this.body.insertBefore(this.splitBody!.children[0], beforeChild)
+            }
+            idx += this.model!.colCount
+        }
+
+        this.root.removeChild(this.splitBody!)
+        this.splitBody = undefined
+    }
+
+    getHandleId() {
+        for (let i = this.model!.colCount + 1; i < this.colHeads!.children.length; ++i) {
+            if (this.colHeads!.children[i] === this.handle) {
+                return i - this.model!.colCount
+            }
+        }
+        throw Error("yikes")
     }
 
 }
