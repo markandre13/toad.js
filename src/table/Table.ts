@@ -17,7 +17,7 @@
  */
 
 import {
-    TableModel, TableAdapter, TableEvent, SelectionModel, View, bindModel
+    TableModel, TableAdapter, TableEvent, SelectionModel, View
 } from '@toad'
 import { span, div } from '@toad/util/lsx'
 
@@ -51,6 +51,11 @@ tableStyle.textContent = `
 
 .body, .cols, .rows {
     position: absolute;
+}
+
+.cols {
+    right: 0;
+    top: 0;
 }
 
 .body {
@@ -105,7 +110,9 @@ tableStyle.textContent = `
 .cols > span.handle, .rows > span.handle {
     padding: 0;
     border: 0 none;
-    opacity: 0;
+    opacity: 1;
+
+    background-color: #08f;
 }
 
 .cols > span.handle {
@@ -137,14 +144,19 @@ export class Table extends View {
     protected root: HTMLDivElement // div containing everything
     protected body: HTMLDivElement // the table body
     protected colHeads?: HTMLDivElement // if set, div containing the column heads
+    protected colHandles?: HTMLDivElement
     protected rowHeads?: HTMLDivElement // if set, div containign the row heads
+    protected rowHandles?: HTMLDivElement
     protected measure: HTMLDivElement // invisible div used to measure cells
 
+    // for column/row resize
     protected handle?: HTMLSpanElement // if set, the handle between the column/row headers currently grabbed/moved
+    protected handleId?: number
     protected delta0?: number // helper variable while moving something, e.g. the handle
     protected delta1?: number // helper variable while moving something, e.g. the handle
     protected delta2?: number // helper variable while moving something, e.g. the handle
     protected delta3?: number // helper variable while moving something, e.g. the handle
+    protected splitHead?: HTMLDivElement
     protected splitBody?: HTMLDivElement // if set, left/lower half of body being moved
 
     constructor() {
@@ -234,6 +246,9 @@ export class Table extends View {
                 this.colHeads = div()
                 this.colHeads.className = "cols"
                 this.root.appendChild(this.colHeads)
+                this.colHandles = div()
+                this.colHandles.className = "cols"
+                this.root.appendChild(this.colHandles)
             }
             columnHeaders[col] = content
         }
@@ -253,6 +268,9 @@ export class Table extends View {
                 this.rowHeads = div()
                 this.rowHeads.className = "rows"
                 this.root.appendChild(this.rowHeads)
+                this.rowHandles = div()
+                this.rowHandles.className = "cols"
+                this.root.appendChild(this.rowHandles)
             }
             rowHeaders[row] = content
         }
@@ -350,9 +368,9 @@ export class Table extends View {
             this.colHeads.appendChild(filler)
 
             this.colHeads.style.left = `${rowHeadWidth}px`
-            this.colHeads.style.top = `0`
-            this.colHeads.style.right = `0`
             this.colHeads.style.height = `${colHeadHeight}px`
+            this.colHandles!.style.left = `${rowHeadWidth}px`
+            this.colHandles!.style.height = `${colHeadHeight}px`
 
             // if resizeableColumns
             x = -2
@@ -367,7 +385,7 @@ export class Table extends View {
                 handle.onpointerdown = this.handleDown
                 handle.onpointermove = this.handleMove
                 handle.onpointerup = this.handleUp
-                this.colHeads.appendChild(handle)
+                this.colHandles!.appendChild(handle)
             }
         }
 
@@ -424,11 +442,11 @@ export class Table extends View {
     protected handleDown(ev: PointerEvent) {
         ev.preventDefault()
         this.handle = ev.target as HTMLSpanElement
-        const h = this.getHandleId()
+        this.handleId = this.xgetHandleId()
 
         this.handle.setPointerCapture(ev.pointerId)
-        this.handle.style.backgroundColor = "#f00"
-        this.handle.style.opacity = "1"
+        // this.handle.style.backgroundColor = "#f00"
+        // this.handle.style.opacity = "1"
         const leftOfHandle = this.handle.style.left
 
         this.delta3 = ev.clientX
@@ -439,16 +457,18 @@ export class Table extends View {
         const x = parseFloat(leftOfBody.substring(0, leftOfBody.length - 2)) // incooperate this into delta1
         this.delta1 = ev.clientX - x                                                   // delta for split body
 
-        const widthOfColumn = (this.colHeads!.children[h-1] as HTMLSpanElement).style.width
+        const widthOfColumn = (this.colHeads!.children[this.handleId-1] as HTMLSpanElement).style.width
         this.delta2 = ev.clientX - parseFloat(widthOfColumn.substring(0, widthOfColumn.length - 2))// delta for resized column's width
 
         this.splitVertical()
     }
     protected handleMove(ev: PointerEvent) {
+        // return
         if (this.handle !== undefined) {
             this.handle!.style.left = `${ev.clientX - this.delta0!}px`
+            this.splitHead!.style.left = `${ev.clientX - this.delta1!}px`
             this.splitBody!.style.left = `${ev.clientX - this.delta1!}px`
-            const h = this.getHandleId();
+            const h = this.handleId!;
             (this.colHeads!.children[h-1] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
             for(let row=0; row<this.model!.rowCount; ++row) {
                 (this.body.children[h-1 + row * h] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
@@ -456,9 +476,10 @@ export class Table extends View {
         }
     }
     protected handleUp(ev: PointerEvent) {
+        // return
         if (this.handle !== undefined) {
             this.handleMove(ev)
-            this.handle!.style.opacity = "0"
+            // this.handle!.style.opacity = "0"
             this.joinVertical(ev.clientX - this.delta3!)
             this.handle = undefined
         }
@@ -467,6 +488,13 @@ export class Table extends View {
     // create 'splitBody' and move the right half of 'body' into it to begin animation
     // TODO: split/join only the visible area
     splitVertical() {
+        // initialize splitHead
+        this.splitHead = div()
+        this.splitHead.className = "cols"
+        this.splitHead.style.left = this.colHeads!.style.left
+        this.splitHead.style.height = this.colHeads!.style.height
+        this.root.appendChild(this.splitHead)
+
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "body"
@@ -474,11 +502,15 @@ export class Table extends View {
         this.splitBody.style.top = this.body.style.top
         this.root.appendChild(this.splitBody)
 
-        // move cells into splitBody
-        const handle = this.getHandleId()
+        // move cells into splitHead and splitBody
+        const handle = this.handleId!
         const bodyWidth = handle
         const splitBodyWidth = this.model!.colCount - handle
         let idx = handle
+
+        for (let i = 0; i < splitBodyWidth; ++i) {
+            this.splitHead.appendChild(this.colHeads!.children[idx])
+        }
 
         for (let row = 0; row < this.model!.rowCount; ++row) {
             for (let i = 0; i < splitBodyWidth; ++i) {
@@ -490,9 +522,29 @@ export class Table extends View {
 
     // move 'splitBody' back into 'body' to end animation
     joinVertical(delta: number) {
-        const handle = this.getHandleId()
+        const handle = this.handleId!
         const splitBodyWidth = this.model!.colCount - handle
         let idx = handle
+
+        const filler = this.colHeads!.children[this.colHeads!.children.length-1] as HTMLSpanElement
+        for (let i = 0; i < splitBodyWidth; ++i) {
+            const cell = this.splitHead!.children[0] as HTMLSpanElement
+            const leftOfCell = cell.style.left
+            const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
+            cell.style.left = `${left + delta}px`
+            this.colHeads!.insertBefore(cell, filler)
+        }
+        const fillerLeft = filler.style.left
+        const left = parseFloat(fillerLeft.substring(0, fillerLeft.length - 2))
+        filler.style.left = `${left + delta}px`
+        // re-align handles too!
+        for (let i = idx; i < this.model!.colCount-1; ++i) {
+            const cell = this.colHandles!.children[i] as HTMLSpanElement
+            const leftOfCell = cell.style.left
+            const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
+            cell.style.left = `${left + delta}px`
+        }
+        
         for (let row = 0; row < this.model!.rowCount; ++row) {
             let beforeChild
             if (idx < this.body.children.length) {
@@ -510,14 +562,16 @@ export class Table extends View {
             idx += this.model!.colCount
         }
 
+        this.root.removeChild(this.splitHead!)
+        this.splitHead = undefined
         this.root.removeChild(this.splitBody!)
         this.splitBody = undefined
     }
 
-    getHandleId() {
-        for (let i = this.model!.colCount + 1; i < this.colHeads!.children.length; ++i) {
-            if (this.colHeads!.children[i] === this.handle) {
-                return i - this.model!.colCount
+    xgetHandleId() {
+        for (let i = 1; i < this.model!.colCount; ++i) {
+            if (this.colHandles!.children[i-1] === this.handle) {
+                return i
             }
         }
         throw Error("yikes")
