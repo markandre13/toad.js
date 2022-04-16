@@ -31,14 +31,28 @@ this is the 2nd version of the table
 NEXT STEPS:
 [X] let Table2 use model & adapter similar to the old table
 [X] row & column headers
-[ ] grab between col headers to get to initiate a resize
-[ ] to resize a column with CSS
+[X] grab between col headers to get to initiate a resize
+[X] to resize a column with CSS
     => plan:
     * once when starting the animation
       * put the right half into a div/span which we'll then translate
       * extend the width of the left column to have row lines in the background
     * then just transform: translateX the right div/span
+[ ] expand last column (instead of filler?)
+[ ] scrollbar should be stable during resize
+[ ] resize column when body is scrolled
+[ ] refactor & add tests
+[ ] implement minumum column size (eg. 8px?)
+[ ] implement the same thing for rows
+[ ] use it to implement insert/remove row animation
+[ ] caret
+[ ] scroll to caret
+[ ] tree
 
+later
+[ ] sort
+[ ] filter
+[ ] move columns (display only/model)
 */
 
 import { text } from '@toad/util/lsx'

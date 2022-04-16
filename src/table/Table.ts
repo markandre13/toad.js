@@ -141,12 +141,12 @@ export class Table extends View {
     protected selection?: SelectionModel
     protected adapter?: TableAdapter<any>
 
-    protected root: HTMLDivElement // div containing everything
-    protected body: HTMLDivElement // the table body
-    protected colHeads?: HTMLDivElement // if set, div containing the column heads
-    protected colHandles?: HTMLDivElement
+    protected root: HTMLDivElement // div containing everything else
+    protected body: HTMLDivElement
+    protected colHeads?: HTMLDivElement
+    protected colResizeHandles?: HTMLDivElement
     protected rowHeads?: HTMLDivElement // if set, div containign the row heads
-    protected rowHandles?: HTMLDivElement
+    protected rowResizeHandles?: HTMLDivElement
     protected measure: HTMLDivElement // invisible div used to measure cells
 
     // for column/row resize
@@ -177,9 +177,12 @@ export class Table extends View {
         this.body.onscroll = () => {
             if (this.colHeads) {
                 this.colHeads.scrollLeft = this.body.scrollLeft
+                this.colResizeHandles!.scrollLeft = this.body.scrollLeft
+                // console.log(`colResizeHandles.scrollLeft=${this.colResizeHandles!.scrollLeft} (${this.body.scrollLeft})`)
             }
             if (this.rowHeads) {
                 this.rowHeads.scrollTop = this.body.scrollTop
+                this.rowResizeHandles!.scrollTop = this.body.scrollTop
             }
         }
 
@@ -246,9 +249,9 @@ export class Table extends View {
                 this.colHeads = div()
                 this.colHeads.className = "cols"
                 this.root.appendChild(this.colHeads)
-                this.colHandles = div()
-                this.colHandles.className = "cols"
-                this.root.appendChild(this.colHandles)
+                this.colResizeHandles = div()
+                this.colResizeHandles.className = "cols"
+                this.root.appendChild(this.colResizeHandles)
             }
             columnHeaders[col] = content
         }
@@ -268,9 +271,9 @@ export class Table extends View {
                 this.rowHeads = div()
                 this.rowHeads.className = "rows"
                 this.root.appendChild(this.rowHeads)
-                this.rowHandles = div()
-                this.rowHandles.className = "cols"
-                this.root.appendChild(this.rowHandles)
+                this.rowResizeHandles = div()
+                this.rowResizeHandles.className = "rows"
+                this.root.appendChild(this.rowResizeHandles)
             }
             rowHeaders[row] = content
         }
@@ -359,7 +362,7 @@ export class Table extends View {
                 x += colWidth[col]
             }
 
-            const filler = span()
+            let filler = span()
             filler.className = "head"
             filler.style.left = `${x}px`
             filler.style.top = `0`
@@ -369,12 +372,12 @@ export class Table extends View {
 
             this.colHeads.style.left = `${rowHeadWidth}px`
             this.colHeads.style.height = `${colHeadHeight}px`
-            this.colHandles!.style.left = `${rowHeadWidth}px`
-            this.colHandles!.style.height = `${colHeadHeight}px`
+            this.colResizeHandles!.style.left = `${rowHeadWidth}px`
+            this.colResizeHandles!.style.height = `${colHeadHeight}px`
 
             // if resizeableColumns
             x = -2
-            for (let col = 0; col < this.model!.colCount - 1; ++col) {
+            for (let col = 0; col < this.model!.colCount-1; ++col) {
                 x += colWidth[col]
                 const handle = span()
                 handle.className = "handle"
@@ -385,8 +388,17 @@ export class Table extends View {
                 handle.onpointerdown = this.handleDown
                 handle.onpointermove = this.handleMove
                 handle.onpointerup = this.handleUp
-                this.colHandles!.appendChild(handle)
+                this.colResizeHandles!.appendChild(handle)
             }
+
+            filler = span()
+            x += colWidth[this.model!.colCount-1]
+            filler.className = "head"
+            filler.style.left = `${x}px`
+            filler.style.top = `0`
+            filler.style.width = `256px`
+            filler.style.height = `${colHeadHeight}px`
+            this.colResizeHandles!.appendChild(filler)
         }
 
         // place row heads
@@ -442,7 +454,7 @@ export class Table extends View {
     protected handleDown(ev: PointerEvent) {
         ev.preventDefault()
         this.handle = ev.target as HTMLSpanElement
-        this.handleId = this.xgetHandleId()
+        this.handleId = this.getHandleId()
 
         this.handle.setPointerCapture(ev.pointerId)
         // this.handle.style.backgroundColor = "#f00"
@@ -457,7 +469,7 @@ export class Table extends View {
         const x = parseFloat(leftOfBody.substring(0, leftOfBody.length - 2)) // incooperate this into delta1
         this.delta1 = ev.clientX - x                                                   // delta for split body
 
-        const widthOfColumn = (this.colHeads!.children[this.handleId-1] as HTMLSpanElement).style.width
+        const widthOfColumn = (this.colHeads!.children[this.handleId - 1] as HTMLSpanElement).style.width
         this.delta2 = ev.clientX - parseFloat(widthOfColumn.substring(0, widthOfColumn.length - 2))// delta for resized column's width
 
         this.splitVertical()
@@ -469,9 +481,9 @@ export class Table extends View {
             this.splitHead!.style.left = `${ev.clientX - this.delta1!}px`
             this.splitBody!.style.left = `${ev.clientX - this.delta1!}px`
             const h = this.handleId!;
-            (this.colHeads!.children[h-1] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
-            for(let row=0; row<this.model!.rowCount; ++row) {
-                (this.body.children[h-1 + row * h] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
+            (this.colHeads!.children[h - 1] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
+            for (let row = 0; row < this.model!.rowCount; ++row) {
+                (this.body.children[h - 1 + row * h] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
             }
         }
     }
@@ -484,7 +496,7 @@ export class Table extends View {
             this.handle = undefined
         }
     }
-    
+
     // create 'splitBody' and move the right half of 'body' into it to begin animation
     // TODO: split/join only the visible area
     splitVertical() {
@@ -500,6 +512,14 @@ export class Table extends View {
         this.splitBody.className = "body"
         this.splitBody.style.left = this.body.style.left
         this.splitBody.style.top = this.body.style.top
+
+        setTimeout(() => {
+            this.splitHead!.scrollTop = this.colHeads!.scrollTop
+            this.splitHead!.scrollLeft = this.colHeads!.scrollLeft
+            this.splitBody!.scrollLeft = this.body.scrollLeft
+            this.splitBody!.scrollTop = this.body.scrollTop
+        }, 0)
+
         this.root.appendChild(this.splitBody)
 
         // move cells into splitHead and splitBody
@@ -526,7 +546,7 @@ export class Table extends View {
         const splitBodyWidth = this.model!.colCount - handle
         let idx = handle
 
-        const filler = this.colHeads!.children[this.colHeads!.children.length-1] as HTMLSpanElement
+        const filler = this.colHeads!.children[this.colHeads!.children.length - 1] as HTMLSpanElement
         for (let i = 0; i < splitBodyWidth; ++i) {
             const cell = this.splitHead!.children[0] as HTMLSpanElement
             const leftOfCell = cell.style.left
@@ -537,14 +557,14 @@ export class Table extends View {
         const fillerLeft = filler.style.left
         const left = parseFloat(fillerLeft.substring(0, fillerLeft.length - 2))
         filler.style.left = `${left + delta}px`
-        // re-align handles too!
-        for (let i = idx; i < this.model!.colCount-1; ++i) {
-            const cell = this.colHandles!.children[i] as HTMLSpanElement
+
+        for (let i = idx; i < this.model!.colCount; ++i) {
+            const cell = this.colResizeHandles!.children[i] as HTMLSpanElement
             const leftOfCell = cell.style.left
             const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
             cell.style.left = `${left + delta}px`
         }
-        
+
         for (let row = 0; row < this.model!.rowCount; ++row) {
             let beforeChild
             if (idx < this.body.children.length) {
@@ -568,14 +588,13 @@ export class Table extends View {
         this.splitBody = undefined
     }
 
-    xgetHandleId() {
-        for (let i = 1; i < this.model!.colCount; ++i) {
-            if (this.colHandles!.children[i-1] === this.handle) {
-                return i
+    getHandleId() {
+        for (let i = 0; i < this.model!.colCount-1; ++i) {
+            if (this.colResizeHandles!.children[i] === this.handle) {
+                return i+1
             }
         }
         throw Error("yikes")
     }
-
 }
 Table.define("tx-table2", Table)
