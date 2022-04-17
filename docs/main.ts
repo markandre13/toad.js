@@ -43,8 +43,8 @@ NEXT STEPS:
 [X] click to resize last column when scrolled to right end causes a glitch in the last column heading (filler needed)
 [X] scroll to right, move last handle to the left causes a glitch due to missing filler (use filler with size of scrollbar)
 [X] resize last column
-[ ] resize last column has a glitch in the header
-[ ] implement minumum column size (eg. 8px?)
+[X] resize last column has a glitch in the header
+[ ] implement minimum column size (eg. 8px?)
 [ ] refactor & add tests
 [ ] implement the same thing for rows
 [ ] use it to implement insert/remove row animation

@@ -405,11 +405,11 @@ export class Table extends View {
                 this.colResizeHandles!.appendChild(handle)
             }
 
+            x+=5 // handle width
             filler = span()
-            x += colWidth[this.model!.colCount]
             filler.className = "head"
             filler.style.left = `${x}px`
-            filler.style.top = `0`
+            filler.style.top = "0"
             filler.style.width = `256px`
             filler.style.height = `${colHeadHeight}px`
             this.colResizeHandles!.appendChild(filler)
@@ -559,6 +559,7 @@ export class Table extends View {
         const splitBodyWidth = this.model!.colCount - handle
         let idx = handle
 
+        // move column headers back and adjust their positions
         const filler = this.colHeads!.children[this.colHeads!.children.length - 1] as HTMLSpanElement
         for (let i = 0; i < splitBodyWidth; ++i) {
             const cell = this.splitHead!.children[0] as HTMLSpanElement
@@ -571,7 +572,8 @@ export class Table extends View {
         const left = parseFloat(fillerLeft.substring(0, fillerLeft.length - 2))
         filler.style.left = `${left + delta}px`
 
-        for (let i = idx; i < this.model!.colCount; ++i) {
+        // adjust handles and filler on the right
+        for (let i = idx; i <= this.model!.colCount; ++i) {
             const cell = this.colResizeHandles!.children[i] as HTMLSpanElement
             const leftOfCell = cell.style.left
             const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
