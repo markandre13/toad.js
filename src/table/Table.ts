@@ -55,6 +55,8 @@ tableStyle.textContent = `
 
 .splitBody {
     position: absolute;
+    left: 0;
+    top: 0;
     right: 0;
     bottom: 0;
     overflow: clip;
@@ -113,6 +115,7 @@ tableStyle.textContent = `
     margin: 0;
     background-color: #080808;
     font-weight: 400;
+    overflow: hidden;
 }
 .cols > span.handle, .rows > span.handle {
     padding: 0;
@@ -388,7 +391,7 @@ export class Table extends View {
 
             // if resizeableColumns
             x = -2
-            for (let col = 0; col < this.model!.colCount-1; ++col) {
+            for (let col = 0; col < this.model!.colCount; ++col) {
                 x += colWidth[col]
                 const handle = span()
                 handle.className = "handle"
@@ -403,7 +406,7 @@ export class Table extends View {
             }
 
             filler = span()
-            x += colWidth[this.model!.colCount-1]
+            x += colWidth[this.model!.colCount]
             filler.className = "head"
             filler.style.left = `${x}px`
             filler.style.top = `0`
@@ -522,14 +525,10 @@ export class Table extends View {
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "splitBody"
-        this.splitBody.style.left = "0" // this.body.style.left
-        this.splitBody.style.top = "0" // this.body.style.top
 
         setTimeout(() => {
             this.splitHead!.scrollTop = this.colHeads!.scrollTop
             this.splitHead!.scrollLeft = this.colHeads!.scrollLeft
-            // this.splitBody!.scrollLeft = this.body.scrollLeft
-            // this.splitBody!.scrollTop = this.body.scrollTop
         }, 0)
 
         this.body.appendChild(this.splitBody)
@@ -614,9 +613,8 @@ export class Table extends View {
         }
     }
 
-
     getHandleId() {
-        for (let i = 0; i < this.model!.colCount-1; ++i) {
+        for (let i = 0; i < this.model!.colCount; ++i) {
             if (this.colResizeHandles!.children[i] === this.handle) {
                 return i+1
             }

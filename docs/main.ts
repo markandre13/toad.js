@@ -42,7 +42,8 @@ NEXT STEPS:
 [X] resize column when body is scrolled (vertically okay, not horizontal; previous point could also be the solution)
 [X] click to resize last column when scrolled to right end causes a glitch in the last column heading (filler needed)
 [X] scroll to right, move last handle to the left causes a glitch due to missing filler (use filler with size of scrollbar)
-[ ] resize last column
+[X] resize last column
+[ ] resize last column has a glitch in the header
 [ ] implement minumum column size (eg. 8px?)
 [ ] refactor & add tests
 [ ] implement the same thing for rows
