@@ -44,18 +44,22 @@ NEXT STEPS:
 [X] scroll to right, move last handle to the left causes a glitch due to missing filler (use filler with size of scrollbar)
 [X] resize last column
 [X] resize last column has a glitch in the header
-[ ] implement minimum column size (eg. 8px?)
+[X] implement minimum column size (eg. 8px?)
+[ ] restrict colHeads & rowHeads to body clientWidth & clientHeight
 [ ] refactor & add tests
 [ ] implement the same thing for rows
 [ ] use it to implement insert/remove row animation
 [ ] caret
 [ ] scroll to caret
 [ ] tree
+[ ] move rows
+[ ] move within tree
+[ ] default table to: width 100%, height to fit content and move column header down when scrolling page
 
 later
 [ ] sort
 [ ] filter
-[ ] move columns (display only/model)
+[ ] move columns (display only and model)
 */
 
 import { text } from '@toad/util/lsx'
