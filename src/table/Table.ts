@@ -31,7 +31,7 @@ tableStyle.textContent = `
     outline-offset: -2px;
     font-family: var(--tx-font-family);
     font-size: var(--tx-font-size);
-    background: var(--tx-gray-50);
+    background: #1e1e1e;
 
     /* not sure about these */
     /*
@@ -458,6 +458,8 @@ export class Table extends View {
         }
         this.body.style.left = `${rowHeadWidth}px`
         this.body.style.top = `${colHeadHeight}px`
+
+        this.setHeadingFillerSizeToScrollbarSize()
     }
 
     //
@@ -606,10 +608,12 @@ export class Table extends View {
         if (this.colHeads !== undefined) {
             const w = Math.ceil(bounds.width - this.body.clientWidth);
             (this.colHeads.children[this.colHeads.children.length-1] as HTMLSpanElement).style.width = `${w}px`
+            this.colHeads.style.right = `${w}px`
         }
         if (this.rowHeads !== undefined) {
             const h = Math.ceil(bounds.height - this.body.clientHeight);
             (this.rowHeads.children[this.rowHeads.children.length-1] as HTMLSpanElement).style.height = `${h}px`
+            this.rowHeads.style.bottom = `${h}px`
         }
     }
 
