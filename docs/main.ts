@@ -40,7 +40,8 @@ NEXT STEPS:
     * then just transform: translateX the right div/span
 [X] scrollbar should be stable during resize (move splitBody into body?)
 [X] resize column when body is scrolled (vertically okay, not horizontal; previous point could also be the solution)
-[ ] resizing last column when scrolled to right end causes a glitch in the last column heading
+[X] click to resize last column when scrolled to right end causes a glitch in the last column heading (filler needed)
+[ ] scroll to right, move last handle to the left causes a glitch due to missing filler
 [ ] refactor & add tests
 [ ] implement minumum column size (eg. 8px?)
 [ ] implement the same thing for rows

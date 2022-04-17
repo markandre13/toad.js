@@ -540,6 +540,8 @@ export class Table extends View {
         for (let i = 0; i < splitBodyWidth; ++i) {
             this.splitHead.appendChild(this.colHeads!.children[idx])
         }
+        // clone the filler
+        this.splitHead.appendChild(this.colHeads!.children[this.colHeads!.children.length-1].cloneNode())
 
         for (let row = 0; row < this.model!.rowCount; ++row) {
             for (let i = 0; i < splitBodyWidth; ++i) {
