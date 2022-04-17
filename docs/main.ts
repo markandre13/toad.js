@@ -41,9 +41,10 @@ NEXT STEPS:
 [X] scrollbar should be stable during resize (move splitBody into body?)
 [X] resize column when body is scrolled (vertically okay, not horizontal; previous point could also be the solution)
 [X] click to resize last column when scrolled to right end causes a glitch in the last column heading (filler needed)
-[ ] scroll to right, move last handle to the left causes a glitch due to missing filler
-[ ] refactor & add tests
+[X] scroll to right, move last handle to the left causes a glitch due to missing filler (use filler with size of scrollbar)
+[ ] resize last column
 [ ] implement minumum column size (eg. 8px?)
+[ ] refactor & add tests
 [ ] implement the same thing for rows
 [ ] use it to implement insert/remove row animation
 [ ] caret

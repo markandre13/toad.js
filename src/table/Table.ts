@@ -173,6 +173,7 @@ export class Table extends View {
         this.handleDown = this.handleDown.bind(this)
         this.handleMove = this.handleMove.bind(this)
         this.handleUp = this.handleUp.bind(this)
+        this.setHeadingFillerSizeToScrollbarSize = this.setHeadingFillerSizeToScrollbarSize.bind(this)
 
         this.root = div(
             this.body = div()
@@ -182,7 +183,9 @@ export class Table extends View {
         this.measure = div()
         this.measure.classList.add("measure")
 
+        this.body.onresize = this.setHeadingFillerSizeToScrollbarSize
         this.body.onscroll = () => {
+            this.setHeadingFillerSizeToScrollbarSize()
             if (this.colHeads) {
                 this.colHeads.scrollLeft = this.body.scrollLeft
                 this.colResizeHandles!.scrollLeft = this.body.scrollLeft
@@ -598,6 +601,19 @@ export class Table extends View {
         this.body.removeChild(this.splitBody!)
         this.splitBody = undefined
     }
+
+    setHeadingFillerSizeToScrollbarSize() {
+        const bounds = this.body.getBoundingClientRect()
+        if (this.colHeads !== undefined) {
+            const w = Math.ceil(bounds.width - this.body.clientWidth);
+            (this.colHeads.children[this.colHeads.children.length-1] as HTMLSpanElement).style.width = `${w}px`
+        }
+        if (this.rowHeads !== undefined) {
+            const h = Math.ceil(bounds.height - this.body.clientHeight);
+            (this.rowHeads.children[this.rowHeads.children.length-1] as HTMLSpanElement).style.height = `${h}px`
+        }
+    }
+
 
     getHandleId() {
         for (let i = 0; i < this.model!.colCount-1; ++i) {
