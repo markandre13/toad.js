@@ -38,9 +38,9 @@ NEXT STEPS:
       * put the right half into a div/span which we'll then translate
       * extend the width of the left column to have row lines in the background
     * then just transform: translateX the right div/span
-[ ] expand last column (instead of filler?)
-[ ] scrollbar should be stable during resize
-[ ] resize column when body is scrolled
+[X] scrollbar should be stable during resize (move splitBody into body?)
+[X] resize column when body is scrolled (vertically okay, not horizontal; previous point could also be the solution)
+[ ] resizing last column when scrolled to right end causes a glitch in the last column heading
 [ ] refactor & add tests
 [ ] implement minumum column size (eg. 8px?)
 [ ] implement the same thing for rows

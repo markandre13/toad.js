@@ -53,6 +53,13 @@ tableStyle.textContent = `
     position: absolute;
 }
 
+.splitBody {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    overflow: clip;
+}
+
 .cols {
     right: 0;
     top: 0;
@@ -96,7 +103,7 @@ tableStyle.textContent = `
     background: var(--tx-gray-500);
 }
 
-.body > span, .cols > span, .rows > span, .measure > span {
+.body > span, .splitBody > span, .cols > span, .rows > span, .measure > span {
     position: absolute;
     white-space: nowrap;
     border: solid 1px var(--tx-gray-200);
@@ -156,6 +163,7 @@ export class Table extends View {
     protected delta1?: number // helper variable while moving something, e.g. the handle
     protected delta2?: number // helper variable while moving something, e.g. the handle
     protected delta3?: number // helper variable while moving something, e.g. the handle
+    protected delta4?: number // helper variable while moving something, e.g. the handle
     protected splitHead?: HTMLDivElement
     protected splitBody?: HTMLDivElement // if set, left/lower half of body being moved
 
@@ -467,7 +475,8 @@ export class Table extends View {
 
         const leftOfBody = this.body.style.left
         const x = parseFloat(leftOfBody.substring(0, leftOfBody.length - 2)) // incooperate this into delta1
-        this.delta1 = ev.clientX - x                                                   // delta for split body
+        this.delta4 = ev.clientX - x
+        this.delta1 = ev.clientX // - x                                                   // delta for split body
 
         const widthOfColumn = (this.colHeads!.children[this.handleId - 1] as HTMLSpanElement).style.width
         this.delta2 = ev.clientX - parseFloat(widthOfColumn.substring(0, widthOfColumn.length - 2))// delta for resized column's width
@@ -478,7 +487,7 @@ export class Table extends View {
         // return
         if (this.handle !== undefined) {
             this.handle!.style.left = `${ev.clientX - this.delta0!}px`
-            this.splitHead!.style.left = `${ev.clientX - this.delta1!}px`
+            this.splitHead!.style.left = `${ev.clientX - this.delta4!}px`
             this.splitBody!.style.left = `${ev.clientX - this.delta1!}px`
             const h = this.handleId!;
             (this.colHeads!.children[h - 1] as HTMLSpanElement).style.width = `${ev.clientX - this.delta2!}px`
@@ -509,18 +518,18 @@ export class Table extends View {
 
         // initialize splitBody
         this.splitBody = div()
-        this.splitBody.className = "body"
-        this.splitBody.style.left = this.body.style.left
-        this.splitBody.style.top = this.body.style.top
+        this.splitBody.className = "splitBody"
+        this.splitBody.style.left = "0" // this.body.style.left
+        this.splitBody.style.top = "0" // this.body.style.top
 
         setTimeout(() => {
             this.splitHead!.scrollTop = this.colHeads!.scrollTop
             this.splitHead!.scrollLeft = this.colHeads!.scrollLeft
-            this.splitBody!.scrollLeft = this.body.scrollLeft
-            this.splitBody!.scrollTop = this.body.scrollTop
+            // this.splitBody!.scrollLeft = this.body.scrollLeft
+            // this.splitBody!.scrollTop = this.body.scrollTop
         }, 0)
 
-        this.root.appendChild(this.splitBody)
+        this.body.appendChild(this.splitBody)
 
         // move cells into splitHead and splitBody
         const handle = this.handleId!
@@ -584,7 +593,7 @@ export class Table extends View {
 
         this.root.removeChild(this.splitHead!)
         this.splitHead = undefined
-        this.root.removeChild(this.splitBody!)
+        this.body.removeChild(this.splitBody!)
         this.splitBody = undefined
     }
 
