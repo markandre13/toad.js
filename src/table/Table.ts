@@ -170,7 +170,7 @@ export class Table extends View {
     protected deltaHandle?: number
     protected deltaSplitBody?: number
     protected deltaColumn?: number
-    protected deltaSplitHeadLeft?: number
+    protected deltaSplitHead?: number
     protected splitHead?: HTMLDivElement
     protected splitBody?: HTMLDivElement
 
@@ -515,7 +515,7 @@ export class Table extends View {
 
             const leftOfBody = this.body.style.left
             const x = parseFloat(leftOfBody.substring(0, leftOfBody.length - 2))
-            this.deltaSplitHeadLeft = ev.clientX - x
+            this.deltaSplitHead = ev.clientX - x
 
             const widthOfColumn = (this.colHeads!.children[this.handleIndex - 1] as HTMLSpanElement).style.width
             this.deltaColumn = ev.clientX - parseFloat(widthOfColumn.substring(0, widthOfColumn.length - 2))
@@ -529,7 +529,7 @@ export class Table extends View {
 
             const topOfBody = this.body.style.top
             const y = parseFloat(topOfBody.substring(0, topOfBody.length - 2))
-            this.deltaSplitHeadLeft = ev.clientY - y
+            this.deltaSplitHead = ev.clientY - y
 
             const heightOfRow = (this.rowHeads!.children[this.handleIndex - 1] as HTMLSpanElement).style.height
             this.deltaColumn = ev.clientY - parseFloat(heightOfRow.substring(0, heightOfRow.length - 2))
@@ -550,7 +550,7 @@ export class Table extends View {
                 clientX = xLimit
             }
             this.handle!.style.left = `${clientX - this.deltaHandle!}px`
-            this.splitHead!.style.left = `${clientX - this.deltaSplitHeadLeft!}px`
+            this.splitHead!.style.left = `${clientX - this.deltaSplitHead!}px`
             this.splitBody!.style.left = `${clientX - this.deltaSplitBody!}px`
             const h = this.handleIndex!;
             // adjust col head width
@@ -566,11 +566,11 @@ export class Table extends View {
                 clientY = yLimit
             }
             this.handle!.style.top = `${clientY - this.deltaHandle!}px`
-            this.splitHead!.style.top = `${clientY - this.deltaSplitHeadLeft!}px`
+            this.splitHead!.style.top = `${clientY - this.deltaSplitHead!}px`
             this.splitBody!.style.top = `${clientY - this.deltaSplitBody!}px`
             const h = this.handleIndex!;
             // adjust row head height
-            (this.colHeads!.children[h - 1] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
+            (this.rowHeads!.children[h - 1] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
             // adjust row cells height
             let idx = (h-1) * this.model!.colCount
             for (let col = 0; col < this.model!.colCount; ++col) {
@@ -585,9 +585,19 @@ export class Table extends View {
         this.handleMove(ev)
         const isColumn = this.handle.parentElement === this.colResizeHandles
         if (isColumn) {
-            this.joinVertical(ev.clientX - this.deltaSplitBody!)
+            let clientX = ev.clientX
+            const xLimit = this.deltaColumn! + 8
+            if (clientX < xLimit) {
+                clientX = xLimit
+            }
+            this.joinVertical(clientX - this.deltaSplitBody!)
         } else {
-            this.joinHorizontal(ev.clientY - this.deltaSplitBody!)
+            let clientY = ev.clientY
+            const yLimit = this.deltaColumn! + 8
+            if (clientY < yLimit) {
+                clientY = yLimit
+            }
+            this.joinHorizontal(clientY - this.deltaSplitBody!)
         }
         this.handle = undefined
     }
