@@ -19,6 +19,16 @@
 import { Model } from "../model/Model"
 import { View } from "./View"
 
+/*
+ * GenericTool is the base class for _Tools_, which are tool buttons which can send
+ * commands to the most suitable View on the screen.
+ * 
+ * 'Most suitable' is detemined by the View type and sharing a common parent View.
+ * 
+ * Once a View receives the focus (which requires the view to have a tabindex != undefined),
+ * the tool will automatically activate.
+ */
+
 // TODO: GenericTool<T> doesn't use T yet, the is to activate not just the tool for the view with the focus, but all tools with those view's model
 export abstract class GenericTool<T extends Model> extends View {
     static allTools = new Set<GenericTool<any>>()

@@ -21,7 +21,7 @@ import { View } from "../view/View"
 import { GenericTool } from "../view/GenericTool"
 import { textAreaStyle } from "../view/textAreaStyle"
 
-import { TableView } from "./TableView"
+import { Table } from "./Table"
 import { ArrayTableModel } from "./ArrayTableModel"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
@@ -42,7 +42,7 @@ export class TableTool extends GenericTool<Model> {
     buttonAddNodeChild: HTMLElement
     buttonDeleteNode: HTMLElement
 
-    lastActiveTable: TableView | undefined
+    lastActiveTable: Table | undefined
 
     constructor() {
         super()
@@ -62,7 +62,7 @@ export class TableTool extends GenericTool<Model> {
         this.buttonAddRowAbove.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
-            const selection = this.lastActiveTable?.selectionModel
+            const selection = this.lastActiveTable?.selection
             if (selection && model && model instanceof ArrayTableModel) {
                 model.insert(selection.row)
             }
@@ -82,7 +82,7 @@ export class TableTool extends GenericTool<Model> {
         this.buttonAddRowBelow.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
-            const selection = this.lastActiveTable?.selectionModel
+            const selection = this.lastActiveTable?.selection
             if (selection && model && model instanceof ArrayTableModel) {
                 model.insert(selection.row+1)
             }
@@ -101,7 +101,7 @@ export class TableTool extends GenericTool<Model> {
         this.buttonDeleteRow.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
-            const selection = this.lastActiveTable?.selectionModel
+            const selection = this.lastActiveTable?.selection
             if (selection && model && model instanceof ArrayTableModel) {
                 model.remove(selection.row)
             }
@@ -243,10 +243,10 @@ export class TableTool extends GenericTool<Model> {
     }
 
     canHandle(view: View): boolean {
-        return view instanceof TableView
+        return view instanceof Table
     }
     activate(): void {
-        this.lastActiveTable = GenericTool.activeView as TableView
+        this.lastActiveTable = GenericTool.activeView as Table
         this.toolbar.classList.add("active")
     }
     deactivate(): void {

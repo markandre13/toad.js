@@ -17,8 +17,12 @@
  */
 
 import {
-    TableModel, TableAdapter, TableEvent, SelectionModel, View
+    TableModel, TableAdapter, TableEvent, View, TablePos, TableEditMode
 } from '@toad'
+
+// FIXME: import via @toad doesn't work
+import { SelectionModel } from './SelectionModel'
+
 import { span, div } from '@toad/util/lsx'
 
 export let tableStyle = document.createElement("style")
@@ -122,6 +126,11 @@ tableStyle.textContent = `
     font-weight: 400;
     overflow: hidden;
 }
+
+.body > span.selected {
+    background: #0e2035;
+}
+
 .cols > span.handle, .rows > span.handle {
     padding: 0;
     border: 0 none;
@@ -137,8 +146,6 @@ tableStyle.textContent = `
     cursor: row-resize;
 }
 
-/* #0e2035 for selection background */
-
 .cols > span.head, .rows > span.head, .measure > span.head {
     background: #1e1e1e;
     font-weight: 600;
@@ -152,8 +159,9 @@ tableStyle.textContent = `
 
 export class Table extends View {
 
-    protected model?: TableModel
-    protected selection?: SelectionModel
+    // friend tabletool
+    model?: TableModel
+    selection?: SelectionModel
     protected adapter?: TableAdapter<any>
 
     protected root: HTMLDivElement // div containing everything else
@@ -176,7 +184,11 @@ export class Table extends View {
 
     constructor() {
         super()
+
+        this.tabIndex = 0 // FIXME: value depends on selection model
+
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
+        this.pointerDown = this.pointerDown.bind(this)
         this.handleDown = this.handleDown.bind(this)
         this.handleMove = this.handleMove.bind(this)
         this.handleUp = this.handleUp.bind(this)
@@ -205,11 +217,49 @@ export class Table extends View {
                 this.rowResizeHandles!.scrollTop = this.body.scrollTop
             }
         }
+        this.body.onpointerdown = this.pointerDown
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
+    }
+
+    override connectedCallback(): void {
+        super.connectedCallback()
+        if (this.selection === undefined) {
+            this.selection = new SelectionModel()
+            this.selection.modified.add(this.selectionChanged, this)
+        }
+    }
+
+    pointerDown(ev: PointerEvent) {
+        this.focus()
+
+        const x = ev.clientX
+        const y = ev.clientY
+
+        let col, row
+        for (col = 0; col < this.adapter!.colCount; ++col) {
+            const b = this.body.children[col]!.getBoundingClientRect()
+            if (b.x <= x && x < b.x + b.width)
+                break
+        }
+        if (col >= this.adapter!.colCount) {
+            return
+        }
+        let idx = 0
+        for (row = 0; row < this.adapter!.rowCount; ++row) {
+            const b = this.body.children[idx]!.getBoundingClientRect()
+            if (b.y <= y && y < b.y + b.height)
+                break
+            idx += this.adapter!.colCount
+        }
+        if (row >= this.adapter!.rowCount) {
+            return
+        }
+
+        this.selection!.value = new TablePos(col, row)
     }
 
     override setModel(model?: TableModel | SelectionModel): void {
@@ -219,7 +269,7 @@ export class Table extends View {
             }
             this.model = undefined
             this.selection = new SelectionModel()
-              this.selection.modified.add(this.selectionChanged, this)
+            this.selection.modified.add(this.selectionChanged, this)
             //   this.updateView()
             return
         }
@@ -258,12 +308,48 @@ export class Table extends View {
     }
 
     selectionChanged() {
-        console.log(`Table2.selectionChanged`)
+        // console.log(`Table2.selectionChanged: ${this.selection}`)
+        if (this.selection === undefined) {
+            return
+        }
+        switch (this.selection.mode) {
+            case TableEditMode.EDIT_CELL: {
+                // this.log(Log.SELECTION, `TableView.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                let allSelected = this.body.querySelectorAll(".selected")
+                for (let selected of allSelected) {
+                    selected.classList.remove("selected")
+                }
+                const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
+                cell.classList.add("selected")
+                // this.prepareInputOverlayForPosition(new TablePos(this.selectionModel.col, this.selectionModel.row))
+                // delete (this.rootDiv as any).tabIndex
+            } break
+            case TableEditMode.SELECT_CELL: {
+                // this.log(Log.SELECTION, `TableView.createSelection(): mode=SELECT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                let allSelected = this.body.querySelectorAll(".selected")
+                for (let selected of allSelected) {
+                    selected.classList.remove("selected")
+                }
+                const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
+                cell.classList.add("selected")
+                // this.toggleCellSelection(this.selectionModel.value, true)
+                this.tabIndex = 0
+                break
+            }
+            case TableEditMode.SELECT_ROW: {
+                // this.log(Log.SELECTION, `TableView.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                // let allSelected = this.bodyBody.querySelectorAll("tbody > tr.selected")
+                // for (let selected of allSelected)
+                //   selected.classList.remove("selected")
+                // this.toggleRowSelection(this.selectionModel.value.row, true)
+                this.tabIndex = 0
+                break
+            }
+        }
     }
 
     modelChanged(event: TableEvent) {
-        console.log(`Table2.modelChanged`)
-        console.log(event)
+        console.log(`Table2.modelChanged: ${event}`)
     }
 
     prepareCells() {
@@ -491,8 +577,8 @@ export class Table extends View {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`
-                child.style.width = `${colWidth[col]}px`
-                child.style.height = `${rowHeight[row]}px`
+                child.style.width = `${colWidth[col] - 5}px`
+                child.style.height = `${rowHeight[row] - 1}px`
                 this.body.appendChild(child)
                 x += colWidth[col]
             }
@@ -580,7 +666,7 @@ export class Table extends View {
             // adjust row head height
             (this.rowHeads!.children[h - 1] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
             // adjust row cells height
-            let idx = (h-1) * this.adapter!.colCount
+            let idx = (h - 1) * this.adapter!.colCount
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 (this.body.children[idx + col] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
             }

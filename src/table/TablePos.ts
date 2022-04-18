@@ -17,10 +17,13 @@
  */
 
 export class TablePos {
-  col: number
-  row: number
-  constructor(col: number, row: number) {
-    this.col = col
-    this.row = row
-  }
+    col: number
+    row: number
+    constructor(col: number, row: number) {
+        this.col = col
+        this.row = row
+    }
+    toString() {
+        return `TablePos { col:${this.col}, row:${this.row}}`
+    }
 }

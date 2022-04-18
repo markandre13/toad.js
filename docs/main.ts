@@ -211,7 +211,6 @@ registerX(DynamicSystemAdapter, ArrayModel, System)
 const dynamicModel = new ArrayModel<System>(systemList, System)
 bindModel("dynamicSystem", dynamicModel)
 
-
 const model = new FixedSystemModel()
 register(FixedSystemAdapter, FixedSystemModel)
 bindModel("fixedSystem", model)

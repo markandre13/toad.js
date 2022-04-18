@@ -37,4 +37,8 @@ export class TableEvent {
     get row() {
         return this.size
     }
+
+    toString() {
+        return `TableEvent {type: ${TableEventType[this.type]}, index: ${this.index}, size: ${this.size}}`
+    }
 }
