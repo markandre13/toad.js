@@ -67,6 +67,11 @@ tableStyle.textContent = `
     top: 0;
 }
 
+.rows {
+    left: 0;
+    bottom: 0;
+}
+
 .body {
     overflow: auto;
     right: 0;
@@ -385,17 +390,17 @@ export class Table extends View {
 
             this.colHeads.style.left = `${rowHeadWidth}px`
             this.colHeads.style.height = `${colHeadHeight}px`
-            this.colResizeHandles!.style.left = `${rowHeadWidth}px`
-            this.colResizeHandles!.style.height = `${colHeadHeight}px`
 
             // if resizeableColumns
+            this.colResizeHandles!.style.left = `${rowHeadWidth}px`
+            this.colResizeHandles!.style.height = `${colHeadHeight}px`
             x = -2
             for (let col = 0; col < this.model!.colCount; ++col) {
                 x += colWidth[col]
                 const handle = span()
                 handle.className = "handle"
                 handle.style.left = `${x}px`
-                handle.style.top = `0px`
+                handle.style.top = `0`
                 handle.style.width = `5px`
                 handle.style.height = `${colHeadHeight}px`
                 handle.onpointerdown = this.handleDown
@@ -408,7 +413,7 @@ export class Table extends View {
             filler = span()
             filler.className = "head"
             filler.style.left = `${x}px`
-            filler.style.top = "0"
+            filler.style.top = `0`
             filler.style.width = `256px`
             filler.style.height = `${colHeadHeight}px`
             this.colResizeHandles!.appendChild(filler)
@@ -427,18 +432,45 @@ export class Table extends View {
                 y += rowHeight[row]
             }
 
-            const filler = span()
+            let filler = span()
             filler.className = "head"
-            filler.style.left = `0px`
+            filler.style.left = `0`
             filler.style.top = `${y}px`
             filler.style.width = `${rowHeadWidth}px`
             filler.style.height = `256px`
             this.rowHeads.appendChild(filler)
 
-            this.rowHeads.style.left = `0px`
+            // this.rowHeads.style.left = `0px`
             this.rowHeads.style.top = `${colHeadHeight}px`
             this.rowHeads.style.width = `${rowHeadWidth}px`
-            this.rowHeads.style.bottom = `0`
+            // this.rowHeads.style.bottom = `0`
+
+            // if resizeableRows
+            this.rowResizeHandles!.style.top = `${colHeadHeight}px`
+            this.rowResizeHandles!.style.width = `${rowHeadWidth}px`
+            y = -2
+            for (let row = 0; row < this.model!.rowCount; ++row) {
+                y += rowHeight[row]
+                const handle = span()
+                handle.className = "handle"
+                handle.style.left = `0`
+                handle.style.top = `${y}px`
+                handle.style.width = `${rowHeadWidth}px`
+                handle.style.height = `5px`
+                handle.onpointerdown = this.handleDown
+                handle.onpointermove = this.handleMove
+                handle.onpointerup = this.handleUp
+                this.rowResizeHandles!.appendChild(handle)
+            }
+
+            y+=5 // handle width
+            filler = span()
+            filler.className = "head"
+            filler.style.left = `0`
+            filler.style.top = `${y}0px`
+            filler.style.width = `${rowHeadWidth}px`
+            filler.style.height = `256px`
+            this.rowResizeHandles!.appendChild(filler)
         }
 
         // place body cells
