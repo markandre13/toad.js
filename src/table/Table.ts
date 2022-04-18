@@ -118,8 +118,6 @@ tableStyle.textContent = `
     position: absolute;
     white-space: nowrap;
     border: solid 1px var(--tx-gray-200);
-    border-bottom: none;
-    border-right: none;
     padding: 0 2px 0 2px;
     margin: 0;
     background-color: #080808;
@@ -127,8 +125,18 @@ tableStyle.textContent = `
     overflow: hidden;
 }
 
-.body > span.selected {
+.body > span:hover {
+    background: #1a1a1a;
+}
+
+.body > span.selected, .splitBody > span.selected {
     background: #0e2035;
+    border-color: #2680eb;
+    z-index: 1;
+}
+
+.body > span.selected:hover {
+    background: #112d4d;
 }
 
 .cols > span.handle, .rows > span.handle {
@@ -468,7 +476,7 @@ export class Table extends View {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `0px`
-                child.style.width = `${colWidth[col]}px`
+                child.style.width = `${colWidth[col]-5}px`
                 child.style.height = `${colHeadHeight}px`
                 this.colHeads.appendChild(child)
                 x += colWidth[col]
