@@ -260,8 +260,8 @@ export class Table extends View {
 
     prepareCells() {
         // column headers
-        let columnHeaders = new Array(this.model!.colCount)
-        for (let col = 0; col < this.model!.colCount; ++col) {
+        let columnHeaders = new Array(this.adapter!.colCount)
+        for (let col = 0; col < this.adapter!.colCount; ++col) {
             const content = this.adapter!.getColumnHead(col)
             if (this.colHeads === undefined && content !== undefined) {
                 this.colHeads = div()
@@ -274,7 +274,7 @@ export class Table extends View {
             columnHeaders[col] = content
         }
         if (this.colHeads) {
-            for (let col = 0; col < this.model!.colCount; ++col) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = span(columnHeaders[col])
                 cell.className = "head"
                 this.measure.appendChild(cell)
@@ -282,8 +282,8 @@ export class Table extends View {
         }
 
         // row headers
-        let rowHeaders = new Array(this.model!.rowCount)
-        for (let row = 0; row < this.model!.rowCount; ++row) {
+        let rowHeaders = new Array(this.adapter!.rowCount)
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
             const content = this.adapter!.getRowHead(row)
             if (this.rowHeads === undefined && content !== undefined) {
                 this.rowHeads = div()
@@ -296,7 +296,7 @@ export class Table extends View {
             rowHeaders[row] = content
         }
         if (this.rowHeads) {
-            for (let row = 0; row < this.model!.rowCount; ++row) {
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 const cell = span(rowHeaders[row])
                 cell.className = "head"
                 this.measure.appendChild(cell)
@@ -304,8 +304,8 @@ export class Table extends View {
         }
 
         // body
-        for (let row = 0; row < this.model!.rowCount; ++row) {
-            for (let col = 0; col < this.model!.colCount; ++col) {
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = span(
                     this.adapter!.getDisplayCell(col, row) as Node
                 )
@@ -320,9 +320,9 @@ export class Table extends View {
 
         // calculate column widths and column header height
         let colHeadHeight = 0
-        const colWidth = Array<number>(this.model!.colCount)
+        const colWidth = Array<number>(this.adapter!.colCount)
         if (this.colHeads) {
-            for (let col = 0; col < this.model!.colCount; ++col) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const child = this.measure.children[idx++]
                 const bounds = child.getBoundingClientRect()
                 colWidth[col] = Math.ceil(bounds.width)
@@ -332,10 +332,10 @@ export class Table extends View {
             colWidth.fill(0)
         }
 
-        for (let col = 0; col < this.model!.colCount; ++col) {
+        for (let col = 0; col < this.adapter!.colCount; ++col) {
             let cw = colWidth[col]
-            for (let row = 0; row < this.model!.rowCount; ++row) {
-                const child = this.measure.children[col + row * this.model!.colCount] as HTMLSpanElement
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
+                const child = this.measure.children[col + row * this.adapter!.colCount] as HTMLSpanElement
                 const bounds = child.getBoundingClientRect()
                 cw = Math.max(cw, bounds.width)
             }
@@ -344,9 +344,9 @@ export class Table extends View {
 
         // calculate row widths and row header width
         let rowHeadWidth = 0
-        const rowHeight = Array<number>(this.model!.rowCount)
+        const rowHeight = Array<number>(this.adapter!.rowCount)
         if (this.rowHeads) {
-            for (let row = 0; row < this.model!.rowCount; ++row) {
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 const child = this.measure.children[idx++]
                 const bounds = child.getBoundingClientRect()
                 rowHeight[row] = Math.ceil(bounds.height)
@@ -356,10 +356,10 @@ export class Table extends View {
             rowHeight.fill(0)
         }
 
-        for (let row = 0; row < this.model!.rowCount; ++row) {
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
             let rh = rowHeight[row]
-            for (let col = 0; col < this.model!.colCount; ++col) {
-                const child = this.measure.children[col + row * this.model!.colCount] as HTMLSpanElement
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
+                const child = this.measure.children[col + row * this.adapter!.colCount] as HTMLSpanElement
                 const bounds = child.getBoundingClientRect()
                 rh = Math.max(rh, bounds.height)
             }
@@ -370,7 +370,7 @@ export class Table extends View {
         let x, y
         if (this.colHeads) {
             x = 0
-            for (let col = 0; col < this.model!.colCount; ++col) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `0px`
@@ -395,7 +395,7 @@ export class Table extends View {
             this.colResizeHandles!.style.left = `${rowHeadWidth}px`
             this.colResizeHandles!.style.height = `${colHeadHeight}px`
             x = -2
-            for (let col = 0; col < this.model!.colCount; ++col) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 x += colWidth[col]
                 const handle = span()
                 handle.className = "handle"
@@ -423,7 +423,7 @@ export class Table extends View {
         // place row heads
         if (this.rowHeads) {
             y = 0
-            for (let row = 0; row < this.model!.rowCount; ++row) {
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `0px`
                 child.style.top = `${y}px`
@@ -450,7 +450,7 @@ export class Table extends View {
             this.rowResizeHandles!.style.top = `${colHeadHeight}px`
             this.rowResizeHandles!.style.width = `${rowHeadWidth}px`
             y = -2
-            for (let row = 0; row < this.model!.rowCount; ++row) {
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 y += rowHeight[row]
                 const handle = span()
                 handle.className = "handle"
@@ -477,9 +477,9 @@ export class Table extends View {
 
         // place body cells
         y = 0
-        for (let row = 0; row < this.model!.rowCount; ++row) {
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
             x = 0
-            for (let col = 0; col < this.model!.colCount; ++col) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`
@@ -556,7 +556,7 @@ export class Table extends View {
             // adjust col head width
             (this.colHeads!.children[h - 1] as HTMLSpanElement).style.width = `${clientX - this.deltaColumn!}px`
             // adjust row cells width
-            for (let row = 0; row < this.model!.rowCount; ++row) {
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 (this.body.children[h - 1 + row * h] as HTMLSpanElement).style.width = `${clientX - this.deltaColumn!}px`
             }
         } else {
@@ -572,8 +572,8 @@ export class Table extends View {
             // adjust row head height
             (this.rowHeads!.children[h - 1] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
             // adjust row cells height
-            let idx = (h-1) * this.model!.colCount
-            for (let col = 0; col < this.model!.colCount; ++col) {
+            let idx = (h-1) * this.adapter!.colCount
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 (this.body.children[idx + col] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
             }
         }
@@ -626,7 +626,7 @@ export class Table extends View {
         // move the heads into splitHead
         const handle = this.handleIndex!
         const bodyWidth = handle
-        const splitBodyWidth = this.model!.colCount - handle
+        const splitBodyWidth = this.adapter!.colCount - handle
 
         for (let i = 0; i < splitBodyWidth; ++i) {
             this.splitHead.appendChild(this.colHeads!.children[handle])
@@ -636,7 +636,7 @@ export class Table extends View {
 
         // move cells into splitBody
         let idx = handle
-        for (let row = 0; row < this.model!.rowCount; ++row) {
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < splitBodyWidth; ++col) {
                 this.splitBody.appendChild(this.body.children[idx])
             }
@@ -647,7 +647,7 @@ export class Table extends View {
     // move 'splitBody' back into 'body' to end animation
     joinVertical(delta: number) {
         const handle = this.handleIndex!
-        const splitBodyWidth = this.model!.colCount - handle
+        const splitBodyWidth = this.adapter!.colCount - handle
         let idx = handle
 
         // move column headers back and adjust their positions
@@ -664,14 +664,14 @@ export class Table extends View {
         filler.style.left = `${left + delta}px`
 
         // adjust handles and filler on the right
-        for (let col = idx; col <= this.model!.colCount; ++col) {
+        for (let col = idx; col <= this.adapter!.colCount; ++col) {
             const cell = this.colResizeHandles!.children[col] as HTMLSpanElement
             const leftOfCell = cell.style.left
             const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
             cell.style.left = `${left + delta}px`
         }
 
-        for (let row = 0; row < this.model!.rowCount; ++row) {
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
             let beforeChild
             if (idx < this.body.children.length) {
                 beforeChild = this.body.children[idx]
@@ -685,7 +685,7 @@ export class Table extends View {
                 cell.style.left = `${left + delta}px`
                 this.body.insertBefore(cell, beforeChild)
             }
-            idx += this.model!.colCount
+            idx += this.adapter!.colCount
         }
 
         this.root.removeChild(this.splitHead!)
@@ -715,7 +715,7 @@ export class Table extends View {
 
         // move heads into splitHead
         const handle = this.handleIndex!
-        const splitBodyHeight = this.model!.rowCount - handle
+        const splitBodyHeight = this.adapter!.rowCount - handle
 
         for (let i = 0; i < splitBodyHeight; ++i) {
             this.splitHead.appendChild(this.rowHeads!.children[handle])
@@ -724,9 +724,9 @@ export class Table extends View {
         this.splitHead.appendChild(this.rowHeads!.children[this.rowHeads!.children.length - 1].cloneNode())
 
         // move cells into splitBody
-        let idx = this.model!.colCount * handle
+        let idx = this.adapter!.colCount * handle
         for (let row = 0; row < splitBodyHeight; ++row) {
-            for (let col = 0; col < this.model!.colCount; ++col) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 this.splitBody.appendChild(this.body.children[idx])
             }
         }
@@ -735,7 +735,7 @@ export class Table extends View {
     // move 'splitBody' back into 'body' to end animation
     joinHorizontal(delta: number) {
         const handle = this.handleIndex!
-        const splitBodyHeight = this.model!.rowCount - handle
+        const splitBodyHeight = this.adapter!.rowCount - handle
 
         // move row headers back and adjust their positions
         const filler = this.rowHeads!.children[this.rowHeads!.children.length - 1] as HTMLSpanElement
@@ -752,7 +752,7 @@ export class Table extends View {
 
         // adjust handles and filler on the right
         let idx = handle
-        for (let row = idx; row <= this.model!.rowCount; ++row) {
+        for (let row = idx; row <= this.adapter!.rowCount; ++row) {
             const cell = this.rowResizeHandles!.children[row] as HTMLSpanElement
             const topOfCell = cell.style.top
             const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
@@ -760,7 +760,7 @@ export class Table extends View {
         }
 
         for (let row = 0; row < splitBodyHeight; ++row) {
-            for (let i = 0; i < this.model!.colCount; ++i) {
+            for (let i = 0; i < this.adapter!.colCount; ++i) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
                 const topOfCell = cell.style.top
                 const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))

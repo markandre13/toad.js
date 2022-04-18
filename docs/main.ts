@@ -45,9 +45,9 @@ NEXT STEPS:
 [X] resize last column
 [X] resize last column has a glitch in the header
 [X] implement minimum column size (eg. 8px?)
-[ ] restrict colHeads & rowHeads to body clientWidth & clientHeight
+[ ] restrict colHeads & rowHeads to body clientWidth & clientHeight (not working during adjust)
 [ ] refactor & add tests
-[ ] implement the same thing for rows
+[X] implement the same thing for rows
 [ ] use it to implement insert/remove row animation
 [ ] caret
 [ ] scroll to caret
@@ -63,7 +63,7 @@ later
 */
 
 import { text } from '@toad/util/lsx'
-import { TableModel, TableAdapter, bindModel } from '@toad'
+import { TableModel, TableAdapter, TypedTableModel, TypedTableAdapter, ArrayModel, ArrayAdapter, bindModel, refs } from '@toad'
 
 // https://www.bbcelite.com/deep_dives/generating_system_data.html
 // https://www.bbcelite.com/deep_dives/printing_text_tokens.html
@@ -81,7 +81,7 @@ const species3 = ["Rodents ", "Frogs", "Lizards", "Lobsters", "Birds", "Humanoid
 // radius = 6911 km to 2816 km
 // population := (tech level * 4) + economy + government + 1 (71 = 7.1 billion)
 
-class MyModel extends TableModel {
+class FixedSystemModel extends TableModel {
     constructor() {
         super()
     }
@@ -92,6 +92,10 @@ class MyModel extends TableModel {
         return 64
     }
     get(col: number, row: number) {
+        return FixedSystemModel.get(col, row)
+    }
+
+    static get(col: number, row: number) {
         let h = this.hash(`${row}`)
         switch (col) {
             case 0: { // species
@@ -130,7 +134,7 @@ class MyModel extends TableModel {
     }
 
     // cyrb53 from https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript/7616484#7616484
-    hash(str: string, seed = 0) {
+    static hash(str: string, seed = 0) {
         let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed
         for (let i = 0, ch; i < str.length; i++) {
             ch = str.charCodeAt(i)
@@ -143,20 +147,14 @@ class MyModel extends TableModel {
     }
 }
 
-class MyAdapter extends TableAdapter<MyModel> {
+class FixedSystemAdapter extends TableAdapter<FixedSystemModel> {
 
-    constructor(model: MyModel) {
+    constructor(model: FixedSystemModel) {
         super(model)
     }
 
-    // getColumnHead(col: number): Node | undefined { return undefined }
-    // getRowHead(row: number): Node | undefined { return undefined }
-    // getDisplayCell(col: number, row: number): Node | Node[] | undefined { return undefined }
-    // getEditorCell(col: number, row: number): Node | undefined { return undefined }
-
     override getColumnHead(col: number): Node | undefined {
-        // return text(String.fromCharCode(col))
-        switch(col) {
+        switch (col) {
             case 0: return text("Name")
             case 1: return text("Government")
             case 2: return text("Economy")
@@ -165,7 +163,7 @@ class MyAdapter extends TableAdapter<MyModel> {
     }
 
     override getRowHead(row: number): Node | undefined {
-        return text(`${row+1}`)
+        return text(`${row + 1}`)
     }
 
     override getDisplayCell(col: number, row: number) {
@@ -173,17 +171,46 @@ class MyAdapter extends TableAdapter<MyModel> {
             this.model!.get(col, row)
         )
     }
-    // getEditorCell(col: number, row: number): Node | undefined { return undefined }
+}
+
+class System {
+    name: string = ""
+    government: string = ""
+    economy: string = ""
+    species: string = ""
+}
+
+const systemList: System[] = Array(64);
+for(let i=0; i<64; ++i) {
+    systemList[i] = {
+        name: FixedSystemModel.get(0, i),
+        government: FixedSystemModel.get(1, i),
+        economy: FixedSystemModel.get(2, i),
+        species: FixedSystemModel.get(3, i)
+    }
+}
+
+class DynamicSystemAdapter extends ArrayAdapter<ArrayModel<System>> {
+    override getColumnHeads() { return ["Name", "Government", "Economy", "Species"] }
+    override getRow(system: System) { return refs(system, "name", "government", "economy", "species") }
 }
 
 // TODO: something else to redesign:
-// static register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
-function register<T extends TableModel>(adapter: new(model: T) => TableAdapter<any>, model: new(...args: any[])=>T): void
-// static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel, data?: any): void
+function registerX<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
+{
+    TableAdapter.register(adapter, model, data)
+}
+function register<T extends TableModel>(adapter: new (model: T) => TableAdapter<any>, model: new (...args: any[]) => T): void
+// function register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel, data?: any): void
 {
     TableAdapter.register(adapter as any, model)
 }
-register(MyAdapter, MyModel)
 
-const model = new MyModel()
-bindModel("solarsystems", model)
+registerX(DynamicSystemAdapter, ArrayModel, System)
+const dynamicModel = new ArrayModel<System>(systemList, System)
+bindModel("dynamicSystem", dynamicModel)
+
+
+const model = new FixedSystemModel()
+register(FixedSystemAdapter, FixedSystemModel)
+bindModel("fixedSystem", model)

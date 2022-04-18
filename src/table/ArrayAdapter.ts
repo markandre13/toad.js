@@ -66,7 +66,9 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
     private getField(col: number, row: number): string | undefined {
         if (!this.model)
             return undefined
-        return this.getRow(this.model.data[row])[col].toString()
+        const struct = this.model.data[row]
+        const array = this.getRow(struct)
+        return array[col].toString()
     }
 
     private setField(col: number, row: number, text: string): void {

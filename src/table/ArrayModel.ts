@@ -22,5 +22,7 @@ export class ArrayModel<T> extends ArrayTableModel<T> {
     constructor(data: Array<T>, rowClass: new () => T) {
         super(data, rowClass)
     }
-    get colCount(): number { return 10 }
+    get colCount(): number {
+        throw Error(`ArrayModel.colCount() should not be called. Use ArrayAdapter.colCount() instead.`)
+     }
 }
