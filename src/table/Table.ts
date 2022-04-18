@@ -16,12 +16,14 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import {
-    TableModel, TableAdapter, TableEvent, View, TablePos, TableEditMode
-} from '@toad'
-
-// FIXME: import via @toad doesn't work
+import { View } from '../view/View'
+import { TableModel } from './TableModel'
 import { SelectionModel } from './SelectionModel'
+import { TableAdapter } from './TableAdapter'
+import { TableEvent } from './TableEvent'
+import { TablePos } from './TablePos'
+import { TableEditMode } from './TableEditMode'
+import { TableEventType } from './TableEventType'
 
 import { span, div } from '@toad/util/lsx'
 
@@ -123,6 +125,7 @@ tableStyle.textContent = `
     background-color: #080808;
     font-weight: 400;
     overflow: hidden;
+    cursor: default;
 }
 
 .body > span:hover {
@@ -142,7 +145,7 @@ tableStyle.textContent = `
 .cols > span.handle, .rows > span.handle {
     padding: 0;
     border: 0 none;
-    opacity: 1;
+    opacity: 0;
 
     background-color: #08f;
 }
@@ -167,7 +170,7 @@ tableStyle.textContent = `
 
 export class Table extends View {
 
-    // friend tabletool
+    // TODO: friend tabletool, ... should make these getters'n setters
     model?: TableModel
     selection?: SelectionModel
     protected adapter?: TableAdapter<any>
@@ -242,6 +245,7 @@ export class Table extends View {
     }
 
     pointerDown(ev: PointerEvent) {
+        ev.preventDefault()
         this.focus()
 
         const x = ev.clientX
@@ -358,6 +362,67 @@ export class Table extends View {
 
     modelChanged(event: TableEvent) {
         console.log(`Table2.modelChanged: ${event}`)
+        switch (event.type) {
+            case TableEventType.INSERT_ROW: {
+                // TODO: when row is inserted before selection, selection must be adjusted
+
+                // prepareRows
+                for (let row = event.index; row < event.index + event.size; ++row) {
+                    for (let col = 0; col < this.adapter!.colCount; ++col) {
+                        const cell = span(
+                            this.adapter!.getDisplayCell(col, row) as Node
+                        )
+                        this.measure.appendChild(cell)
+                    }
+                }
+                // arrangeMeasuredRowsInGrid
+                setTimeout(() => {
+                    let idx = event.index * this.adapter!.colCount
+                    let beforeChild
+                    let y
+                    console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
+                    if (idx < this.body.children.length) {
+                        beforeChild = this.body.children[idx]
+                        const top = (beforeChild as HTMLSpanElement).style.top
+                        y = parseInt(top.substring(0, top.length - 2))
+                    } else {
+                        beforeChild = null
+                        if (this.body.children.length === 0) {
+                            y = 0
+                        } else {
+                            const top = (this.body.children[this.body.children.length - 1] as HTMLSpanElement).style.top
+                            y = parseInt(top.substring(0, top.length - 2))
+                        }
+                    }
+                    let totalHeight = 0
+                    for (let row = event.index; row < event.index + event.size; ++row) {
+                        let rowHeight = 0
+                        for (let col = 0; col < this.adapter!.colCount; ++col) {
+                            const child = this.measure.children[0]
+                            const bounds = child.getBoundingClientRect()
+                            rowHeight = Math.max(rowHeight, bounds.height)
+                        }
+                        for (let col = 0; col < this.adapter!.colCount; ++col) {
+                            const child = this.measure.children[0] as HTMLSpanElement
+                            child.style.left = (this.body.children[col] as HTMLSpanElement).style.left // FIXME: hack
+                            child.style.top = `${y}px`
+                            child.style.width = (this.body.children[col] as HTMLSpanElement).style.width // FIXME: hack
+                            child.style.height = `${rowHeight}px`
+                            this.body.insertBefore(child, beforeChild)
+                        }
+                        y += rowHeight
+                        totalHeight += Math.ceil(rowHeight)
+                    }
+
+                    this.splitHorizontal(event.index + event.size)
+
+                    this.splitBody!.style.top = `${totalHeight}px` // TODO: make this an animation
+
+                    this.joinHorizontal(event.index + event.size, totalHeight)
+
+                }, 0)
+            } break
+        }
     }
 
     prepareCells() {
@@ -476,7 +541,7 @@ export class Table extends View {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `0px`
-                child.style.width = `${colWidth[col]-5}px`
+                child.style.width = `${colWidth[col] - 5}px`
                 child.style.height = `${colHeadHeight}px`
                 this.colHeads.appendChild(child)
                 x += colWidth[col]
@@ -636,7 +701,7 @@ export class Table extends View {
             const heightOfRow = (this.rowHeads!.children[this.handleIndex - 1] as HTMLSpanElement).style.height
             this.deltaColumn = ev.clientY - parseFloat(heightOfRow.substring(0, heightOfRow.length - 2))
 
-            this.splitHorizontal()
+            this.splitHorizontal(this.handleIndex!)
         }
     }
     protected handleMove(ev: PointerEvent) {
@@ -699,7 +764,7 @@ export class Table extends View {
             if (clientY < yLimit) {
                 clientY = yLimit
             }
-            this.joinHorizontal(clientY - this.deltaSplitBody!)
+            this.joinHorizontal(this.handleIndex!, clientY - this.deltaSplitBody!)
         }
         this.handle = undefined
     }
@@ -796,37 +861,38 @@ export class Table extends View {
         this.splitBody = undefined
     }
 
-    splitHorizontal() {
+    splitHorizontal(splitRow: number) {
         // initialize splitHead
-        this.splitHead = div()
-        this.splitHead.className = "rows"
-        this.splitHead.style.top = this.rowHeads!.style.top
-        this.splitHead.style.width = this.rowHeads!.style.width
-        this.root.appendChild(this.splitHead)
+        if (this.rowHeads !== undefined) {
+            this.splitHead = div()
+            this.splitHead.className = "rows"
+            this.splitHead.style.top = this.rowHeads!.style.top
+            this.splitHead.style.width = this.rowHeads!.style.width
+            this.root.appendChild(this.splitHead)
+            setTimeout(() => {
+                this.splitHead!.scrollTop = this.rowHeads!.scrollTop
+                this.splitHead!.scrollLeft = this.rowHeads!.scrollLeft
+            }, 0)
+        }
 
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "splitBody"
-
-        setTimeout(() => {
-            this.splitHead!.scrollTop = this.rowHeads!.scrollTop
-            this.splitHead!.scrollLeft = this.rowHeads!.scrollLeft
-        }, 0)
-
         this.body.appendChild(this.splitBody)
 
-        // move heads into splitHead
-        const handle = this.handleIndex!
-        const splitBodyHeight = this.adapter!.rowCount - handle
+        const splitBodyHeight = this.adapter!.rowCount - splitRow
 
-        for (let i = 0; i < splitBodyHeight; ++i) {
-            this.splitHead.appendChild(this.rowHeads!.children[handle])
+        // move heads into splitHead
+        if (this.splitHead !== undefined) {
+            for (let i = 0; i < splitBodyHeight; ++i) {
+                this.splitHead.appendChild(this.rowHeads!.children[splitRow])
+            }
+            // clone the filler
+            this.splitHead.appendChild(this.rowHeads!.children[this.rowHeads!.children.length - 1].cloneNode())
         }
-        // clone the filler
-        this.splitHead.appendChild(this.rowHeads!.children[this.rowHeads!.children.length - 1].cloneNode())
 
         // move cells into splitBody
-        let idx = this.adapter!.colCount * handle
+        let idx = this.adapter!.colCount * splitRow
         for (let row = 0; row < splitBodyHeight; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 this.splitBody.appendChild(this.body.children[idx])
@@ -835,30 +901,31 @@ export class Table extends View {
     }
 
     // move 'splitBody' back into 'body' to end animation
-    joinHorizontal(delta: number) {
-        const handle = this.handleIndex!
-        const splitBodyHeight = this.adapter!.rowCount - handle
+    joinHorizontal(splitRow: number, delta: number) {
+        const splitBodyHeight = this.adapter!.rowCount - splitRow
 
         // move row headers back and adjust their positions
-        const filler = this.rowHeads!.children[this.rowHeads!.children.length - 1] as HTMLSpanElement
-        for (let row = 0; row < splitBodyHeight; ++row) {
-            const cell = this.splitHead!.children[0] as HTMLSpanElement
-            const topOfCell = cell.style.top
-            const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
-            cell.style.top = `${top + delta}px`
-            this.rowHeads!.insertBefore(cell, filler)
-        }
-        const fillerTop = filler.style.top
-        const top = parseFloat(fillerTop.substring(0, fillerTop.length - 2))
-        filler.style.top = `${top + delta}px`
+        if (this.rowHeads !== undefined) {
+            const filler = this.rowHeads!.children[this.rowHeads!.children.length - 1] as HTMLSpanElement
+            for (let row = 0; row < splitBodyHeight; ++row) {
+                const cell = this.splitHead!.children[0] as HTMLSpanElement
+                const topOfCell = cell.style.top
+                const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
+                cell.style.top = `${top + delta}px`
+                this.rowHeads!.insertBefore(cell, filler)
+            }
+            const fillerTop = filler.style.top
+            const top = parseFloat(fillerTop.substring(0, fillerTop.length - 2))
+            filler.style.top = `${top + delta}px`
 
-        // adjust handles and filler on the right
-        let idx = handle
-        for (let row = idx; row <= this.adapter!.rowCount; ++row) {
-            const cell = this.rowResizeHandles!.children[row] as HTMLSpanElement
-            const topOfCell = cell.style.top
-            const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
-            cell.style.top = `${top + delta}px`
+            // adjust handles and filler on the right
+            let idx = splitRow
+            for (let row = idx; row <= this.adapter!.rowCount; ++row) {
+                const cell = this.rowResizeHandles!.children[row] as HTMLSpanElement
+                const topOfCell = cell.style.top
+                const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
+                cell.style.top = `${top + delta}px`
+            }
         }
 
         for (let row = 0; row < splitBodyHeight; ++row) {
@@ -871,8 +938,10 @@ export class Table extends View {
             }
         }
 
-        this.root.removeChild(this.splitHead!)
-        this.splitHead = undefined
+        if (this.rowHeads !== undefined) {
+            this.root.removeChild(this.splitHead!)
+            this.splitHead = undefined
+        }
         this.body.removeChild(this.splitBody!)
         this.splitBody = undefined
     }

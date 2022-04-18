@@ -175,10 +175,10 @@ class FixedSystemAdapter extends TableAdapter<FixedSystemModel> {
 }
 
 class System {
-    name: string = ""
-    government: string = ""
-    economy: string = ""
-    species: string = ""
+    name: string = "New Name"
+    government: string = "New Government"
+    economy: string = "New Economy"
+    species: string = "New Species"
 }
 
 const systemList: System[] = Array(64);
