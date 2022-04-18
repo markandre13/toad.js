@@ -48,8 +48,9 @@ NEXT STEPS:
 [ ] restrict colHeads & rowHeads to body clientWidth & clientHeight (not working during adjust)
 [ ] refactor & add tests
 [X] implement the same thing for rows
+[ ] select row
+[ ] select cell
 [ ] use it to implement insert/remove row animation
-[ ] caret
 [ ] scroll to caret
 [ ] tree
 [ ] move rows

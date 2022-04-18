@@ -181,6 +181,8 @@ export class Table extends View {
         this.handleMove = this.handleMove.bind(this)
         this.handleUp = this.handleUp.bind(this)
         this.setHeadingFillerSizeToScrollbarSize = this.setHeadingFillerSizeToScrollbarSize.bind(this)
+        this.selectionChanged = this.selectionChanged.bind(this)
+        this.modelChanged = this.modelChanged.bind(this)
 
         this.root = div(
             this.body = div()
@@ -212,13 +214,12 @@ export class Table extends View {
 
     override setModel(model?: TableModel | SelectionModel): void {
         if (!model) {
-            if (this.selection)
+            if (this.selection) {
                 this.selection.modified.remove(this)
+            }
             this.model = undefined
             this.selection = new SelectionModel()
-            //   this.selection.modified.add(() => {
-            //     this.createSelection()
-            //   }, this)
+              this.selection.modified.add(this.selectionChanged, this)
             //   this.updateView()
             return
         }
@@ -229,15 +230,13 @@ export class Table extends View {
             }
             this.selection = model
             // this.createSelection()
-            this.selection.modified.add(() => {
-                // this.createSelection()
-            }, this)
+            this.selection.modified.add(this.selectionChanged, this)
             return
         }
 
         if (model instanceof TableModel) {
             this.model = model
-            // this.model.modified.add((event: TableEvent) => { this.modelChanged(event) }, this)
+            this.model.modified.add(this.modelChanged, this)
             const adapter = TableAdapter.lookup(model) as new (model: TableModel) => TableAdapter<any>
             try {
                 this.adapter = new adapter(model)
@@ -256,6 +255,15 @@ export class Table extends View {
         if ((model as any) instanceof Object) {
             throw Error("TableView.setModel(): unexpected model of type " + (model as Object).constructor.name)
         }
+    }
+
+    selectionChanged() {
+        console.log(`Table2.selectionChanged`)
+    }
+
+    modelChanged(event: TableEvent) {
+        console.log(`Table2.modelChanged`)
+        console.log(event)
     }
 
     prepareCells() {
