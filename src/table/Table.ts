@@ -375,7 +375,7 @@ export class Table extends View {
             case TableEventType.INSERT_ROW: {
                 // TODO: when row is inserted before selection, selection must be adjusted
 
-                // prepareRows
+                // prepareRows to be measured
                 for (let row = event.index; row < event.index + event.size; ++row) {
                     for (let col = 0; col < this.adapter!.colCount; ++col) {
                         const cell = span(
@@ -433,12 +433,50 @@ export class Table extends View {
                         this.joinHorizontal(event.index + event.size, totalHeight)
                     }
                     setTimeout(() => {
-                        // console.log(this.splitBody!.isConnected)
                         this.splitBody!.style.transform = `translateY(${totalHeight}px)` // TODO: make this an animation
                     }, 50) // at around > 10ms we'll get an animated transition on google chrome
 
                 })
             } break
+            case TableEventType.REMOVE_ROW: {
+                let totalHeight = 0
+                let idx = event.index * this.adapter!.colCount
+                for (let row = event.index; row < event.index + event.size; ++row) {
+                    const cell = this.body.children[idx] as HTMLSpanElement
+
+                    totalHeight += Math.ceil(px2float(cell.style.height)+1)
+                }
+
+                let allSelected = this.body.querySelectorAll(".selected")
+                for (let selected of allSelected) {
+                    selected.classList.remove("selected")
+                }
+
+                this.splitHorizontal(event.index + event.size)
+
+                this.splitBody!.style.transitionProperty = "transform"
+                this.splitBody!.style.transitionDuration = "500ms"
+
+                const closure = () => {
+                    let idx = event.index * this.adapter!.colCount
+                    for (let row = 0; row < event.size; ++row) {
+                        for (let col = 0; col < this.adapter!.colCount; ++col) {
+                            this.body!.removeChild(this.body!.children[idx])
+                        }
+                    }
+                    this.joinHorizontal(event.index + event.size, -totalHeight)
+                }
+
+                this.splitBody!.ontransitionend = closure
+                this.splitBody!.ontransitioncancel = closure
+                setTimeout(() => {
+                    // console.log(this.splitBody!.isConnected)
+                    this.splitBody!.style.transform = `translateY(${-totalHeight}px)` // TODO: make this an animation
+                }, 50) // at around > 10ms we'll get an animated transition on google chrome
+
+            } break
+            default:
+                console.log(`Table.modelChanged(): ${event} is not implemented`)
         }
     }
 
@@ -927,7 +965,7 @@ export class Table extends View {
         }
 
         for (let row = 0; row < splitBodyHeight; ++row) {
-            for (let i = 0; i < this.adapter!.colCount; ++i) {
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
                 const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
