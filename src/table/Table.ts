@@ -172,6 +172,14 @@ tableStyle.textContent = `
 }
 `
 
+function px2int(s: string) {
+    return parseInt(s.substring(0, s.length - 2))
+}
+
+function px2float(s: string) {
+    return parseFloat(s.substring(0, s.length - 2))
+}
+
 export class Table extends View {
 
     // TODO: friend tabletool, ... should make these getters'n setters
@@ -388,16 +396,15 @@ export class Table extends View {
                     let y
                     // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
                     if (idx < this.body.children.length) {
-                        beforeChild = this.body.children[idx]
-                        const top = (beforeChild as HTMLSpanElement).style.top
-                        y = parseInt(top.substring(0, top.length - 2))
+                        beforeChild = this.body.children[idx] as HTMLSpanElement
+                        y = px2int(beforeChild.style.top)
                     } else {
                         beforeChild = null
                         if (this.body.children.length === 0) {
                             y = 0
                         } else {
-                            const top = (this.body.children[this.body.children.length - 1] as HTMLSpanElement).style.top
-                            y = parseInt(top.substring(0, top.length - 2))
+                            const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+                            y = px2int(cell.style.top)
                         }
                     }
                     let totalHeight = 0
@@ -690,32 +697,18 @@ export class Table extends View {
 
         const isColumn = this.handle.parentElement === this.colResizeHandles
         if (isColumn) {
-            const leftOfHandle = this.handle.style.left
-            this.deltaHandle = ev.clientX - parseFloat(leftOfHandle.substring(0, leftOfHandle.length - 2))
-
+            this.deltaHandle = ev.clientX - px2int(this.handle.style.left)
             this.deltaSplitBody = ev.clientX
-
-            const leftOfBody = this.body.style.left
-            const x = parseFloat(leftOfBody.substring(0, leftOfBody.length - 2))
-            this.deltaSplitHead = ev.clientX - x
-
-            const widthOfColumn = (this.colHeads!.children[this.handleIndex - 1] as HTMLSpanElement).style.width
-            this.deltaColumn = ev.clientX - parseFloat(widthOfColumn.substring(0, widthOfColumn.length - 2))
-
+            this.deltaSplitHead = ev.clientX - px2float(this.body.style.left)
+            const cell = this.colHeads!.children[this.handleIndex - 1] as HTMLSpanElement
+            this.deltaColumn = ev.clientX - px2float(cell.style.width)
             this.splitVertical()
         } else {
-            const topOfHandle = this.handle.style.top
-            this.deltaHandle = ev.clientY - parseFloat(topOfHandle.substring(0, topOfHandle.length - 2))
-
+            this.deltaHandle = ev.clientY - px2float(this.handle.style.top)
             this.deltaSplitBody = ev.clientY
-
-            const topOfBody = this.body.style.top
-            const y = parseFloat(topOfBody.substring(0, topOfBody.length - 2))
-            this.deltaSplitHead = ev.clientY - y
-
-            const heightOfRow = (this.rowHeads!.children[this.handleIndex - 1] as HTMLSpanElement).style.height
-            this.deltaColumn = ev.clientY - parseFloat(heightOfRow.substring(0, heightOfRow.length - 2))
-
+            this.deltaSplitHead = ev.clientY - px2float(this.body.style.top)
+            const cell = this.rowHeads!.children[this.handleIndex - 1] as HTMLSpanElement
+            this.deltaColumn = ev.clientY - px2float(cell.style.height)
             this.splitHorizontal(this.handleIndex!)
         }
     }
@@ -836,20 +829,18 @@ export class Table extends View {
         const filler = this.colHeads!.children[this.colHeads!.children.length - 1] as HTMLSpanElement
         for (let col = 0; col < splitBodyWidth; ++col) {
             const cell = this.splitHead!.children[0] as HTMLSpanElement
-            const leftOfCell = cell.style.left
-            const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
+            const left = px2float(cell.style.left)
             cell.style.left = `${left + delta}px`
             this.colHeads!.insertBefore(cell, filler)
         }
         const fillerLeft = filler.style.left
-        const left = parseFloat(fillerLeft.substring(0, fillerLeft.length - 2))
+        const left = px2float(fillerLeft)
         filler.style.left = `${left + delta}px`
 
         // adjust handles and filler on the right
         for (let col = idx; col <= this.adapter!.colCount; ++col) {
             const cell = this.colResizeHandles!.children[col] as HTMLSpanElement
-            const leftOfCell = cell.style.left
-            const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
+            const left = px2float(cell.style.left)
             cell.style.left = `${left + delta}px`
         }
 
@@ -862,8 +853,7 @@ export class Table extends View {
             }
             for (let i = 0; i < splitBodyWidth; ++i) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
-                const leftOfCell = cell.style.left
-                const left = parseFloat(leftOfCell.substring(0, leftOfCell.length - 2))
+                const left = px2float(cell.style.left)
                 cell.style.left = `${left + delta}px`
                 this.body.insertBefore(cell, beforeChild)
             }
@@ -924,21 +914,19 @@ export class Table extends View {
             const filler = this.rowHeads!.children[this.rowHeads!.children.length - 1] as HTMLSpanElement
             for (let row = 0; row < splitBodyHeight; ++row) {
                 const cell = this.splitHead!.children[0] as HTMLSpanElement
-                const topOfCell = cell.style.top
-                const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
+                const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
                 this.rowHeads!.insertBefore(cell, filler)
             }
             const fillerTop = filler.style.top
-            const top = parseFloat(fillerTop.substring(0, fillerTop.length - 2))
+            const top = px2float(fillerTop)
             filler.style.top = `${top + delta}px`
 
             // adjust handles and filler on the right
             let idx = splitRow
             for (let row = idx; row <= this.adapter!.rowCount; ++row) {
                 const cell = this.rowResizeHandles!.children[row] as HTMLSpanElement
-                const topOfCell = cell.style.top
-                const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
+                const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
             }
         }
@@ -946,8 +934,7 @@ export class Table extends View {
         for (let row = 0; row < splitBodyHeight; ++row) {
             for (let i = 0; i < this.adapter!.colCount; ++i) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
-                const topOfCell = cell.style.top
-                const top = parseFloat(topOfCell.substring(0, topOfCell.length - 2))
+                const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
                 this.body.appendChild(cell)
             }
