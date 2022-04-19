@@ -65,7 +65,7 @@ tableStyle.textContent = `
     top: 0;
     right: 0;
     bottom: 0;
-    overflow: clip;
+    overflow: hidden;
 }
 
 .cols {
@@ -128,6 +128,10 @@ tableStyle.textContent = `
     cursor: default;
 }
 
+.splitBody {
+    transition: transform 5s;
+}
+
 .body > span:hover {
     background: #1a1a1a;
 }
@@ -175,6 +179,7 @@ export class Table extends View {
     selection?: SelectionModel
     protected adapter?: TableAdapter<any>
 
+    _style: HTMLStyleElement
     protected root: HTMLDivElement // div containing everything else
     protected body: HTMLDivElement
     protected colHeads?: HTMLDivElement
@@ -231,7 +236,8 @@ export class Table extends View {
         this.body.onpointerdown = this.pointerDown
 
         this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(document.importNode(tableStyle, true))
+        this._style = document.importNode(tableStyle, true)
+        this.shadowRoot!.appendChild(this._style)
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
     }
@@ -361,7 +367,7 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        console.log(`Table2.modelChanged: ${event}`)
+        // console.log(`Table2.modelChanged: ${event}`)
         switch (event.type) {
             case TableEventType.INSERT_ROW: {
                 // TODO: when row is inserted before selection, selection must be adjusted
@@ -380,7 +386,7 @@ export class Table extends View {
                     let idx = event.index * this.adapter!.colCount
                     let beforeChild
                     let y
-                    console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
+                    // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
                     if (idx < this.body.children.length) {
                         beforeChild = this.body.children[idx]
                         const top = (beforeChild as HTMLSpanElement).style.top
@@ -416,11 +422,20 @@ export class Table extends View {
 
                     this.splitHorizontal(event.index + event.size)
 
-                    this.splitBody!.style.top = `${totalHeight}px` // TODO: make this an animation
+                    this.splitBody!.style.transitionProperty = "transform"
+                    this.splitBody!.style.transitionDuration = "500ms"
+                    this.splitBody!.ontransitionend = () => {
+                        this.joinHorizontal(event.index + event.size, totalHeight)
+                    }
+                    this.splitBody!.ontransitioncancel = () => {
+                        this.joinHorizontal(event.index + event.size, totalHeight)
+                    }
+                    setTimeout(() => {
+                        // console.log(this.splitBody!.isConnected)
+                        this.splitBody!.style.transform = `translateY(${totalHeight}px)` // TODO: make this an animation
+                    }, 50) // at around > 10ms we'll get an animated transition on google chrome
 
-                    this.joinHorizontal(event.index + event.size, totalHeight)
-
-                }, 0)
+                })
             } break
         }
     }
