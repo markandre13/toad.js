@@ -210,6 +210,7 @@ export class Table extends View {
         this.tabIndex = 0 // FIXME: value depends on selection model
 
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
+        this.keyDown = this.keyDown.bind(this)
         this.pointerDown = this.pointerDown.bind(this)
         this.handleDown = this.handleDown.bind(this)
         this.handleMove = this.handleMove.bind(this)
@@ -226,6 +227,7 @@ export class Table extends View {
         this.measure = div()
         this.measure.classList.add("measure")
 
+        this.onkeydown = this.keyDown
         this.body.onresize = this.setHeadingFillerSizeToScrollbarSize
         this.body.onscroll = () => {
             this.setHeadingFillerSizeToScrollbarSize()
@@ -251,8 +253,55 @@ export class Table extends View {
     override connectedCallback(): void {
         super.connectedCallback()
         if (this.selection === undefined) {
-            this.selection = new SelectionModel()
+            this.selection = new SelectionModel(TableEditMode.SELECT_CELL)
             this.selection.modified.add(this.selectionChanged, this)
+        }
+    }
+
+    keyDown(ev: KeyboardEvent) {
+        // console.log(`keydown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        if (!this.selection)
+            return
+        // FIXME: based on the selection model we could plug in a behaviour class
+        switch (this.selection.mode) {
+            case TableEditMode.SELECT_ROW: {
+                let row = this.selection.value.row
+                switch (ev.key) {
+                    case "ArrowDown":
+                        if (row + 1 < this.adapter!.rowCount)
+                            ++row
+                        break
+                    case "ArrowUp":
+                        if (row > 0)
+                            --row
+                        break
+                }
+                this.selection.row = row
+            } break
+            case TableEditMode.SELECT_CELL: {
+                let pos = { col: this.selection.col, row: this.selection.row }
+                switch (ev.key) {
+                    case "ArrowRight":
+                        if (pos.col + 1 < this.adapter!.colCount) {
+                            ++pos.col
+                        }
+                        break
+                    case "ArrowLeft":
+                        if (pos.col > 0) {
+                            --pos.col
+                        }
+                        break
+                    case "ArrowDown":
+                        if (pos.row + 1 < this.adapter!.rowCount)
+                            ++pos.row
+                        break
+                    case "ArrowUp":
+                        if (pos.row > 0)
+                            --pos.row
+                        break
+                }
+                this.selection.value = pos
+            } break
         }
     }
 
@@ -447,7 +496,7 @@ export class Table extends View {
                 for (let row = event.index; row < event.index + event.size; ++row) {
                     const cell = this.body.children[idx] as HTMLSpanElement
 
-                    totalHeight += Math.ceil(px2float(cell.style.height)+1)
+                    totalHeight += Math.ceil(px2float(cell.style.height) + 1)
                 }
 
                 let allSelected = this.body.querySelectorAll(".selected")
