@@ -27,6 +27,9 @@ import { TableEventType } from './TableEventType'
 
 import { span, div } from '@toad/util/lsx'
 
+// --spectrum-table-row-background-color-selected
+// --spectrum-alias-highlight-selected
+
 export let tableStyle = document.createElement("style")
 tableStyle.textContent = `
 :host {
@@ -452,7 +455,7 @@ export class Table extends View {
                     selected.classList.remove("selected")
                 }
 
-                this.splitHorizontal(event.index + event.size)
+                this.splitHorizontal(event.index + event.size, event.size)
 
                 this.splitBody!.style.transitionProperty = "transform"
                 this.splitBody!.style.transitionDuration = "500ms"
@@ -464,7 +467,7 @@ export class Table extends View {
                             this.body!.removeChild(this.body!.children[idx])
                         }
                     }
-                    this.joinHorizontal(event.index + event.size, -totalHeight)
+                    this.joinHorizontal(event.index + event.size, -totalHeight, event.size)
                 }
 
                 this.splitBody!.ontransitionend = closure
@@ -823,6 +826,9 @@ export class Table extends View {
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "splitBody"
+        const b = this.body.getBoundingClientRect()
+        this.splitBody.style.width = `${b.width}px`
+        this.splitBody.style.height = `${b.height}px`
 
         setTimeout(() => {
             this.splitHead!.scrollTop = this.colHeads!.scrollTop
@@ -834,9 +840,9 @@ export class Table extends View {
         // move the heads into splitHead
         const handle = this.handleIndex!
         const bodyWidth = handle
-        const splitBodyWidth = this.adapter!.colCount - handle
+        const splitBodyColumns = this.adapter!.colCount - handle
 
-        for (let i = 0; i < splitBodyWidth; ++i) {
+        for (let i = 0; i < splitBodyColumns; ++i) {
             this.splitHead.appendChild(this.colHeads!.children[handle])
         }
         // clone the filler
@@ -845,7 +851,7 @@ export class Table extends View {
         // move cells into splitBody
         let idx = handle
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
-            for (let col = 0; col < splitBodyWidth; ++col) {
+            for (let col = 0; col < splitBodyColumns; ++col) {
                 this.splitBody.appendChild(this.body.children[idx])
             }
             idx += bodyWidth
@@ -855,12 +861,12 @@ export class Table extends View {
     // move 'splitBody' back into 'body' to end animation
     joinVertical(delta: number) {
         const handle = this.handleIndex!
-        const splitBodyWidth = this.adapter!.colCount - handle
+        const splitBodyColumns = this.adapter!.colCount - handle
         let idx = handle
 
         // move column headers back and adjust their positions
         const filler = this.colHeads!.children[this.colHeads!.children.length - 1] as HTMLSpanElement
-        for (let col = 0; col < splitBodyWidth; ++col) {
+        for (let col = 0; col < splitBodyColumns; ++col) {
             const cell = this.splitHead!.children[0] as HTMLSpanElement
             const left = px2float(cell.style.left)
             cell.style.left = `${left + delta}px`
@@ -884,7 +890,7 @@ export class Table extends View {
             } else {
                 beforeChild = null
             }
-            for (let i = 0; i < splitBodyWidth; ++i) {
+            for (let i = 0; i < splitBodyColumns; ++i) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
                 const left = px2float(cell.style.left)
                 cell.style.left = `${left + delta}px`
@@ -899,7 +905,7 @@ export class Table extends View {
         this.splitBody = undefined
     }
 
-    splitHorizontal(splitRow: number) {
+    splitHorizontal(splitRow: number, extra: number = 0) {
         // initialize splitHead
         if (this.rowHeads !== undefined) {
             this.splitHead = div()
@@ -916,13 +922,18 @@ export class Table extends View {
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "splitBody"
+
+        const b = this.body.getBoundingClientRect()
+        this.splitBody.style.width = `${b.width}px`
+        this.splitBody.style.height = `${b.height}px`
+
         this.body.appendChild(this.splitBody)
 
-        const splitBodyHeight = this.adapter!.rowCount - splitRow
+        const splitBodyRows = this.adapter!.rowCount - splitRow + extra
 
         // move heads into splitHead
         if (this.splitHead !== undefined) {
-            for (let i = 0; i < splitBodyHeight; ++i) {
+            for (let i = 0; i < splitBodyRows; ++i) {
                 this.splitHead.appendChild(this.rowHeads!.children[splitRow])
             }
             // clone the filler
@@ -931,7 +942,7 @@ export class Table extends View {
 
         // move cells into splitBody
         let idx = this.adapter!.colCount * splitRow
-        for (let row = 0; row < splitBodyHeight; ++row) {
+        for (let row = 0; row < splitBodyRows; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 this.splitBody.appendChild(this.body.children[idx])
             }
@@ -939,13 +950,13 @@ export class Table extends View {
     }
 
     // move 'splitBody' back into 'body' to end animation
-    joinHorizontal(splitRow: number, delta: number) {
-        const splitBodyHeight = this.adapter!.rowCount - splitRow
+    joinHorizontal(splitRow: number, delta: number, extra: number = 0) {
+        const splitBodyRows = this.adapter!.rowCount - splitRow + extra
 
         // move row headers back and adjust their positions
         if (this.rowHeads !== undefined) {
             const filler = this.rowHeads!.children[this.rowHeads!.children.length - 1] as HTMLSpanElement
-            for (let row = 0; row < splitBodyHeight; ++row) {
+            for (let row = 0; row < splitBodyRows; ++row) {
                 const cell = this.splitHead!.children[0] as HTMLSpanElement
                 const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
@@ -964,11 +975,12 @@ export class Table extends View {
             }
         }
 
-        for (let row = 0; row < splitBodyHeight; ++row) {
+        for (let row = 0; row < splitBodyRows; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
                 const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
+                // console.log(`[${col},${row}] adjusted top of ${cell.innerText}`)
                 this.body.appendChild(cell)
             }
         }
