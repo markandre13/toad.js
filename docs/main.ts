@@ -45,14 +45,15 @@ NEXT STEPS:
 [X] resize last column
 [X] resize last column has a glitch in the header
 [X] implement minimum column size (eg. 8px?)
-[ ] restrict colHeads & rowHeads to body clientWidth & clientHeight (not working during adjust)
-[ ] refactor & add tests
 [X] implement the same thing for rows
-[ ] select row
-[ ] select cell
-[ ] use it to implement insert/remove row animation
+[ ] handle overlapping animation
+[ ] select row (& let selection emit event information with the old & new selection value)
+[X] select cell
+[X] use it to implement insert/remove row animation
 [ ] scroll to caret
 [ ] tree
+[ ] restrict colHeads & rowHeads to body clientWidth & clientHeight (not working during adjust)
+[ ] refactor & add tests
 [ ] move rows
 [ ] move within tree
 [ ] default table to: width 100%, height to fit content and move column header down when scrolling page

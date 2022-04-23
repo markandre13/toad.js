@@ -425,70 +425,8 @@ export class Table extends View {
         // console.log(`Table2.modelChanged: ${event}`)
         switch (event.type) {
             case TableEventType.INSERT_ROW: {
-                // TODO: when row is inserted before selection, selection must be adjusted
-
-                // prepareRows to be measured
-                for (let row = event.index; row < event.index + event.size; ++row) {
-                    for (let col = 0; col < this.adapter!.colCount; ++col) {
-                        const cell = span(
-                            this.adapter!.getDisplayCell(col, row) as Node
-                        )
-                        this.measure.appendChild(cell)
-                    }
-                }
-                // arrangeMeasuredRowsInGrid
-                setTimeout(() => {
-                    let idx = event.index * this.adapter!.colCount
-                    let beforeChild
-                    let y
-                    // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
-                    if (idx < this.body.children.length) {
-                        beforeChild = this.body.children[idx] as HTMLSpanElement
-                        y = px2int(beforeChild.style.top)
-                    } else {
-                        beforeChild = null
-                        if (this.body.children.length === 0) {
-                            y = 0
-                        } else {
-                            const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-                            y = px2int(cell.style.top)
-                        }
-                    }
-                    let totalHeight = 0
-                    for (let row = event.index; row < event.index + event.size; ++row) {
-                        let rowHeight = 0
-                        for (let col = 0; col < this.adapter!.colCount; ++col) {
-                            const child = this.measure.children[0]
-                            const bounds = child.getBoundingClientRect()
-                            rowHeight = Math.max(rowHeight, bounds.height)
-                        }
-                        for (let col = 0; col < this.adapter!.colCount; ++col) {
-                            const child = this.measure.children[0] as HTMLSpanElement
-                            child.style.left = (this.body.children[col] as HTMLSpanElement).style.left // FIXME: hack
-                            child.style.top = `${y}px`
-                            child.style.width = (this.body.children[col] as HTMLSpanElement).style.width // FIXME: hack
-                            child.style.height = `${rowHeight}px`
-                            this.body.insertBefore(child, beforeChild)
-                        }
-                        y += rowHeight
-                        totalHeight += Math.ceil(rowHeight)
-                    }
-
-                    this.splitHorizontal(event.index + event.size)
-
-                    this.splitBody!.style.transitionProperty = "transform"
-                    this.splitBody!.style.transitionDuration = "500ms"
-                    this.splitBody!.ontransitionend = () => {
-                        this.joinHorizontal(event.index + event.size, totalHeight)
-                    }
-                    this.splitBody!.ontransitioncancel = () => {
-                        this.joinHorizontal(event.index + event.size, totalHeight)
-                    }
-                    setTimeout(() => {
-                        this.splitBody!.style.transform = `translateY(${totalHeight}px)` // TODO: make this an animation
-                    }, 50) // at around > 10ms we'll get an animated transition on google chrome
-
-                })
+                const animation = new InsertRowAnimation(this, event)
+                animation.run()
             } break
             case TableEventType.REMOVE_ROW: {
                 let totalHeight = 0
@@ -1057,3 +995,101 @@ export class Table extends View {
     }
 }
 Table.define("tx-table2", Table)
+
+class InsertRowAnimation {
+    table: Table
+    event: TableEvent
+
+    totalHeight!: number
+
+    constructor(table: Table, event: TableEvent) {
+        this.table = table
+        this.event = event
+        this.joinHorizontal = this.joinHorizontal.bind(this)
+    }
+
+    // workaround for missing 'friend' declarator in typescript
+    protected get adapter() {
+        return (this.table as any).adapter as TableAdapter<any>
+    }
+    protected get measure() {
+        return (this.table as any).measure as HTMLDivElement
+    }
+    protected get body() {
+        return (this.table as any).body as HTMLDivElement
+    }
+    protected get splitBody() {
+        return (this.table as any).splitBody as HTMLDivElement
+    }
+    splitHorizontal(splitRow: number, extra: number = 0) {
+        this.table.splitHorizontal(splitRow, extra)
+    }
+    joinHorizontal(ev: TransitionEvent) {
+        this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight)
+    }
+
+    run() {
+        this.prepareCells()
+        setTimeout(() => {
+            this.arrangeMeasuredRowsInGrid()
+            this.splitHorizontal(this.event.index + this.event.size)
+            this.splitBody.style.transitionProperty = "transform"
+            this.splitBody.style.transitionDuration = "500ms"
+            this.splitBody.ontransitionend = this.joinHorizontal
+            this.splitBody.ontransitioncancel = this.joinHorizontal
+            setTimeout(() => {
+                this.splitBody.style.transform = `translateY(${this.totalHeight}px)` // TODO: make this an animation
+            }, 50) // at around > 10ms we'll get an animated transition on google chrome
+        })
+    }
+
+    prepareCells() {
+        for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
+            for (let col = 0; col < this.adapter.colCount; ++col) {
+                const cell = span(
+                    this.adapter!.getDisplayCell(col, row) as Node
+                )
+                this.measure.appendChild(cell)
+            }
+        }
+    }
+
+    arrangeMeasuredRowsInGrid() {
+        let idx = this.event.index * this.adapter.colCount
+        let beforeChild
+        let y
+        // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
+        if (idx < this.body.children.length) {
+            beforeChild = this.body.children[idx] as HTMLSpanElement
+            y = px2int(beforeChild.style.top)
+        } else {
+            beforeChild = null
+            if (this.body.children.length === 0) {
+                y = 0
+            } else {
+                const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+                y = px2int(cell.style.top)
+            }
+        }
+        let totalHeight = 0
+        for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
+            let rowHeight = 0
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
+                const child = this.measure.children[0]
+                const bounds = child.getBoundingClientRect()
+                rowHeight = Math.max(rowHeight, bounds.height)
+            }
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
+                const child = this.measure.children[0] as HTMLSpanElement
+                child.style.left = (this.body.children[col] as HTMLSpanElement).style.left // FIXME: hack
+                child.style.top = `${y}px`
+                child.style.width = (this.body.children[col] as HTMLSpanElement).style.width // FIXME: hack
+                child.style.height = `${rowHeight}px`
+                this.body.insertBefore(child, beforeChild)
+            }
+            y += rowHeight
+            totalHeight += Math.ceil(rowHeight)
+        }
+        this.totalHeight = totalHeight
+    }
+}
