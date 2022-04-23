@@ -204,6 +204,8 @@ export class Table extends View {
     protected splitHead?: HTMLDivElement
     protected splitBody?: HTMLDivElement
 
+    animation?: TableAnimation
+
     constructor() {
         super()
 
@@ -425,45 +427,18 @@ export class Table extends View {
         // console.log(`Table2.modelChanged: ${event}`)
         switch (event.type) {
             case TableEventType.INSERT_ROW: {
-                const animation = new InsertRowAnimation(this, event)
-                animation.run()
+                if (this.animation) {
+                    this.animation.stop()
+                }
+                this.animation = new InsertRowAnimation(this, event)
+                this.animation.run()
             } break
             case TableEventType.REMOVE_ROW: {
-                let totalHeight = 0
-                let idx = event.index * this.adapter!.colCount
-                for (let row = event.index; row < event.index + event.size; ++row) {
-                    const cell = this.body.children[idx] as HTMLSpanElement
-
-                    totalHeight += Math.ceil(px2float(cell.style.height) + 1)
+                if (this.animation) {
+                    this.animation.stop()
                 }
-
-                let allSelected = this.body.querySelectorAll(".selected")
-                for (let selected of allSelected) {
-                    selected.classList.remove("selected")
-                }
-
-                this.splitHorizontal(event.index + event.size, event.size)
-
-                this.splitBody!.style.transitionProperty = "transform"
-                this.splitBody!.style.transitionDuration = "500ms"
-
-                const closure = () => {
-                    let idx = event.index * this.adapter!.colCount
-                    for (let row = 0; row < event.size; ++row) {
-                        for (let col = 0; col < this.adapter!.colCount; ++col) {
-                            this.body!.removeChild(this.body!.children[idx])
-                        }
-                    }
-                    this.joinHorizontal(event.index + event.size, -totalHeight, event.size)
-                }
-
-                this.splitBody!.ontransitionend = closure
-                this.splitBody!.ontransitioncancel = closure
-                setTimeout(() => {
-                    // console.log(this.splitBody!.isConnected)
-                    this.splitBody!.style.transform = `translateY(${-totalHeight}px)` // TODO: make this an animation
-                }, 50) // at around > 10ms we'll get an animated transition on google chrome
-
+                this.animation = new RemoveRowAnimation(this, event)
+                this.animation.run()
             } break
             default:
                 console.log(`Table.modelChanged(): ${event} is not implemented`)
@@ -937,8 +912,16 @@ export class Table extends View {
     }
 
     // move 'splitBody' back into 'body' to end animation
-    joinHorizontal(splitRow: number, delta: number, extra: number = 0) {
-        const splitBodyRows = this.adapter!.rowCount - splitRow + extra
+    joinHorizontal(splitRow: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
+
+        if (colCount === undefined) {
+            colCount = this.adapter!.colCount
+        }
+        if (rowCount === undefined) {
+            rowCount = this.adapter!.rowCount
+        }
+
+        const splitBodyRows = rowCount - splitRow + extra
 
         // move row headers back and adjust their positions
         if (this.rowHeads !== undefined) {
@@ -955,7 +938,7 @@ export class Table extends View {
 
             // adjust handles and filler on the right
             let idx = splitRow
-            for (let row = idx; row <= this.adapter!.rowCount; ++row) {
+            for (let row = idx; row <= rowCount; ++row) {
                 const cell = this.rowResizeHandles!.children[row] as HTMLSpanElement
                 const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
@@ -963,7 +946,7 @@ export class Table extends View {
         }
 
         for (let row = 0; row < splitBodyRows; ++row) {
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
+            for (let col = 0; col < colCount; ++col) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
                 const top = px2float(cell.style.top)
                 cell.style.top = `${top + delta}px`
@@ -996,19 +979,12 @@ export class Table extends View {
 }
 Table.define("tx-table2", Table)
 
-class InsertRowAnimation {
+// workaround for missing 'friend' declarator in typescript
+class TableFriend {
     table: Table
-    event: TableEvent
-
-    totalHeight!: number
-
-    constructor(table: Table, event: TableEvent) {
+    constructor(table: Table) {
         this.table = table
-        this.event = event
-        this.joinHorizontal = this.joinHorizontal.bind(this)
     }
-
-    // workaround for missing 'friend' declarator in typescript
     protected get adapter() {
         return (this.table as any).adapter as TableAdapter<any>
     }
@@ -1021,16 +997,119 @@ class InsertRowAnimation {
     protected get splitBody() {
         return (this.table as any).splitBody as HTMLDivElement
     }
+    protected clearAnimation() {
+        (this.table as any).animation = undefined
+    }
+}
+
+abstract class TableAnimation extends TableFriend {
+    constructor(table: Table) {
+        super(table)
+    }
+    abstract run(): void
+    abstract stop(): void
+}
+
+class RemoveRowAnimation extends TableAnimation {
+    event: TableEvent
+    totalHeight!: number
+    done = false
+    colCount: number
+    rowCount: number
+
+    constructor(table: Table, event: TableEvent) {
+        super(table)
+        this.event = event
+        this.joinHorizontal = this.joinHorizontal.bind(this)
+
+        this.colCount = this.adapter.colCount
+        this.rowCount = this.adapter.rowCount
+    }
+
+    override stop() {
+        this.joinHorizontal()
+        this.clearAnimation()
+    }
+
     splitHorizontal(splitRow: number, extra: number = 0) {
         this.table.splitHorizontal(splitRow, extra)
     }
-    joinHorizontal(ev: TransitionEvent) {
-        this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight)
+
+    joinHorizontal() {
+        if (!this.done) {
+            this.done = true
+
+            let idx = this.event.index * this.colCount
+            for (let row = 0; row < this.event.size; ++row) {
+                for (let col = 0; col < this.colCount; ++col) {
+                    this.body.removeChild(this.body.children[idx])
+                }
+            }
+            this.table.joinHorizontal(this.event.index + this.event.size, -this.totalHeight, this.event.size, this.colCount, this.rowCount)
+        }
+    }
+
+    run() {
+        let totalHeight = 0
+        let idx = this.event.index * this.colCount
+        for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
+            const cell = this.body.children[idx] as HTMLSpanElement
+            totalHeight += Math.ceil(px2float(cell.style.height) + 1)
+        }
+        this.totalHeight = totalHeight
+
+        let allSelected = this.body.querySelectorAll(".selected")
+        for (let selected of allSelected) {
+            selected.classList.remove("selected")
+        }
+
+        this.splitHorizontal(this.event.index + this.event.size, this.event.size)
+
+        this.splitBody.style.transitionProperty = "transform"
+        this.splitBody.style.transitionDuration = "5000ms"
+        this.splitBody.ontransitionend = this.joinHorizontal
+        this.splitBody.ontransitioncancel = this.joinHorizontal
+        setTimeout(() => {
+            this.splitBody.style.transform = `translateY(${-this.totalHeight}px)` // TODO: make this an animation
+        }, 50) // at around > 10ms we'll get an animated transition on google chrome
+    }
+}
+
+class InsertRowAnimation extends TableAnimation {
+    event: TableEvent
+    totalHeight!: number
+    done = false
+    colCount: number
+    rowCount: number
+
+    constructor(table: Table, event: TableEvent) {
+        super(table)
+        this.event = event
+        this.joinHorizontal = this.joinHorizontal.bind(this)
+        this.colCount = this.adapter.colCount
+        this.rowCount = this.adapter.rowCount
+    }
+
+    stop() {
+        this.joinHorizontal()
+        this.clearAnimation()
+    }
+
+    splitHorizontal(splitRow: number, extra: number = 0) {
+        this.table.splitHorizontal(splitRow, extra)
+    }
+
+    joinHorizontal() {
+        if (!this.done) {
+            this.done = true
+            this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight, 0, this.colCount, this.rowCount)
+        }
     }
 
     run() {
         this.prepareCells()
         setTimeout(() => {
+            // FIXME: if stop is called before this is executed (unlikely), stop will fail
             this.arrangeMeasuredRowsInGrid()
             this.splitHorizontal(this.event.index + this.event.size)
             this.splitBody.style.transitionProperty = "transform"
@@ -1045,9 +1124,9 @@ class InsertRowAnimation {
 
     prepareCells() {
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
-            for (let col = 0; col < this.adapter.colCount; ++col) {
+            for (let col = 0; col < this.colCount; ++col) {
                 const cell = span(
-                    this.adapter!.getDisplayCell(col, row) as Node
+                    this.adapter.getDisplayCell(col, row) as Node
                 )
                 this.measure.appendChild(cell)
             }
@@ -1055,7 +1134,7 @@ class InsertRowAnimation {
     }
 
     arrangeMeasuredRowsInGrid() {
-        let idx = this.event.index * this.adapter.colCount
+        let idx = this.event.index * this.colCount
         let beforeChild
         let y
         // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
@@ -1074,12 +1153,12 @@ class InsertRowAnimation {
         let totalHeight = 0
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             let rowHeight = 0
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
+            for (let col = 0; col < this.colCount; ++col) {
                 const child = this.measure.children[0]
                 const bounds = child.getBoundingClientRect()
                 rowHeight = Math.max(rowHeight, bounds.height)
             }
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
+            for (let col = 0; col < this.colCount; ++col) {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = (this.body.children[col] as HTMLSpanElement).style.left // FIXME: hack
                 child.style.top = `${y}px`

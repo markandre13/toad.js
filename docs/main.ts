@@ -46,7 +46,7 @@ NEXT STEPS:
 [X] resize last column has a glitch in the header
 [X] implement minimum column size (eg. 8px?)
 [X] implement the same thing for rows
-[ ] handle overlapping animation
+[X] handle overlapping animation
 [ ] select row (& let selection emit event information with the old & new selection value)
 [X] select cell
 [X] use it to implement insert/remove row animation
