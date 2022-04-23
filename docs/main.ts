@@ -50,6 +50,7 @@ NEXT STEPS:
 [ ] select row (& let selection emit event information with the old & new selection value)
 [X] select cell
 [X] use it to implement insert/remove row animation
+[ ] adjust selection after insert/remove row
 [ ] scroll to caret
 [ ] tree
 [ ] restrict colHeads & rowHeads to body clientWidth & clientHeight (not working during adjust)
