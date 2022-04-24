@@ -47,11 +47,13 @@ NEXT STEPS:
 [X] implement minimum column size (eg. 8px?)
 [X] implement the same thing for rows
 [X] handle overlapping animation
-[ ] select row (& let selection emit event information with the old & new selection value)
 [X] select cell
 [X] use it to implement insert/remove row animation
+[X] scroll to caret
 [ ] adjust selection after insert/remove row
-[ ] scroll to caret
+[ ] edit cell
+[ ] tab key
+[ ] select row (& let selection emit event information with the old & new selection value)
 [ ] tree
 [ ] restrict colHeads & rowHeads to body clientWidth & clientHeight (not working during adjust)
 [ ] refactor & add tests

@@ -29,10 +29,11 @@ import { InsertRowAnimation } from './InsertRowAnimation'
 import { RemoveRowAnimation } from './RemoveRowAnimation'
 
 import { span, div } from '@toad/util/lsx'
+import { scrollIntoView } from '@toad/util/scrollIntoView'
 
 // --spectrum-table-row-background-color-selected
 // --spectrum-alias-highlight-selected
-
+// --spectrum-alias-highlight-selected: rgba(20,115,230,0.1); // --tx-global-blue-500 with alias 0.1
 export let tableStyle = document.createElement("style")
 tableStyle.textContent = `
 :host {
@@ -399,6 +400,7 @@ export class Table extends View {
                 }
                 const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
                 cell.classList.add("selected")
+                scrollIntoView(cell)
                 // this.prepareInputOverlayForPosition(new TablePos(this.selectionModel.col, this.selectionModel.row))
                 // delete (this.rootDiv as any).tabIndex
             } break
@@ -412,6 +414,7 @@ export class Table extends View {
                 cell.classList.add("selected")
                 // this.toggleCellSelection(this.selectionModel.value, true)
                 this.tabIndex = 0
+                scrollIntoView(cell)
                 break
             }
             case TableEditMode.SELECT_ROW: {
