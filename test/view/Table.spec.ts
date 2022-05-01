@@ -337,6 +337,7 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         return `${cell.value}`
     }
     setField(col: number, row: number, value: string) {
+        console.log(`setField(${col}, ${row}, '${value}')`)
         const index = col + row * this._cols
         let cell = this._data[index]
         if (cell === undefined) {
@@ -346,25 +347,41 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
             // remove depedencies
             cell.value = value
         }
-        this.addDependencies(cell)
+        this.observe(cell)
+
         cell.eval(this)
+
+        // FIXME: this needs to be done recursivley
+        this.updateObservers(cell)    
     }
 
-    protected addDependencies(cell: SpreadsheetCell) {
+    protected updateObservers(cell: SpreadsheetCell) {
+        const observers = this.dependencies.get(cell)
+        if (observers !== undefined) {
+            observers.forEach( observer => {
+                console.log(`  update observer ${observer._str}`)
+                observer.eval(this)
+            })
+        }
+    }
+
+    protected observe(cell: SpreadsheetCell) {
         const dependencies = cell.getDependencies()
         dependencies.forEach(element => {
             const col = element[0]
             const row = element[1]
+
+            console.log(`    depends on [${col}, ${row}]`)
             const index = col + row * this._cols
-            let subject = this._data[index]
-            if (subject === undefined) {
-                subject = new SpreadsheetCell()
-                this._data[index] = subject
+            let dependency = this._data[index]
+            if (dependency === undefined) {
+                dependency = new SpreadsheetCell()
+                this._data[index] = dependency
             }
-            let dependents = this.dependencies.get(subject)
+            let dependents = this.dependencies.get(dependency)
             if (dependents === undefined) {
                 dependents = new Set<SpreadsheetCell>()
-                this.dependencies.set(subject, dependents)
+                this.dependencies.set(dependency, dependents)
             }
             dependents.add(cell)
         })
@@ -443,15 +460,14 @@ describe("view", function () {
                 expect(m.getField(0, 0)).to.equal("3")
             })
             it("A1=1+2, B2=A1*2 -> 6", function () {
-                const m = new SpreadsheetModel(2, 2)
+                const m = new SpreadsheetModel(4, 4)
                 m.setField(0, 0, "=1+2")
                 m.setField(1, 1, "=A1*2")
                 expect(m.getField(1, 1)).to.equal("6")
-
-                m.setField(0, 0, "=4")
-                m._data[3].eval(m) // FIXME: this needs to be done automatically
+                m.setField(0, 0, "=3+1")
                 expect(m.getField(1, 1)).to.equal("8")
             })
+            // dependency involving 3 fields to check recursion
         })
 
         describe("lexer", function () {
@@ -644,7 +660,7 @@ describe("view", function () {
             })
         })
         describe("dependencies", function () {
-            it("", function () {
+            it("A2 + 2 * C4", function () {
                 const t = expression(new Lexer("=A2+2*C4"))
                 expect(t?.dependencies()).to.deep.equal([[0, 1], [2, 3]])
             })
