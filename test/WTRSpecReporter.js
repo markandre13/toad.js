@@ -24,7 +24,6 @@ const colour = {
 
     bold: '\x1b[1m',
     underline: '\x1b[4m',
-    underline: '\x1b[4m',
     noUnderline: '\x1b[24m',
     reversed: '\x1b[7m',
 

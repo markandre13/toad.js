@@ -50,6 +50,7 @@ NEXT STEPS:
 [X] select cell
 [X] use it to implement insert/remove row animation
 [X] scroll to caret
+[ ] caret position != selection
 [ ] adjust selection after insert/remove row
 [ ] edit cell
 [ ] tab key
