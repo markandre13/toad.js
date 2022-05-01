@@ -1,5 +1,6 @@
 import { expect } from '@esm-bundle/chai'
 import { TableModel, TableAdapter, bindModel, unbind, text } from "@toad"
+import { TypedTableModel } from "src/table/TypedTableModel"
 
 function sleep(milliseconds: number = 500) {
     return new Promise((resolve, reject) => {
@@ -9,15 +10,11 @@ function sleep(milliseconds: number = 500) {
     })
 }
 
-class SpreadsheetCell {
-    raw!: string
-}
-
-class Node {
-    value: string | number | undefined
-    down?: Node
-    next?: Node
-    constructor(value: string | number | undefined) {
+class ExpressionNode {
+    value: string | number | number[] | undefined
+    down?: ExpressionNode
+    next?: ExpressionNode
+    constructor(value: string | number | number[] | undefined) {
         this.value = value
     }
     eval(): number {
@@ -40,7 +37,7 @@ class Node {
                 throw Error(`unexpected token '${this.value}'`)
         }
     }
-    append(node: Node) {
+    append(node: ExpressionNode) {
         if (this.down === undefined) {
             this.down = node
         } else {
@@ -54,7 +51,7 @@ class Node {
     toString() {
         return this._toString()
     }
-    _toString(out: string = "\n", indent: number = 0) {
+    protected _toString(out: string = "\n", indent: number = 0) {
         for (let i = 0; i < indent; ++i) {
             out += "    "
         }
@@ -70,7 +67,7 @@ class Node {
 class Lexer {
     i = 0
     str: string
-    stack?: Node
+    stack?: ExpressionNode
     constructor(str: string) {
         this.str = str
     }
@@ -81,7 +78,14 @@ class Lexer {
         const code = c.charCodeAt(0)
         return code >= 0x30 && code <= 0x39
     }
-    unlex(node: Node) {
+    isalpha(c: string) {
+        const code = c.charCodeAt(0)
+        return code >= 0x41 && code <= 0x5a || code >= 0x91 && code <= 0x7a
+    }
+    isalnum(c: string) {
+        return this.isnumber(c) || this.isalpha(c)
+    }
+    unlex(node: ExpressionNode) {
         if (this.stack !== undefined) {
             throw Error(`Lexer.unlex(): can't unlex more than one node (${this.stack.value}, ${node.value})`)
         }
@@ -100,6 +104,8 @@ class Lexer {
             return n
         }
 
+        let col = 0, row = 0
+
         let state = 0
         if (this.i >= this.str.length) {
             return undefined
@@ -107,7 +113,7 @@ class Lexer {
         const start = this.i
         while (true) {
             let c = this.str.at(this.i)
-            // console.log(`state=${state}, i=${this.i}, c=${c}`)
+            // console.log(`state=${state}, i=${this.i}, c=${c}, col=${col}, row=${row}`)
             switch (state) {
                 case 0:
                     if (c === undefined) {
@@ -122,6 +128,11 @@ class Lexer {
                         state = 1
                         break
                     }
+                    if (this.isalpha(c)) {
+                        col = 0
+                        state = 3
+                        break
+                    }
                     switch (c) {
                         case '+':
                         case '-':
@@ -129,43 +140,78 @@ class Lexer {
                         case '/':
                         case '(':
                         case ')':
+                        case '=':
                             ++this.i
-                            return new Node(c)
+                            return new ExpressionNode(c)
                     }
                     return undefined
                 case 1: // [0-9]?
-                    if (c === undefined) {
-                        return new Node(parseFloat(this.str.substring(start, this.i)))
-                    }
-                    if (this.isnumber(c)) {
+                    if (c !== undefined && this.isnumber(c)) {
                         ++this.i
-                        continue
+                        break
                     }
                     if (c === '.' || c == 'e' || c == 'E') {
                         ++this.i
                         state = 2
                         break
                     }
-                    return new Node(parseFloat(this.str.substring(start, this.i)))
+                    return new ExpressionNode(parseFloat(this.str.substring(start, this.i)))
                 case 2: // [0-9]+[.eE]?
-                    if (c === undefined) {
-                        return new Node(parseFloat(this.str.substring(start, this.i)))
-                    }
-                    if (this.isnumber(c)) {
+                    if (c !== undefined && this.isnumber(c)) {
                         ++this.i
-                        continue
+                        break
                     }
-                    return new Node(parseFloat(this.str.substring(start, this.i)))
+                    return new ExpressionNode(parseFloat(this.str.substring(start, this.i)))
+                case 3: // [a-zA-Z]+?
+                    if (c !== undefined) {
+                        // isnumber(c: string) {
+                        const code = c.charCodeAt(0)
+                        
+                        if (code >= 0x30 && code <= 0x39) {
+                            row = code - 0x30
+                            state = 4
+                            ++this.i
+                            break
+                        }
+                        if (code >= 0x41 && code <= 0x5a) {
+                            col *= 26
+                            col += code - 0x40
+                            ++this.i
+                            break
+                        }
+                        if (code >= 0x91 && code <= 0x7a) {
+                            col *= 26
+                            col += code - 0x90
+                            ++this.i
+                            break
+                        }
+                    }
+                    return new ExpressionNode(this.str.substring(start, this.i))
+                case 4: // [a-zA-Z][0-9]+?
+                    if (c !== undefined) {
+                        const code = c.charCodeAt(0)
+                        if (code >= 0x30 && code <= 0x39) {
+                            row *= 10
+                            row += code - 0x30
+                            ++this.i
+                            break
+                        }
+                    }
+                    return new ExpressionNode([col-1, row-1])
             }
         }
     }
 }
 
-function expression(lexer: Lexer): Node | undefined {
+function expression(lexer: Lexer): ExpressionNode | undefined {
+    const n0 = lexer.lex()
+    if (n0 === undefined || n0.value !== '=') {
+        return undefined
+    }
     return additive_expression(lexer)
 }
 
-function additive_expression(lexer: Lexer): Node | undefined {
+function additive_expression(lexer: Lexer): ExpressionNode | undefined {
     const n0 = multiplicative_expression(lexer)
     if (n0 === undefined) {
         return undefined
@@ -189,7 +235,7 @@ function additive_expression(lexer: Lexer): Node | undefined {
     return n0
 }
 
-function multiplicative_expression(lexer: Lexer): Node | undefined {
+function multiplicative_expression(lexer: Lexer): ExpressionNode | undefined {
     const n0 = unary_expression(lexer)
     if (n0 === undefined) {
         return undefined
@@ -211,7 +257,7 @@ function multiplicative_expression(lexer: Lexer): Node | undefined {
     return n0
 }
 
-function unary_expression(lexer: Lexer): Node | undefined {
+function unary_expression(lexer: Lexer): ExpressionNode | undefined {
     const n0 = lexer.lex()
     if (n0 === undefined) {
         return undefined
@@ -220,7 +266,7 @@ function unary_expression(lexer: Lexer): Node | undefined {
         return n0
     }
     if (n0.value === "(") {
-        const n1 = expression(lexer)
+        const n1 = additive_expression(lexer)
         if (n1 === undefined) {
             throw Error("Unexpected end after '(")
         }
@@ -241,12 +287,92 @@ function unary_expression(lexer: Lexer): Node | undefined {
     return undefined
 }
 
-class SpreadsheetModel extends TableModel {
+class GridTableModel<T> extends TypedTableModel<T> {
+    _cols: number
+    _rows: number
+    _data: Array<T>
+    constructor(nodeClass: new () => T, cols: number, rows: number) {
+        super(nodeClass)
+        this._cols = cols
+        this._rows = rows
+        this._data = new Array(cols * rows)
+    }
     get colCount(): number {
-        throw new Error('Method not implemented.')
+        return this._cols
     }
     get rowCount(): number {
-        throw new Error('Method not implemented.')
+        return this._rows
+    }
+}
+
+class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
+    dependencies = new Map<SpreadsheetCell, Set<SpreadsheetCell>>()
+
+    constructor(cols: number, rows: number) {
+        super(SpreadsheetCell, cols, rows)
+    }
+    getField(col: number, row: number): string {
+        const index = col + row * this._cols
+        let cell = this._data[index]
+        if (cell === undefined) {
+            return ""
+        }
+        return cell.value
+    }
+    setField(col: number, row: number, value: string) {
+        const index = col + row * this._cols
+        let cell = this._data[index]
+        if (cell === undefined) {
+            cell = new SpreadsheetCell(value)
+            this._data[col + row * this._cols] = cell
+        } else {
+            // remove dependencies
+            cell.value = value
+        }
+
+        // add dependencies
+        const dependencies = cell.getDependencies()
+    }
+    // insertRow(row: number, rowData?: T | Array<T>): number
+    // removeRow(row: number, count: number = 1): number
+}
+
+// export abstract class SpreadsheetAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
+//     override getDisplayCell(col: number, row: number): Node | Node[] | undefined {
+//         if (!this.model) {
+//             return undefined
+//         }
+//         const cell = this.model.getField(col, row)
+//         if (cell === undefined)
+//             return undefined
+//         return document.createTextNode(cell)
+//     }
+// }
+
+class SpreadsheetCell {
+    _value?: string | ExpressionNode
+    constructor(value?: string) {
+        console.log(`SpreadsheetCell(${value})`)
+
+        if (value === undefined || value.trim().length === 0) {
+            return
+        }
+        this.value = value
+    }
+    set value(value: string) {
+        const parsed = expression(new Lexer(value))
+        this._value = parsed === undefined ? value : parsed
+    }
+    get value(): string {
+        if (this._value === undefined) {
+            return ""
+        }
+        if (typeof this._value === "string") {
+            return this._value
+        }
+        return `${this._value.eval()}`
+    }
+    getDependencies() {
     }
 }
 
@@ -259,6 +385,25 @@ describe("view", function () {
     })
 
     describe.only("spreadsheetmodel", function () {
+        describe("model", function () {
+            it("1+2 -> 1=2", function () {
+                const m = new SpreadsheetModel(4, 4)
+                m.setField(0, 0, "1+2")
+                expect(m.getField(0, 0)).to.equal("1+2")
+            })
+            it("=1+2 -> 3", function () {
+                const m = new SpreadsheetModel(4, 4)
+                m.setField(0, 0, "=1+2")
+                expect(m.getField(0, 0)).to.equal("3")
+            })
+            it("A1=1+2, B2=A1*2 -> 6", function () {
+                const m = new SpreadsheetModel(4, 4)
+                m.setField(0, 0, "=1+2")
+                m.setField(1, 1, "=A1*2")
+                expect(m.getField(1, 1)).to.equal("6")
+            })
+        })
+
         describe("lexer", function () {
             describe("single token", function () {
                 it("1", function () {
@@ -301,9 +446,21 @@ describe("view", function () {
                     const lexer = new Lexer(")")
                     expect(lexer.lex()?.value).to.equal(')')
                 })
-                xit("A:1", function () {
-                    const lexer = new Lexer(")")
-                    expect(lexer.lex()?.value).to.equal(')')
+                it("A1", function () {
+                    const lexer = new Lexer("A1")
+                    expect(lexer.lex()?.value).to.deep.equal([0, 0])
+                })
+                it("Z9", function () {
+                    const lexer = new Lexer("Z9")
+                    expect(lexer.lex()?.value).to.deep.equal([25, 8])
+                })
+                it("AA10", function () {
+                    const lexer = new Lexer("AA10")
+                    expect(lexer.lex()?.value).to.deep.equal([26, 9])
+                })
+                it("AB13", function () {
+                    const lexer = new Lexer("AB11")
+                    expect(lexer.lex()?.value).to.deep.equal([27, 10])
                 })
                 xit("SUM(<cell>, ...)", function () {
                     const lexer = new Lexer(")")
@@ -333,26 +490,27 @@ describe("view", function () {
         })
         describe("parser", function () {
             it("1", function () {
-                const lexer = new Lexer("1")
+                const lexer = new Lexer("=1")
                 const tree = expression(lexer)
+                console.log(tree?.toString())
                 expect(tree?.value).to.equal(1)
             })
             it("1+2", function () {
-                const lexer = new Lexer("1+2")
+                const lexer = new Lexer("=1+2")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('+')
                 expect(tree?.down?.value).to.equal(1)
                 expect(tree?.down?.next?.value).to.equal(2)
             })
             it("1*2", function () {
-                const lexer = new Lexer("1*2")
+                const lexer = new Lexer("=1*2")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('*')
                 expect(tree?.down?.value).to.equal(1)
                 expect(tree?.down?.next?.value).to.equal(2)
             })
             it("1+2*3", function () {
-                const lexer = new Lexer("1+2*3")
+                const lexer = new Lexer("=1+2*3")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('+')
                 expect(tree?.down?.value).to.equal(1)
@@ -361,7 +519,7 @@ describe("view", function () {
                 expect(tree?.down?.next?.down?.next?.value).to.equal(3)
             })
             it("1*2+3", function () {
-                const lexer = new Lexer("1*2+3")
+                const lexer = new Lexer("=1*2+3")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('+')
                 expect(tree?.down?.value).to.equal('*')
@@ -370,26 +528,26 @@ describe("view", function () {
                 expect(tree?.down?.next?.value).to.equal(3)
             })
             it("(1)", function () {
-                const lexer = new Lexer("(1)")
+                const lexer = new Lexer("=(1)")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal(1)
             })
             it("(1+2)", function () {
-                const lexer = new Lexer("(1+2)")
+                const lexer = new Lexer("=(1+2)")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('+')
                 expect(tree?.down?.value).to.equal(1)
                 expect(tree?.down?.next?.value).to.equal(2)
             })
             it("((1+2))", function () {
-                const lexer = new Lexer("((1+2))")
+                const lexer = new Lexer("=((1+2))")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('+')
                 expect(tree?.down?.value).to.equal(1)
                 expect(tree?.down?.next?.value).to.equal(2)
             })
             it("(1+2)*3", function () {
-                const lexer = new Lexer("(1+2)*3")
+                const lexer = new Lexer("=(1+2)*3")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('*')
                 expect(tree?.down?.value).to.equal('+')
@@ -398,13 +556,13 @@ describe("view", function () {
                 expect(tree?.down?.next?.value).to.equal(3)
             })
             it("-1", function () {
-                const lexer = new Lexer("-1")
+                const lexer = new Lexer("=-1")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('-')
                 expect(tree?.down?.value).to.equal(1)
             })
             it("-1", function () {
-                const lexer = new Lexer("1+-2")
+                const lexer = new Lexer("=1+-2")
                 const tree = expression(lexer)
                 expect(tree?.value).to.equal('+')
                 expect(tree?.down?.value).to.equal(1)
@@ -414,25 +572,25 @@ describe("view", function () {
         })
         describe("eval", function () {
             it("1+2", function () {
-                expect(expression(new Lexer("1+2"))?.eval()).to.equal(3)
+                expect(expression(new Lexer("=1+2"))?.eval()).to.equal(3)
             })
             it("3-2", function () {
-                expect(expression(new Lexer("3-2"))?.eval()).to.equal(1)
+                expect(expression(new Lexer("=3-2"))?.eval()).to.equal(1)
             })
             it("2*3", function () {
-                expect(expression(new Lexer("2*3"))?.eval()).to.equal(6)
+                expect(expression(new Lexer("=2*3"))?.eval()).to.equal(6)
             })
             it("6/2", function () {
-                expect(expression(new Lexer("6/2"))?.eval()).to.equal(3)
+                expect(expression(new Lexer("=6/2"))?.eval()).to.equal(3)
             })
             it("-1", function () {
-                expect(expression(new Lexer("-1"))!.eval()).to.equal(-1)
+                expect(expression(new Lexer("=-1"))!.eval()).to.equal(-1)
             })
             it("1+-4", function () {
-                expect(expression(new Lexer("1+-4"))!.eval()).to.equal(-3)
+                expect(expression(new Lexer("=1+-4"))!.eval()).to.equal(-3)
             })
             it("6*2+14/7-3", function () {
-                expect(expression(new Lexer("6*2+14/7-3"))?.eval()).to.equal(11)
+                expect(expression(new Lexer("=6*2+14/7-3"))?.eval()).to.equal(11)
             })
         })
     })

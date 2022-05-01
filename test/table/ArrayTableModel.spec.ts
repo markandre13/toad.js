@@ -19,7 +19,7 @@ describe("view", function() {
                     model.modified.add( (data: TableEvent) => { event = data })
 
                     const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
-                    model.insert(3, newBook)
+                    model.insertRow(3, newBook)
 
                     expect(model.data.length).to.equal(9)
                     expect(model.data[3]).to.equal(newBook)
@@ -34,7 +34,7 @@ describe("view", function() {
 
                     const newBook0 = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
                     const newBook1 = new Book("Master of the World", "Jules Verne", 1904)
-                    model.insert(3, [newBook0, newBook1])
+                    model.insertRow(3, [newBook0, newBook1])
 
                     expect(model.data.length).to.equal(10)
                     expect(model.data[3]).to.equal(newBook0)
@@ -48,7 +48,7 @@ describe("view", function() {
                     expect(model.data.length).to.equal(8)
 
                     const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
-                    model.insert(model.rowCount, newBook)
+                    model.insertRow(model.rowCount, newBook)
 
                     expect(model.data.length).to.equal(9)
                     expect(model.data[8]).to.equal(newBook)
@@ -59,7 +59,7 @@ describe("view", function() {
                     expect(model.data.length).to.equal(8)
 
                     const newBook = new Book("A Princess of Mars", "Edgar Rice Burroughs", 1912)
-                    expect( () => model.insert(model.rowCount + 1, newBook)).to.throw(Error)
+                    expect( () => model.insertRow(model.rowCount + 1, newBook)).to.throw(Error)
                 })
 
             })
@@ -69,7 +69,7 @@ describe("view", function() {
                     let event: TableEvent | undefined
                     model.modified.add( (data: TableEvent) => { event = data })
 
-                    model.remove(2)
+                    model.removeRow(2)
 
                     expect(model.data.length).to.equal(7)
                     expect(model.data[1].title).to.equal("Stranger In A Strange Land")
@@ -81,7 +81,7 @@ describe("view", function() {
                     const model = BookTableScene.createBookModel()
                     let event: TableEvent | undefined
                     model.modified.add( (data: TableEvent) => { event = data })
-                    model.remove(2, 2)
+                    model.removeRow(2, 2)
 
                     expect(model.data.length).to.equal(6)
                     expect(model.data[1].title).to.equal("Stranger In A Strange Land")
@@ -91,21 +91,21 @@ describe("view", function() {
                 })
                 it("remove AT END of table throws an exception (index == model.rowCount)", async function() {
                     const model = BookTableScene.createBookModel()
-                    expect( () => model.remove(model.rowCount)).to.throw(Error)
+                    expect( () => model.removeRow(model.rowCount)).to.throw(Error)
                 })
                 it("remove BEHIND END of table throws an exception (index > model.rowCount)", async function() {
                     const model = BookTableScene.createBookModel()
-                    expect( () => model.remove(model.rowCount)).to.throw(Error)
+                    expect( () => model.removeRow(model.rowCount)).to.throw(Error)
                 })
                 it("remove AT END of table", async function() {
                     const model = BookTableScene.createBookModel()
                     expect(model.data.length).to.equal(8)
-                    model.remove(model.rowCount-1, 1)
+                    model.removeRow(model.rowCount-1, 1)
                     expect(model.data.length).to.equal(7)
                 })
                 it("removed are stretches BEHIND END of table", async function() {
                     const model = BookTableScene.createBookModel()
-                    expect( () => model.remove(model.rowCount-1, 2)).to.throw(Error)
+                    expect( () => model.removeRow(model.rowCount-1, 2)).to.throw(Error)
                 })
             })
         })

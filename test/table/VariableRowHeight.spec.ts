@@ -32,7 +32,7 @@ describe("view", function() {
                 // row header as different height from row
                 describe("the heights for animation and their display are correct", function() {
                     it("insert single row", async function() {
-                        scene.model.insert(2, new VariableHeightThingy(128))
+                        scene.model.insertRow(2, new VariableHeightThingy(128))
                         await scene.sleep()
 
                         const rows = scene.table.bodyBody.children
@@ -50,13 +50,13 @@ describe("view", function() {
                         expect(scene.table.rowAnimationHeight).to.equal(128 + 5)
                     })
                     it("remove single row", async function() {
-                        scene.model.remove(1)
+                        scene.model.removeRow(1)
                         await scene.sleep()
 
                         expect(scene.table.rowAnimationHeight).to.equal(32 + 5)
                     })
                     it("insert multiple rows", async function() {
-                        scene.model.insert(2, [
+                        scene.model.insertRow(2, [
                             new VariableHeightThingy(256),
                             new VariableHeightThingy(128)]
                         )
@@ -66,7 +66,7 @@ describe("view", function() {
                         expect(scene.table.rowAnimationHeight).to.equal(256 + 128 + 2 * 5)
                     })
                     it("remove multiple rows", async function() {
-                        scene.model.remove(1, 2)
+                        scene.model.removeRow(1, 2)
 
                         await scene.sleep()
 

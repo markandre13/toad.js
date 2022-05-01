@@ -148,7 +148,7 @@ describe("view", function () {
                 //     hasHorizontalScrollBar: false,
                 //     hasVerticalScrollBar: false
                 // })
-                scene.model.insert(5, scene.model.createRow())
+                scene.model.insertRow(5, scene.model.createRow())
                 await scene.sleep()
             })
         })

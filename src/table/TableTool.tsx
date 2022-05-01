@@ -64,7 +64,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
             if (selection && model && model instanceof ArrayTableModel) {
-                model.insert(selection.row)
+                model.insertRow(selection.row)
             }
         }
         this.toolbar.appendChild(this.buttonAddRowAbove)
@@ -84,7 +84,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
             if (selection && model && model instanceof ArrayTableModel) {
-                model.insert(selection.row+1)
+                model.insertRow(selection.row+1)
             }
         }
         this.toolbar.appendChild(this.buttonAddRowBelow)
@@ -103,7 +103,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
             if (selection && model && model instanceof ArrayTableModel) {
-                model.remove(selection.row)
+                model.removeRow(selection.row)
             }
         }
         this.toolbar.appendChild(this.buttonDeleteRow)

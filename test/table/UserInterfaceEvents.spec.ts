@@ -53,7 +53,7 @@ describe("view", function() {
                             const rows = scene.table.bodyBody.children
 
                             const newRow = new TestRow(101)
-                            scene.model.insert(3, newRow)
+                            scene.model.insertRow(3, newRow)
                             await scene.sleep()
 
                             expect(rows.length).to.equal(11+1)
@@ -68,7 +68,7 @@ describe("view", function() {
 
                             const newRow0 = new TestRow(101)
                             const newRow1 = new TestRow(102)
-                            scene.model.insert(3, [newRow0, newRow1])
+                            scene.model.insertRow(3, [newRow0, newRow1])
                             await scene.sleep()
 
                             expect(rows.length).to.equal(12+1)
@@ -125,7 +125,7 @@ describe("view", function() {
 
                             const newRow0 = new TestRow(101)
                             const newRow1 = new TestRow(102)
-                            scene.model.insert(5, [newRow0, newRow1])
+                            scene.model.insertRow(5, [newRow0, newRow1])
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(3)
@@ -140,7 +140,7 @@ describe("view", function() {
 
                             const newRow0 = new TestRow(101)
                             const newRow1 = new TestRow(102)
-                            scene.model.insert(3, [newRow0, newRow1])
+                            scene.model.insertRow(3, [newRow0, newRow1])
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(5)
@@ -155,7 +155,7 @@ describe("view", function() {
 
                             const newRow0 = new TestRow(101)
                             const newRow1 = new TestRow(102)
-                            scene.model.insert(3, [newRow0, newRow1])
+                            scene.model.insertRow(3, [newRow0, newRow1])
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(7)
@@ -169,7 +169,7 @@ describe("view", function() {
                             const scene = new TestTableScene()
                             const rows = scene.table.bodyBody.children
 
-                            scene.model.remove(2)
+                            scene.model.removeRow(2)
                             await scene.sleep()
 
                             expect(rows.length).to.equal(9+1)
@@ -180,7 +180,7 @@ describe("view", function() {
                             const scene = new TestTableScene()
                             const rows = scene.table.bodyBody.children
 
-                            scene.model.remove(2, 2)
+                            scene.model.removeRow(2, 2)
                             await scene.sleep()
 
                             expect(rows.length).to.equal(8+1)
@@ -196,7 +196,7 @@ describe("view", function() {
                             scene.selectionModel.row = 3
                             await scene.sleep(0)
 
-                            scene.model.remove(5, 3)
+                            scene.model.removeRow(5, 3)
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(3)
@@ -210,7 +210,7 @@ describe("view", function() {
                             scene.selectionModel.row = 4
                             await scene.sleep(0)
 
-                            scene.model.remove(4, 2)
+                            scene.model.removeRow(4, 2)
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(4)
@@ -224,7 +224,7 @@ describe("view", function() {
                             scene.selectionModel.row = 5
                             await scene.sleep(0)
 
-                            scene.model.remove(4, 3)
+                            scene.model.removeRow(4, 3)
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(4)
@@ -238,7 +238,7 @@ describe("view", function() {
                             scene.selectionModel.row = 7
                             await scene.sleep(0)
 
-                            scene.model.remove(6, 4)
+                            scene.model.removeRow(6, 4)
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(5)
@@ -252,7 +252,7 @@ describe("view", function() {
                             scene.selectionModel.row = 7
                             await scene.sleep(0)
 
-                            scene.model.remove(2, 3)
+                            scene.model.removeRow(2, 3)
                             await scene.sleep()
 
                             expect(scene.selectionModel.row).equals(4)
