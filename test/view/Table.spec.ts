@@ -11,28 +11,38 @@ function sleep(milliseconds: number = 500) {
 }
 
 class ExpressionNode {
+    // string: one of the tokens
+    // number: fixed number
+    // number[]: col, row
+    // undefined: error?
     value: string | number | number[] | undefined
     down?: ExpressionNode
     next?: ExpressionNode
     constructor(value: string | number | number[] | undefined) {
         this.value = value
     }
-    eval(): number {
+    eval(model?: SpreadsheetModel): number {
         if (typeof this.value === "number") {
             return this.value
         }
+        if (this.value instanceof Array) {
+            if (model === undefined) {
+                throw Error(`yikes: no model to get cell [${this.value[0]},${this.value[1]}]`)
+            }
+            return model.getCell(this.value[0], this.value[1])._value!
+        }
         switch (this.value) {
             case '+':
-                return this.down!.eval() + this.down!.next!.eval()
+                return this.down!.eval(model) + this.down!.next!.eval(model)
             case '-':
                 if (this.down?.next) {
-                    return this.down!.eval() - this.down!.next!.eval()
+                    return this.down!.eval(model) - this.down!.next!.eval(model)
                 }
-                return - this.down!.eval()
+                return - this.down!.eval(model)
             case '*':
-                return this.down!.eval() * this.down!.next!.eval()
+                return this.down!.eval(model) * this.down!.next!.eval(model)
             case '/':
-                return this.down!.eval() / this.down!.next!.eval()
+                return this.down!.eval(model) / this.down!.next!.eval(model)
             default:
                 throw Error(`unexpected token '${this.value}'`)
         }
@@ -47,6 +57,18 @@ class ExpressionNode {
             }
             n.next = node
         }
+    }
+    dependencies(deps: Array<Array<number>> = []) {
+        if (this.value instanceof Array) {
+            deps.push(this.value)
+        }
+        if (this.next) {
+            this.next.dependencies(deps)
+        }
+        if (this.down) {
+            this.down.dependencies(deps)
+        }
+        return deps
     }
     toString() {
         return this._toString()
@@ -67,7 +89,7 @@ class ExpressionNode {
 class Lexer {
     i = 0
     str: string
-    stack?: ExpressionNode
+    stack: ExpressionNode[] = []
     constructor(str: string) {
         this.str = str
     }
@@ -86,22 +108,11 @@ class Lexer {
         return this.isnumber(c) || this.isalpha(c)
     }
     unlex(node: ExpressionNode) {
-        if (this.stack !== undefined) {
-            throw Error(`Lexer.unlex(): can't unlex more than one node (${this.stack.value}, ${node.value})`)
-        }
-        this.stack = node
+        this.stack.push(node)
     }
-
     lex() {
-        const n = this._lex()
-        return n
-    }
-
-    _lex() {
-        if (this.stack !== undefined) {
-            const n = this.stack
-            this.stack = undefined
-            return n
+        if (this.stack.length > 0) {
+            return this.stack.pop()
         }
 
         let col = 0, row = 0
@@ -166,7 +177,7 @@ class Lexer {
                     if (c !== undefined) {
                         // isnumber(c: string) {
                         const code = c.charCodeAt(0)
-                        
+
                         if (code >= 0x30 && code <= 0x39) {
                             row = code - 0x30
                             state = 4
@@ -197,7 +208,7 @@ class Lexer {
                             break
                         }
                     }
-                    return new ExpressionNode([col-1, row-1])
+                    return new ExpressionNode([col - 1, row - 1])
             }
         }
     }
@@ -265,6 +276,9 @@ function unary_expression(lexer: Lexer): ExpressionNode | undefined {
     if (typeof n0.value === "number") {
         return n0
     }
+    if (n0.value instanceof Array) {
+        return n0
+    }
     if (n0.value === "(") {
         const n1 = additive_expression(lexer)
         if (n1 === undefined) {
@@ -306,18 +320,21 @@ class GridTableModel<T> extends TypedTableModel<T> {
 }
 
 class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
-    dependencies = new Map<SpreadsheetCell, Set<SpreadsheetCell>>()
+    protected dependencies = new Map<SpreadsheetCell, Set<SpreadsheetCell>>()
 
     constructor(cols: number, rows: number) {
         super(SpreadsheetCell, cols, rows)
     }
-    getField(col: number, row: number): string {
+    getCell(col: number, row: number) {
         const index = col + row * this._cols
-        let cell = this._data[index]
+        return this._data[index]
+    }
+    getField(col: number, row: number): string {
+        const cell = this.getCell(col, row)
         if (cell === undefined) {
             return ""
         }
-        return cell.value
+        return `${cell.value}`
     }
     setField(col: number, row: number, value: string) {
         const index = col + row * this._cols
@@ -326,12 +343,31 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
             cell = new SpreadsheetCell(value)
             this._data[col + row * this._cols] = cell
         } else {
-            // remove dependencies
+            // remove depedencies
             cell.value = value
         }
+        this.addDependencies(cell)
+        cell.eval(this)
+    }
 
-        // add dependencies
+    protected addDependencies(cell: SpreadsheetCell) {
         const dependencies = cell.getDependencies()
+        dependencies.forEach(element => {
+            const col = element[0]
+            const row = element[1]
+            const index = col + row * this._cols
+            let subject = this._data[index]
+            if (subject === undefined) {
+                subject = new SpreadsheetCell()
+                this._data[index] = subject
+            }
+            let dependents = this.dependencies.get(subject)
+            if (dependents === undefined) {
+                dependents = new Set<SpreadsheetCell>()
+                this.dependencies.set(subject, dependents)
+            }
+            dependents.add(cell)
+        })
     }
     // insertRow(row: number, rowData?: T | Array<T>): number
     // removeRow(row: number, count: number = 1): number
@@ -350,29 +386,39 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
 // }
 
 class SpreadsheetCell {
-    _value?: string | ExpressionNode
+    _str?: string
+    _node?: ExpressionNode
+    _value?: number
     constructor(value?: string) {
         console.log(`SpreadsheetCell(${value})`)
-
         if (value === undefined || value.trim().length === 0) {
             return
         }
         this.value = value
     }
+    eval(model: SpreadsheetModel) {
+        if (this._node !== undefined) {
+            this._value = this._node!.eval(model)
+        }
+    }
     set value(value: string) {
-        const parsed = expression(new Lexer(value))
-        this._value = parsed === undefined ? value : parsed
+        this._node = expression(new Lexer(value))
+        this._str = value
     }
     get value(): string {
-        if (this._value === undefined) {
-            return ""
+        if (this._node) {
+            return `${this._value}`
         }
-        if (typeof this._value === "string") {
-            return this._value
+        if (this._str !== undefined) {
+            return this._str
         }
-        return `${this._value.eval()}`
+        return ""
     }
     getDependencies() {
+        if (this._node !== undefined) {
+            return this._node.dependencies()
+        }
+        return []
     }
 }
 
@@ -397,10 +443,14 @@ describe("view", function () {
                 expect(m.getField(0, 0)).to.equal("3")
             })
             it("A1=1+2, B2=A1*2 -> 6", function () {
-                const m = new SpreadsheetModel(4, 4)
+                const m = new SpreadsheetModel(2, 2)
                 m.setField(0, 0, "=1+2")
                 m.setField(1, 1, "=A1*2")
                 expect(m.getField(1, 1)).to.equal("6")
+
+                m.setField(0, 0, "=4")
+                m._data[3].eval(m) // FIXME: this needs to be done automatically
+                expect(m.getField(1, 1)).to.equal("8")
             })
         })
 
@@ -591,6 +641,12 @@ describe("view", function () {
             })
             it("6*2+14/7-3", function () {
                 expect(expression(new Lexer("=6*2+14/7-3"))?.eval()).to.equal(11)
+            })
+        })
+        describe("dependencies", function () {
+            it("", function () {
+                const t = expression(new Lexer("=A2+2*C4"))
+                expect(t?.dependencies()).to.deep.equal([[0, 1], [2, 3]])
             })
         })
     })
