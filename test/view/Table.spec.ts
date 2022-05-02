@@ -302,20 +302,62 @@ function unary_expression(lexer: Lexer): ExpressionNode | undefined {
 }
 
 class GridTableModel<T> extends TypedTableModel<T> {
-    _cols: number
-    _rows: number
-    _data: Array<T>
+    protected _cols: number
+    protected _rows: number
+    protected _data: Array<T>
     constructor(nodeClass: new () => T, cols: number, rows: number) {
         super(nodeClass)
         this._cols = cols
         this._rows = rows
-        this._data = new Array(cols * rows)
+        const size = cols * rows
+        this._data = new Array(size)
+        for (let idx = 0; idx < size; ++idx) {
+            this._data[idx] = new this.nodeClass()
+        }
     }
     get colCount(): number {
         return this._cols
     }
     get rowCount(): number {
         return this._rows
+    }
+    insertRow(row: number, rowData?: Array<T>): number {
+        if (rowData === undefined) {
+            rowData = new Array<T>(this._cols)
+            for (let col = 0; col < this._cols; ++col) {
+                rowData[col] = new this.nodeClass()
+            }
+        }
+        this._data.splice(row * this._cols, 0, ...rowData)
+        ++this._rows
+        return row
+    }
+    removeRow(row: number, count: number = 1): number {
+        this._data.splice(row * this._cols, this._cols)
+        --this._rows
+        return row
+    }
+    insertColumn(col: number, colData?: Array<T>): number {
+        if (colData === undefined) {
+            colData = new Array<T>(this._rows)
+            for (let row = 0; row < this._rows; ++row) {
+                colData[row] = new this.nodeClass()
+            }
+        }
+        ++this._cols
+        for (let row = 0; row < this._rows; ++row) {
+            this._data.splice(col + row * this._cols, 0, colData[row])
+        }
+        // this._data.splice(row * this._cols, 0, ...rowData)
+
+        return col
+    }
+    removeColumn(col: number, count: number = 1): number {
+        --this._cols
+        for (let row = 0; row < this._rows; ++row) {
+            this._data.splice(col + row * this._cols, 1)
+        }
+        return col
     }
 }
 
@@ -359,7 +401,7 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
             throw Error("cycle")
         }
         marks.add(cell)
-        
+
         // (evaluate)
         cell.eval(this)
 
@@ -394,8 +436,6 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
             dependents.add(cell)
         })
     }
-    // insertRow(row: number, rowData?: T | Array<T>): number
-    // removeRow(row: number, count: number = 1): number
 }
 
 // export abstract class SpreadsheetAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
@@ -456,7 +496,108 @@ describe("view", function () {
     })
 
     describe.only("spreadsheetmodel", function () {
-        describe("model", function () {
+        function createModel4x4() {
+            const m = new SpreadsheetModel(4, 4)
+            for (let row = 0; row < 4; ++row) {
+                for (let col = 0; col < 4; ++col) {
+                    m.setField(col, row, `C${col}R${row}`)
+                }
+            }
+            return m
+        }
+        function logModel(m: SpreadsheetModel) {
+            let txt = "\n"
+            for (let row = 0; row < m.rowCount; ++row) {
+                for (let col = 0; col < m.colCount; ++col) {
+                    txt += m.getField(col, row) + " "
+                }
+                txt += "\n"
+            }
+            console.log(txt)
+        }
+
+        describe("add/remove rows/columns", function () {
+            it("insert row", function () {
+                const m = createModel4x4()
+                m.insertRow(2)
+                
+                expect(m.rowCount).to.equal(5)
+
+                for (let row = 0; row < 5; ++row) {
+                    for (let col = 0; col < 4; ++col) {
+                        let want
+                        if (row<2) {
+                            want = `C${col}R${row}`
+                        } else
+                        if (row === 2) {
+                            want = ""
+                        } else {
+                            want = `C${col}R${row-1}`
+                        }
+                        expect(m.getField(col, row)).to.equal(want)
+                    }
+                }
+            })
+            it("remove row", function () {
+                const m = createModel4x4()
+
+                m.removeRow(2)
+                
+                expect(m.rowCount).to.equal(3)
+                for (let row = 0; row < 3; ++row) {
+                    for (let col = 0; col < 4; ++col) {
+                        let want
+                        if (row<2) {
+                            want = `C${col}R${row}`
+                        } else {
+                            want = `C${col}R${row+1}`
+                        }
+                        expect(m.getField(col, row)).to.equal(want)
+                    }
+                }
+            })
+            it("insert column", function() {
+                const m = createModel4x4()
+
+                m.insertColumn(2)
+
+                expect(m.colCount).to.equal(5)
+                for (let col = 0; col < 5; ++col) {
+                    for (let row = 0; row < 4; ++row) {                
+                        let want
+                        if (col<2) {
+                            want = `C${col}R${row}`
+                        } else
+                        if (col === 2) {
+                            want = ""
+                        } else {
+                            want = `C${col-1}R${row}`
+                        }
+                        expect(m.getField(col, row)).to.equal(want)
+                    }
+                }
+            })
+            it("remove column", function () {
+                const m = createModel4x4()
+
+                m.removeColumn(2)
+
+                expect(m.colCount).to.equal(3)
+                for (let col = 0; col < 3; ++col) {
+                    for (let row = 0; row < 4; ++row) {
+                        let want
+                        if (col<2) {
+                            want = `C${col}R${row}`
+                        } else {
+                            want = `C${col+1}R${row}`
+                        }
+                        expect(m.getField(col, row)).to.equal(want)
+                    }
+                }
+            })
+        })
+
+        describe("arithmetics", function () {
             it("1+2 -> 1=2", function () {
                 const m = new SpreadsheetModel(4, 4)
                 m.setField(0, 0, "1+2")
