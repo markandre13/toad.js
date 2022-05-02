@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { TableModel, TableAdapter, bindModel, unbind, text } from "@toad"
+import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType } from "@toad"
 import { TypedTableModel } from "src/table/TypedTableModel"
 
 function sleep(milliseconds: number = 500) {
@@ -330,11 +330,17 @@ class GridTableModel<T> extends TypedTableModel<T> {
         }
         this._data.splice(row * this._cols, 0, ...rowData)
         ++this._rows
+        this.modified.trigger(new TableEvent(
+            TableEventType.INSERT_ROW, row, 1
+        ))
         return row
     }
     removeRow(row: number, count: number = 1): number {
         this._data.splice(row * this._cols, this._cols)
         --this._rows
+        this.modified.trigger(new TableEvent(
+            TableEventType.REMOVE_ROW, row, 1
+        ))
         return row
     }
     insertColumn(col: number, colData?: Array<T>): number {
@@ -348,7 +354,9 @@ class GridTableModel<T> extends TypedTableModel<T> {
         for (let row = 0; row < this._rows; ++row) {
             this._data.splice(col + row * this._cols, 0, colData[row])
         }
-        // this._data.splice(row * this._cols, 0, ...rowData)
+        this.modified.trigger(new TableEvent(
+            TableEventType.INSERT_COL, col, 1
+        ))
 
         return col
     }
@@ -357,6 +365,9 @@ class GridTableModel<T> extends TypedTableModel<T> {
         for (let row = 0; row < this._rows; ++row) {
             this._data.splice(col + row * this._cols, 1)
         }
+        this.modified.trigger(new TableEvent(
+            TableEventType.REMOVE_COL, col, 1
+        ))
         return col
     }
 }
@@ -516,11 +527,28 @@ describe("view", function () {
             console.log(txt)
         }
 
+        // TODO:
+        // [ ] make this a grid/Table2DModel only test
+        // [ ] send modified-events
+        // [ ] spreadsheet: adjust col/rows
+        // [ ] declare (insert/remove)(Row/Column) in a superclass for use by TableTool
+        // [ ] render table
+        // [ ] display error
+        // [ ] edit cells
         describe("add/remove rows/columns", function () {
             it("insert row", function () {
                 const m = createModel4x4()
+                let event!: TableEvent
+                m.modified.add((e) => event = e)
+
                 m.insertRow(2)
                 
+                expect(event).to.deep.equal({
+                    type: TableEventType.INSERT_ROW,
+                    index: 2,
+                    size: 1
+                })
+
                 expect(m.rowCount).to.equal(5)
 
                 for (let row = 0; row < 5; ++row) {
@@ -540,8 +568,16 @@ describe("view", function () {
             })
             it("remove row", function () {
                 const m = createModel4x4()
+                let event!: TableEvent
+                m.modified.add((e) => event = e)
 
                 m.removeRow(2)
+                
+                expect(event).to.deep.equal({
+                    type: TableEventType.REMOVE_ROW,
+                    index: 2,
+                    size: 1
+                })
                 
                 expect(m.rowCount).to.equal(3)
                 for (let row = 0; row < 3; ++row) {
@@ -558,8 +594,16 @@ describe("view", function () {
             })
             it("insert column", function() {
                 const m = createModel4x4()
+                let event!: TableEvent
+                m.modified.add((e) => event = e)
 
                 m.insertColumn(2)
+
+                expect(event).to.deep.equal({
+                    type: TableEventType.INSERT_COL,
+                    index: 2,
+                    size: 1
+                })
 
                 expect(m.colCount).to.equal(5)
                 for (let col = 0; col < 5; ++col) {
@@ -579,9 +623,16 @@ describe("view", function () {
             })
             it("remove column", function () {
                 const m = createModel4x4()
+                let event!: TableEvent
+                m.modified.add((e) => event = e)
 
                 m.removeColumn(2)
 
+                expect(event).to.deep.equal({
+                    type: TableEventType.REMOVE_COL,
+                    index: 2,
+                    size: 1
+                })
                 expect(m.colCount).to.equal(3)
                 for (let col = 0; col < 3; ++col) {
                     for (let row = 0; row < 4; ++row) {

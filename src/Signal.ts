@@ -27,8 +27,8 @@ export class SignalLink {
 
 // TODO: specify the callback argument via generic
 export class Signal<T = void> {
-  locked?: boolean
-  triggered?: any
+  protected locked?: boolean
+  protected triggered?: any
   callbacks?: Array<SignalLink>
 
   add(callback: (data: T) => void): void
