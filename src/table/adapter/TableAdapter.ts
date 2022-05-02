@@ -96,8 +96,10 @@ export class TableAdapter<T extends TableModel> {
             } else {
                 for (const [modelX, typeToAdapterX] of TableAdapter.modelToAdapter) {
                     for (const [typeX, adapterX] of typeToAdapterX) {
-                        // msg += `\n model=${model?.constructor.name}, type=${type.name}`
-                        msg += `\n        model=${modelX.name}, type=${typeX}`
+                        msg += `\n        model=${modelX.name}`
+                        if (typeX !== undefined) {
+                            msg += `, type=${typeX.name}`
+                        }
                     }
                 }
             }
