@@ -27,6 +27,8 @@ import { TableEventType } from './TableEventType'
 import { TableAnimation } from './TableAnimation'
 import { InsertRowAnimation } from './InsertRowAnimation'
 import { RemoveRowAnimation } from './RemoveRowAnimation'
+import { InsertColumnAnimation } from './InsertColumnAnimation'
+import { RemoveColumnAnimation } from './RemoveColumnAnimation'
 
 import { span, div } from '@toad/util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
@@ -446,6 +448,20 @@ export class Table extends View {
                 this.animation = new RemoveRowAnimation(this, event)
                 this.animation.run()
             } break
+            case TableEventType.INSERT_COL: {
+                if (this.animation) {
+                    this.animation.stop()
+                }
+                this.animation = new InsertColumnAnimation(this, event)
+                this.animation.run()
+            } break
+            case TableEventType.REMOVE_COL: {
+                if (this.animation) {
+                    this.animation.stop()
+                }
+                this.animation = new RemoveColumnAnimation(this, event)
+                this.animation.run()
+            } break
             default:
                 console.log(`Table.modelChanged(): ${event} is not implemented`)
         }
@@ -706,7 +722,7 @@ export class Table extends View {
             this.deltaSplitHead = ev.clientX - px2float(this.body.style.left)
             const cell = this.colHeads!.children[this.handleIndex - 1] as HTMLSpanElement
             this.deltaColumn = ev.clientX - px2float(cell.style.width)
-            this.splitVertical()
+            this.splitVertical(this.handleIndex!)
         } else {
             this.deltaHandle = ev.clientY - px2float(this.handle.style.top)
             this.deltaSplitBody = ev.clientY
@@ -769,7 +785,7 @@ export class Table extends View {
             if (clientX < xLimit) {
                 clientX = xLimit
             }
-            this.joinVertical(clientX - this.deltaSplitBody!)
+            this.joinVertical(this.handleIndex!, clientX - this.deltaSplitBody!)
         } else {
             let clientY = ev.clientY
             const yLimit = this.deltaColumn! + 8
@@ -783,13 +799,19 @@ export class Table extends View {
 
     // create 'splitBody' and move the right half of 'body' into it to begin animation
     // TODO: split/join only the visible area
-    splitVertical() {
+    splitVertical(splitColumn: number, extra: number = 0) {
         // initialize splitHead
-        this.splitHead = div()
-        this.splitHead.className = "cols"
-        this.splitHead.style.left = this.colHeads!.style.left
-        this.splitHead.style.height = this.colHeads!.style.height
-        this.root.appendChild(this.splitHead)
+        if (this.colHeads !== undefined) {
+            this.splitHead = div()
+            this.splitHead.className = "cols"
+            this.splitHead.style.left = this.colHeads!.style.left
+            this.splitHead.style.height = this.colHeads!.style.height
+            this.root.appendChild(this.splitHead)
+            setTimeout(() => {
+                this.splitHead!.scrollTop = this.colHeads!.scrollTop
+                this.splitHead!.scrollLeft = this.colHeads!.scrollLeft
+            }, 0)   
+        }
 
         // initialize splitBody
         this.splitBody = div()
@@ -798,26 +820,23 @@ export class Table extends View {
         this.splitBody.style.width = `${b.width}px`
         this.splitBody.style.height = `${b.height}px`
 
-        setTimeout(() => {
-            this.splitHead!.scrollTop = this.colHeads!.scrollTop
-            this.splitHead!.scrollLeft = this.colHeads!.scrollLeft
-        }, 0)
-
         this.body.appendChild(this.splitBody)
 
         // move the heads into splitHead
-        const handle = this.handleIndex!
-        const bodyWidth = handle
-        const splitBodyColumns = this.adapter!.colCount - handle
+        // const handle = this.handleIndex!
+        const bodyWidth = splitColumn
+        const splitBodyColumns = this.adapter!.colCount - splitColumn + extra
 
-        for (let i = 0; i < splitBodyColumns; ++i) {
-            this.splitHead.appendChild(this.colHeads!.children[handle])
+        if (this.splitHead !== undefined) {
+            for (let i = 0; i < splitBodyColumns; ++i) {
+                this.splitHead.appendChild(this.colHeads!.children[splitColumn])
+            }
+            // clone the filler
+            this.splitHead.appendChild(this.colHeads!.children[this.colHeads!.children.length - 1].cloneNode())
         }
-        // clone the filler
-        this.splitHead.appendChild(this.colHeads!.children[this.colHeads!.children.length - 1].cloneNode())
 
         // move cells into splitBody
-        let idx = handle
+        let idx = splitColumn
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < splitBodyColumns; ++col) {
                 this.splitBody.appendChild(this.body.children[idx])
@@ -827,31 +846,40 @@ export class Table extends View {
     }
 
     // move 'splitBody' back into 'body' to end animation
-    joinVertical(delta: number) {
-        const handle = this.handleIndex!
-        const splitBodyColumns = this.adapter!.colCount - handle
-        let idx = handle
-
-        // move column headers back and adjust their positions
-        const filler = this.colHeads!.children[this.colHeads!.children.length - 1] as HTMLSpanElement
-        for (let col = 0; col < splitBodyColumns; ++col) {
-            const cell = this.splitHead!.children[0] as HTMLSpanElement
-            const left = px2float(cell.style.left)
-            cell.style.left = `${left + delta}px`
-            this.colHeads!.insertBefore(cell, filler)
+    joinVertical(splitCol: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
+        // const handle = this.handleIndex!
+        if (colCount === undefined) {
+            colCount = this.adapter!.colCount
         }
-        const fillerLeft = filler.style.left
-        const left = px2float(fillerLeft)
-        filler.style.left = `${left + delta}px`
+        if (rowCount === undefined) {
+            rowCount = this.adapter!.rowCount
+        }
+
+        const splitBodyColumns = colCount - splitCol
+        let idx = splitCol
+
+        if (this.colHeads !== undefined) {
+            // move column headers back and adjust their positions
+            const filler = this.colHeads!.children[this.colHeads!.children.length - 1] as HTMLSpanElement
+            for (let col = 0; col < splitBodyColumns; ++col) {
+                const cell = this.splitHead!.children[0] as HTMLSpanElement
+                const left = px2float(cell.style.left)
+                cell.style.left = `${left + delta}px`
+                this.colHeads!.insertBefore(cell, filler)
+            }
+            const fillerLeft = filler.style.left
+            const left = px2float(fillerLeft)
+            filler.style.left = `${left + delta}px`
+        }
 
         // adjust handles and filler on the right
-        for (let col = idx; col <= this.adapter!.colCount; ++col) {
+        for (let col = idx; col <= colCount; ++col) {
             const cell = this.colResizeHandles!.children[col] as HTMLSpanElement
             const left = px2float(cell.style.left)
             cell.style.left = `${left + delta}px`
         }
 
-        for (let row = 0; row < this.adapter!.rowCount; ++row) {
+        for (let row = 0; row < rowCount; ++row) {
             let beforeChild
             if (idx < this.body.children.length) {
                 beforeChild = this.body.children[idx]
@@ -864,11 +892,13 @@ export class Table extends View {
                 cell.style.left = `${left + delta}px`
                 this.body.insertBefore(cell, beforeChild)
             }
-            idx += this.adapter!.colCount
+            idx += colCount
         }
 
-        this.root.removeChild(this.splitHead!)
-        this.splitHead = undefined
+        if (this.colHeads !== undefined) {
+            this.root.removeChild(this.splitHead!)
+            this.splitHead = undefined
+            }
         this.body.removeChild(this.splitBody!)
         this.splitBody = undefined
     }
