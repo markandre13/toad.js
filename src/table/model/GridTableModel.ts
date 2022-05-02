@@ -1,7 +1,8 @@
 import { TableEvent, TableEventType } from "@toad"
 import { TypedTableModel } from "@toad/table/model/TypedTableModel"
+import { ColumnEditInterface, RowEditInterface } from "./TableModel"
 
-export class GridTableModel<T> extends TypedTableModel<T> {
+export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInterface, ColumnEditInterface{
     protected _cols: number
     protected _rows: number
     protected _data: Array<T>

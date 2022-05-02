@@ -22,7 +22,7 @@ import { GenericTool } from "../view/GenericTool"
 import { textAreaStyle } from "../view/textAreaStyle"
 
 import { Table } from "./Table"
-import { ArrayTableModel } from "./model/ArrayTableModel"
+import { RowEditInterface, ColumnEditInterface } from "./model/TableModel"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
@@ -63,8 +63,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && model instanceof ArrayTableModel) {
-                model.insertRow(selection.row)
+            if (selection && model && 'insertRow' in model) {
+                (model as RowEditInterface).insertRow(selection.row)
             }
         }
         this.toolbar.appendChild(this.buttonAddRowAbove)
@@ -83,8 +83,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && model instanceof ArrayTableModel) {
-                model.insertRow(selection.row+1)
+            if (selection && model && 'insertRow' in model) {
+                (model as RowEditInterface).insertRow(selection.row+1)
             }
         }
         this.toolbar.appendChild(this.buttonAddRowBelow)
@@ -102,8 +102,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && model instanceof ArrayTableModel) {
-                model.removeRow(selection.row)
+            if (selection && model && 'removeRow' in model) {
+                (model as RowEditInterface).removeRow(selection.row, 1)
             }
         }
         this.toolbar.appendChild(this.buttonDeleteRow)
@@ -120,6 +120,14 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="4.5" y1="4" x2="4.5" y2="9" class="stroke" />
             </svg>
         </button>
+        this.buttonAddColumnLeft.onclick = () => {
+            this.lastActiveTable?.focus()
+            const model = this.lastActiveTable?.model
+            const selection = this.lastActiveTable?.selection
+            if (selection && model && 'insertColumn' in model) {
+                (model as ColumnEditInterface).insertColumn(selection.row)
+            }
+        }
         this.toolbar.appendChild(this.buttonAddColumnLeft)
 
         this.buttonAddColumnRight = <button title="add column right">
@@ -132,10 +140,14 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="8.5" y1="4" x2="8.5" y2="9" class="stroke" />
             </svg>
         </button>
-        // this.buttonAddColumnRight.onclick = (event) => {
-        //     document.execCommand("insertUnorderedList", false)
-        //     this.update()
-        // }
+        this.buttonAddColumnRight.onclick = () => {
+            this.lastActiveTable?.focus()
+            const model = this.lastActiveTable?.model
+            const selection = this.lastActiveTable?.selection
+            if (selection && model && 'insertColumn' in model) {
+                (model as ColumnEditInterface).insertColumn(selection.row+1)
+            }
+        }
         this.toolbar.appendChild(this.buttonAddColumnRight)
 
         this.buttonDeleteColumn = <button class="right" title="delete column">
@@ -147,10 +159,14 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="3.5" y1="11.5" x2="9.5" y2="5.5" class="stroke" stroke-width="1.5" />
             </svg>
         </button>
-        // this.buttonDeleteColumn.onclick = () => {
-        //     document.execCommand("insertOrderedList", false)
-        //     this.update()
-        // }
+        this.buttonDeleteColumn.onclick = () => {
+            this.lastActiveTable?.focus()
+            const model = this.lastActiveTable?.model
+            const selection = this.lastActiveTable?.selection
+            if (selection && model && 'removeRow' in model) {
+                (model as ColumnEditInterface).removeColumn(selection.row, 1)
+            }
+        }
         this.toolbar.appendChild(this.buttonDeleteColumn)
 
         this.toolbar.appendChild(document.createTextNode(" "))

@@ -4,6 +4,12 @@ import { Lexer } from 'src/util/expressions/Lexer'
 import { expression } from 'src/util/expressions/expression'
 import { SpreadsheetModel } from 'src/table/model/SpreadsheetModel'
 
+// TODO:
+// [X] send modified-events
+// [X] render table
+// [ ] declare (insert/remove)(Row/Column) in a superclass for use by TableTool
+// [ ] display error
+// [ ] edit cells
 function sleep(milliseconds: number = 500) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -40,15 +46,6 @@ describe("view", function () {
             }
             console.log(txt)
         }
-
-        // TODO:
-        // [ ] make this a grid/Table2DModel only test
-        // [ ] send modified-events
-        // [ ] spreadsheet: adjust col/rows
-        // [ ] declare (insert/remove)(Row/Column) in a superclass for use by TableTool
-        // [ ] render table
-        // [ ] display error
-        // [ ] edit cells
         describe("add/remove rows/columns", function () {
             it("insert row", function () {
                 const m = createModel4x4()

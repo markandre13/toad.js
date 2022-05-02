@@ -18,9 +18,10 @@
 
 import { TableEvent } from "../TableEvent"
 import { TableEventType } from "../TableEventType"
+import { RowEditInterface } from "./TableModel"
 import { TypedTableModel } from "./TypedTableModel"
 
-export abstract class ArrayTableModel<T> extends TypedTableModel<T> {
+export abstract class ArrayTableModel<T> extends TypedTableModel<T> implements RowEditInterface {
 
   data: Array<T>
 
