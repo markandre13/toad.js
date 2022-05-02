@@ -337,7 +337,7 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         return `${cell.value}`
     }
     setField(col: number, row: number, value: string) {
-        console.log(`setField(${col}, ${row}, '${value}')`)
+        // console.log(`setField(${col}, ${row}, '${value}')`)
         const index = col + row * this._cols
         let cell = this._data[index]
         if (cell === undefined) {
@@ -349,18 +349,17 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         }
         this.observe(cell)
 
-        cell.eval(this)
-
         // FIXME: this needs to be done recursivley
-        this.updateObservers(cell)    
+        this.eval(cell)    
     }
 
-    protected updateObservers(cell: SpreadsheetCell) {
+    protected eval(cell: SpreadsheetCell) {
+        cell.eval(this)
         const observers = this.dependencies.get(cell)
         if (observers !== undefined) {
             observers.forEach( observer => {
-                console.log(`  update observer ${observer._str}`)
-                observer.eval(this)
+                // console.log(`  update observer ${observer._str}`)
+                this.eval(observer)
             })
         }
     }
@@ -371,7 +370,7 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
             const col = element[0]
             const row = element[1]
 
-            console.log(`    depends on [${col}, ${row}]`)
+            // console.log(`    depends on [${col}, ${row}]`)
             const index = col + row * this._cols
             let dependency = this._data[index]
             if (dependency === undefined) {
@@ -407,7 +406,7 @@ class SpreadsheetCell {
     _node?: ExpressionNode
     _value?: number
     constructor(value?: string) {
-        console.log(`SpreadsheetCell(${value})`)
+        // console.log(`SpreadsheetCell(${value})`)
         if (value === undefined || value.trim().length === 0) {
             return
         }
@@ -459,15 +458,16 @@ describe("view", function () {
                 m.setField(0, 0, "=1+2")
                 expect(m.getField(0, 0)).to.equal("3")
             })
-            it("A1=1+2, B2=A1*2 -> 6", function () {
+            it("A1=1, B1=2, A2=A1+B1, B2=A2*2 -> 6 and A1=3 -> 10", function () {
                 const m = new SpreadsheetModel(4, 4)
-                m.setField(0, 0, "=1+2")
-                m.setField(1, 1, "=A1*2")
+                m.setField(0, 0, "=1")
+                m.setField(1, 0, "=2")
+                m.setField(0, 1, "=A1+B1")
+                m.setField(1, 1, "=A2*2")
                 expect(m.getField(1, 1)).to.equal("6")
-                m.setField(0, 0, "=3+1")
-                expect(m.getField(1, 1)).to.equal("8")
+                m.setField(0, 0, "=3")
+                expect(m.getField(1, 1)).to.equal("10")
             })
-            // dependency involving 3 fields to check recursion
         })
 
         describe("lexer", function () {
@@ -558,7 +558,6 @@ describe("view", function () {
             it("1", function () {
                 const lexer = new Lexer("=1")
                 const tree = expression(lexer)
-                console.log(tree?.toString())
                 expect(tree?.value).to.equal(1)
             })
             it("1+2", function () {
