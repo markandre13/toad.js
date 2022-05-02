@@ -350,16 +350,25 @@ class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         this.observe(cell)
 
         // FIXME: this needs to be done recursivley
-        this.eval(cell)    
+        this.eval(cell)
     }
 
-    protected eval(cell: SpreadsheetCell) {
+    protected eval(cell: SpreadsheetCell, marks = new Set<SpreadsheetCell>()) {
+        // mark...
+        if (marks.has(cell)) {
+            throw Error("cycle")
+        }
+        marks.add(cell)
+        
+        // (evaluate)
         cell.eval(this)
+
+        // ...and sweep
         const observers = this.dependencies.get(cell)
         if (observers !== undefined) {
-            observers.forEach( observer => {
+            observers.forEach(observer => {
                 // console.log(`  update observer ${observer._str}`)
-                this.eval(observer)
+                this.eval(observer, marks)
             })
         }
     }
@@ -467,6 +476,14 @@ describe("view", function () {
                 expect(m.getField(1, 1)).to.equal("6")
                 m.setField(0, 0, "=3")
                 expect(m.getField(1, 1)).to.equal("10")
+            })
+            it("cycle", function () {
+                const m = new SpreadsheetModel(4, 4)
+                m.setField(0, 0, "=1")
+                m.setField(1, 0, "=A1+1")
+                m.setField(2, 0, "=B1+2")
+
+                expect(() => m.setField(0, 0, "=C1+3")).to.throw()
             })
         })
 
