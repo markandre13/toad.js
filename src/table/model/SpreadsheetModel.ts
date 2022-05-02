@@ -7,10 +7,6 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
     constructor(cols: number, rows: number) {
         super(SpreadsheetCell, cols, rows)
     }
-    getCell(col: number, row: number) {
-        const index = col + row * this._cols
-        return this._data[index]
-    }
     getField(col: number, row: number): string {
         const cell = this.getCell(col, row)
         if (cell === undefined) {

@@ -70,6 +70,10 @@ later
 
 import { text } from '@toad/util/lsx'
 import { TableModel, TableAdapter, TypedTableModel, TypedTableAdapter, ArrayModel, ArrayAdapter, bindModel, refs } from '@toad'
+import { GridTableModel } from '@toad/table/model/GridTableModel'
+import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
+import { InferTypedTableModelParameter } from '@toad/table/adapter/TypedTableAdapter'
+import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 
 // https://www.bbcelite.com/deep_dives/generating_system_data.html
 // https://www.bbcelite.com/deep_dives/printing_text_tokens.html
@@ -186,8 +190,8 @@ class System {
     species: string = "New Species"
 }
 
-const systemList: System[] = Array(64);
-for(let i=0; i<64; ++i) {
+const systemList: System[] = Array(64)
+for (let i = 0; i < 64; ++i) {
     systemList[i] = {
         name: FixedSystemModel.get(0, i),
         government: FixedSystemModel.get(1, i),
@@ -202,8 +206,7 @@ class DynamicSystemAdapter extends ArrayAdapter<ArrayModel<System>> {
 }
 
 // TODO: something else to redesign:
-function registerX<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
-{
+function registerX<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new (...args: any[]) => A, model: new (...args: any[]) => C, data: new (...args: any[]) => T): void {
     TableAdapter.register(adapter, model, data)
 }
 function register<T extends TableModel>(adapter: new (model: T) => TableAdapter<any>, model: new (...args: any[]) => T): void
@@ -219,3 +222,24 @@ bindModel("dynamicSystem", dynamicModel)
 const model = new FixedSystemModel()
 register(FixedSystemAdapter, FixedSystemModel)
 bindModel("fixedSystem", model)
+
+const m = new SpreadsheetModel(4, 4)
+for (let row = 0; row < 4; ++row) {
+    for (let col = 0; col < 4; ++col) {
+        m.setField(col, row, `C${col}R${row}`)
+    }
+}
+export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
+    override getDisplayCell(col: number, row: number): Node | Node[] | undefined {
+        if (!this.model) {
+            return undefined
+        }
+        const cell = this.model.getCell(col, row)
+        if (cell === undefined)
+            return undefined
+        return document.createTextNode(cell.value)
+    }
+}
+export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {}
+registerX(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
+bindModel("spreadsheet", m)

@@ -21,6 +21,11 @@ export class GridTableModel<T> extends TypedTableModel<T> {
     get rowCount(): number {
         return this._rows
     }
+    getCell(col: number, row: number) {
+        const index = col + row * this._cols
+        return this._data[index]
+    }
+
     insertRow(row: number, rowData?: Array<T>): number {
         if (rowData === undefined) {
             rowData = new Array<T>(this._cols)
