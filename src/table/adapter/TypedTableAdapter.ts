@@ -16,12 +16,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "../model/Model"
-import { TableEvent } from "./TableEvent"
+import { TableAdapter } from './TableAdapter'
+import { TypedTableModel } from '../model/TypedTableModel'
 
-// TODO: API for insert, delete and move rows and columns
-export abstract class TableModel extends Model<TableEvent> {
-  abstract get colCount(): number
-  abstract get rowCount(): number
-  isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
-}
+abstract class AbstractTypedTableAdapter<T, M extends TypedTableModel<T>> extends TableAdapter<M> {}
+export type InferTypedTableModelParameter<M> = M extends TypedTableModel<infer T> ? T : never
+export class TypedTableAdapter<M extends TypedTableModel<any>> extends AbstractTypedTableAdapter<InferTypedTableModelParameter<M>, M> {}

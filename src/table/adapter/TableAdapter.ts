@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableModel } from "./TableModel"
-import { TypedTableModel } from "./TypedTableModel"
+import { TableModel } from "../model/TableModel"
+import { TypedTableModel } from "../model/TypedTableModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 
 export class TableAdapter<T extends TableModel> {

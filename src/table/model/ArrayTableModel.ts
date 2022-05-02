@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEvent } from "./TableEvent"
-import { TableEventType } from "./TableEventType"
+import { TableEvent } from "../TableEvent"
+import { TableEventType } from "../TableEventType"
 import { TypedTableModel } from "./TypedTableModel"
 
 export abstract class ArrayTableModel<T> extends TypedTableModel<T> {

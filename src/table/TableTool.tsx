@@ -22,7 +22,7 @@ import { GenericTool } from "../view/GenericTool"
 import { textAreaStyle } from "../view/textAreaStyle"
 
 import { Table } from "./Table"
-import { ArrayTableModel } from "./ArrayTableModel"
+import { ArrayTableModel } from "./model/ArrayTableModel"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 

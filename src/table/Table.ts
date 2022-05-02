@@ -17,9 +17,9 @@
  */
 
 import { View } from '../view/View'
-import { TableModel } from './TableModel'
-import { SelectionModel } from './SelectionModel'
-import { TableAdapter } from './TableAdapter'
+import { TableModel } from './model/TableModel'
+import { SelectionModel } from './model/SelectionModel'
+import { TableAdapter } from './adapter/TableAdapter'
 import { TableEvent } from './TableEvent'
 import { TablePos } from './TablePos'
 import { TableEditMode } from './TableEditMode'

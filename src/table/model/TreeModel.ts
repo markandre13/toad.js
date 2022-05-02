@@ -17,8 +17,8 @@
  */
 
 import { TypedTableModel } from "./TypedTableModel"
-import { TableEvent } from "./TableEvent"
-import { TableEventType } from "./TableEventType"
+import { TableEvent } from "../TableEvent"
+import { TableEventType } from "../TableEventType"
 
 export class RowInfo<T> {
     node: T

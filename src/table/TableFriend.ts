@@ -1,4 +1,4 @@
-import { TableAdapter } from './TableAdapter'
+import { TableAdapter } from './adapter/TableAdapter'
 import { Table } from './Table'
 
 // workaround for missing 'friend' declarator in typescript

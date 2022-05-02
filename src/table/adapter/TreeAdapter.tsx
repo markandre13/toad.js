@@ -16,10 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TreeModel } from "./TreeModel"
+import { TreeModel } from "../model/TreeModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
-import { View } from '../view/View'
-import { RowInfo } from './TreeModel'
+import { View } from '../../view/View'
+import { RowInfo } from '../model/TreeModel'
 
 export class TreeNodeCell<T> extends View {
     model: TreeModel<T>

@@ -16,14 +16,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ArrayModel } from "./ArrayModel"
+import { ArrayModel } from "../model/ArrayModel"
 import { TypedTableAdapter, InferTypedTableModelParameter } from "./TypedTableAdapter"
-import { TableEvent } from "./TableEvent"
-import { TableEventType } from "./TableEventType"
+import { TableEvent } from "../TableEvent"
+import { TableEventType } from "../TableEventType"
 
 import { Reference } from "src"
-import { TextModel } from "../model/TextModel"
-import { Text } from "../view/Text"
+import { TextModel } from "../../model/TextModel"
+import { Text } from "../../view/Text"
 
 export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
 
