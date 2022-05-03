@@ -82,7 +82,7 @@ export class InsertRowAnimation extends TableAnimation {
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             let rowHeight = 0
             for (let col = 0; col < this.colCount; ++col) {
-                const child = this.measure.children[0]
+                const child = this.measure.children[col]
                 const bounds = child.getBoundingClientRect()
                 rowHeight = Math.max(rowHeight, bounds.height)
             }

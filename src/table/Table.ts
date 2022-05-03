@@ -810,7 +810,7 @@ export class Table extends View {
             setTimeout(() => {
                 this.splitHead!.scrollTop = this.colHeads!.scrollTop
                 this.splitHead!.scrollLeft = this.colHeads!.scrollLeft
-            }, 0)   
+            }, 0)
         }
 
         // initialize splitBody
@@ -870,13 +870,14 @@ export class Table extends View {
             const fillerLeft = filler.style.left
             const left = px2float(fillerLeft)
             filler.style.left = `${left + delta}px`
-        }
 
-        // adjust handles and filler on the right
-        for (let col = idx; col <= colCount; ++col) {
-            const cell = this.colResizeHandles!.children[col] as HTMLSpanElement
-            const left = px2float(cell.style.left)
-            cell.style.left = `${left + delta}px`
+
+            // adjust handles and filler on the right
+            for (let col = idx; col <= colCount; ++col) {
+                const cell = this.colResizeHandles!.children[col] as HTMLSpanElement
+                const left = px2float(cell.style.left)
+                cell.style.left = `${left + delta}px`
+            }
         }
 
         for (let row = 0; row < rowCount; ++row) {
@@ -898,7 +899,7 @@ export class Table extends View {
         if (this.colHeads !== undefined) {
             this.root.removeChild(this.splitHead!)
             this.splitHead = undefined
-            }
+        }
         this.body.removeChild(this.splitBody!)
         this.splitBody = undefined
     }

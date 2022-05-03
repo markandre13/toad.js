@@ -39,6 +39,7 @@ export class InsertColumnAnimation extends TableAnimation {
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
             this.arrangeMeasuredColumnsInGrid()
+            console.log(`split at column index=${this.event.index}, size=${this.event.size}`)
             this.splitVertical(this.event.index + this.event.size)
             this.splitBody.style.transitionProperty = "transform"
             this.splitBody.style.transitionDuration = "500ms"
@@ -62,10 +63,11 @@ export class InsertColumnAnimation extends TableAnimation {
     }
 
     arrangeMeasuredColumnsInGrid() {
-        let idx = this.event.index * this.colCount
+        let idx = this.event.index
+        // let idx = this.event.index * this.colCount
         let beforeChild
         let x
-        // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
+        // // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
         if (idx < this.body.children.length) {
             beforeChild = this.body.children[idx] as HTMLSpanElement
             x = px2int(beforeChild.style.left)
@@ -79,24 +81,41 @@ export class InsertColumnAnimation extends TableAnimation {
             }
         }
         let totalWidth = 0
-        for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
+        for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
             let columnWidth = 0
             for (let row = 0; row < this.rowCount; ++row) {
-                const child = this.measure.children[0]
+                const child = this.measure.children[row]
                 const bounds = child.getBoundingClientRect()
                 columnWidth = Math.max(columnWidth, bounds.width)
             }
             for (let row = 0; row < this.rowCount; ++row) {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
-                child.style.top = (this.body.children[row] as HTMLSpanElement).style.top // FIXME: hack
+                child.style.top = (this.body.children[row * this.colCount] as HTMLSpanElement).style.top // FIXME: hack
                 child.style.width = `${columnWidth}px`
-                child.style.height = (this.body.children[row] as HTMLSpanElement).style.height // FIXME: hack
+                child.style.height = (this.body.children[row * this.colCount] as HTMLSpanElement).style.height // FIXME: hack
+                if (idx < this.body.children.length) {
+                    beforeChild = this.body.children[idx] as HTMLSpanElement
+                } else {
+                    beforeChild = null
+                }
                 this.body.insertBefore(child, beforeChild)
+                idx += this.colCount
             }
             x += columnWidth
             totalWidth += Math.ceil(columnWidth)
         }
         this.totalWidth = totalWidth
+
+        let txt = `InsertColumnAnimation: table size ${this.colCount}, ${this.rowCount}\n`
+        idx = 0
+        for (let row = 0; row < this.rowCount; ++row) {
+        for (let col = 0; col < this.colCount; ++col) {
+                let cell = this.body.children[idx++] as HTMLSpanElement
+                txt = `${txt} ${cell.innerText}`
+            }
+            txt += "\n"
+        }
+        console.log(txt)
     }
 }

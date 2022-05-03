@@ -125,7 +125,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
             if (selection && model && 'insertColumn' in model) {
-                (model as ColumnEditInterface).insertColumn(selection.row)
+                (model as ColumnEditInterface).insertColumn(selection.col)
             }
         }
         this.toolbar.appendChild(this.buttonAddColumnLeft)
@@ -145,7 +145,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
             if (selection && model && 'insertColumn' in model) {
-                (model as ColumnEditInterface).insertColumn(selection.row+1)
+                (model as ColumnEditInterface).insertColumn(selection.col+1)
             }
         }
         this.toolbar.appendChild(this.buttonAddColumnRight)
@@ -164,7 +164,7 @@ export class TableTool extends GenericTool<Model> {
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
             if (selection && model && 'removeRow' in model) {
-                (model as ColumnEditInterface).removeColumn(selection.row, 1)
+                (model as ColumnEditInterface).removeColumn(selection.col, 1)
             }
         }
         this.toolbar.appendChild(this.buttonDeleteColumn)
