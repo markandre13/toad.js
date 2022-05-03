@@ -1,5 +1,5 @@
-import { TableEvent } from './TableEvent'
-import { Table, px2float } from './Table'
+import { TableEvent } from '../TableEvent'
+import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
 
 export class RemoveColumnAnimation extends TableAnimation {

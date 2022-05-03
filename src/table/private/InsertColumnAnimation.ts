@@ -1,6 +1,6 @@
-import { TableEvent } from './TableEvent'
+import { TableEvent } from '../TableEvent'
 import { span } from '@toad/util/lsx'
-import { Table, px2int } from './Table'
+import { Table, px2int } from '../Table'
 import { TableAnimation } from "./TableAnimation"
 
 export class InsertColumnAnimation extends TableAnimation {
@@ -64,20 +64,17 @@ export class InsertColumnAnimation extends TableAnimation {
 
     arrangeMeasuredColumnsInGrid() {
         let idx = this.event.index
-        // let idx = this.event.index * this.colCount
-        let beforeChild
         let x
-        // // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
-        if (idx < this.body.children.length) {
-            beforeChild = this.body.children[idx] as HTMLSpanElement
-            x = px2int(beforeChild.style.left)
+        if (idx < this.colCount-1) {
+            let cell  = this.body.children[idx] as HTMLSpanElement
+            x = px2int(cell.style.left)
         } else {
-            beforeChild = null
             if (this.body.children.length === 0) {
                 x = 0
             } else {
-                const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-                x = px2int(cell.style.left)
+                const cell = this.body.children[this.colCount - 2] as HTMLSpanElement
+                const bounds = cell.getBoundingClientRect()
+                x = px2int(cell.style.left) + bounds.width - 1
             }
         }
         let totalWidth = 0
@@ -94,6 +91,7 @@ export class InsertColumnAnimation extends TableAnimation {
                 child.style.top = (this.body.children[row * this.colCount] as HTMLSpanElement).style.top // FIXME: hack
                 child.style.width = `${columnWidth}px`
                 child.style.height = (this.body.children[row * this.colCount] as HTMLSpanElement).style.height // FIXME: hack
+                let beforeChild
                 if (idx < this.body.children.length) {
                     beforeChild = this.body.children[idx] as HTMLSpanElement
                 } else {
@@ -107,15 +105,15 @@ export class InsertColumnAnimation extends TableAnimation {
         }
         this.totalWidth = totalWidth
 
-        let txt = `InsertColumnAnimation: table size ${this.colCount}, ${this.rowCount}\n`
-        idx = 0
-        for (let row = 0; row < this.rowCount; ++row) {
-        for (let col = 0; col < this.colCount; ++col) {
-                let cell = this.body.children[idx++] as HTMLSpanElement
-                txt = `${txt} ${cell.innerText}`
-            }
-            txt += "\n"
-        }
-        console.log(txt)
+        // let txt = `InsertColumnAnimation: table size ${this.colCount}, ${this.rowCount}\n`
+        // idx = 0
+        // for (let row = 0; row < this.rowCount; ++row) {
+        // for (let col = 0; col < this.colCount; ++col) {
+        //         let cell = this.body.children[idx++] as HTMLSpanElement
+        //         txt = `${txt} ${cell.innerText}`
+        //     }
+        //     txt += "\n"
+        // }
+        // console.log(txt)
     }
 }

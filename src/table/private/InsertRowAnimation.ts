@@ -1,6 +1,6 @@
-import { TableEvent } from './TableEvent'
+import { TableEvent } from '../TableEvent'
 import { span } from '@toad/util/lsx'
-import { Table, px2int } from './Table'
+import { Table, px2int } from '../Table'
 import { TableAnimation } from "./TableAnimation"
 
 export class InsertRowAnimation extends TableAnimation {
@@ -65,7 +65,7 @@ export class InsertRowAnimation extends TableAnimation {
         let idx = this.event.index * this.colCount
         let beforeChild
         let y
-        // console.log(`event.index=${event.index}, idx=${idx}, children.length=${this.body.children.length}`)
+        // console.log(`event.index=${this,event.index}, idx=${idx}, children.length=${this.body.children.length}`)
         if (idx < this.body.children.length) {
             beforeChild = this.body.children[idx] as HTMLSpanElement
             y = px2int(beforeChild.style.top)
@@ -78,6 +78,7 @@ export class InsertRowAnimation extends TableAnimation {
                 y = px2int(cell.style.top)
             }
         }
+
         let totalHeight = 0
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             let rowHeight = 0
@@ -87,16 +88,34 @@ export class InsertRowAnimation extends TableAnimation {
                 rowHeight = Math.max(rowHeight, bounds.height)
             }
             for (let col = 0; col < this.colCount; ++col) {
-                const child = this.measure.children[0] as HTMLSpanElement
-                child.style.left = (this.body.children[col] as HTMLSpanElement).style.left // FIXME: hack
-                child.style.top = `${y}px`
-                child.style.width = (this.body.children[col] as HTMLSpanElement).style.width // FIXME: hack
-                child.style.height = `${rowHeight}px`
-                this.body.insertBefore(child, beforeChild)
+                const cell = this.measure.children[0] as HTMLSpanElement
+                let neighbour
+                if (row === 0 && this.event.index === 0) {
+                    neighbour = this.body.children[col*2] as HTMLSpanElement
+                } else {
+                    neighbour = this.body.children[this.colCount] as HTMLSpanElement
+                }
+                console.log(`copy pos for ${col}, ${row} from ${neighbour.innerText}`)
+                cell.style.left = neighbour.style.left // FIXME: hack
+                cell.style.top = `${y}px`
+                cell.style.width = neighbour.style.width // FIXME: hack
+                cell.style.height = `${rowHeight}px`
+                this.body.insertBefore(cell, beforeChild)
             }
             y += rowHeight
             totalHeight += Math.ceil(rowHeight)
         }
         this.totalHeight = totalHeight
+
+        let txt = `InsertRowAnimation: table size ${this.colCount}, ${this.rowCount}\n`
+        idx = 0
+        for (let row = 0; row < this.rowCount; ++row) {
+        for (let col = 0; col < this.colCount; ++col) {
+                let cell = this.body.children[idx++] as HTMLSpanElement
+                txt = `${txt} ${cell.innerText}`
+            }
+            txt += "\n"
+        }
+        console.log(txt)
     }
 }

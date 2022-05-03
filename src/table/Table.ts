@@ -24,11 +24,11 @@ import { TableEvent } from './TableEvent'
 import { TablePos } from './TablePos'
 import { TableEditMode } from './TableEditMode'
 import { TableEventType } from './TableEventType'
-import { TableAnimation } from './TableAnimation'
-import { InsertRowAnimation } from './InsertRowAnimation'
-import { RemoveRowAnimation } from './RemoveRowAnimation'
-import { InsertColumnAnimation } from './InsertColumnAnimation'
-import { RemoveColumnAnimation } from './RemoveColumnAnimation'
+import { TableAnimation } from './private/TableAnimation'
+import { InsertRowAnimation } from './private/InsertRowAnimation'
+import { RemoveRowAnimation } from './private/RemoveRowAnimation'
+import { InsertColumnAnimation } from './private/InsertColumnAnimation'
+import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
 
 import { span, div } from '@toad/util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
@@ -185,6 +185,7 @@ export function px2float(s: string) {
 }
 
 export class Table extends View {
+    static transitionDuration = "500ms"
 
     // TODO: friend tabletool, ... should make these getters'n setters
     model?: TableModel
@@ -1014,4 +1015,4 @@ export class Table extends View {
         }
     }
 }
-Table.define("tx-table2", Table)
+Table.define("tx-table", Table)

@@ -67,7 +67,6 @@ export { MenuSpacer } from "./menu/MenuSpacer"
 export { PopupMenu } from "./menu/PopupMenu"
 
 export { Table } from "./table/Table"
-export { TableView } from "./table/TableView"
 export { TableTool } from "./table/TableTool"
 export { TableAdapter } from "./table/adapter/TableAdapter"
 export { TypedTableAdapter } from "./table/adapter/TypedTableAdapter"
