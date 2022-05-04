@@ -344,6 +344,10 @@ export class Table extends View {
         this.selection!.value = new TablePos(col, row)
     }
 
+    getModel(): TableModel | undefined {
+        return this.model
+    }
+
     override setModel(model?: TableModel | SelectionModel): void {
         if (!model) {
             if (this.selection) {

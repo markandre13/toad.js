@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType } from "@toad"
+import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType, Table } from "@toad"
 
 import { TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
 import { TypedTableModel } from "@toad/table/model/TypedTableModel"
@@ -12,13 +12,7 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 // [ ] add tests for row/column insert/remove animations
 // [ ] display error
 // [ ] edit cells
-function sleep(milliseconds: number = 500) {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve('success')
-        }, milliseconds)
-    })
-}
+
 
 describe("table", function () {
     beforeEach(function () {
@@ -29,7 +23,7 @@ describe("table", function () {
 
     function createModel(cols: number, rows: number) {
         register(MyAdapter, MyModel, String)
-        const model = new MyModel(4, 4)
+        const model = new MyModel(cols, rows)
         for (let row = 0; row < 4; ++row) {
             for (let col = 0; col < 4; ++col) {
                 model.setCell(col, row, `C${col}R${row}`)
@@ -38,22 +32,68 @@ describe("table", function () {
         bindModel("model", model)
         return model
     }
-    function validateModelRender(model: MyModel) {
+    function validateRender(model: MyModel) {
+        const table = document.querySelector("tx-table") as Table
+        if (table === undefined) {
+            throw Error("No <tx-table> found.")
+        }
+        if (table.getModel() !== model) {
+            throw Error("<tx-model> has wrong model")
+        }
+
+        const body = document.body.children[1].shadowRoot!.children[1].children[0]
+
+        const expectCol: {x: number, w: number}[] = []
+        let x = 0
+        for (let col = 0; col < model.colCount; ++col) {
+            const cell = body.children[col] as HTMLSpanElement
+            const bounds = cell.getBoundingClientRect()
+            expectCol.push({x, w: px2int(cell.style.width)})
+            const borderWidth = 1
+            x += bounds.width + borderWidth
+        }
+
+        const expectRow: {y: number, h: number}[] = []
+        let y = 0
+        for (let row = 0; row < model.colCount; ++row) {
+            const cell = body.children[row + model.colCount] as HTMLSpanElement
+            const bounds = cell.getBoundingClientRect()
+            expectRow.push({y, h: px2int(cell.style.height)})
+            const borderWidth = 1
+            y += bounds.height + borderWidth
+        }
+
+        let idx = 0
+        for (let row = 0; row < model.rowCount; ++row) {
+            for (let col = 0; col < model.colCount; ++col) {
+                const cell = body.children[idx++] as HTMLSpanElement
+                expect(cell.innerText).to.equal(model.getCell(col, row).valueOf())
+                expect(px2int(cell.style.left), `C${col}R${row} left`).to.equal((expectCol[col].x))
+                expect(px2int(cell.style.width), `C${col}R${row} width`).to.equal((expectCol[col].w))
+                expect(px2int(cell.style.top), `C${col}R${row} top`).to.equal((expectRow[row].y))
+                expect(px2int(cell.style.height), `C${col}R${row} height`).to.equal((expectRow[row].h))
+            }
+        }
     }
 
-    it("can render the 1st cell", async function () {
-        const m = createModel(4,4)
+    it("render model", async function () {
+        const model = createModel(4, 4)
         document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        await sleep(1)
-        const body = document.body.children[1].shadowRoot!.children[1].children[0]
-        const cell00 = body.children[0] as HTMLElement
-        expect(cell00.innerText).to.equal("C0R0")
-        expect(cell00.style.top).to.equal("0px")
-        expect(cell00.style.left).to.equal("0px")
+        await sleep()
+        validateRender(model)
     })
 
-    describe("rows", function () {
+    // insert/delete row/column
+    // insert into empty, remove last, insert 1st/last/middle
 
+    it("insertRow", async function () {
+        const model = createModel(4, 4)
+        Table.transitionDuration = "0ms"
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        await sleep()
+        model.insertRow(2)
+        await sleep()
+        validateRender(model)
     })
 
 
@@ -121,11 +161,6 @@ class MyModel extends GridTableModel<String> {
 }
 
 class MyAdapter extends TableAdapter<MyModel> {
-
-    // constructor(model: MyModel) {
-    //     super(model)
-    // }
-
     override getDisplayCell(col: number, row: number) {
         return text(
             this.model!.getCell(col, row).valueOf()
@@ -133,17 +168,36 @@ class MyAdapter extends TableAdapter<MyModel> {
     }
 }
 
-function register<T extends TableModel>(
-    adapter: new (model: T) => TableAdapter<any>,
-    model: new (...args: any[]) => T): void
-function register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(
-    adapter: new (...args: any[]) => A,
-    model: new (...args: any[]) => C,
-    data: new (...args: any[]) => T): void
+function register<M extends TableModel>(
+    adapter: new (model: M) => TableAdapter<M>,
+    model: new (...args: any[]) => M): void
+function register<
+    A extends TypedTableAdapter<M>,
+    M extends TypedTableModel<D>,
+    D
+>(
+    adapter: new (model: M) => A,
+    model: new (...args: any[]) => M,
+    data: new (...args: any[]) => D): void
 function register(
-    adapter: (new () => TableAdapter<any>) | (new (model: TableModel) => TableAdapter<any>), 
-    model: (new (...args: any[]) => TableModel) | (new (...args: any[]) => any), 
-    data?: new (...args: any[]) => any): void
-{
+    adapter: new (model: TableModel) => TableAdapter<any>,
+    model: (new (...args: any[]) => TableModel),
+    data?: new (...args: any[]) => any): void {
     TableAdapter.register(adapter as any, model as any, data as any)
+}
+
+function sleep(milliseconds: number = 1) {
+    return new Promise((resolve, reject) => {
+        setTimeout(() => {
+            resolve('success')
+        }, milliseconds)
+    })
+}
+
+export function px2int(s: string) {
+    return parseInt(s.substring(0, s.length - 2))
+}
+
+export function px2float(s: string) {
+    return parseFloat(s.substring(0, s.length - 2))
 }
