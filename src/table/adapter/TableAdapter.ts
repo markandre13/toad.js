@@ -53,12 +53,13 @@ export class TableAdapter<T extends TableModel> {
         // console.log(adapter)
         // console.log(model)
         // console.log(data)
+
         let typeToModel = TableAdapter.modelToAdapter.get(model)
         if (typeToModel === undefined) {
             typeToModel = new Map<any, any>()
             TableAdapter.modelToAdapter.set(model, typeToModel)
         }
-        if (typeToModel.get(data) !== undefined) {
+        if (typeToModel.has(data)) {
             throw Error(`attempt to redefine existing table adapter`)
         }
         typeToModel.set(data, adapter)

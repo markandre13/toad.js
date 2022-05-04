@@ -1,6 +1,10 @@
 import { expect } from '@esm-bundle/chai'
 import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType } from "@toad"
 
+import { TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
+import { TypedTableModel } from "@toad/table/model/TypedTableModel"
+import { GridTableModel } from "@toad/table/model/GridTableModel"
+
 // TODO:
 // [X] send modified-events
 // [X] render table
@@ -23,18 +27,36 @@ describe("table", function () {
         document.body.innerHTML = ""
     })
 
-    it("can render the 1st cell", async function () {
-        register(MyAdapter, MyModel)
-        const model = new MyModel()
+    function createModel(cols: number, rows: number) {
+        register(MyAdapter, MyModel, String)
+        const model = new MyModel(4, 4)
+        for (let row = 0; row < 4; ++row) {
+            for (let col = 0; col < 4; ++col) {
+                model.setCell(col, row, `C${col}R${row}`)
+            }
+        }
         bindModel("model", model)
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table2 model="model"></tx-table2>`
+        return model
+    }
+    function validateModelRender(model: MyModel) {
+    }
+
+    it("can render the 1st cell", async function () {
+        const m = createModel(4,4)
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
         await sleep(1)
         const body = document.body.children[1].shadowRoot!.children[1].children[0]
         const cell00 = body.children[0] as HTMLElement
-        expect(cell00.innerText).to.equal("C0:R0")
+        expect(cell00.innerText).to.equal("C0R0")
         expect(cell00.style.top).to.equal("0px")
         expect(cell00.style.left).to.equal("0px")
     })
+
+    describe("rows", function () {
+
+    })
+
+
     //     describe("initialize view from model", function () {
     //         describe("does so when the model is defined before the view", function () {
     //             it("true", function () {
@@ -92,18 +114,9 @@ describe("table", function () {
     //     })
 })
 
-class MyModel extends TableModel {
-    constructor() {
-        super()
-    }
-    get colCount() {
-        return 4
-    }
-    get rowCount() {
-        return 3
-    }
-    get(col: number, row: number) {
-        return `C${col}:R${row}`
+class MyModel extends GridTableModel<String> {
+    constructor(cols: number, rows: number) {
+        super(String, cols, rows)
     }
 }
 
@@ -115,16 +128,22 @@ class MyAdapter extends TableAdapter<MyModel> {
 
     override getDisplayCell(col: number, row: number) {
         return text(
-            this.model!.get(col, row)
+            this.model!.getCell(col, row).valueOf()
         )
     }
 }
 
-// TODO: something else to redesign:
-// static register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new(...args: any[]) => A, model: new(...args: any[]) => C, data: new(...args: any[]) => T): void
-function register<T extends TableModel>(adapter: new (model: T) => TableAdapter<any>, model: new (...args: any[]) => T): void
-// static register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel, data?: any): void
+function register<T extends TableModel>(
+    adapter: new (model: T) => TableAdapter<any>,
+    model: new (...args: any[]) => T): void
+function register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(
+    adapter: new (...args: any[]) => A,
+    model: new (...args: any[]) => C,
+    data: new (...args: any[]) => T): void
+function register(
+    adapter: (new () => TableAdapter<any>) | (new (model: TableModel) => TableAdapter<any>), 
+    model: (new (...args: any[]) => TableModel) | (new (...args: any[]) => any), 
+    data?: new (...args: any[]) => any): void
 {
-    TableAdapter.register(adapter as any, model)
+    TableAdapter.register(adapter as any, model as any, data as any)
 }
-

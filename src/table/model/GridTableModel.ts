@@ -22,9 +22,11 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
     get rowCount(): number {
         return this._rows
     }
-    getCell(col: number, row: number) {
-        const index = col + row * this._cols
-        return this._data[index]
+    getCell(col: number, row: number): T {
+        return this._data[col + row * this._cols]
+    }
+    setCell(col: number, row: number, data: T) {
+        this._data[col + row * this._cols] = data
     }
 
     insertRow(row: number, rowData?: Array<T>): number {
@@ -42,10 +44,10 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         return row
     }
     removeRow(row: number, count: number = 1): number {
-        this._data.splice(row * this._cols, this._cols)
-        --this._rows
+        this._data.splice(row * this._cols, this._cols * count)
+        this._rows -= count
         this.modified.trigger(new TableEvent(
-            TableEventType.REMOVE_ROW, row, 1
+            TableEventType.REMOVE_ROW, row, count
         ))
         return row
     }
