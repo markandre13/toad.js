@@ -31,6 +31,9 @@ export class InsertRowAnimation extends TableAnimation {
         if (!this.done) {
             this.done = true
             this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight, 0, this.colCount, this.rowCount)
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
         }
     }
 
@@ -41,7 +44,7 @@ export class InsertRowAnimation extends TableAnimation {
             this.arrangeMeasuredRowsInGrid()
             this.splitHorizontal(this.event.index + this.event.size)
             this.splitBody.style.transitionProperty = "transform"
-            this.splitBody.style.transitionDuration = "500ms"
+            this.splitBody.style.transitionDuration = Table.transitionDuration
             this.splitBody.ontransitionend = this.joinHorizontal
             this.splitBody.ontransitioncancel = this.joinHorizontal
             setTimeout(() => {
@@ -81,7 +84,7 @@ export class InsertRowAnimation extends TableAnimation {
 
         let totalHeight = 0
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
-            let rowHeight = 0
+            let rowHeight = this.table.minCellHeight
             for (let col = 0; col < this.colCount; ++col) {
                 const child = this.measure.children[col]
                 const bounds = child.getBoundingClientRect()
@@ -93,7 +96,7 @@ export class InsertRowAnimation extends TableAnimation {
                 if (row === 0 && this.event.index === 0) {
                     neighbour = this.body.children[col*2] as HTMLSpanElement
                 } else {
-                    neighbour = this.body.children[this.colCount] as HTMLSpanElement
+                    neighbour = this.body.children[col] as HTMLSpanElement
                 }
                 console.log(`copy pos for ${col}, ${row} from ${neighbour.innerText}`)
                 cell.style.left = neighbour.style.left // FIXME: hack
@@ -102,10 +105,10 @@ export class InsertRowAnimation extends TableAnimation {
                 cell.style.height = `${rowHeight}px`
                 this.body.insertBefore(cell, beforeChild)
             }
-            y += rowHeight
+            y += rowHeight + 1
             totalHeight += Math.ceil(rowHeight)
         }
-        this.totalHeight = totalHeight
+        this.totalHeight = totalHeight + 1
 
         let txt = `InsertRowAnimation: table size ${this.colCount}, ${this.rowCount}\n`
         idx = 0

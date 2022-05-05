@@ -71,10 +71,10 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
     removeColumn(col: number, count: number = 1): number {
         --this._cols
         for (let row = 0; row < this._rows; ++row) {
-            this._data.splice(col + row * this._cols, 1)
+            this._data.splice(col + row * this._cols, count)
         }
         this.modified.trigger(new TableEvent(
-            TableEventType.REMOVE_COL, col, 1
+            TableEventType.REMOVE_COL, col, count
         ))
         return col
     }

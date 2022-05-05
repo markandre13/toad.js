@@ -58,7 +58,7 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.splitHorizontal(this.event.index + this.event.size, this.event.size)
 
         this.splitBody.style.transitionProperty = "transform"
-        this.splitBody.style.transitionDuration = "500ms"
+        this.splitBody.style.transitionDuration = Table.transitionDuration
         this.splitBody.ontransitionend = this.joinHorizontal
         this.splitBody.ontransitioncancel = this.joinHorizontal
         setTimeout(() => {

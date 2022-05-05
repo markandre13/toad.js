@@ -43,27 +43,47 @@ describe("table", function () {
 
         const body = document.body.children[1].shadowRoot!.children[1].children[0]
 
-        const expectCol: {x: number, w: number}[] = []
+        const expectCol: { x: number, w: number }[] = []
         let x = 0
         for (let col = 0; col < model.colCount; ++col) {
             const cell = body.children[col] as HTMLSpanElement
             const bounds = cell.getBoundingClientRect()
-            expectCol.push({x, w: px2int(cell.style.width)})
+            expectCol.push({ x, w: px2int(cell.style.width) })
             const borderWidth = 1
             x += bounds.width + borderWidth
         }
 
-        const expectRow: {y: number, h: number}[] = []
+        const expectRow: { y: number, h: number }[] = []
         let y = 0
-        for (let row = 0; row < model.colCount; ++row) {
-            const cell = body.children[row + model.colCount] as HTMLSpanElement
+        for (let row = 0; row < model.rowCount; ++row) {
+            const cell = body.children[row * model.colCount] as HTMLSpanElement
             const bounds = cell.getBoundingClientRect()
-            expectRow.push({y, h: px2int(cell.style.height)})
+            expectRow.push({ y, h: px2int(cell.style.height) })
             const borderWidth = 1
             y += bounds.height + borderWidth
         }
 
         let idx = 0
+        let txt = ""
+        console.log(`model = ${model.colCount} x ${model.rowCount} = ${model.colCount * model.rowCount} cells, children = ${body.children.length}`)
+        for (let row = 0; row < model.rowCount; ++row) {
+            for (let col = 0; col < model.colCount; ++col) {
+                const cell = body.children[idx++] as HTMLSpanElement
+                txt = `${txt}[${col},${row}] (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
+                // txt = `${txt}[${col},${row}] ${cell} `
+                // expect(cell.innerText).to.equal(model.getCell(col, row).valueOf())
+                // expect(px2int(cell.style.left), `C${col}R${row} left`).to.equal((expectCol[col].x))
+                // expect(px2int(cell.style.width), `C${col}R${row} width`).to.equal((expectCol[col].w))
+                // expect(px2int(cell.style.top), `C${col}R${row} top`).to.equal((expectRow[row].y))
+                // expect(px2int(cell.style.height), `C${col}R${row} height`).to.equal((expectRow[row].h))
+            }
+            console.log(txt)
+            txt = ""
+            // txt += "\n"
+        }
+        // console.log(txt)
+
+        idx = 0
         for (let row = 0; row < model.rowCount; ++row) {
             for (let col = 0; col < model.colCount; ++col) {
                 const cell = body.children[idx++] as HTMLSpanElement
@@ -88,14 +108,25 @@ describe("table", function () {
 
     it("insertRow", async function () {
         const model = createModel(4, 4)
-        Table.transitionDuration = "0ms"
+
         document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        const table = document.querySelector("tx-table") as Table
+        if (table === undefined) {
+            throw Error("No <tx-table> found.")
+        }
+        Table.transitionDuration = "1ms"
+        const animationDone = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+
         await sleep()
         model.insertRow(2)
-        await sleep()
+        await animationDone
+
         validateRender(model)
     })
-
 
     //     describe("initialize view from model", function () {
     //         describe("does so when the model is defined before the view", function () {

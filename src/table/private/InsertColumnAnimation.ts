@@ -42,7 +42,7 @@ export class InsertColumnAnimation extends TableAnimation {
             console.log(`split at column index=${this.event.index}, size=${this.event.size}`)
             this.splitVertical(this.event.index + this.event.size)
             this.splitBody.style.transitionProperty = "transform"
-            this.splitBody.style.transitionDuration = "500ms"
+            this.splitBody.style.transitionDuration = Table.transitionDuration
             this.splitBody.ontransitionend = this.joinVertical
             this.splitBody.ontransitioncancel = this.joinVertical
             setTimeout(() => {

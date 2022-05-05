@@ -30,7 +30,7 @@ import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertColumnAnimation } from './private/InsertColumnAnimation'
 import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
 
-import { span, div } from '@toad/util/lsx'
+import { span, div, text } from '@toad/util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
 
 // --spectrum-table-row-background-color-selected
@@ -185,7 +185,12 @@ export function px2float(s: string) {
 }
 
 export class Table extends View {
+    // test api
     static transitionDuration = "500ms"
+    animationDone?: () => void
+
+    // this will be set to lineheight
+    minCellHeight = 0
 
     // TODO: friend tabletool, ... should make these getters'n setters
     model?: TableModel
@@ -517,6 +522,9 @@ export class Table extends View {
             }
         }
 
+        const measureLineHeight = span(text("Tg")) // let the adapter provide this
+        this.measure.appendChild(measureLineHeight)
+
         // body
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
@@ -531,6 +539,12 @@ export class Table extends View {
 
     arrangeAllMeasuredInGrid() {
         let idx = 0
+
+        const measureLineHeight = this.measure.children[0] as HTMLElement
+        // console.log(measureLineHeight)
+        const b = measureLineHeight.getBoundingClientRect()
+        this.minCellHeight = Math.ceil(b.height) - 1
+        this.measure.removeChild(measureLineHeight)
 
         // calculate column widths and column header height
         let colHeadHeight = 0
@@ -563,7 +577,7 @@ export class Table extends View {
             for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 const child = this.measure.children[idx++]
                 const bounds = child.getBoundingClientRect()
-                rowHeight[row] = Math.ceil(bounds.height)
+                rowHeight[row] = Math.max(Math.ceil(bounds.height), this.minCellHeight)
                 rowHeadWidth = Math.max(rowHeadWidth, bounds.width)
             }
         } else {
