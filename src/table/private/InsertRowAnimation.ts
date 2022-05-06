@@ -80,6 +80,10 @@ export class InsertRowAnimation extends TableAnimation {
                 const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
                 y = px2int(cell.style.top)
             }
+            if (this.event.index+1 >= this.rowCount) {
+                const bounds = this.body.children[this.body.children.length - 1].getBoundingClientRect()
+                y += bounds.height + 1
+            }
         }
 
         let totalHeight = 0

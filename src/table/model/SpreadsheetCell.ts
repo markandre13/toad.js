@@ -42,7 +42,7 @@ export class SpreadsheetCell {
         if (this._str !== undefined) {
             return this._str
         }
-        return "EMPTY"
+        return ""
     }
     getDependencies() {
         if (this._node !== undefined) {

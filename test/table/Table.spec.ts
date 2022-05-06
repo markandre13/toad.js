@@ -101,32 +101,34 @@ describe("table", function () {
         document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
         await sleep()
         validateRender(model)
-    })
+    });
 
     // insert/delete row/column
     // insert into empty, remove last, insert 1st/last/middle
 
-    it("insertRow", async function () {
-        const model = createModel(4, 4)
+    [0, 2, 4].forEach(row =>
+        it(`insertRow ${row} out of 4`, async function () {
+            const model = createModel(4, 4)
 
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        const table = document.querySelector("tx-table") as Table
-        if (table === undefined) {
-            throw Error("No <tx-table> found.")
-        }
-        Table.transitionDuration = "1ms"
-        const animationDone = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
+            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+            const table = document.querySelector("tx-table") as Table
+            if (table === undefined) {
+                throw Error("No <tx-table> found.")
             }
+            Table.transitionDuration = "1ms"
+            const animationDone = new Promise<void>((resolve, reject) => {
+                table.animationDone = () => {
+                    resolve()
+                }
+            })
+
+            await sleep()
+            model.insertRow(row)
+            await animationDone
+
+            validateRender(model)
         })
-
-        await sleep()
-        model.insertRow(2)
-        await animationDone
-
-        validateRender(model)
-    })
+    )
 
     //     describe("initialize view from model", function () {
     //         describe("does so when the model is defined before the view", function () {
