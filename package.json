@@ -33,7 +33,7 @@
         "build": "ttsc",
         "test": "wtr \"lib/test/**/*.spec.js\"",
         "dev:build": "ttsc --watch",
-        "dev:test": "if test -z \"$npm_config_file\" ; then wtr --watch lib/test ; else wtr --watch $npm_config_file; fi",
+        "dev:test": "wtr --watch",
         "dev:serve": "wds --node-resolve --watch --open --app-index docs/index.dev.html",
         "build:docs": "rollup --config docs/rollup.config.js && sed 's|../lib/docs/main.js|main.js|;s|../style/|style/|g;s|../polyfill/||' docs/index.dev.html > docs/index.html",
         "update": "npx npm-check-updates -u && npm install"

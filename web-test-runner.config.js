@@ -10,4 +10,5 @@ module.exports = {
     reporters: [
         WTRSpecReporter({ reportTestResults: true, reportTestProgress: true }),
     ],
+    files: 'lib/test/**/*.spec.js'
 }
