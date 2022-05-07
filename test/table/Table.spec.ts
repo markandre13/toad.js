@@ -69,11 +69,10 @@ describe("table", function () {
 
         let idx = 0
         // let txt = ""
-        // console.log(`model = ${model.colCount} x ${model.rowCount} = ${model.colCount * model.rowCount} cells, children = ${body.children.length}`)
         // for (let row = 0; row < model.rowCount; ++row) {
         //     for (let col = 0; col < model.colCount; ++col) {
         //         const cell = body.children[idx++] as HTMLSpanElement
-        //         txt = `${txt}[${col},${row}] (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
+        //         txt = `${txt}[${col},${row}]='${cell.textContent}' (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
         //         // txt = `${txt}[${col},${row}] ${cell} `
         //     }
         //     console.log(txt)
@@ -100,8 +99,55 @@ describe("table", function () {
         validateRender(model)
     });
 
+    it(`insertRow with data`, async function () {
+        const model = createModel(4, 4)
+
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        const table = document.querySelector("tx-table") as Table
+        if (table === undefined) {
+            throw Error("No <tx-table> found.")
+        }
+        Table.transitionDuration = "1ms"
+        const animationDone = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+
+        await sleep()
+        // also test wrong row size, and multiple rows
+        model.insertRow(2, ["N1", "N2", "N3", "N4"])
+        await animationDone
+
+        validateRender(model)
+    });
+
+    it(`insertColumn with data`, async function () {
+        const model = createModel(4, 4)
+
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        const table = document.querySelector("tx-table") as Table
+        if (table === undefined) {
+            throw Error("No <tx-table> found.")
+        }
+        Table.transitionDuration = "1ms"
+        const animationDone = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+
+        await sleep()
+        // also test wrong row size, and multiple rows
+        model.insertColumn(2, ["N1", "N2", "N3", "N4"])
+        await animationDone
+
+        validateRender(model)
+    });
+
     // TODO:
     // [ ] insert more than one row/column
+    // [ ] insert pre-defined row/column
     // [ ] delete row/column
     // [ ] insert into empty table
     [0, 2, 4].forEach(row =>
