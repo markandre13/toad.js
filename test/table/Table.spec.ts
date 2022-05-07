@@ -13,7 +13,6 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 // [ ] display error
 // [ ] edit cells
 
-
 describe("table", function () {
     beforeEach(function () {
         unbind()
@@ -32,7 +31,8 @@ describe("table", function () {
         bindModel("model", model)
         return model
     }
-    function validateRender(model: MyModel) {
+
+    function getTable(model: MyModel) {
         const table = document.querySelector("tx-table") as Table
         if (table === undefined) {
             throw Error("No <tx-table> found.")
@@ -40,8 +40,12 @@ describe("table", function () {
         if (table.getModel() !== model) {
             throw Error("<tx-model> has wrong model")
         }
+        return table
+    }
 
-        const body = document.body.children[1].shadowRoot!.children[1].children[0]
+    function validateRender(model: MyModel) {
+        const table = getTable(model)
+        const body = table.shadowRoot!.children[1].children[0]
 
         const expectCol: { x: number, w: number }[] = []
         let x = 0
@@ -64,24 +68,17 @@ describe("table", function () {
         }
 
         let idx = 0
-        let txt = ""
-        console.log(`model = ${model.colCount} x ${model.rowCount} = ${model.colCount * model.rowCount} cells, children = ${body.children.length}`)
-        for (let row = 0; row < model.rowCount; ++row) {
-            for (let col = 0; col < model.colCount; ++col) {
-                const cell = body.children[idx++] as HTMLSpanElement
-                txt = `${txt}[${col},${row}] (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
-                // txt = `${txt}[${col},${row}] ${cell} `
-                // expect(cell.innerText).to.equal(model.getCell(col, row).valueOf())
-                // expect(px2int(cell.style.left), `C${col}R${row} left`).to.equal((expectCol[col].x))
-                // expect(px2int(cell.style.width), `C${col}R${row} width`).to.equal((expectCol[col].w))
-                // expect(px2int(cell.style.top), `C${col}R${row} top`).to.equal((expectRow[row].y))
-                // expect(px2int(cell.style.height), `C${col}R${row} height`).to.equal((expectRow[row].h))
-            }
-            console.log(txt)
-            txt = ""
-            // txt += "\n"
-        }
-        // console.log(txt)
+        // let txt = ""
+        // console.log(`model = ${model.colCount} x ${model.rowCount} = ${model.colCount * model.rowCount} cells, children = ${body.children.length}`)
+        // for (let row = 0; row < model.rowCount; ++row) {
+        //     for (let col = 0; col < model.colCount; ++col) {
+        //         const cell = body.children[idx++] as HTMLSpanElement
+        //         txt = `${txt}[${col},${row}] (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
+        //         // txt = `${txt}[${col},${row}] ${cell} `
+        //     }
+        //     console.log(txt)
+        //     txt = ""
+        // }
 
         idx = 0
         for (let row = 0; row < model.rowCount; ++row) {
@@ -93,7 +90,7 @@ describe("table", function () {
                 expect(px2int(cell.style.top), `C${col}R${row} top`).to.equal((expectRow[row].y))
                 expect(px2int(cell.style.height), `C${col}R${row} height`).to.equal((expectRow[row].h))
             }
-        }
+        }        
     }
 
     it("render model", async function () {
@@ -103,9 +100,10 @@ describe("table", function () {
         validateRender(model)
     });
 
-    // insert/delete row/column
-    // insert into empty, remove last, insert 1st/last/middle
-
+    // TODO:
+    // [ ] insert more than one row/column
+    // [ ] delete row/column
+    // [ ] insert into empty table
     [0, 2, 4].forEach(row =>
         it(`insertRow ${row} out of 4`, async function () {
             const model = createModel(4, 4)
@@ -124,6 +122,30 @@ describe("table", function () {
 
             await sleep()
             model.insertRow(row)
+            await animationDone
+
+            validateRender(model)
+        })
+    );
+
+    [0, 2, 4].forEach(row =>
+        it(`insertColumn ${row} out of 4`, async function () {
+            const model = createModel(4, 4)
+
+            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+            const table = document.querySelector("tx-table") as Table
+            if (table === undefined) {
+                throw Error("No <tx-table> found.")
+            }
+            Table.transitionDuration = "1ms"
+            const animationDone = new Promise<void>((resolve, reject) => {
+                table.animationDone = () => {
+                    resolve()
+                }
+            })
+
+            await sleep()
+            model.insertColumn(row)
             await animationDone
 
             validateRender(model)

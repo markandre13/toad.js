@@ -102,7 +102,6 @@ export class InsertRowAnimation extends TableAnimation {
                 } else {
                     neighbour = this.body.children[col] as HTMLSpanElement
                 }
-                console.log(`copy pos for ${col}, ${row} from ${neighbour.innerText}`)
                 cell.style.left = neighbour.style.left // FIXME: hack
                 cell.style.top = `${y}px`
                 cell.style.width = neighbour.style.width // FIXME: hack
@@ -114,15 +113,15 @@ export class InsertRowAnimation extends TableAnimation {
         }
         this.totalHeight = totalHeight + 1
 
-        let txt = `InsertRowAnimation: table size ${this.colCount}, ${this.rowCount}\n`
-        idx = 0
-        for (let row = 0; row < this.rowCount; ++row) {
-        for (let col = 0; col < this.colCount; ++col) {
-                let cell = this.body.children[idx++] as HTMLSpanElement
-                txt = `${txt} ${cell.innerText}`
-            }
-            txt += "\n"
-        }
-        console.log(txt)
+        // let txt = `InsertRowAnimation: table size ${this.colCount}, ${this.rowCount}\n`
+        // idx = 0
+        // for (let row = 0; row < this.rowCount; ++row) {
+        // for (let col = 0; col < this.colCount; ++col) {
+        //         let cell = this.body.children[idx++] as HTMLSpanElement
+        //         txt = `${txt} ${cell.innerText}`
+        //     }
+        //     txt += "\n"
+        // }
+        // console.log(txt)
     }
 }

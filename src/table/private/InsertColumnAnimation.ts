@@ -31,6 +31,9 @@ export class InsertColumnAnimation extends TableAnimation {
         if (!this.done) {
             this.done = true
             this.table.joinVertical(this.event.index + this.event.size, this.totalWidth, 0, this.colCount, this.rowCount)
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
         }
     }
 
@@ -39,7 +42,7 @@ export class InsertColumnAnimation extends TableAnimation {
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
             this.arrangeMeasuredColumnsInGrid()
-            console.log(`split at column index=${this.event.index}, size=${this.event.size}`)
+            // console.log(`split at column index=${this.event.index}, size=${this.event.size}`)
             this.splitVertical(this.event.index + this.event.size)
             this.splitBody.style.transitionProperty = "transform"
             this.splitBody.style.transitionDuration = Table.transitionDuration
@@ -63,33 +66,45 @@ export class InsertColumnAnimation extends TableAnimation {
     }
 
     arrangeMeasuredColumnsInGrid() {
+
+        // x := x position of new column
         let idx = this.event.index
         let x
+        // console.log(`idx=${idx}, colCount=${this.colCount}`)
         if (idx < this.colCount-1) {
             let cell  = this.body.children[idx] as HTMLSpanElement
             x = px2int(cell.style.left)
+            // console.log(`COLUMN IS LEFT: place new column at x = ${x}`)
         } else {
             if (this.body.children.length === 0) {
                 x = 0
+                // console.log(`COLUMN IS FIRST: place new column at x = ${x}`)
             } else {
                 const cell = this.body.children[this.colCount - 2] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
-                x = px2int(cell.style.left) + bounds.width - 1
+                x = px2int(cell.style.left) + bounds.width + 1
+                // console.log(`COLUMN IS RIGHT: place new column at x = ${x}`)
             }
         }
+
+        // totalWidth := width of all columns to be inserted
+        // place cells
         let totalWidth = 0
         for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
-            let columnWidth = 0
+            // columnWidth := width of this column
+            let columnWidth = this.table.minCellHeight
             for (let row = 0; row < this.rowCount; ++row) {
                 const child = this.measure.children[row]
                 const bounds = child.getBoundingClientRect()
                 columnWidth = Math.max(columnWidth, bounds.width)
             }
+            columnWidth = Math.ceil(columnWidth)
+            // place all cells in column $col and move them from this.measure to this.body
             for (let row = 0; row < this.rowCount; ++row) {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = (this.body.children[row * this.colCount] as HTMLSpanElement).style.top // FIXME: hack
-                child.style.width = `${columnWidth}px`
+                child.style.width = `${columnWidth - 5}px`
                 child.style.height = (this.body.children[row * this.colCount] as HTMLSpanElement).style.height // FIXME: hack
                 let beforeChild
                 if (idx < this.body.children.length) {
@@ -101,19 +116,8 @@ export class InsertColumnAnimation extends TableAnimation {
                 idx += this.colCount
             }
             x += columnWidth
-            totalWidth += Math.ceil(columnWidth)
+            totalWidth += columnWidth
         }
         this.totalWidth = totalWidth
-
-        // let txt = `InsertColumnAnimation: table size ${this.colCount}, ${this.rowCount}\n`
-        // idx = 0
-        // for (let row = 0; row < this.rowCount; ++row) {
-        // for (let col = 0; col < this.colCount; ++col) {
-        //         let cell = this.body.children[idx++] as HTMLSpanElement
-        //         txt = `${txt} ${cell.innerText}`
-        //     }
-        //     txt += "\n"
-        // }
-        // console.log(txt)
     }
 }

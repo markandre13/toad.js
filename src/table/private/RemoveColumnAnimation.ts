@@ -38,6 +38,9 @@ export class RemoveColumnAnimation extends TableAnimation {
                 }
             }
             this.table.joinHorizontal(this.event.index + this.event.size, -this.totalHeight, this.event.size, this.colCount, this.rowCount)
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
         }
     }
 

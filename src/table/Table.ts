@@ -122,6 +122,7 @@ tableStyle.textContent = `
 
 .body > span, .splitBody > span, .cols > span, .rows > span, .measure > span {
     position: absolute;
+    box-sizing: content-box;
     white-space: nowrap;
     border: solid 1px var(--tx-gray-200);
     padding: 0 2px 0 2px;
@@ -191,6 +192,7 @@ export class Table extends View {
 
     // this will be set to lineheight
     minCellHeight = 0
+    minCellWidth = 16
 
     // TODO: friend tabletool, ... should make these getters'n setters
     model?: TableModel
@@ -711,8 +713,8 @@ export class Table extends View {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`
-                child.style.width = `${colWidth[col] - 5}px`
-                child.style.height = `${rowHeight[row] - 1}px`
+                child.style.width = `${colWidth[col] - 5}px` // -5 == - border left & right - padding top
+                child.style.height = `${rowHeight[row] - 1}px` // -1 == - border left - padding top & bottom
                 this.body.appendChild(child)
                 x += colWidth[col]
             }
