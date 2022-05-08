@@ -4,7 +4,7 @@ import { TableAnimation } from "./TableAnimation"
 
 export class RemoveColumnAnimation extends TableAnimation {
     event: TableEvent
-    totalHeight!: number
+    totalWidth!: number
     done = false;
     colCount: number
     rowCount: number
@@ -12,60 +12,62 @@ export class RemoveColumnAnimation extends TableAnimation {
     constructor(table: Table, event: TableEvent) {
         super(table)
         this.event = event
-        this.joinHorizontal = this.joinHorizontal.bind(this)
+        this.joinVertical = this.joinVertical.bind(this)
 
         this.colCount = this.adapter.colCount
         this.rowCount = this.adapter.rowCount
     }
 
-    override stop() {
-        this.joinHorizontal()
-        this.clearAnimation()
-    }
-
-    splitHorizontal(splitRow: number, extra: number = 0) {
-        this.table.splitHorizontal(splitRow, extra)
-    }
-
-    joinHorizontal() {
-        if (!this.done) {
-            this.done = true
-
-            let idx = this.event.index * this.colCount
-            for (let row = 0; row < this.event.size; ++row) {
-                for (let col = 0; col < this.colCount; ++col) {
-                    this.body.removeChild(this.body.children[idx])
-                }
-            }
-            this.table.joinHorizontal(this.event.index + this.event.size, -this.totalHeight, this.event.size, this.colCount, this.rowCount)
-            if (this.table.animationDone) {
-                this.table.animationDone()
-            }
-        }
-    }
-
     run() {
-        let totalHeight = 0
-        let idx = this.event.index * this.colCount
-        for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
-            const cell = this.body.children[idx] as HTMLSpanElement
-            totalHeight += Math.ceil(px2float(cell.style.height) + 1)
+        let totalWidth = 0
+        for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
+            const cell = this.body.children[col] as HTMLSpanElement
+            totalWidth += Math.ceil(px2float(cell.style.width) + 5)
         }
-        this.totalHeight = totalHeight
+        this.totalWidth = totalWidth
 
         let allSelected = this.body.querySelectorAll(".selected")
         for (let selected of allSelected) {
             selected.classList.remove("selected")
         }
 
-        this.splitHorizontal(this.event.index + this.event.size, this.event.size)
+        this.splitVertical(this.event.index + this.event.size, this.event.size)
 
         this.splitBody.style.transitionProperty = "transform"
         this.splitBody.style.transitionDuration = Table.transitionDuration
-        this.splitBody.ontransitionend = this.joinHorizontal
-        this.splitBody.ontransitioncancel = this.joinHorizontal
+        this.splitBody.ontransitionend = this.joinVertical
+        this.splitBody.ontransitioncancel = this.joinVertical
         setTimeout(() => {
-            this.splitBody.style.transform = `translateY(${-this.totalHeight}px)` // TODO: make this an animation
+            this.splitBody.style.transform = `translateX(${-this.totalWidth}px)` // TODO: make this an animation
         }, 50) // at around > 10ms we'll get an animated transition on google chrome
+    }
+
+    override stop() {
+        this.joinVertical()
+        this.clearAnimation()
+    }
+
+    splitVertical(splitColumn: number, extra: number = 0) {
+        this.table.splitVertical(splitColumn, extra)
+    }
+
+    joinVertical() {
+        if (!this.done) {
+            this.done = true
+
+            let idx = this.event.index
+            for (let row = 0; row < this.rowCount; ++row) {
+                for (let col = 0; col < this.event.size; ++col) {
+                    const cell = this.body.children[idx] as HTMLSpanElement
+                    this.body.removeChild(this.body.children[idx])
+                }
+                idx += this.event.index - this.event.size + 1
+            }
+
+            this.table.joinVertical(this.event.index + this.event.size, -this.totalWidth, this.event.size, this.colCount, this.rowCount)
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
+        }
     }
 }

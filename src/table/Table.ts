@@ -868,7 +868,6 @@ export class Table extends View {
 
     // move 'splitBody' back into 'body' to end animation
     joinVertical(splitCol: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
-        // const handle = this.handleIndex!
         if (colCount === undefined) {
             colCount = this.adapter!.colCount
         }
@@ -876,8 +875,8 @@ export class Table extends View {
             rowCount = this.adapter!.rowCount
         }
 
-        const splitBodyColumns = colCount - splitCol
-        let idx = splitCol
+        const splitBodyColumns = colCount - splitCol + extra
+        let idx = splitCol - extra
 
         if (this.colHeads !== undefined) {
             // move column headers back and adjust their positions
@@ -892,7 +891,6 @@ export class Table extends View {
             const left = px2float(fillerLeft)
             filler.style.left = `${left + delta}px`
 
-
             // adjust handles and filler on the right
             for (let col = idx; col <= colCount; ++col) {
                 const cell = this.colResizeHandles!.children[col] as HTMLSpanElement
@@ -902,13 +900,8 @@ export class Table extends View {
         }
 
         for (let row = 0; row < rowCount; ++row) {
-            let beforeChild
-            if (idx < this.body.children.length) {
-                beforeChild = this.body.children[idx]
-            } else {
-                beforeChild = null
-            }
-            for (let i = 0; i < splitBodyColumns; ++i) {
+            let beforeChild = this.body.children[idx] as HTMLSpanElement
+            for (let col = 0; col < splitBodyColumns; ++col) {
                 const cell = this.splitBody!.children[0] as HTMLSpanElement
                 const left = px2float(cell.style.left)
                 cell.style.left = `${left + delta}px`
