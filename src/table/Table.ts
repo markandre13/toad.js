@@ -171,6 +171,10 @@ tableStyle.textContent = `
     font-weight: 600;
 }
 
+.cols > span {
+    text-align: center;
+}
+
 .measure {
     position: absolute;
     opacity: 0;
@@ -480,6 +484,9 @@ export class Table extends View {
     }
 
     prepareCells() {
+        const measureLineHeight = span(text("Tg")) // let the adapter provide this
+        this.measure.appendChild(measureLineHeight)
+
         // column headers
         let columnHeaders = new Array(this.adapter!.colCount)
         for (let col = 0; col < this.adapter!.colCount; ++col) {
@@ -523,9 +530,6 @@ export class Table extends View {
                 this.measure.appendChild(cell)
             }
         }
-
-        const measureLineHeight = span(text("Tg")) // let the adapter provide this
-        this.measure.appendChild(measureLineHeight)
 
         // body
         for (let row = 0; row < this.adapter!.rowCount; ++row) {

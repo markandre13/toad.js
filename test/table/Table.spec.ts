@@ -1,6 +1,8 @@
 import { expect } from '@esm-bundle/chai'
 import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType, Table } from "@toad"
 
+import { TableFriend } from '@toad/table/private/TableFriend'
+
 import { TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
 import { TypedTableModel } from "@toad/table/model/TypedTableModel"
 import { GridTableModel } from "@toad/table/model/GridTableModel"
@@ -11,6 +13,8 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 // [X] declare (insert/remove)(Row/Column) in a superclass for use by TableTool
 // [X] add tests for row/column insert/remove animations
 // [ ] all of the above with row/col headers
+// [ ] combine add/remove column/row
+// [ ] adjust selection, caret, ...
 // [ ] edit cells
 // [ ] tab in/out of table
 // [ ] display error
@@ -27,6 +31,15 @@ describe("table", function () {
 
     it("render model", async function () {
         const model = createModel(4, 4)
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        await sleep()
+        validateRender(model)
+    })
+
+    it("render model with headers", async function () {
+        const model = createModel(4, 4)
+        model.showColumnHeaders = true
+        model.showRowHeaders = true
         document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
         await sleep()
         validateRender(model)
@@ -73,7 +86,7 @@ describe("table", function () {
     });
 
     [0, 2, 4].forEach(row =>
-        it(`insertRow ${row+1} out of 4`, async function () {
+        it(`insertRow ${row + 1} out of 4`, async function () {
             const model = createModel(4, 4)
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
@@ -94,7 +107,7 @@ describe("table", function () {
     );
 
     [0, 2, 4].forEach(row =>
-        it(`insertColumn ${row+1} out of 4`, async function () {
+        it(`insertColumn ${row + 1} out of 4`, async function () {
             const model = createModel(4, 4)
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
@@ -115,7 +128,7 @@ describe("table", function () {
     );
 
     [0, 2, 3].forEach(row =>
-        it(`removeRow ${row+1} out of 4`, async function () {
+        it(`removeRow ${row + 1} out of 4`, async function () {
             const model = createModel(4, 4)
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
@@ -138,7 +151,7 @@ describe("table", function () {
 
     // 0, 2, 3
     [0, 2, 3].forEach(column =>
-        it(`removeColumn ${column+1} out of 4`, async function () {
+        it(`removeColumn ${column + 1} out of 4`, async function () {
             const model = createModel(4, 4)
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
@@ -236,7 +249,7 @@ function getTable(model: MyModel) {
     if (table.getModel() !== model) {
         throw Error("<tx-model> has wrong model")
     }
-    return table
+    return new TableFriend(table)
 }
 
 function validateRender(model: MyModel) {
@@ -244,7 +257,7 @@ function validateRender(model: MyModel) {
     // console.log(`validateRender: size ${model.colCount} x ${model.rowCount} = ${model.colCount * model.rowCount}`)
 
     const table = getTable(model)
-    const body = table.shadowRoot!.children[1].children[0]
+    const body = table.body
     // console.log(`  body has length ${body.children.length}`)
 
     const expectCol: { x: number, w: number }[] = []
@@ -279,6 +292,23 @@ function validateRender(model: MyModel) {
     //     txt = ""
     // }
 
+    if (model.showColumnHeaders) {
+        const colHeads = table.colHeads!
+        for (let col = 0; col < model.colCount; ++col) {
+            const cell = colHeads.children[col] as HTMLSpanElement
+            expect(cell.innerText, `column header ${col}`).to.equal((table.adapter.getColumnHead(col) as Text).data)
+        }
+    }
+
+    if (model.showRowHeaders) {
+        const rowHeads = table.rowHeads!
+        for (let row = 0; row < model.rowCount; ++row) {
+            const cell = rowHeads.children[row] as HTMLSpanElement
+            expect(cell.innerText, `row header ${row}`).to.equal((table.adapter.getRowHead(row) as Text).data)
+        }
+    }
+
+
     let idx = 0
     for (let row = 0; row < model.rowCount; ++row) {
         for (let col = 0; col < model.colCount; ++col) {
@@ -293,6 +323,9 @@ function validateRender(model: MyModel) {
 }
 
 class MyModel extends GridTableModel<String> {
+    showColumnHeaders = false
+    showRowHeaders = false
+
     constructor(cols: number, rows: number) {
         super(String, cols, rows)
     }
@@ -303,6 +336,27 @@ class MyAdapter extends TableAdapter<MyModel> {
         return text(
             this.model!.getCell(col, row).valueOf()
         )
+    }
+
+    override getRowHead(row: number): Node | undefined {
+        if (this.model?.showRowHeaders) {
+            return text(`${row}`)
+        }
+    }
+
+    override getColumnHead(col: number): Node | undefined {
+        if (this.model?.showRowHeaders) {
+            let str = ""
+            while (true) {
+                str = `${String.fromCharCode((col % 26) + 0x41)}${str}`
+                col = Math.floor(col / 26)
+                if (col === 0) {
+                    break
+                }
+                col -= 1
+            }
+            return text(str)
+        }
     }
 }
 

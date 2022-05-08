@@ -237,7 +237,27 @@ export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedT
         const cell = this.model.getCell(col, row)
         if (cell === undefined)
             return undefined
-        return document.createTextNode(cell.value)
+        return text(cell.value)
+    }
+    
+    override getRowHead(row: number): Node | undefined {
+        // console.log(`row ${row} -> ${row}`)
+        return text(`${row}`)
+    }
+
+    override getColumnHead(col: number): Node | undefined {
+        let str = ""
+        let code = col
+        while (true) {
+            str = `${String.fromCharCode((code % 26) + 0x41)}${str}`
+            code = Math.floor(code / 26)
+            if (code === 0) {
+                break
+            }
+            code -= 1
+        }
+        // console.log(`column ${col} -> ${str}`)
+        return text(str)
     }
 }
 export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {}

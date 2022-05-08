@@ -8,19 +8,28 @@ export class TableFriend {
     constructor(table: Table) {
         this.table = table
     }
-    protected get adapter() {
+    get adapter() {
         return (this.table as any).adapter as TableAdapter<any>
     }
-    protected get measure() {
+    get measure() {
         return (this.table as any).measure as HTMLDivElement
     }
-    protected get body() {
+    get body() {
         return (this.table as any).body as HTMLDivElement
     }
-    protected get splitBody() {
+    get splitBody() {
         return (this.table as any).splitBody as HTMLDivElement
     }
-    protected clearAnimation() {
+    get colHeads() {
+        return (this.table as any).colHeads as HTMLDivElement
+    }
+    get rowHeads() {
+        return (this.table as any).rowHeads as HTMLDivElement
+    }
+    set animationDone(animationDone: () => void) {
+        (this.table as any).animationDone = animationDone
+    }
+    clearAnimation() {
         (this.table as any).animation = undefined
     }
 }
