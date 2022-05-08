@@ -631,16 +631,7 @@ export class Table extends View {
             x = -2
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 x += colWidth[col]
-                const handle = span()
-                handle.className = "handle"
-                handle.style.left = `${x}px`
-                handle.style.top = `0`
-                handle.style.width = `5px`
-                handle.style.height = `${colHeadHeight}px`
-                handle.dataset["idx"] = `${col}`
-                handle.onpointerdown = this.handleDown
-                handle.onpointermove = this.handleMove
-                handle.onpointerup = this.handleUp
+                const handle = this.createHandle(col, x, 0, 5, colHeadHeight)
                 this.colResizeHandles!.appendChild(handle)
             }
 
@@ -662,7 +653,7 @@ export class Table extends View {
                 child.style.left = `0px`
                 child.style.top = `${y}px`
                 child.style.width = `${rowHeadWidth}px`
-                child.style.height = `${rowHeight[row]}px`
+                child.style.height = `${rowHeight[row]-1}px`
                 this.rowHeads.appendChild(child)
                 y += rowHeight[row]
             }
@@ -686,17 +677,8 @@ export class Table extends View {
             y = -2
             for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 y += rowHeight[row]
-                const handle = span()
-                handle.className = "handle"
-                handle.style.left = `0`
-                handle.style.top = `${y}px`
-                handle.style.width = `${rowHeadWidth}px`
-                handle.style.height = `5px`
-                handle.dataset["idx"] = `${row}`
-                handle.onpointerdown = this.handleDown
-                handle.onpointermove = this.handleMove
-                handle.onpointerup = this.handleUp
-                this.rowResizeHandles!.appendChild(handle)
+                const rowHandle = this.createHandle(row, 0, y, rowHeadWidth, 5)
+                this.rowResizeHandles!.appendChild(rowHandle)
             }
 
             y += 5 // handle width
@@ -728,6 +710,20 @@ export class Table extends View {
         this.body.style.top = `${colHeadHeight}px`
 
         this.setHeadingFillerSizeToScrollbarSize()
+    }
+
+    createHandle(idx: number, x: number, y: number, w: number, h: number) {
+        const handle = span()
+        handle.className = "handle"
+        handle.style.left = `${x}px`
+        handle.style.top = `${y}px`
+        handle.style.width = `${w}px`
+        handle.style.height = `${h}px`
+        handle.dataset["idx"] = `${idx}`
+        handle.onpointerdown = this.handleDown
+        handle.onpointermove = this.handleMove
+        handle.onpointerup = this.handleUp
+        return handle
     }
 
     //

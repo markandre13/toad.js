@@ -26,6 +26,12 @@ export class TableFriend {
     get rowHeads() {
         return (this.table as any).rowHeads as HTMLDivElement
     }
+    get colResizeHandles() {
+        return (this.table as any).colResizeHandles as HTMLDivElement
+    }
+    get rowResizeHandles() {
+        return (this.table as any).rowResizeHandles as HTMLDivElement
+    }
     set animationDone(animationDone: () => void) {
         (this.table as any).animationDone = animationDone
     }

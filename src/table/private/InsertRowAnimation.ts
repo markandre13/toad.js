@@ -1,6 +1,6 @@
 import { TableEvent } from '../TableEvent'
-import { span } from '@toad/util/lsx'
-import { Table, px2int } from '../Table'
+import { span, text } from '@toad/util/lsx'
+import { Table, px2int, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
 
 export class InsertRowAnimation extends TableAnimation {
@@ -16,6 +16,22 @@ export class InsertRowAnimation extends TableAnimation {
         this.joinHorizontal = this.joinHorizontal.bind(this)
         this.colCount = this.adapter.colCount
         this.rowCount = this.adapter.rowCount
+    }
+
+    run() {
+        this.prepareCells()
+        setTimeout(() => {
+            // FIXME: if stop is called before this is executed (unlikely), stop will fail
+            this.arrangeMeasuredRowsInGrid()
+            this.splitHorizontal(this.event.index + this.event.size)
+            this.splitBody.style.transitionProperty = "transform"
+            this.splitBody.style.transitionDuration = Table.transitionDuration
+            this.splitBody.ontransitionend = this.joinHorizontal
+            this.splitBody.ontransitioncancel = this.joinHorizontal
+            setTimeout(() => {
+                this.splitBody.style.transform = `translateY(${this.totalHeight}px)` // TODO: make this an animation
+            }, 50) // at around > 10ms we'll get an animated transition on google chrome
+        })
     }
 
     stop() {
@@ -37,22 +53,6 @@ export class InsertRowAnimation extends TableAnimation {
         }
     }
 
-    run() {
-        this.prepareCells()
-        setTimeout(() => {
-            // FIXME: if stop is called before this is executed (unlikely), stop will fail
-            this.arrangeMeasuredRowsInGrid()
-            this.splitHorizontal(this.event.index + this.event.size)
-            this.splitBody.style.transitionProperty = "transform"
-            this.splitBody.style.transitionDuration = Table.transitionDuration
-            this.splitBody.ontransitionend = this.joinHorizontal
-            this.splitBody.ontransitioncancel = this.joinHorizontal
-            setTimeout(() => {
-                this.splitBody.style.transform = `translateY(${this.totalHeight}px)` // TODO: make this an animation
-            }, 50) // at around > 10ms we'll get an animated transition on google chrome
-        })
-    }
-
     prepareCells() {
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.colCount; ++col) {
@@ -65,6 +65,8 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     arrangeMeasuredRowsInGrid() {
+
+        // y := position of new row
         let idx = this.event.index * this.colCount
         let beforeChild
         let y
@@ -86,6 +88,7 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
+        // totalHeight := height of all columns to be inserted
         let totalHeight = 0
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             let rowHeight = this.table.minCellHeight
@@ -94,6 +97,32 @@ export class InsertRowAnimation extends TableAnimation {
                 const bounds = child.getBoundingClientRect()
                 rowHeight = Math.max(rowHeight, bounds.height)
             }
+            rowHeight = Math.ceil(rowHeight)
+
+            if (this.rowHeads) {
+                const newRowHead = span(this.adapter.getRowHead(row)!)
+                newRowHead.className = "head"
+                newRowHead.style.left = "0px"
+                newRowHead.style.top = `${y}px`
+                newRowHead.style.width = this.rowHeads.style.width
+                newRowHead.style.height = `${rowHeight}px`
+                this.rowHeads.insertBefore(newRowHead, this.rowHeads.children[row])
+
+                const newRowHandle = this.table.createHandle(row, 0, y + rowHeight - 1, px2float(this.rowHeads.style.width), 5)
+                this.rowResizeHandles.insertBefore(newRowHandle, this.rowResizeHandles.children[row])
+
+                // adjust subsequent row heads and handles
+                for(let subsequentRow=row+1; subsequentRow<this.rowCount; ++subsequentRow) {
+                    this.rowHeads.children[subsequentRow].replaceChildren(
+                        span(
+                            this.adapter.getRowHead(subsequentRow)!
+                        )
+                    );
+                    (this.rowResizeHandles.children[subsequentRow] as HTMLSpanElement).dataset["idx"] = `${subsequentRow}`
+                }
+            }
+
+            // place all cell in row $row and move them from this.measure to this.body
             for (let col = 0; col < this.colCount; ++col) {
                 const cell = this.measure.children[0] as HTMLSpanElement
                 let neighbour
@@ -102,14 +131,14 @@ export class InsertRowAnimation extends TableAnimation {
                 } else {
                     neighbour = this.body.children[col] as HTMLSpanElement
                 }
-                cell.style.left = neighbour.style.left // FIXME: hack
+                cell.style.left = neighbour.style.left
                 cell.style.top = `${y}px`
-                cell.style.width = neighbour.style.width // FIXME: hack
+                cell.style.width = neighbour.style.width
                 cell.style.height = `${rowHeight}px`
                 this.body.insertBefore(cell, beforeChild)
             }
             y += rowHeight + 1
-            totalHeight += Math.ceil(rowHeight)
+            totalHeight += rowHeight
         }
         this.totalHeight = totalHeight + 1
 

@@ -22,6 +22,8 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 // [ ] insert more than one row/column
 // [ ] insert into empty table
 
+// FIXME: use the 'with data' for all tests because with or without data is a property of the model, not the view
+
 describe("table", function () {
     beforeEach(function () {
         unbind()
@@ -36,7 +38,7 @@ describe("table", function () {
         validateRender(model)
     })
 
-    it("render model with headers", async function () {
+    it("with headers: render model", async function () {
         const model = createModel(4, 4)
         model.showColumnHeaders = true
         model.showRowHeaders = true
@@ -44,6 +46,52 @@ describe("table", function () {
         await sleep()
         validateRender(model)
     })
+
+    it(`with headers: insertRow with data`, async function () {
+        const model = createModel(4, 4)
+        model.showColumnHeaders = true
+        model.showRowHeaders = true
+
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        const table = getTable(model)
+        Table.transitionDuration = "1ms"
+        const animationDone = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+
+        await sleep()
+        // also test wrong row size, and multiple rows
+        model.insertRow(2, ["N1", "N2", "N3", "N4"])
+        await animationDone
+
+        validateRender(model)
+    })
+
+    it(`with headers: insertColumn with data`, async function () {
+        const model = createModel(4, 4)
+        model.showColumnHeaders = true
+        model.showRowHeaders = true
+
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        const table = getTable(model)
+        Table.transitionDuration = "1ms"
+        const animationDone = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+
+        await sleep()
+        // also test wrong row size, and multiple rows
+        model.insertColumn(2, ["N1", "N2", "N3", "N4"])
+        await animationDone
+
+        validateRender(model)
+    })
+
+    // WITH HEADERS: REMOVE COLUMN/ROW
 
     it(`insertRow with data`, async function () {
         const model = createModel(4, 4)
@@ -294,20 +342,53 @@ function validateRender(model: MyModel) {
 
     if (model.showColumnHeaders) {
         const colHeads = table.colHeads!
+        const colHandles = table.colResizeHandles!
+        const height = px2int((colHeads.children[0] as HTMLSpanElement).style.height)
         for (let col = 0; col < model.colCount; ++col) {
-            const cell = colHeads.children[col] as HTMLSpanElement
-            expect(cell.innerText, `column header ${col}`).to.equal((table.adapter.getColumnHead(col) as Text).data)
+            const rowHeader = colHeads.children[col] as HTMLSpanElement
+            expect(rowHeader.innerText, `column header ${col}`).to.equal((table.adapter.getColumnHead(col) as Text).data)
+            expect(px2int(rowHeader.style.left), `column header ${col}] left`).to.equal(expectCol[col].x)
+            expect(px2int(rowHeader.style.width), `column header ${col} width`).to.equal(expectCol[col].w)
+            expect(px2int(rowHeader.style.top), `column header ${col} top`).to.equal(0)
+            expect(px2int(rowHeader.style.height), `column header ${col} height`).to.equal(height)
+
+            const rowHandle = colHandles.children[col] as HTMLSpanElement
+            expect(rowHandle.dataset["idx"], `row handle ${col} index`).to.equal(`${col}`)
+            if (col + 1 < model.colCount) {
+                expect(px2int(rowHandle.style.left), `row handle ${col}] left`).to.equal(expectCol[col + 1].x - 2)
+            } else {
+                expect(px2int(rowHandle.style.left), `row handle ${col}] left`).to.equal(expectCol[col].x + expectCol[col].w + 3)
+            }
+            expect(px2int(rowHandle.style.width), `row handle ${col} width`).to.equal(5)
+            expect(px2int(rowHandle.style.top), `row handle ${col} top`).to.equal(0)
+            expect(px2int(rowHandle.style.height), `row handle ${col} height`).to.equal(height)
         }
     }
 
     if (model.showRowHeaders) {
         const rowHeads = table.rowHeads!
+        const rowHandles = table.rowResizeHandles!
+        const width = px2int((rowHeads.children[0] as HTMLSpanElement).style.width)
         for (let row = 0; row < model.rowCount; ++row) {
             const cell = rowHeads.children[row] as HTMLSpanElement
             expect(cell.innerText, `row header ${row}`).to.equal((table.adapter.getRowHead(row) as Text).data)
+            expect(px2int(cell.style.left), `row header ${row}] left`).to.equal(0)
+            expect(px2int(cell.style.width), `row header ${row} width`).to.equal(width)
+            expect(px2int(cell.style.top), `row header ${row} top`).to.equal(expectRow[row].y)
+            expect(px2int(cell.style.height), `row header ${row} height`).to.equal(expectRow[row].h)
+
+            const colHandle = rowHandles.children[row] as HTMLSpanElement
+            expect(colHandle.dataset["idx"], `column handle ${row} index`).to.equal(`${row}`)
+            expect(px2int(colHandle.style.left), `column handle ${row}] left`).to.equal(0)
+            expect(px2int(colHandle.style.width), `column handle ${row} width`).to.equal(width)
+            if (row + 1 < model.rowCount) {
+                expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row + 1].y - 2)
+            } else {
+                expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row].y + expectRow[row].h - 1)
+            }
+            expect(px2int(colHandle.style.height), `column handle ${row} height`).to.equal(5)
         }
     }
-
 
     let idx = 0
     for (let row = 0; row < model.rowCount; ++row) {
