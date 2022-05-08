@@ -1,7 +1,7 @@
 import { TableEvent } from '../TableEvent'
-import { span, text } from '@toad/util/lsx'
 import { Table, px2int, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
+import { span } from '@toad/util/lsx'
 
 export class InsertRowAnimation extends TableAnimation {
     event: TableEvent

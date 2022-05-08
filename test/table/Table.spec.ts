@@ -12,15 +12,14 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 // [X] render table
 // [X] declare (insert/remove)(Row/Column) in a superclass for use by TableTool
 // [X] add tests for row/column insert/remove animations
-// [ ] all of the above with row/col headers
-// [ ] combine add/remove column/row
-// [ ] adjust selection, caret, ...
+// [X] all of the above with row/col headers
 // [ ] edit cells
+// [ ] adjust selection, caret, ...
 // [ ] tab in/out of table
 // [ ] display error
 
 // [ ] insert more than one row/column
-// [ ] insert into empty table
+// [ ] restrict minimal table size to at least one row or one column
 
 // FIXME: use the 'with data' for all tests because with or without data is a property of the model, not the view
 
@@ -91,7 +90,51 @@ describe("table", function () {
         validateRender(model)
     })
 
-    // WITH HEADERS: REMOVE COLUMN/ROW
+    it(`with headers: removeRow`, async function () {
+        const model = createModel(4, 4)
+        model.showColumnHeaders = true
+        model.showRowHeaders = true
+
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        const table = getTable(model)
+        Table.transitionDuration = "1ms"
+        const animationDone = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+
+        await sleep()
+        // also test wrong row size, and multiple rows
+        model.removeRow(2)
+        expect(model.rowCount).to.equal(3)
+        await animationDone
+
+        validateRender(model)
+    })
+
+    it(`with headers: removeColumn`, async function () {
+        const model = createModel(4, 4)
+        model.showColumnHeaders = true
+        model.showRowHeaders = true
+
+        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+        const table = getTable(model)
+        Table.transitionDuration = "1ms"
+        const animationDone = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+
+        await sleep()
+        // also test wrong row size, and multiple rows
+        model.removeColumn(2)
+        expect(model.colCount).to.equal(3)
+        await animationDone
+
+        validateRender(model)
+    })
 
     it(`insertRow with data`, async function () {
         const model = createModel(4, 4)
@@ -197,7 +240,6 @@ describe("table", function () {
         })
     );
 
-    // 0, 2, 3
     [0, 2, 3].forEach(column =>
         it(`removeColumn ${column + 1} out of 4`, async function () {
             const model = createModel(4, 4)
@@ -219,62 +261,6 @@ describe("table", function () {
             validateRender(model)
         })
     )
-
-    //     describe("initialize view from model", function () {
-    //         describe("does so when the model is defined before the view", function () {
-    //             it("true", function () {
-    //                 const model = new BooleanModel(true)
-    //                 bindModel("bool", model)
-    //                 document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
-    //                 expect(isChecked()).to.equal(true)
-    //             })
-
-    //             it("false", function () {
-    //                 const model = new BooleanModel(false)
-    //                 bindModel("bool", model)
-    //                 document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
-    //                 expect(isChecked()).to.equal(false)
-    //             })
-    //         })
-
-    //         describe("does so when the view is defined before the model", function () {
-    //             it("true", function () {
-    //                 document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
-    //                 const model = new BooleanModel(true)
-    //                 bindModel("bool", model)
-    //                 expect(isChecked()).to.equal(true)
-    //             })
-
-    //             it("false", function () {
-    //                 document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
-    //                 const model = new BooleanModel(false)
-    //                 bindModel("bool", model)
-    //                 expect(isChecked()).to.equal(false)
-    //             })
-    //         })
-    //     })
-
-    //     describe("on change sync data between model and view", function () {
-
-    //         it("updates the html element when the model changes", function () {
-    //             const model = new BooleanModel(true)
-    //             bindModel("bool", model)
-    //             document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
-    //             expect(isChecked()).to.equal(true)
-
-    //             model.value = false
-    //             expect(isChecked()).to.equal(false)
-    //         })
-
-    //         it("updates the model when the html element changes", function () {
-    //             let model = new BooleanModel(false)
-    //             bindModel("bool", model)
-    //             document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
-
-    //             setChecked(true)
-    //             expect(model.value).to.equal(true)
-    //         })
-    //     })
 })
 
 function createModel(cols: number, rows: number) {
@@ -343,6 +329,8 @@ function validateRender(model: MyModel) {
     if (model.showColumnHeaders) {
         const colHeads = table.colHeads!
         const colHandles = table.colResizeHandles!
+        expect(colHeads.children.length).to.equal(model.colCount+1)
+        expect(colHandles.children.length).to.equal(model.colCount+1)
         const height = px2int((colHeads.children[0] as HTMLSpanElement).style.height)
         for (let col = 0; col < model.colCount; ++col) {
             const rowHeader = colHeads.children[col] as HTMLSpanElement
@@ -368,6 +356,8 @@ function validateRender(model: MyModel) {
     if (model.showRowHeaders) {
         const rowHeads = table.rowHeads!
         const rowHandles = table.rowResizeHandles!
+        expect(rowHeads.children.length).to.equal(model.rowCount+1)
+        expect(rowHandles.children.length).to.equal(model.rowCount+1)
         const width = px2int((rowHeads.children[0] as HTMLSpanElement).style.width)
         for (let row = 0; row < model.rowCount; ++row) {
             const cell = rowHeads.children[row] as HTMLSpanElement
@@ -391,6 +381,8 @@ function validateRender(model: MyModel) {
     }
 
     let idx = 0
+
+    expect(body.children.length).to.equal(model.colCount * model.rowCount)
     for (let row = 0; row < model.rowCount; ++row) {
         for (let col = 0; col < model.colCount; ++col) {
             const cell = body.children[idx++] as HTMLSpanElement
@@ -420,13 +412,13 @@ class MyAdapter extends TableAdapter<MyModel> {
     }
 
     override getRowHead(row: number): Node | undefined {
-        if (this.model?.showRowHeaders) {
-            return text(`${row}`)
+        if (this.model!.showRowHeaders) {
+            return text(`${row+1}`)
         }
     }
 
     override getColumnHead(col: number): Node | undefined {
-        if (this.model?.showRowHeaders) {
+        if (this.model!.showRowHeaders) {
             let str = ""
             while (true) {
                 str = `${String.fromCharCode((col % 26) + 0x41)}${str}`

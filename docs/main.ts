@@ -242,7 +242,7 @@ export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedT
     
     override getRowHead(row: number): Node | undefined {
         // console.log(`row ${row} -> ${row}`)
-        return text(`${row}`)
+        return text(`${row+1}`)
     }
 
     override getColumnHead(col: number): Node | undefined {
@@ -256,7 +256,6 @@ export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedT
             }
             code -= 1
         }
-        // console.log(`column ${col} -> ${str}`)
         return text(str)
     }
 }

@@ -1,6 +1,7 @@
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
+import { span, text } from '@toad/util/lsx'
 
 export class RemoveRowAnimation extends TableAnimation {
     event: TableEvent
@@ -16,32 +17,6 @@ export class RemoveRowAnimation extends TableAnimation {
 
         this.colCount = this.adapter.colCount
         this.rowCount = this.adapter.rowCount
-    }
-
-    override stop() {
-        this.joinHorizontal()
-        this.clearAnimation()
-    }
-
-    splitHorizontal(splitRow: number, extra: number = 0) {
-        this.table.splitHorizontal(splitRow, extra)
-    }
-
-    joinHorizontal() {
-        if (!this.done) {
-            this.done = true
-
-            let idx = this.event.index * this.colCount
-            for (let row = 0; row < this.event.size; ++row) {
-                for (let col = 0; col < this.colCount; ++col) {
-                    this.body.removeChild(this.body.children[idx])
-                }
-            }
-            this.table.joinHorizontal(this.event.index + this.event.size, -this.totalHeight, this.event.size, this.colCount, this.rowCount)
-            if (this.table.animationDone) {
-                this.table.animationDone()
-            }
-        }
     }
 
     run() {
@@ -67,5 +42,46 @@ export class RemoveRowAnimation extends TableAnimation {
         setTimeout(() => {
             this.splitBody.style.transform = `translateY(${-this.totalHeight}px)` // TODO: make this an animation
         }, 50) // at around > 10ms we'll get an animated transition on google chrome
+    }
+
+    override stop() {
+        this.joinHorizontal()
+        this.clearAnimation()
+    }
+
+    splitHorizontal(splitRow: number, extra: number = 0) {
+        this.table.splitHorizontal(splitRow, extra)
+    }
+
+    joinHorizontal() {
+        if (!this.done) {
+            this.done = true
+
+            let idx = this.event.index * this.colCount
+            for (let row = 0; row < this.event.size; ++row) {
+                for (let col = 0; col < this.colCount; ++col) {
+                    this.body.removeChild(this.body.children[idx])
+                }
+            }
+            this.table.joinHorizontal(this.event.index + this.event.size, -this.totalHeight, this.event.size, this.colCount, this.rowCount)
+
+            if (this.rowHeads) {
+                for (let row = 0; row < this.event.size; ++row) {
+                    this.rowHeads.removeChild(this.rowHeads.children[this.event.index])
+                    this.rowResizeHandles.removeChild(this.rowResizeHandles.children[this.event.index])
+                }
+                // adjust subsequent row heads and handles
+                for (let subsequentRow = this.event.index; subsequentRow < this.rowCount; ++subsequentRow) {
+                    this.rowHeads.children[subsequentRow].replaceChildren(
+                        this.adapter.getRowHead(subsequentRow)!
+                    );
+                    (this.rowResizeHandles.children[subsequentRow] as HTMLSpanElement).dataset["idx"] = `${subsequentRow}`
+                }
+            }
+
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
+        }
     }
 }

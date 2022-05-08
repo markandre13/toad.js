@@ -65,6 +65,21 @@ export class RemoveColumnAnimation extends TableAnimation {
             }
 
             this.table.joinVertical(this.event.index + this.event.size, -this.totalWidth, this.event.size, this.colCount, this.rowCount)
+
+            if (this.colHeads) {
+                for (let col = 0; col < this.event.size; ++col) {
+                    this.colHeads.removeChild(this.colHeads.children[this.event.index])
+                    this.colResizeHandles.removeChild(this.colResizeHandles.children[this.event.index])
+                }
+                // adjust subsequent row heads and handles
+                for (let subsequentColumn = this.event.index; subsequentColumn < this.colCount; ++subsequentColumn) {
+                    this.colHeads.children[subsequentColumn].replaceChildren(
+                        this.adapter.getColumnHead(subsequentColumn)!
+                    );
+                    (this.colResizeHandles.children[subsequentColumn] as HTMLSpanElement).dataset["idx"] = `${subsequentColumn}`
+                }
+            }
+
             if (this.table.animationDone) {
                 this.table.animationDone()
             }
