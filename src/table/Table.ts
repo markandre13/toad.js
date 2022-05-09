@@ -333,7 +333,6 @@ export class Table extends View {
     }
 
     editCell() {
-        console.log(this.adapter)
         const col = this.selection!.value.col
         const row = this.selection!.value.row
         this.editing = new TablePos(col, row)
@@ -378,7 +377,7 @@ export class Table extends View {
     }
 
     override setModel(model?: TableModel | SelectionModel): void {
-        if (!model) {
+        if (model === undefined) {
             if (this.selection) {
                 this.selection.modified.remove(this)
             }
@@ -423,7 +422,7 @@ export class Table extends View {
     }
 
     selectionChanged() {
-        // console.log(`Table2.selectionChanged: ${this.selection}`)
+        // console.log(`Table.selectionChanged: ${this.selection}`)
         if (this.selection === undefined) {
             return
         }
@@ -471,8 +470,15 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        // console.log(`Table2.modelChanged: ${event}`)
+        // console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
+            case TableEventType.CELL_CHANGED: {
+                const data = this.adapter!.getDisplayCell(event.col, event.row)
+                if (data !== undefined) {
+                    const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
+                    cell.replaceChildren(data as any)
+                }
+            } break
             case TableEventType.INSERT_ROW: {
                 if (this.animation) {
                     this.animation.stop()

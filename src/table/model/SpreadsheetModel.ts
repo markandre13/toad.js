@@ -1,3 +1,5 @@
+import { TableEvent } from '../TableEvent'
+import { TableEventType } from '../TableEventType'
 import { GridTableModel } from './GridTableModel'
 import { SpreadsheetCell } from "./SpreadsheetCell"
 
@@ -15,7 +17,7 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         return `${cell.value}`
     }
     setField(col: number, row: number, value: string) {
-        console.log(`SpreadsheetModel.setField(${col}, ${row}, '${value}')`)
+        // console.log(`SpreadsheetModel.setField(${col}, ${row}, '${value}')`)
         const index = col + row * this._cols
         let cell = this._data[index]
         if (cell === undefined) {
@@ -31,6 +33,19 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         this.eval(cell)
     }
 
+    // FIXME: can we do this without a linear search for the cell coordinates?
+    protected sendCellChanged(cell: SpreadsheetCell) {
+        let idx = 0
+        for(let row = 0; row<this._rows; ++row) {
+            for(let col = 0; col<this._cols; ++col) {
+                if (cell === this._data[idx++]) {
+                    this.modified.trigger(new TableEvent(TableEventType.CELL_CHANGED, col, row))
+                    return
+                }
+            }
+        }
+    }
+
     protected eval(cell: SpreadsheetCell, marks = new Set<SpreadsheetCell>()) {
         // mark...
         if (marks.has(cell)) {
@@ -39,7 +54,11 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         marks.add(cell)
 
         // (evaluate)
+        const oldValue = cell._value
         cell.eval(this)
+        if (oldValue != cell._value) {
+            this.sendCellChanged(cell)
+        }
 
         // ...and sweep
         const observers = this.dependencies.get(cell)

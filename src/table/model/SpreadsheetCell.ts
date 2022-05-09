@@ -32,7 +32,7 @@ export class SpreadsheetCell {
         }
     }
     set value(value: string) {
-        console.log(`SpreadsheetCell.value('${value}')`)
+        // console.log(`SpreadsheetCell.value('${value}')`)
         this._node = expression(new Lexer(value))
         this._str = value
     }

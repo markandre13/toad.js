@@ -265,11 +265,11 @@ export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
         cell.tabIndex = -1
         cell.contentEditable = "true"
         cell.focus()
-        const a = this.model!.getCell(pos.col, pos.row)
-        console.log(a)
-        if (a !== undefined) {
-            cell.innerText = a._str!
-        }
+        // const a = this.model!.getCell(pos.col, pos.row)
+        // console.log(a)
+        // if (a !== undefined) {
+        //     cell.innerText = a._str!
+        // }
         return undefined
     }
 
