@@ -582,21 +582,11 @@ export class Table extends View {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const child = this.measure.children[idx++]
                 const bounds = child.getBoundingClientRect()
-                colWidth[col] = Math.ceil(bounds.width)
+                colWidth[col] = bounds.width
                 colHeadHeight = Math.max(colHeadHeight, bounds.height)
             }
         } else {
             colWidth.fill(0)
-        }
-
-        for (let col = 0; col < this.adapter!.colCount; ++col) {
-            let cw = colWidth[col]
-            for (let row = 0; row < this.adapter!.rowCount; ++row) {
-                const child = this.measure.children[col + row * this.adapter!.colCount] as HTMLSpanElement
-                const bounds = child.getBoundingClientRect()
-                cw = Math.max(cw, bounds.width)
-            }
-            colWidth[col] = Math.ceil(cw)
         }
 
         // calculate row widths and row header width
@@ -613,10 +603,20 @@ export class Table extends View {
             rowHeight.fill(0)
         }
 
+        for (let col = 0; col < this.adapter!.colCount; ++col) {
+            let cw = colWidth[col]
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
+                const child = this.measure.children[idx + col + row * this.adapter!.colCount] as HTMLSpanElement
+                const bounds = child.getBoundingClientRect()
+                cw = Math.max(cw, bounds.width)
+            }
+            colWidth[col] = Math.ceil(cw)
+        }
+
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             let rh = rowHeight[row]
             for (let col = 0; col < this.adapter!.colCount; ++col) {
-                const child = this.measure.children[col + row * this.adapter!.colCount] as HTMLSpanElement
+                const child = this.measure.children[idx + col + row * this.adapter!.colCount] as HTMLSpanElement
                 const bounds = child.getBoundingClientRect()
                 rh = Math.max(rh, bounds.height)
             }

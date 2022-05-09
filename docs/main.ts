@@ -223,7 +223,7 @@ const model = new FixedSystemModel()
 register(FixedSystemAdapter, FixedSystemModel)
 bindModel("fixedSystem", model)
 
-const m = new SpreadsheetModel(4, 4)
+const m = new SpreadsheetModel(2, 2)
 for (let row = 0; row < m.rowCount; ++row) {
     for (let col = 0; col < m.colCount; ++col) {
         m.setField(col, row, `C${col}R${row}`)
