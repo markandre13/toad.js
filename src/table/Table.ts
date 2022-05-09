@@ -198,6 +198,8 @@ export class Table extends View {
     minCellHeight = 0
     minCellWidth = 16
 
+    protected editing?: TablePos
+
     // TODO: friend tabletool, ... should make these getters'n setters
     model?: TableModel
     selection?: SelectionModel
@@ -319,10 +321,26 @@ export class Table extends View {
                         if (pos.row > 0)
                             --pos.row
                         break
+                    case "Enter":
+                        this.editCell()
+                        break
+                    // default:
+                    //     console.log(ev)
                 }
                 this.selection.value = pos
             } break
         }
+    }
+
+    editCell() {
+        console.log(this.adapter)
+        const col = this.selection!.value.col
+        const row = this.selection!.value.row
+        this.editing = new TablePos(col, row)
+        this.adapter!.editCell(
+            this.editing,
+            this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
+        )
     }
 
     pointerDown(ev: PointerEvent) {
@@ -408,6 +426,11 @@ export class Table extends View {
         // console.log(`Table2.selectionChanged: ${this.selection}`)
         if (this.selection === undefined) {
             return
+        }
+        if (this.editing) {
+            this.adapter!.saveCell(this.editing, this.body.children[this.editing.col + this.editing.row * this.adapter!.colCount] as HTMLSpanElement)
+            this.editing = undefined
+            this.focus()
         }
         switch (this.selection.mode) {
             case TableEditMode.EDIT_CELL: {
@@ -653,7 +676,7 @@ export class Table extends View {
                 child.style.left = `0px`
                 child.style.top = `${y}px`
                 child.style.width = `${rowHeadWidth}px`
-                child.style.height = `${rowHeight[row]-1}px`
+                child.style.height = `${rowHeight[row] - 1}px`
                 this.rowHeads.appendChild(child)
                 y += rowHeight[row]
             }

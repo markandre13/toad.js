@@ -69,7 +69,7 @@ later
 */
 
 import { text } from '@toad/util/lsx'
-import { TableModel, TableAdapter, TypedTableModel, TypedTableAdapter, ArrayModel, ArrayAdapter, bindModel, refs } from '@toad'
+import { TableModel, TableAdapter, TypedTableModel, TypedTableAdapter, ArrayModel, ArrayAdapter, bindModel, refs, TablePos } from '@toad'
 import { GridTableModel } from '@toad/table/model/GridTableModel'
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { InferTypedTableModelParameter } from '@toad/table/adapter/TypedTableAdapter'
@@ -224,8 +224,8 @@ register(FixedSystemAdapter, FixedSystemModel)
 bindModel("fixedSystem", model)
 
 const m = new SpreadsheetModel(4, 4)
-for (let row = 0; row < 4; ++row) {
-    for (let col = 0; col < 4; ++col) {
+for (let row = 0; row < m.rowCount; ++row) {
+    for (let col = 0; col < m.colCount; ++col) {
         m.setField(col, row, `C${col}R${row}`)
     }
 }
@@ -259,6 +259,28 @@ export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedT
         return text(str)
     }
 }
-export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {}
+export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
+    override editCell(pos: TablePos, cell: HTMLSpanElement) {
+        console.log("MyAdapter.editCell()")
+        cell.tabIndex = -1
+        cell.contentEditable = "true"
+        cell.focus()
+        const a = this.model!.getCell(pos.col, pos.row)
+        console.log(a)
+        if (a !== undefined) {
+            cell.innerText = a._str!
+        }
+        return undefined
+    }
+
+    override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
+        console.log("MyAdapter.saveCell()")
+        // this.model!.getCell(pos.col, pos.row)
+        this.model!.setField(pos.col, pos.row, cell.innerText)
+        cell.innerText = this.model!.getField(pos.col, pos.row) // HACK! The model should generate events to update the fields!!!
+        cell.tabIndex = 0
+        // cell.blur()
+    }
+}
 registerX(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
 bindModel("spreadsheet", m)

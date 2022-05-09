@@ -18,6 +18,7 @@
 
 import { TableModel } from "../model/TableModel"
 import { TypedTableModel } from "../model/TypedTableModel"
+import { TablePos } from "../TablePos"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 
 export class TableAdapter<T extends TableModel> {
@@ -36,8 +37,15 @@ export class TableAdapter<T extends TableModel> {
     }
     getColumnHead(col: number): Node | undefined { return undefined }
     getRowHead(row: number): Node | undefined { return undefined }
+
+    // old style
     getDisplayCell(col: number, row: number): Node | Node[] | undefined { return undefined }
     getEditorCell(col: number, row: number): Node | undefined { return undefined }
+
+    // new style
+    showCell(pos: TablePos): string | Node | undefined { return undefined }
+    editCell(pos: TablePos, cell: HTMLSpanElement) { }
+    saveCell(pos: TablePos, cell: HTMLSpanElement) { }
 
     isViewCompact(): boolean { return false }
 

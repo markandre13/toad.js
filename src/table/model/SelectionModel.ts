@@ -24,7 +24,7 @@ import { TablePos } from "../TablePos"
 
 export class SelectionModel extends Model {
     mode: TableEditMode // FIXME: there might be a way to do without, just by the behaviour of a common API towards TableView
-    _value: TablePos
+    protected _value: TablePos
 
     constructor(mode = TableEditMode.EDIT_CELL) {
         super()

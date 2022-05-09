@@ -15,7 +15,7 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         return `${cell.value}`
     }
     setField(col: number, row: number, value: string) {
-        // console.log(`setField(${col}, ${row}, '${value}')`)
+        console.log(`SpreadsheetModel.setField(${col}, ${row}, '${value}')`)
         const index = col + row * this._cols
         let cell = this._data[index]
         if (cell === undefined) {

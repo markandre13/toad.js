@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType, Table } from "@toad"
+import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType, Table, TablePos } from "@toad"
 
 import { TableFriend } from '@toad/table/private/TableFriend'
 
@@ -13,6 +13,7 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 // [X] declare (insert/remove)(Row/Column) in a superclass for use by TableTool
 // [X] add tests for row/column insert/remove animations
 // [X] all of the above with row/col headers
+// [ ] header glitches
 // [ ] edit cells
 // [ ] adjust selection, caret, ...
 // [ ] tab in/out of table
@@ -20,6 +21,14 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 
 // [ ] insert more than one row/column
 // [ ] restrict minimal table size to at least one row or one column
+
+// cell editing follows google sheets shortcuts
+// not editing
+//   type    : replace cell content
+//   [enter] : edit cell content/formula (ms & apple use these: ctrl+u, f2, ctrl+=)
+// editing
+//   [enter] : move down
+//   [esc]   : revert changes
 
 // FIXME: use the 'with data' for all tests because with or without data is a property of the model, not the view
 
@@ -409,6 +418,14 @@ class MyAdapter extends TableAdapter<MyModel> {
         return text(
             this.model!.getCell(col, row).valueOf()
         )
+    }
+
+    override editCell(pos: TablePos, cell: HTMLSpanElement) {
+        console.log("MyAdapter.editCell()")
+        cell.tabIndex = -1
+        cell.contentEditable = "true"
+        cell.focus()
+        return undefined
     }
 
     override getRowHead(row: number): Node | undefined {
