@@ -32,6 +32,7 @@ import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
 
 import { span, div, text } from '@toad/util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
+import { isNodeBeforeNode } from '@toad/util/dom'
 
 // --spectrum-table-row-background-color-selected
 // --spectrum-alias-highlight-selected
@@ -43,7 +44,8 @@ tableStyle.textContent = `
     display: inline-block;
     border: 1px solid var(--tx-gray-300);
     border-radius: 3px;
-    outline-offset: -2px;
+    /* outline-offset: -2px; */
+    outline: none;
     font-family: var(--tx-font-family);
     font-size: var(--tx-font-size);
     background: #1e1e1e;
@@ -124,6 +126,7 @@ tableStyle.textContent = `
     position: absolute;
     box-sizing: content-box;
     white-space: nowrap;
+    outline: none;
     border: solid 1px var(--tx-gray-200);
     padding: 0 2px 0 2px;
     margin: 0;
@@ -233,6 +236,8 @@ export class Table extends View {
 
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
         this.keyDown = this.keyDown.bind(this)
+        this.focusIn = this.focusIn.bind(this)
+        this.focusOut = this.focusOut.bind(this)
         this.pointerDown = this.pointerDown.bind(this)
         this.handleDown = this.handleDown.bind(this)
         this.handleMove = this.handleMove.bind(this)
@@ -250,6 +255,9 @@ export class Table extends View {
         this.measure.classList.add("measure")
 
         this.onkeydown = this.keyDown
+        this.addEventListener("focusin", this.focusIn)
+        this.addEventListener("focusout", this.focusOut)
+
         this.body.onresize = this.setHeadingFillerSizeToScrollbarSize
         this.body.onscroll = () => {
             this.setHeadingFillerSizeToScrollbarSize()
@@ -304,25 +312,66 @@ export class Table extends View {
                 let pos = { col: this.selection.col, row: this.selection.row }
                 switch (ev.key) {
                     case "ArrowRight":
-                        if (pos.col + 1 < this.adapter!.colCount) {
+                        if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
                             ++pos.col
+                            ev.preventDefault()
                         }
                         break
                     case "ArrowLeft":
-                        if (pos.col > 0) {
+                        if (this.editing === undefined && pos.col > 0) {
                             --pos.col
+                            ev.preventDefault()
                         }
                         break
                     case "ArrowDown":
-                        if (pos.row + 1 < this.adapter!.rowCount)
+                        if (this.editing === undefined && pos.row + 1 < this.adapter!.rowCount) {
                             ++pos.row
+                            ev.preventDefault()
+                        }
                         break
                     case "ArrowUp":
-                        if (pos.row > 0)
+                        if (this.editing === undefined && pos.row > 0) {
                             --pos.row
+                            ev.preventDefault()
+                        }
+                        break
+                    case "Tab":
+                        if (ev.shiftKey) {
+                            if (pos.col > 0) {
+                                --pos.col
+                                ev.preventDefault()
+                            } else {
+                                if (pos.row > 0) {
+                                    pos.col = this.adapter!.colCount - 1
+                                    --pos.row
+                                    ev.preventDefault()
+                                }
+                            }
+                        } else {
+                            if (pos.col + 1 < this.adapter!.colCount) {
+                                ++pos.col
+                                ev.preventDefault()
+                            } else {
+                                if (pos.row + 1 < this.adapter!.rowCount) {
+                                    pos.col = 0
+                                    ++pos.row
+                                    ev.preventDefault()
+                                }
+                            }
+                        }
                         break
                     case "Enter":
-                        this.editCell()
+                        if (this.editing === undefined) {
+                            this.editCell()
+                        } else {
+                            this.saveCell()
+                            if (pos.row + 1 < this.adapter!.rowCount) {
+                                ++pos.row
+                                this.selection.value = pos
+                                this.editCell()
+                            }
+                        }
+                        ev.preventDefault()
                         break
                     // default:
                     //     console.log(ev)
@@ -330,6 +379,23 @@ export class Table extends View {
                 this.selection.value = pos
             } break
         }
+    }
+
+    focusIn(event: FocusEvent) {
+        if (event.target && event.relatedTarget) {
+            try {
+                if (isNodeBeforeNode(event.relatedTarget as Node, this)) {
+                    this.selection!.value = { col: 0, row: 0 }
+                } else {
+                    this.selection!.value = { col: this.adapter!.colCount - 1, row: this.adapter!.rowCount - 1 }
+                }
+            }
+            catch (e) { }
+        }
+    }
+
+    focusOut(ev: FocusEvent) {
+        // console.log(ev)
     }
 
     editCell() {
@@ -340,6 +406,16 @@ export class Table extends View {
             this.editing,
             this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
         )
+    }
+
+    saveCell() {
+        if (this.editing === undefined) {
+            return
+        }
+        console.log(`save cell ${this.editing.col}, ${this.editing.row}`)
+        this.adapter!.saveCell(this.editing, this.body.children[this.editing.col + this.editing.row * this.adapter!.colCount] as HTMLSpanElement)
+        this.editing = undefined
+        // this.focus()
     }
 
     pointerDown(ev: PointerEvent) {
@@ -426,11 +502,7 @@ export class Table extends View {
         if (this.selection === undefined) {
             return
         }
-        if (this.editing) {
-            this.adapter!.saveCell(this.editing, this.body.children[this.editing.col + this.editing.row * this.adapter!.colCount] as HTMLSpanElement)
-            this.editing = undefined
-            this.focus()
-        }
+        this.saveCell()
         switch (this.selection.mode) {
             case TableEditMode.EDIT_CELL: {
                 // this.log(Log.SELECTION, `TableView.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
@@ -438,9 +510,14 @@ export class Table extends View {
                 for (let selected of allSelected) {
                     selected.classList.remove("selected")
                 }
-                const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                cell.classList.add("selected")
-                scrollIntoView(cell)
+                if (document.activeElement === this) {
+                    console.log("table is active element, set focus")
+                    const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
+                    cell.classList.add("selected")
+                    scrollIntoView(cell)
+                } else {
+                    console.log("table is not active element, do not set focus")
+                }
                 // this.prepareInputOverlayForPosition(new TablePos(this.selectionModel.col, this.selectionModel.row))
                 // delete (this.rootDiv as any).tabIndex
             } break

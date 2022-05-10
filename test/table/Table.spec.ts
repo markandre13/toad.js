@@ -36,6 +36,10 @@ describe("table", function () {
     beforeEach(function () {
         unbind()
         TableAdapter.unbind()
+        document.head.innerHTML = `
+            <link rel="stylesheet" type="text/css" href="/style/tx-static.css" />
+            <link rel="stylesheet" type="text/css" href="/style/tx-dark.css" />
+            <link rel="stylesheet" type="text/css" href="/style/tx.css" />`
         document.body.innerHTML = ""
     })
 
@@ -57,9 +61,30 @@ describe("table", function () {
         })
     })
 
-    describe("keyboard", function() {
+    describe("keyboard", function () {
         // tab in
         // tab out
+        it.only("tab in", async function () {
+            const model = createModel(2, 2)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
+            document.body.innerHTML = `<input style="outline: none;" id="before"/><tx-table model="model"></tx-table><input id="after">`
+            const table = getTable(model)
+            const before = document.querySelector("#before") as HTMLElement
+            before.focus()
+
+            // there are two ways how we get the focus, from an element before and an element after
+
+            // the browser doesn't allow us to emulate tab events
+            // instead we listen for focusin and focusout events, and then use dom.isNodeBeforeNode()
+            // unlike the previous table implementation, we could now try to handle these events on
+            // the tx-table itself instead of the input overlay!
+            // const e = new KeyboardEvent("keydown", {
+            //     bubbles: true,
+            //     key: "Tab"
+            // })
+            // before.dispatchEvent(e)
+        })
     })
 
     describe("edit columns/rows", function () {

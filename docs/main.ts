@@ -255,11 +255,11 @@ export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
         cell.tabIndex = -1
         cell.contentEditable = "true"
         cell.focus()
-        // const a = this.model!.getCell(pos.col, pos.row)
+        const a = this.model!.getCell(pos.col, pos.row)
         // console.log(a)
-        // if (a !== undefined) {
-        //     cell.innerText = a._str!
-        // }
+        if (a !== undefined) {
+            cell.innerText = a._str!
+        }
         return undefined
     }
 
@@ -269,7 +269,7 @@ export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
         this.model!.setField(pos.col, pos.row, cell.innerText)
         cell.innerText = this.model!.getField(pos.col, pos.row) // HACK! The model should generate events to update the fields!!!
         cell.tabIndex = 0
-        // cell.blur()
+        cell.blur()
     }
 }
 TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
