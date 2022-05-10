@@ -205,22 +205,12 @@ class DynamicSystemAdapter extends ArrayAdapter<ArrayModel<System>> {
     override getRow(system: System) { return refs(system, "name", "government", "economy", "species") }
 }
 
-// TODO: something else to redesign:
-function registerX<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new (...args: any[]) => A, model: new (...args: any[]) => C, data: new (...args: any[]) => T): void {
-    TableAdapter.register(adapter, model, data)
-}
-function register<T extends TableModel>(adapter: new (model: T) => TableAdapter<any>, model: new (...args: any[]) => T): void
-// function register(adapter: new() => TableAdapter<any>, model: new(...args: any[])=>TableModel, data?: any): void
-{
-    TableAdapter.register(adapter as any, model)
-}
-
-registerX(DynamicSystemAdapter, ArrayModel, System)
+TableAdapter.register(DynamicSystemAdapter, ArrayModel, System)
 const dynamicModel = new ArrayModel<System>(systemList, System)
 bindModel("dynamicSystem", dynamicModel)
 
 const model = new FixedSystemModel()
-register(FixedSystemAdapter, FixedSystemModel)
+TableAdapter.register(FixedSystemAdapter, FixedSystemModel)
 bindModel("fixedSystem", model)
 
 const m = new SpreadsheetModel(2, 2)
@@ -282,5 +272,5 @@ export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
         // cell.blur()
     }
 }
-registerX(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
+TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
 bindModel("spreadsheet", m)

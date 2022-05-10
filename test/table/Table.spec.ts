@@ -39,155 +39,35 @@ describe("table", function () {
         document.body.innerHTML = ""
     })
 
-    it("render model", async function () {
-        const model = createModel(4, 4)
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        await sleep()
-        validateRender(model)
-    })
-
-    it("with headers: render model", async function () {
-        const model = createModel(4, 4)
-        model.showColumnHeaders = true
-        model.showRowHeaders = true
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        await sleep()
-        validateRender(model)
-    })
-
-    it(`with headers: insertRow with data`, async function () {
-        const model = createModel(4, 4)
-        model.showColumnHeaders = true
-        model.showRowHeaders = true
-
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        const table = getTable(model)
-        Table.transitionDuration = "1ms"
-        const animationDone = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
-            }
-        })
-
-        await sleep()
-        // also test wrong row size, and multiple rows
-        model.insertRow(2, ["N1", "N2", "N3", "N4"])
-        await animationDone
-
-        validateRender(model)
-    })
-
-    it(`with headers: insertColumn with data`, async function () {
-        const model = createModel(4, 4)
-        model.showColumnHeaders = true
-        model.showRowHeaders = true
-
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        const table = getTable(model)
-        Table.transitionDuration = "1ms"
-        const animationDone = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
-            }
-        })
-
-        await sleep()
-        // also test wrong row size, and multiple rows
-        model.insertColumn(2, ["N1", "N2", "N3", "N4"])
-        await animationDone
-
-        validateRender(model)
-    })
-
-    it(`with headers: removeRow`, async function () {
-        const model = createModel(4, 4)
-        model.showColumnHeaders = true
-        model.showRowHeaders = true
-
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        const table = getTable(model)
-        Table.transitionDuration = "1ms"
-        const animationDone = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
-            }
-        })
-
-        await sleep()
-        // also test wrong row size, and multiple rows
-        model.removeRow(2)
-        expect(model.rowCount).to.equal(3)
-        await animationDone
-
-        validateRender(model)
-    })
-
-    it(`with headers: removeColumn`, async function () {
-        const model = createModel(4, 4)
-        model.showColumnHeaders = true
-        model.showRowHeaders = true
-
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        const table = getTable(model)
-        Table.transitionDuration = "1ms"
-        const animationDone = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
-            }
-        })
-
-        await sleep()
-        // also test wrong row size, and multiple rows
-        model.removeColumn(2)
-        expect(model.colCount).to.equal(3)
-        await animationDone
-
-        validateRender(model)
-    })
-
-    it(`insertRow with data`, async function () {
-        const model = createModel(4, 4)
-
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        const table = getTable(model)
-        Table.transitionDuration = "1ms"
-        const animationDone = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
-            }
-        })
-
-        await sleep()
-        // also test wrong row size, and multiple rows
-        model.insertRow(2, ["N1", "N2", "N3", "N4"])
-        await animationDone
-
-        validateRender(model)
-    })
-
-    it(`insertColumn with data`, async function () {
-        const model = createModel(4, 4)
-
-        document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-        const table = getTable(model)
-        Table.transitionDuration = "1ms"
-        const animationDone = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
-            }
-        })
-
-        await sleep()
-        // also test wrong row size, and multiple rows
-        model.insertColumn(2, ["N1", "N2", "N3", "N4"])
-        await animationDone
-
-        validateRender(model)
-    });
-
-    [0, 2, 4].forEach(row =>
-        it(`insertRow ${row + 1} out of 4`, async function () {
+    describe("render", function () {
+        it("render model", async function () {
             const model = createModel(4, 4)
+            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+            await sleep()
+            validateRender(model)
+        })
+
+        it("with headers: render model", async function () {
+            const model = createModel(4, 4)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
+            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+            await sleep()
+            validateRender(model)
+        })
+    })
+
+    describe("keyboard", function() {
+        // tab in
+        // tab out
+    })
+
+    describe("edit columns/rows", function () {
+
+        it(`with headers: insertRow with data`, async function () {
+            const model = createModel(4, 4)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
@@ -199,16 +79,17 @@ describe("table", function () {
             })
 
             await sleep()
-            model.insertRow(row)
+            // also test wrong row size, and multiple rows
+            model.insertRow(2, ["N1", "N2", "N3", "N4"])
             await animationDone
 
             validateRender(model)
         })
-    );
 
-    [0, 2, 4].forEach(row =>
-        it(`insertColumn ${row + 1} out of 4`, async function () {
+        it(`with headers: insertColumn with data`, async function () {
             const model = createModel(4, 4)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
@@ -220,15 +101,60 @@ describe("table", function () {
             })
 
             await sleep()
-            model.insertColumn(row)
+            // also test wrong row size, and multiple rows
+            model.insertColumn(2, ["N1", "N2", "N3", "N4"])
             await animationDone
 
             validateRender(model)
         })
-    );
 
-    [0, 2, 3].forEach(row =>
-        it(`removeRow ${row + 1} out of 4`, async function () {
+        it(`with headers: removeRow`, async function () {
+            const model = createModel(4, 4)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
+
+            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+            const table = getTable(model)
+            Table.transitionDuration = "1ms"
+            const animationDone = new Promise<void>((resolve, reject) => {
+                table.animationDone = () => {
+                    resolve()
+                }
+            })
+
+            await sleep()
+            // also test wrong row size, and multiple rows
+            model.removeRow(2)
+            expect(model.rowCount).to.equal(3)
+            await animationDone
+
+            validateRender(model)
+        })
+
+        it(`with headers: removeColumn`, async function () {
+            const model = createModel(4, 4)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
+
+            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+            const table = getTable(model)
+            Table.transitionDuration = "1ms"
+            const animationDone = new Promise<void>((resolve, reject) => {
+                table.animationDone = () => {
+                    resolve()
+                }
+            })
+
+            await sleep()
+            // also test wrong row size, and multiple rows
+            model.removeColumn(2)
+            expect(model.colCount).to.equal(3)
+            await animationDone
+
+            validateRender(model)
+        })
+
+        it(`insertRow with data`, async function () {
             const model = createModel(4, 4)
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
@@ -242,15 +168,13 @@ describe("table", function () {
 
             await sleep()
             // also test wrong row size, and multiple rows
-            model.removeRow(row, 1)
+            model.insertRow(2, ["N1", "N2", "N3", "N4"])
             await animationDone
 
             validateRender(model)
         })
-    );
 
-    [0, 2, 3].forEach(column =>
-        it(`removeColumn ${column + 1} out of 4`, async function () {
+        it(`insertColumn with data`, async function () {
             const model = createModel(4, 4)
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
@@ -264,16 +188,102 @@ describe("table", function () {
 
             await sleep()
             // also test wrong row size, and multiple rows
-            model.removeColumn(column, 1)
+            model.insertColumn(2, ["N1", "N2", "N3", "N4"])
             await animationDone
 
             validateRender(model)
-        })
-    )
+        });
+
+        [0, 2, 4].forEach(row =>
+            it(`insertRow ${row + 1} out of 4`, async function () {
+                const model = createModel(4, 4)
+
+                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+                const table = getTable(model)
+                Table.transitionDuration = "1ms"
+                const animationDone = new Promise<void>((resolve, reject) => {
+                    table.animationDone = () => {
+                        resolve()
+                    }
+                })
+
+                await sleep()
+                model.insertRow(row)
+                await animationDone
+
+                validateRender(model)
+            })
+        );
+
+        [0, 2, 4].forEach(row =>
+            it(`insertColumn ${row + 1} out of 4`, async function () {
+                const model = createModel(4, 4)
+
+                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+                const table = getTable(model)
+                Table.transitionDuration = "1ms"
+                const animationDone = new Promise<void>((resolve, reject) => {
+                    table.animationDone = () => {
+                        resolve()
+                    }
+                })
+
+                await sleep()
+                model.insertColumn(row)
+                await animationDone
+
+                validateRender(model)
+            })
+        );
+
+        [0, 2, 3].forEach(row =>
+            it(`removeRow ${row + 1} out of 4`, async function () {
+                const model = createModel(4, 4)
+
+                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+                const table = getTable(model)
+                Table.transitionDuration = "1ms"
+                const animationDone = new Promise<void>((resolve, reject) => {
+                    table.animationDone = () => {
+                        resolve()
+                    }
+                })
+
+                await sleep()
+                // also test wrong row size, and multiple rows
+                model.removeRow(row, 1)
+                await animationDone
+
+                validateRender(model)
+            })
+        );
+
+        [0, 2, 3].forEach(column =>
+            it(`removeColumn ${column + 1} out of 4`, async function () {
+                const model = createModel(4, 4)
+
+                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
+                const table = getTable(model)
+                Table.transitionDuration = "1ms"
+                const animationDone = new Promise<void>((resolve, reject) => {
+                    table.animationDone = () => {
+                        resolve()
+                    }
+                })
+
+                await sleep()
+                // also test wrong row size, and multiple rows
+                model.removeColumn(column, 1)
+                await animationDone
+
+                validateRender(model)
+            })
+        )
+    })
 })
 
 function createModel(cols: number, rows: number) {
-    register(MyAdapter, MyModel, String)
+    TableAdapter.register(MyAdapter, MyModel, String)
     const model = new MyModel(cols, rows)
     for (let row = 0; row < 4; ++row) {
         for (let col = 0; col < 4; ++col) {
@@ -338,8 +348,8 @@ function validateRender(model: MyModel) {
     if (model.showColumnHeaders) {
         const colHeads = table.colHeads!
         const colHandles = table.colResizeHandles!
-        expect(colHeads.children.length).to.equal(model.colCount+1)
-        expect(colHandles.children.length).to.equal(model.colCount+1)
+        expect(colHeads.children.length).to.equal(model.colCount + 1)
+        expect(colHandles.children.length).to.equal(model.colCount + 1)
         const height = px2int((colHeads.children[0] as HTMLSpanElement).style.height)
         for (let col = 0; col < model.colCount; ++col) {
             const rowHeader = colHeads.children[col] as HTMLSpanElement
@@ -365,8 +375,8 @@ function validateRender(model: MyModel) {
     if (model.showRowHeaders) {
         const rowHeads = table.rowHeads!
         const rowHandles = table.rowResizeHandles!
-        expect(rowHeads.children.length).to.equal(model.rowCount+1)
-        expect(rowHandles.children.length).to.equal(model.rowCount+1)
+        expect(rowHeads.children.length).to.equal(model.rowCount + 1)
+        expect(rowHandles.children.length).to.equal(model.rowCount + 1)
         const width = px2int((rowHeads.children[0] as HTMLSpanElement).style.width)
         for (let row = 0; row < model.rowCount; ++row) {
             const cell = rowHeads.children[row] as HTMLSpanElement
@@ -430,7 +440,7 @@ class MyAdapter extends TableAdapter<MyModel> {
 
     override getRowHead(row: number): Node | undefined {
         if (this.model!.showRowHeaders) {
-            return text(`${row+1}`)
+            return text(`${row + 1}`)
         }
     }
 
@@ -448,24 +458,6 @@ class MyAdapter extends TableAdapter<MyModel> {
             return text(str)
         }
     }
-}
-
-function register<M extends TableModel>(
-    adapter: new (model: M) => TableAdapter<M>,
-    model: new (...args: any[]) => M): void
-function register<
-    A extends TypedTableAdapter<M>,
-    M extends TypedTableModel<D>,
-    D
->(
-    adapter: new (model: M) => A,
-    model: new (...args: any[]) => M,
-    data: new (...args: any[]) => D): void
-function register(
-    adapter: new (model: TableModel) => TableAdapter<any>,
-    model: (new (...args: any[]) => TableModel),
-    data?: new (...args: any[]) => any): void {
-    TableAdapter.register(adapter as any, model as any, data as any)
 }
 
 function sleep(milliseconds: number = 1) {

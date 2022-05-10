@@ -52,11 +52,23 @@ export class TableAdapter<T extends TableModel> {
     // FIXME: convert the comments below into clean code
     // data is used for TypeTableModel
     // Map<model, Map<data, adapter>>
-    private static modelToAdapter = new Map<new (...args: any[]) => TableModel, Map<new (...args: any[]) => any, new () => TableAdapter<any>>>()
+    private static modelToAdapter = new Map<new (...args: any[]) => TableModel, Map<new (...args: any[]) => any, new (model: TableModel) => TableAdapter<any>>>();
 
-    static register<T, A extends TypedTableAdapter<TypedTableModel<T>>, C extends TypedTableModel<T>>(adapter: new (...args: any[]) => A, model: new (...args: any[]) => C, data: new (...args: any[]) => T): void
-    static register(adapter: new () => TableAdapter<any>, model: new (...args: any[]) => TableModel): void
-    static register(adapter: new () => TableAdapter<any>, model: new (...args: any[]) => TableModel, data?: any): void {
+    static register<M extends TableModel>(
+        adapter: new (model: M) => TableAdapter<M>,
+        model: new (...args: any[]) => M): void
+    static register<
+        A extends TypedTableAdapter<M>,
+        M extends TypedTableModel<D>,
+        D
+    >(
+        adapter: new (model: M) => A,
+        model: new (...args: any[]) => M,
+        data: new (...args: any[]) => D): void
+    static register(
+        adapter: new (model: TableModel) => TableAdapter<any>,
+        model: (new (...args: any[]) => TableModel),
+        data?: new (...args: any[]) => any): void {
         // console.log("TableAdapter.register() ============")
         // console.log(adapter)
         // console.log(model)
@@ -65,19 +77,24 @@ export class TableAdapter<T extends TableModel> {
         let typeToModel = TableAdapter.modelToAdapter.get(model)
         if (typeToModel === undefined) {
             typeToModel = new Map<any, any>()
+            if (data === undefined && typeToModel.has(model)) {
+                throw Error(`attempt to redefine existing table adapter`)
+            }
             TableAdapter.modelToAdapter.set(model, typeToModel)
         }
-        if (typeToModel.has(data)) {
-            throw Error(`attempt to redefine existing table adapter`)
+        if (data !== undefined) {
+            if (typeToModel.has(data)) {
+                throw Error(`attempt to redefine existing table adapter`)
+            }
+            typeToModel.set(data, adapter)
         }
-        typeToModel.set(data, adapter)
     }
 
     static unbind() {
         TableAdapter.modelToAdapter.clear()
     }
 
-    static lookup(model: TableModel): (new () => TableAdapter<any>) {
+    static lookup(model: TableModel): (new (model: TableModel) => TableAdapter<any>) {
         // console.log("TableAdapter.lookup() ============")
 
         let dataType: any
@@ -101,7 +118,7 @@ export class TableAdapter<T extends TableModel> {
             let msg = `TableAdapter.lookup(): Did not find an adapter for model of type ${model.constructor.name}`
             msg += `\n    Requested adapter: model=${model.constructor.name}, type=${dataType?.name}\n    Available adapters:`
             if (TableAdapter.modelToAdapter.size === 0) {
-                msg+=" none."
+                msg += " none."
             } else {
                 for (const [modelX, typeToAdapterX] of TableAdapter.modelToAdapter) {
                     for (const [typeX, adapterX] of typeToAdapterX) {
