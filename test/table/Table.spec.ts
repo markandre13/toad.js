@@ -7,6 +7,9 @@ import { TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
 import { TypedTableModel } from "@toad/table/model/TypedTableModel"
 import { GridTableModel } from "@toad/table/model/GridTableModel"
 
+import { input } from "@toad/util/lsx"
+import { TableAnimation } from '@toad/table/private/TableAnimation'
+
 // TODO:
 // [X] send modified-events
 // [X] render table
@@ -40,7 +43,7 @@ describe("table", function () {
             <link rel="stylesheet" type="text/css" href="/style/tx-static.css" />
             <link rel="stylesheet" type="text/css" href="/style/tx-dark.css" />
             <link rel="stylesheet" type="text/css" href="/style/tx.css" />`
-        document.body.innerHTML = ""
+        document.body.replaceChildren()
     })
 
     describe("render", function () {
@@ -61,30 +64,67 @@ describe("table", function () {
         })
     })
 
-    describe("keyboard", function () {
+    describe("event", function () {
+        xit("test", async function () {
+            let i0, i1, i2
+
+            await sleep()
+            for (let i = 0; i < 3; ++i) {
+                const element = input()
+                for (let type of ["focusin", "focusout", "focus", "blur", "pointerdown", "pointerup", "keydown", "keyup"]) {
+                    element.addEventListener(type as any, (ev: FocusEvent) => {
+                        console.log(`========== i${i} ${ev.type} ===========`)
+                        console.log(ev)
+                    })
+                }
+                document.body.appendChild(element)
+            }
+        })
+    })
+
+    describe("interaction", function () {
         // tab in
         // tab out
-        it.only("tab in", async function () {
+        it("click first cell", async function () {
             const model = createModel(2, 2)
             model.showColumnHeaders = true
             model.showRowHeaders = true
-            document.body.innerHTML = `<input style="outline: none;" id="before"/><tx-table model="model"></tx-table><input id="after">`
-            const table = getTable(model)
-            const before = document.querySelector("#before") as HTMLElement
-            before.focus()
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
 
-            // there are two ways how we get the focus, from an element before and an element after
-
-            // the browser doesn't allow us to emulate tab events
-            // instead we listen for focusin and focusout events, and then use dom.isNodeBeforeNode()
-            // unlike the previous table implementation, we could now try to handle these events on
-            // the tx-table itself instead of the input overlay!
-            // const e = new KeyboardEvent("keydown", {
-            //     bubbles: true,
-            //     key: "Tab"
-            // })
-            // before.dispatchEvent(e)
+            const cell = getByText(document.body, "C0R0")
+            click(cell!)
+            expect(cell?.classList.contains("selected")).is.true
         })
+
+        it("tab forward into table", async function() {
+            const model = createModel(2, 2)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
+            document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
+            await sleep();
+            (document.body.children[0] as HTMLElement).focus()
+
+            tabForward()
+
+            const cell = getByText(document.body, "C0R0")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+
+        it("tab backward into table", async function() {
+            const model = createModel(2, 2)
+            model.showColumnHeaders = true
+            model.showRowHeaders = true
+            document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
+            await sleep();
+            (document.body.children[2] as HTMLElement).focus()
+
+            tabBackward()
+
+            const cell = getByText(document.body, "C1R1")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+
     })
 
     describe("edit columns/rows", function () {
@@ -499,4 +539,201 @@ export function px2int(s: string) {
 
 export function px2float(s: string) {
     return parseFloat(s.substring(0, s.length - 2))
+}
+
+// https://testing-library.com/docs/dom-testing-library/cheatsheet
+function getByText(node: Node, text: string): Element | undefined {
+    if (node instanceof Text) {
+        if (text == node.nodeValue) {
+            return node.parentNode as Element
+        }
+    }
+    if (node instanceof HTMLElement) {
+        if (node.shadowRoot) {
+            for (const child of node.shadowRoot.childNodes) {
+                const r = getByText(child, text)
+                if (r !== undefined) {
+                    return r
+                }
+            }
+        }
+    }
+    for (const child of node.childNodes) {
+        const r = getByText(child, text)
+        if (r !== undefined) {
+            return r
+        }
+    }
+    return undefined
+}
+
+function activeElement(): Element | undefined {
+    let active = document.activeElement
+    while (active?.shadowRoot?.activeElement) {
+        active = active.shadowRoot.activeElement
+    }
+    return active === null ? undefined : active
+}
+
+// https://testing-library.com/docs/user-event/intro
+function click(node: Element) {
+    const bounds = node.getBoundingClientRect()
+    const clientX = bounds.x + bounds.width / 2
+    const clientY = bounds.y + bounds.height / 2
+    const old = activeElement()
+
+    console.log(`click() target=${node}, relatedTarget=${old}`)
+    // console.log(node)
+    // console.log(old)
+
+    // POINTER DOWN
+    node.dispatchEvent(
+        new PointerEvent("pointerdown", {
+            bubbles: true,
+            clientX,
+            clientY
+        })
+    )
+    old?.dispatchEvent(
+        new FocusEvent("blur", {
+            bubbles: true,
+            relatedTarget: node
+        })
+    )
+    old?.dispatchEvent(
+        new FocusEvent("focusout", {
+            bubbles: true,
+            relatedTarget: node
+        })
+    )
+    node?.dispatchEvent(
+        new FocusEvent("focus", {
+            bubbles: true,
+        })
+    )
+    node?.dispatchEvent(
+        new FocusEvent("focusin", {
+            bubbles: true,
+            relatedTarget: old
+        })
+    )
+
+    // POINTER UP
+    node.dispatchEvent(
+        new PointerEvent("pointerup", {
+            bubbles: true, clientX, clientY
+        })
+    )
+}
+
+// tabIndex
+//   -1: can receive focus but not navigated to via keyboard(?) (e.g. body, div)
+//   0: can receive focus
+//   >0: can receive focus and uses a custom tab order (shouldn't be used)
+
+interface CTX {
+    currentFocus?: Element
+    passedCurrentFocus: boolean
+    previousFocusable?: Element
+}
+
+function forwardFocus() {
+    return moveFocus(true)
+}
+
+function backwardFocus() {
+    return moveFocus(false)
+}
+
+function moveFocus(forward: boolean, element: Element = document.body, ctx: CTX | undefined = undefined): Element | undefined {
+    if (ctx === undefined) {
+        ctx = {
+            currentFocus: activeElement(),
+            passedCurrentFocus: false,
+            previousFocusable: undefined
+        }
+    }
+
+    // console.log(`moveFocus(foward=${forward}, node=${element.nodeName}, previous=${ctx.previousFocusable?.nodeName}, found=${ctx.passedCurrentFocus}, active=${ctx.currentFocus?.nodeName})`)
+
+    if (element === ctx.currentFocus) {
+        if (!forward) {
+            // console.log(`  found the active one, return previous`)
+            return ctx.previousFocusable
+        }
+        ctx.passedCurrentFocus = true
+    } else
+    if (element instanceof HTMLElement) {
+        // console.log(`${element.nodeName} ${element.nodeType} ${element.tabIndex}`)
+        if (element.tabIndex >= 0) {
+            if (forward && ctx.passedCurrentFocus) {
+                // console.log(`  found tabIndex`)
+                return element
+            }
+            ctx.previousFocusable = element
+        }
+    }
+
+    for(let n of element.children) {
+        const r = moveFocus(forward, n, ctx)
+        if (r !== undefined) {
+            return r
+        }
+    }
+    // console.log(`  found nothing`)
+    return undefined
+}
+
+function tabForward() {
+    tab(forwardFocus())
+}
+
+function tabBackward() {
+    tab(backwardFocus())
+}
+
+function tab(node?: Element) {
+    // console.log(`tab to ${node?.nodeName}`)
+    if (node === undefined) {
+        throw Error("can not tab forward")
+    }
+
+    const old = activeElement()
+    old?.dispatchEvent(
+        new KeyboardEvent("keydown", {
+            bubbles: true,
+            key: "Tab"
+        })
+    )
+    old?.dispatchEvent(
+        new FocusEvent("blur", {
+            bubbles: true,
+            relatedTarget: node
+        })
+    )
+    old?.dispatchEvent(
+        new FocusEvent("focusout", {
+            bubbles: true,
+            relatedTarget: node
+        })
+    );
+    (node as HTMLElement).focus()
+    // node.dispatchEvent(
+    //     new FocusEvent("focus", {
+    //         bubbles: true,
+    //         relatedTarget: old
+    //     })
+    // )
+    node.dispatchEvent(
+        new FocusEvent("focusin", {
+            bubbles: true,
+            relatedTarget: old
+        })
+    )
+    old?.dispatchEvent(
+        new KeyboardEvent("keyup", {
+            bubbles: true,
+            key: "Tab"
+        })
+    )
 }

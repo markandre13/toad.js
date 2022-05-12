@@ -56,10 +56,7 @@ export function remove(n: Node): void {
   n.parentNode.removeChild(n);
 }
 export function erase(n: Element): void { 
-  // if ('replaceChildren' in n && typeof n["replaceChildren"] === "function")
-  //   (n as any).replaceChildren()
-  // else
-    while(n.firstChild) n.removeChild(n.firstChild);
+    n.replaceChildren()
 }
 
 export function hasFocus(element: Element): boolean {

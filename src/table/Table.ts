@@ -382,20 +382,28 @@ export class Table extends View {
     }
 
     focusIn(event: FocusEvent) {
+        // console.log("Table.focusIn()")
+        // console.log(event)
         if (event.target && event.relatedTarget) {
             try {
                 if (isNodeBeforeNode(event.relatedTarget as Node, this)) {
+                    // console.log("Table.focusIn() -> 1st cell")
                     this.selection!.value = { col: 0, row: 0 }
                 } else {
+                    // console.log("Table.focusIn() -> last cell")
                     this.selection!.value = { col: this.adapter!.colCount - 1, row: this.adapter!.rowCount - 1 }
                 }
             }
             catch (e) { }
+        // } else {
+            // console.log(`  target=${event.target}, relatedTarget=${event.relatedTarget}`)
         }
+        this.selectionChanged() // HACK
     }
 
     focusOut(ev: FocusEvent) {
-        // console.log(ev)
+        // console.log(`Table.focusOut()`)
+        this.selectionChanged() // HACK
     }
 
     editCell() {
@@ -412,18 +420,21 @@ export class Table extends View {
         if (this.editing === undefined) {
             return
         }
-        console.log(`save cell ${this.editing.col}, ${this.editing.row}`)
+        // console.log(`save cell ${this.editing.col}, ${this.editing.row}`)
         this.adapter!.saveCell(this.editing, this.body.children[this.editing.col + this.editing.row * this.adapter!.colCount] as HTMLSpanElement)
         this.editing = undefined
         // this.focus()
     }
 
     pointerDown(ev: PointerEvent) {
+        // console.log("Table.pointerDown()")
         ev.preventDefault()
         this.focus()
 
         const x = ev.clientX
         const y = ev.clientY
+
+        console.log(`x=${x}, y=${y}`)
 
         let col, row
         for (col = 0; col < this.adapter!.colCount; ++col) {
@@ -498,7 +509,7 @@ export class Table extends View {
     }
 
     selectionChanged() {
-        // console.log(`Table.selectionChanged: ${this.selection}`)
+        // console.log(`Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}`)
         if (this.selection === undefined) {
             return
         }
@@ -511,12 +522,12 @@ export class Table extends View {
                     selected.classList.remove("selected")
                 }
                 if (document.activeElement === this) {
-                    console.log("table is active element, set focus")
+                    // console.log("table is active element, set focus")
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
                     cell.classList.add("selected")
                     scrollIntoView(cell)
-                } else {
-                    console.log("table is not active element, do not set focus")
+                // } else {
+                //     console.log("table is not active element, do not set focus")
                 }
                 // this.prepareInputOverlayForPosition(new TablePos(this.selectionModel.col, this.selectionModel.row))
                 // delete (this.rootDiv as any).tabIndex
