@@ -2,6 +2,10 @@ import { expect } from '@esm-bundle/chai'
 import { TableAdapter, bindModel, unbind, text, Table, TablePos } from "@toad"
 import { TableFriend } from '@toad/table/private/TableFriend'
 import { GridTableModel } from "@toad/table/model/GridTableModel"
+import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
+import { InferTypedTableModelParameter, TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
+import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
+
 import { input } from "@toad/util/lsx"
 
 import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, keyboard, activeElement } from "../testlib"
@@ -263,7 +267,7 @@ describe("table", function () {
 
             await sleep()
             // also test wrong row size, and multiple rows
-            model.insertRow(2, ["N1", "N2", "N3", "N4"])
+            model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
             await animationDone
 
             validateRender(model)
@@ -284,7 +288,7 @@ describe("table", function () {
 
             await sleep()
             // also test wrong row size, and multiple rows
-            model.insertColumn(2, ["N1", "N2", "N3", "N4"])
+            model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
             await animationDone
 
             validateRender(model)
@@ -347,7 +351,7 @@ describe("table", function () {
 
             await sleep()
             // also test wrong row size, and multiple rows
-            model.insertRow(2, ["N1", "N2", "N3", "N4"])
+            model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
             await animationDone
 
             validateRender(model)
@@ -366,7 +370,7 @@ describe("table", function () {
 
             await sleep()
             // also test wrong row size, and multiple rows
-            model.insertColumn(2, ["N1", "N2", "N3", "N4"])
+            model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
             await animationDone
 
             validateRender(model)
@@ -456,19 +460,24 @@ describe("table", function () {
     })
 })
 
+class TestModel extends SpreadsheetModel {
+    showColumnHeaders = false
+    showRowHeaders = false
+}
+
 function createModel(cols: number, rows: number) {
-    TableAdapter.register(MyAdapter, MyModel, String)
-    const model = new MyModel(cols, rows)
+    TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
+    const model = new TestModel(cols, rows)
     for (let row = 0; row < 4; ++row) {
         for (let col = 0; col < 4; ++col) {
-            model.setCell(col, row, `C${col}R${row}`)
+            model.setField(col, row, `C${col}R${row}`)
         }
     }
     bindModel("model", model)
     return model
 }
 
-function getTable(model: MyModel) {
+function getTable(model: TestModel) {
     const table = document.querySelector("tx-table") as Table
     if (table === undefined) {
         throw Error("No <tx-table> found.")
@@ -479,7 +488,7 @@ function getTable(model: MyModel) {
     return new TableFriend(table)
 }
 
-function validateRender(model: MyModel) {
+function validateRender(model: TestModel) {
 
     // console.log(`validateRender: size ${model.colCount} x ${model.rowCount} = ${model.colCount * model.rowCount}`)
 
@@ -590,7 +599,7 @@ function validateRender(model: MyModel) {
     for (let row = 0; row < model.rowCount; ++row) {
         for (let col = 0; col < model.colCount; ++col) {
             const cell = body.children[idx++] as HTMLSpanElement
-            expect(cell.innerText).to.equal(model.getCell(col, row).valueOf())
+            expect(cell.innerText).to.equal(model.getField(col, row).valueOf())
             expect(px2int(cell.style.left), `[${col},${row}] left`).to.equal((expectCol[col].x))
             expect(px2int(cell.style.width), `[${col},${row}] width`).to.equal((expectCol[col].w))
             expect(px2int(cell.style.top), `[${col},${row}] top`).to.equal((expectRow[row].y))
@@ -599,48 +608,61 @@ function validateRender(model: MyModel) {
     }
 }
 
-class MyModel extends GridTableModel<String> {
-    showColumnHeaders = false
-    showRowHeaders = false
+function str2cell(s: string[]) {
+    return s.map( (item) => new SpreadsheetCell(item))
+}
 
-    constructor(cols: number, rows: number) {
-        super(String, cols, rows)
+export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
+    override getDisplayCell(col: number, row: number): Node | Node[] | undefined {
+        if (!this.model) {
+            return undefined
+        }
+        const cell = this.model.getCell(col, row)
+        if (cell === undefined)
+            return undefined
+        return text(cell.value)
+    }
+    
+    override getRowHead(row: number): Node | undefined {
+        // console.log(`row ${row} -> ${row}`)
+        return text(`${row+1}`)
+    }
+
+    override getColumnHead(col: number): Node | undefined {
+        let str = ""
+        let code = col
+        while (true) {
+            str = `${String.fromCharCode((code % 26) + 0x41)}${str}`
+            code = Math.floor(code / 26)
+            if (code === 0) {
+                break
+            }
+            code -= 1
+        }
+        return text(str)
     }
 }
 
-class MyAdapter extends TableAdapter<MyModel> {
-    override getDisplayCell(col: number, row: number) {
-        return text(
-            this.model!.getCell(col, row).valueOf()
-        )
-    }
-
+export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
     override editCell(pos: TablePos, cell: HTMLSpanElement) {
         console.log("MyAdapter.editCell()")
         cell.tabIndex = -1
         cell.contentEditable = "true"
         cell.focus()
+        const a = this.model!.getCell(pos.col, pos.row)
+        // console.log(a)
+        if (a !== undefined) {
+            cell.innerText = a._str!
+        }
         return undefined
     }
 
-    override getRowHead(row: number): Node | undefined {
-        if (this.model!.showRowHeaders) {
-            return text(`${row + 1}`)
-        }
-    }
-
-    override getColumnHead(col: number): Node | undefined {
-        if (this.model!.showRowHeaders) {
-            let str = ""
-            while (true) {
-                str = `${String.fromCharCode((col % 26) + 0x41)}${str}`
-                col = Math.floor(col / 26)
-                if (col === 0) {
-                    break
-                }
-                col -= 1
-            }
-            return text(str)
-        }
+    override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
+        console.log("MyAdapter.saveCell()")
+        // this.model!.getCell(pos.col, pos.row)
+        this.model!.setField(pos.col, pos.row, cell.innerText)
+        cell.innerText = this.model!.getField(pos.col, pos.row) // HACK! The model should generate events to update the fields!!!
+        cell.tabIndex = 0
+        cell.blur()
     }
 }
