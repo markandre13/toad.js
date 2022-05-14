@@ -34,28 +34,28 @@ describe("table", function () {
         unbind()
         TableAdapter.unbind()
         Table.transitionDuration = "1ms"
-        // let links = []
-        // let promises = []
+        let links = []
+        let promises = []
 
-        // // FIXME: the test fails without these styles...
+        // FIXME: the test fails without these styles...
 
-        // for (let path of ["/style/tx-static.css", "/style/tx-dark.css", "/style/tx.css"]) {
-        //     const link = document.createElement("link")
-        //     link.rel = "stylesheet"
-        //     link.type = "text/css"
-        //     link.href = path
-        //     promises.push(new Promise<void>((resolve, reject) => {
-        //         link.onload = () => {
-        //             resolve()
-        //         }
-        //     }))
-        //     links.push(link)
-        // }
-        // document.head.replaceChildren(...links)
-        // for (let promise of promises) {
-        //     await promise
-        // }
-        // await sleep(0)
+        for (let path of ["/style/tx-static.css", "/style/tx-dark.css", "/style/tx.css"]) {
+            const link = document.createElement("link")
+            link.rel = "stylesheet"
+            link.type = "text/css"
+            link.href = path
+            promises.push(new Promise<void>((resolve, reject) => {
+                link.onload = () => {
+                    resolve()
+                }
+            }))
+            links.push(link)
+        }
+        document.head.replaceChildren(...links)
+        for (let promise of promises) {
+            await promise
+        }
+        await sleep(0)
     })
 
     describe("render", function () {
@@ -95,48 +95,153 @@ describe("table", function () {
     })
 
     describe("interaction", function () {
-        // tab in
-        // tab out
         it("click first cell", async function () {
             const model = createModel(2, 2)
-            model.showColumnHeaders = true
-            model.showRowHeaders = true
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
 
-            const cell = getByText(document.body, "C0R0")
+            const cell = getByText("C0R0")
             click(cell!)
             expect(cell?.classList.contains("selected")).is.true
         })
 
         it("tab forward into table", async function () {
             const model = createModel(2, 2)
-            model.showColumnHeaders = true
-            model.showRowHeaders = true
             document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
             await sleep();
             (document.body.children[0] as HTMLElement).focus()
 
             tabForward()
 
-            const cell = getByText(document.body, "C0R0")
+            const cell = getByText("C0R0")
             expect(cell?.classList.contains("selected")).is.true
         })
 
         it("tab backward into table", async function () {
             const model = createModel(2, 2)
-            model.showColumnHeaders = true
-            model.showRowHeaders = true
             document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
             await sleep();
             (document.body.children[2] as HTMLElement).focus()
 
             tabBackward()
 
-            const cell = getByText(document.body, "C1R1")
+            const cell = getByText("C1R1")
             expect(cell?.classList.contains("selected")).is.true
         })
 
+        it("tab to next cell", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C0R0")!)
+            tabForward()
+            const cell = getByText("C1R0")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+        it("tab to previous cell", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C1R0")!)
+            tabBackward()
+            const cell = getByText("C0R0")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+        it("tab forward out of table", async function() {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
+            await sleep()
+
+            click(getByText("C1R1")!)
+            tabForward()
+            expect(activeElement()).to.equal(getById("after"))
+        })
+        it("tab backward out of table", async function() {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
+            await sleep()
+
+            click(getByText("C0R0")!)
+            tabBackward()
+            expect(activeElement()).to.equal(getById("before"))
+        })
+        it("cursor right to next cell", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C0R0")!)
+
+            keyboard({key: "ArrowRight"})
+            
+            const cell = getByText("C1R0")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+        xit("cursor right to next row", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C1R0")!)
+
+            keyboard({key: "ArrowRight"})
+            
+            const cell = getByText("C0R1")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+        it("cursor left to previous cell", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C1R0")!)
+
+            keyboard({key: "ArrowLeft"})
+            
+            const cell = getByText("C0R0")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+        xit("cursor left to previous row", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C0R1")!)
+
+            keyboard({key: "ArrowLeft"})
+            
+            const cell = getByText("C1R0")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+        it("cursor up", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C0R1")!)
+
+            keyboard({key: "ArrowUp"})
+            
+            const cell = getByText("C0R0")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+        it("cursor down", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+
+            click(getByText("C0R0")!)
+
+            keyboard({key: "ArrowDown"})
+            
+            const cell = getByText("C0R1")
+            expect(cell?.classList.contains("selected")).is.true
+        })
+
+        // different edit modes: normal, spreadsheet
+        it("edit cell")
     })
 
     describe("edit columns/rows", function () {
@@ -422,7 +527,7 @@ function validateRender(model: MyModel) {
     //     console.log(txt)
     //     txt = ""
     // }
-    
+
     if (model.showColumnHeaders) {
         const colHeads = table.colHeads!
         const colHandles = table.colResizeHandles!
@@ -471,7 +576,7 @@ function validateRender(model: MyModel) {
             if (row + 1 < model.rowCount) {
                 expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row + 1].y - 3)
             } else {
-                expect(px2int(colHandle.style.top), `column handle last top`).to.equal(expectRow[row].y + expectRow[row].h - 2 )
+                expect(px2int(colHandle.style.top), `column handle last top`).to.equal(expectRow[row].y + expectRow[row].h - 2)
             }
             expect(px2int(colHandle.style.height), `column handle ${row} height`).to.equal(5)
         }
@@ -554,8 +659,12 @@ export function px2float(s: string) {
     return parseFloat(s.substring(0, s.length - 2))
 }
 
+function getById(id: string) {
+    return document.getElementById(id)
+}
+
 // https://testing-library.com/docs/dom-testing-library/cheatsheet
-function getByText(node: Node, text: string): Element | undefined {
+function getByText(text: string, node: Node = document): Element | undefined {
     if (node instanceof Text) {
         if (text == node.nodeValue) {
             return node.parentNode as Element
@@ -564,7 +673,7 @@ function getByText(node: Node, text: string): Element | undefined {
     if (node instanceof HTMLElement) {
         if (node.shadowRoot) {
             for (const child of node.shadowRoot.childNodes) {
-                const r = getByText(child, text)
+                const r = getByText(text, child)
                 if (r !== undefined) {
                     return r
                 }
@@ -572,7 +681,7 @@ function getByText(node: Node, text: string): Element | undefined {
         }
     }
     for (const child of node.childNodes) {
-        const r = getByText(child, text)
+        const r = getByText(text, child)
         if (r !== undefined) {
             return r
         }
@@ -588,6 +697,12 @@ function activeElement(): Element | undefined {
     return active === null ? undefined : active
 }
 
+function keyboard(init: KeyboardEventInit) {
+    const old = activeElement()
+    old?.dispatchEvent(new KeyboardEvent("keydown", init))
+    old?.dispatchEvent(new KeyboardEvent("keyup", init))
+}
+
 // https://testing-library.com/docs/user-event/intro
 function click(node: Element) {
     const bounds = node.getBoundingClientRect()
@@ -595,7 +710,7 @@ function click(node: Element) {
     const clientY = bounds.y + bounds.height / 2
     const old = activeElement()
 
-    console.log(`click() target=${node}, relatedTarget=${old}`)
+    // console.log(`click() target=${node}, relatedTarget=${old}`)
     // console.log(node)
     // console.log(old)
 
@@ -698,46 +813,55 @@ function moveFocus(forward: boolean, element: Element = document.body, ctx: CTX 
 }
 
 function tabForward() {
-    tab(forwardFocus())
+    tab(forwardFocus(), false)
 }
 
 function tabBackward() {
-    tab(backwardFocus())
+    tab(backwardFocus(), true)
 }
 
-function tab(node?: Element) {
+function tab(next: Element | undefined, shiftKey: boolean) {
     // console.log(`tab to ${node?.nodeName}`)
-    if (node === undefined) {
-        throw Error("can not tab forward")
-    }
 
     const old = activeElement()
-    old?.dispatchEvent(
+    if (!old) {
+        throw Error("tab: no active element")
+    }
+    if (!old.dispatchEvent(
         new KeyboardEvent("keydown", {
             bubbles: true,
+            cancelable: true,
+            shiftKey: shiftKey,
             key: "Tab"
         })
-    )
+    )) {
+        return
+    }
+
+    if (next === undefined) {
+        throw Error("tab: no next element")
+    }
+
     old?.dispatchEvent(
         new FocusEvent("blur", {
             bubbles: true,
-            relatedTarget: node
+            relatedTarget: next
         })
     )
     old?.dispatchEvent(
         new FocusEvent("focusout", {
             bubbles: true,
-            relatedTarget: node
+            relatedTarget: next
         })
     );
-    (node as HTMLElement).focus()
+    (next as HTMLElement).focus()
     // node.dispatchEvent(
     //     new FocusEvent("focus", {
     //         bubbles: true,
     //         relatedTarget: old
     //     })
     // )
-    node.dispatchEvent(
+    next.dispatchEvent(
         new FocusEvent("focusin", {
             bubbles: true,
             relatedTarget: old

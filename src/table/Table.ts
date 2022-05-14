@@ -198,7 +198,7 @@ export class Table extends View {
     animationDone?: () => void
 
     // delay before we can successfully start a transition after adding elements to the dom
-    static renderDelay = 15
+    static renderDelay = 50
 
     // this will be set to lineheight
     minCellHeight = 0
@@ -436,8 +436,6 @@ export class Table extends View {
 
         const x = ev.clientX
         const y = ev.clientY
-
-        console.log(`x=${x}, y=${y}`)
 
         let col, row
         for (col = 0; col < this.adapter!.colCount; ++col) {
