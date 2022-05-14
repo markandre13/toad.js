@@ -41,7 +41,7 @@ export class RemoveRowAnimation extends TableAnimation {
         this.splitBody.ontransitioncancel = this.joinHorizontal
         setTimeout(() => {
             this.splitBody.style.transform = `translateY(${-this.totalHeight}px)` // TODO: make this an animation
-        }, 50) // at around > 10ms we'll get an animated transition on google chrome
+        }, Table.renderDelay)
     }
 
     override stop() {

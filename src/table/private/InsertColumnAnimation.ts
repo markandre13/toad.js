@@ -31,7 +31,7 @@ export class InsertColumnAnimation extends TableAnimation {
             this.splitBody.ontransitioncancel = this.joinVertical
             setTimeout(() => {
                 this.splitBody.style.transform = `translateX(${this.totalWidth}px)` // TODO: make this an animation
-            }, 50) // at around > 10ms we'll get an animated transition on google chrome
+            }, Table.renderDelay)
         })
     }
 
@@ -82,7 +82,7 @@ export class InsertColumnAnimation extends TableAnimation {
             } else {
                 const cell = this.body.children[this.colCount - 2] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
-                x = px2int(cell.style.left) + bounds.width + 1
+                x = px2int(cell.style.left) + px2int(cell.style.width) + 6 - 1
                 // console.log(`COLUMN IS RIGHT: place new column at x = ${x}`)
             }
         }
@@ -98,7 +98,7 @@ export class InsertColumnAnimation extends TableAnimation {
                 const bounds = child.getBoundingClientRect()
                 columnWidth = Math.max(columnWidth, bounds.width)
             }
-            columnWidth = Math.ceil(columnWidth)
+            columnWidth = Math.ceil(columnWidth - 2)
 
             if (this.colHeads) {
                 const newColHead = span(this.adapter.getColumnHead(col)!)
@@ -106,18 +106,18 @@ export class InsertColumnAnimation extends TableAnimation {
                 newColHead.style.left = `${x}px`
                 newColHead.style.top = "0px"
                 newColHead.style.width = `${columnWidth - 5}px`
-                newColHead.style.height = this.colHeads.style.height
+                newColHead.style.height = `${px2int(this.colHeads.style.height)-2}px`
                 this.colHeads.insertBefore(newColHead, this.colHeads.children[col])
 
-                const newRowHandle = this.table.createHandle(col, x + columnWidth - 2, 0, 5, px2float(this.colHeads.style.height))
+                const newRowHandle = this.table.createHandle(col, x + columnWidth - 3, 0, 5, px2float(this.colHeads.style.height))
                 this.colResizeHandles.insertBefore(newRowHandle, this.colResizeHandles.children[col])
 
                 // adjust subsequent row heads and handles
                 for(let subsequentCol=col+1; subsequentCol<this.colCount; ++subsequentCol) {
                     this.colHeads.children[subsequentCol].replaceChildren(
-                        span(
+                        // span(
                             this.adapter.getColumnHead(subsequentCol)!
-                        )
+                        // )
                     );
                     (this.colResizeHandles.children[subsequentCol] as HTMLSpanElement).dataset["idx"] = `${subsequentCol}`
                 }

@@ -30,7 +30,7 @@ export class InsertRowAnimation extends TableAnimation {
             this.splitBody.ontransitioncancel = this.joinHorizontal
             setTimeout(() => {
                 this.splitBody.style.transform = `translateY(${this.totalHeight}px)` // TODO: make this an animation
-            }, 50) // at around > 10ms we'll get an animated transition on google chrome
+            }, Table.renderDelay)
         })
     }
 
@@ -83,8 +83,8 @@ export class InsertRowAnimation extends TableAnimation {
                 y = px2int(cell.style.top)
             }
             if (this.event.index+1 >= this.rowCount) {
-                const bounds = this.body.children[this.body.children.length - 1].getBoundingClientRect()
-                y += bounds.height + 1
+                const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+                y += px2int(cell.style.height) + 2 - 1
             }
         }
 
@@ -97,26 +97,26 @@ export class InsertRowAnimation extends TableAnimation {
                 const bounds = child.getBoundingClientRect()
                 rowHeight = Math.max(rowHeight, bounds.height)
             }
-            rowHeight = Math.ceil(rowHeight)
+            rowHeight = Math.ceil(rowHeight - 2)
 
             if (this.rowHeads) {
                 const newRowHead = span(this.adapter.getRowHead(row)!)
                 newRowHead.className = "head"
                 newRowHead.style.left = "0px"
                 newRowHead.style.top = `${y}px`
-                newRowHead.style.width = this.rowHeads.style.width
+                newRowHead.style.width = `${px2int(this.rowHeads.style.width)-6}px`
                 newRowHead.style.height = `${rowHeight}px`
                 this.rowHeads.insertBefore(newRowHead, this.rowHeads.children[row])
 
-                const newRowHandle = this.table.createHandle(row, 0, y + rowHeight - 1, px2float(this.rowHeads.style.width), 5)
+                const newRowHandle = this.table.createHandle(row, 0, y + rowHeight - 2, px2float(this.rowHeads.style.width), 5)
                 this.rowResizeHandles.insertBefore(newRowHandle, this.rowResizeHandles.children[row])
 
                 // adjust subsequent row heads and handles
                 for(let subsequentRow=row+1; subsequentRow<this.rowCount; ++subsequentRow) {
                     this.rowHeads.children[subsequentRow].replaceChildren(
-                        span(
+                        // span(
                             this.adapter.getRowHead(subsequentRow)!
-                        )
+                        // )
                     );
                     (this.rowResizeHandles.children[subsequentRow] as HTMLSpanElement).dataset["idx"] = `${subsequentRow}`
                 }

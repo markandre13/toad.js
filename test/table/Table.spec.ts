@@ -1,14 +1,8 @@
 import { expect } from '@esm-bundle/chai'
-import { TableModel, TableAdapter, bindModel, unbind, text, TableEvent, TableEventType, Table, TablePos } from "@toad"
-
+import { TableAdapter, bindModel, unbind, text, Table, TablePos } from "@toad"
 import { TableFriend } from '@toad/table/private/TableFriend'
-
-import { TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
-import { TypedTableModel } from "@toad/table/model/TypedTableModel"
 import { GridTableModel } from "@toad/table/model/GridTableModel"
-
 import { input } from "@toad/util/lsx"
-import { TableAnimation } from '@toad/table/private/TableAnimation'
 
 // TODO:
 // [X] send modified-events
@@ -36,14 +30,32 @@ import { TableAnimation } from '@toad/table/private/TableAnimation'
 // FIXME: use the 'with data' for all tests because with or without data is a property of the model, not the view
 
 describe("table", function () {
-    beforeEach(function () {
+    beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
-        document.head.innerHTML = `
-            <link rel="stylesheet" type="text/css" href="/style/tx-static.css" />
-            <link rel="stylesheet" type="text/css" href="/style/tx-dark.css" />
-            <link rel="stylesheet" type="text/css" href="/style/tx.css" />`
-        document.body.replaceChildren()
+        Table.transitionDuration = "1ms"
+        // let links = []
+        // let promises = []
+
+        // // FIXME: the test fails without these styles...
+
+        // for (let path of ["/style/tx-static.css", "/style/tx-dark.css", "/style/tx.css"]) {
+        //     const link = document.createElement("link")
+        //     link.rel = "stylesheet"
+        //     link.type = "text/css"
+        //     link.href = path
+        //     promises.push(new Promise<void>((resolve, reject) => {
+        //         link.onload = () => {
+        //             resolve()
+        //         }
+        //     }))
+        //     links.push(link)
+        // }
+        // document.head.replaceChildren(...links)
+        // for (let promise of promises) {
+        //     await promise
+        // }
+        // await sleep(0)
     })
 
     describe("render", function () {
@@ -97,7 +109,7 @@ describe("table", function () {
             expect(cell?.classList.contains("selected")).is.true
         })
 
-        it("tab forward into table", async function() {
+        it("tab forward into table", async function () {
             const model = createModel(2, 2)
             model.showColumnHeaders = true
             model.showRowHeaders = true
@@ -111,7 +123,7 @@ describe("table", function () {
             expect(cell?.classList.contains("selected")).is.true
         })
 
-        it("tab backward into table", async function() {
+        it("tab backward into table", async function () {
             const model = createModel(2, 2)
             model.showColumnHeaders = true
             model.showRowHeaders = true
@@ -136,7 +148,6 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            Table.transitionDuration = "1ms"
             const animationDone = new Promise<void>((resolve, reject) => {
                 table.animationDone = () => {
                     resolve()
@@ -158,7 +169,6 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            Table.transitionDuration = "1ms"
             const animationDone = new Promise<void>((resolve, reject) => {
                 table.animationDone = () => {
                     resolve()
@@ -180,7 +190,6 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            Table.transitionDuration = "1ms"
             const animationDone = new Promise<void>((resolve, reject) => {
                 table.animationDone = () => {
                     resolve()
@@ -203,7 +212,6 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            Table.transitionDuration = "1ms"
             const animationDone = new Promise<void>((resolve, reject) => {
                 table.animationDone = () => {
                     resolve()
@@ -224,7 +232,6 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            Table.transitionDuration = "1ms"
             const animationDone = new Promise<void>((resolve, reject) => {
                 table.animationDone = () => {
                     resolve()
@@ -244,7 +251,6 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            Table.transitionDuration = "1ms"
             const animationDone = new Promise<void>((resolve, reject) => {
                 table.animationDone = () => {
                     resolve()
@@ -265,7 +271,6 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                Table.transitionDuration = "1ms"
                 const animationDone = new Promise<void>((resolve, reject) => {
                     table.animationDone = () => {
                         resolve()
@@ -286,7 +291,6 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                Table.transitionDuration = "1ms"
                 const animationDone = new Promise<void>((resolve, reject) => {
                     table.animationDone = () => {
                         resolve()
@@ -307,7 +311,6 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                Table.transitionDuration = "1ms"
                 const animationDone = new Promise<void>((resolve, reject) => {
                     table.animationDone = () => {
                         resolve()
@@ -329,7 +332,6 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                Table.transitionDuration = "1ms"
                 const animationDone = new Promise<void>((resolve, reject) => {
                     table.animationDone = () => {
                         resolve()
@@ -382,34 +384,45 @@ function validateRender(model: MyModel) {
     let x = 0
     for (let col = 0; col < model.colCount; ++col) {
         const cell = body.children[col] as HTMLSpanElement
-        const bounds = cell.getBoundingClientRect()
-        expectCol.push({ x, w: px2int(cell.style.width) })
-        const borderWidth = 1
-        x += bounds.width + borderWidth
+        const w = px2int(cell.style.width)
+        expectCol.push({ x, w })
+        // console.log(`expectCol[${col}] = {x: ${x}, w: ${w}}`)
+        x += w + 6 - 1
     }
 
     const expectRow: { y: number, h: number }[] = []
     let y = 0
     for (let row = 0; row < model.rowCount; ++row) {
         const cell = body.children[row * model.colCount] as HTMLSpanElement
-        const bounds = cell.getBoundingClientRect()
-        expectRow.push({ y, h: px2int(cell.style.height) })
-        const borderWidth = 1
-        y += bounds.height + borderWidth
+        const h = px2int(cell.style.height)
+        expectRow.push({ y, h })
+        // console.log(`expectRow[${row}] = {x: ${y}, w: ${h}}`)
+        y += h + 2 - 1
     }
 
-    // let idx = 0
-    // let txt = ""
+    // let idx0 = 0
+    // let txt = "cols (x,w): "
+    // for (let col = 0; col < model.colCount; ++col) {
+    //     txt += `${expectCol[col].x},${expectCol[col].w} `
+    // }
+    // console.log(txt)
+
+    // txt = "rows (y,h): "
+    // for (let row = 0; row < model.rowCount; ++row) {
+    //     txt += `${expectRow[row].y},${expectRow[row].h} `
+    // }
+    // console.log(txt)
+    // txt = ""
+
     // for (let row = 0; row < model.rowCount; ++row) {
     //     for (let col = 0; col < model.colCount; ++col) {
-    //         const cell = body.children[idx++] as HTMLSpanElement
+    //         const cell = body.children[idx0++] as HTMLSpanElement
     //         txt = `${txt}[${col},${row}]='${cell.textContent}' (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
-    //         // txt = `${txt}[${col},${row}] ${cell} `
     //     }
     //     console.log(txt)
     //     txt = ""
     // }
-
+    
     if (model.showColumnHeaders) {
         const colHeads = table.colHeads!
         const colHandles = table.colResizeHandles!
@@ -419,7 +432,7 @@ function validateRender(model: MyModel) {
         for (let col = 0; col < model.colCount; ++col) {
             const rowHeader = colHeads.children[col] as HTMLSpanElement
             expect(rowHeader.innerText, `column header ${col}`).to.equal((table.adapter.getColumnHead(col) as Text).data)
-            expect(px2int(rowHeader.style.left), `column header ${col}] left`).to.equal(expectCol[col].x)
+            expect(px2int(rowHeader.style.left), `column header ${col} left`).to.equal(expectCol[col].x)
             expect(px2int(rowHeader.style.width), `column header ${col} width`).to.equal(expectCol[col].w)
             expect(px2int(rowHeader.style.top), `column header ${col} top`).to.equal(0)
             expect(px2int(rowHeader.style.height), `column header ${col} height`).to.equal(height)
@@ -427,13 +440,13 @@ function validateRender(model: MyModel) {
             const rowHandle = colHandles.children[col] as HTMLSpanElement
             expect(rowHandle.dataset["idx"], `row handle ${col} index`).to.equal(`${col}`)
             if (col + 1 < model.colCount) {
-                expect(px2int(rowHandle.style.left), `row handle ${col}] left`).to.equal(expectCol[col + 1].x - 2)
+                expect(px2int(rowHandle.style.left), `row handle ${col} left`).to.equal(expectCol[col + 1].x - 3)
             } else {
-                expect(px2int(rowHandle.style.left), `row handle ${col}] left`).to.equal(expectCol[col].x + expectCol[col].w + 3)
+                expect(px2int(rowHandle.style.left), `row handle last left`).to.equal(expectCol[col].x + expectCol[col].w + 5 - 3)
             }
             expect(px2int(rowHandle.style.width), `row handle ${col} width`).to.equal(5)
             expect(px2int(rowHandle.style.top), `row handle ${col} top`).to.equal(0)
-            expect(px2int(rowHandle.style.height), `row handle ${col} height`).to.equal(height)
+            expect(px2int(rowHandle.style.height), `row handle ${col} height`).to.equal(height + 2)
         }
     }
 
@@ -446,19 +459,19 @@ function validateRender(model: MyModel) {
         for (let row = 0; row < model.rowCount; ++row) {
             const cell = rowHeads.children[row] as HTMLSpanElement
             expect(cell.innerText, `row header ${row}`).to.equal((table.adapter.getRowHead(row) as Text).data)
-            expect(px2int(cell.style.left), `row header ${row}] left`).to.equal(0)
+            expect(px2int(cell.style.left), `row header ${row} left`).to.equal(0)
             expect(px2int(cell.style.width), `row header ${row} width`).to.equal(width)
             expect(px2int(cell.style.top), `row header ${row} top`).to.equal(expectRow[row].y)
             expect(px2int(cell.style.height), `row header ${row} height`).to.equal(expectRow[row].h)
 
             const colHandle = rowHandles.children[row] as HTMLSpanElement
             expect(colHandle.dataset["idx"], `column handle ${row} index`).to.equal(`${row}`)
-            expect(px2int(colHandle.style.left), `column handle ${row}] left`).to.equal(0)
-            expect(px2int(colHandle.style.width), `column handle ${row} width`).to.equal(width)
+            expect(px2int(colHandle.style.left), `column handle ${row} left`).to.equal(0)
+            expect(px2int(colHandle.style.width), `column handle ${row} width`).to.equal(width + 6)
             if (row + 1 < model.rowCount) {
-                expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row + 1].y - 2)
+                expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row + 1].y - 3)
             } else {
-                expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row].y + expectRow[row].h - 1)
+                expect(px2int(colHandle.style.top), `column handle last top`).to.equal(expectRow[row].y + expectRow[row].h - 2 )
             }
             expect(px2int(colHandle.style.height), `column handle ${row} height`).to.equal(5)
         }
@@ -525,7 +538,7 @@ class MyAdapter extends TableAdapter<MyModel> {
     }
 }
 
-function sleep(milliseconds: number = 1) {
+function sleep(milliseconds: number = 0) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
             resolve('success')
@@ -663,18 +676,18 @@ function moveFocus(forward: boolean, element: Element = document.body, ctx: CTX 
         }
         ctx.passedCurrentFocus = true
     } else
-    if (element instanceof HTMLElement) {
-        // console.log(`${element.nodeName} ${element.nodeType} ${element.tabIndex}`)
-        if (element.tabIndex >= 0) {
-            if (forward && ctx.passedCurrentFocus) {
-                // console.log(`  found tabIndex`)
-                return element
+        if (element instanceof HTMLElement) {
+            // console.log(`${element.nodeName} ${element.nodeType} ${element.tabIndex}`)
+            if (element.tabIndex >= 0) {
+                if (forward && ctx.passedCurrentFocus) {
+                    // console.log(`  found tabIndex`)
+                    return element
+                }
+                ctx.previousFocusable = element
             }
-            ctx.previousFocusable = element
         }
-    }
 
-    for(let n of element.children) {
+    for (let n of element.children) {
         const r = moveFocus(forward, n, ctx)
         if (r !== undefined) {
             return r

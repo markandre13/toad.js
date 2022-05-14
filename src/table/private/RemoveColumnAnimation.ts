@@ -39,7 +39,7 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.splitBody.ontransitioncancel = this.joinVertical
         setTimeout(() => {
             this.splitBody.style.transform = `translateX(${-this.totalWidth}px)` // TODO: make this an animation
-        }, 50) // at around > 10ms we'll get an animated transition on google chrome
+        }, Table.renderDelay) // at around > 10ms we'll get an animated transition on google chrome
     }
 
     override stop() {
