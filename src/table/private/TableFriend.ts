@@ -35,6 +35,9 @@ export class TableFriend {
     set animationDone(animationDone: () => void) {
         (this.table as any).animationDone = animationDone
     }
+    get selection() {
+        return this.table.selection
+    }
     clearAnimation() {
         (this.table as any).animation = undefined
     }

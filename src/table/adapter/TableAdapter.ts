@@ -21,10 +21,22 @@ import { TypedTableModel } from "../model/TypedTableModel"
 import { TablePos } from "../TablePos"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 
+export enum EditMode {
+    // begin to edit the cell when it has the focus. this is the default
+    EDIT_ON_FOCUS,
+    // begin to edit the cell when the enter key was pressed
+    // this is used in spreadsheets, where output and input may be different
+    // input: a formula, output: the result of the formula
+    EDIT_ON_ENTER
+}
+
 export class TableAdapter<T extends TableModel> {
     model?: T
     constructor(model: T) {
         this.model = model
+    }
+    get editMode(): EditMode {
+        return EditMode.EDIT_ON_FOCUS
     }
     get colCount(): number {
         return this.model === undefined ? 0 : this.model.colCount

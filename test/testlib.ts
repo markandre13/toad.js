@@ -55,10 +55,38 @@ export function activeElement(): Element | undefined {
     return active === null ? undefined : active
 }
 
+export function type(text: string, clear = false) {
+    const active = activeElement() as HTMLElement
+    if (active === undefined) {
+        return
+    }
+    if (clear) {
+        active.textContent = ""
+    }
+    for (let i = 0; i < text.length; ++i) {
+        active.dispatchEvent(
+            new KeyboardEvent("keydown", {
+                bubbles: true,
+                cancelable: true,
+                key: text[i]
+            })
+        )
+        active.innerText += text[i]
+        active.dispatchEvent(new Event("change"))
+        active.dispatchEvent(
+            new KeyboardEvent("keyup", {
+                bubbles: true,
+                cancelable: true,
+                key: text[i]
+            })
+        )
+     }
+}
+
 export function keyboard(init: KeyboardEventInit) {
-    const old = activeElement()
-    old?.dispatchEvent(new KeyboardEvent("keydown", init))
-    old?.dispatchEvent(new KeyboardEvent("keyup", init))
+    const active = activeElement()
+    active?.dispatchEvent(new KeyboardEvent("keydown", init))
+    active?.dispatchEvent(new KeyboardEvent("keyup", init))
 }
 
 export function click(node: Element) {

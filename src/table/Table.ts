@@ -19,7 +19,7 @@
 import { View } from '../view/View'
 import { TableModel } from './model/TableModel'
 import { SelectionModel } from './model/SelectionModel'
-import { TableAdapter } from './adapter/TableAdapter'
+import { EditMode, TableAdapter } from './adapter/TableAdapter'
 import { TableEvent } from './TableEvent'
 import { TablePos } from './TablePos'
 import { TableEditMode } from './TableEditMode'
@@ -238,7 +238,8 @@ export class Table extends View {
         this.tabIndex = 0 // FIXME: value depends on selection model
 
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
-        this.keyDown = this.keyDown.bind(this)
+        this.hostKeyDown = this.hostKeyDown.bind(this)
+        this.cellKeyDown = this.cellKeyDown.bind(this)
         this.focusIn = this.focusIn.bind(this)
         this.focusOut = this.focusOut.bind(this)
         this.pointerDown = this.pointerDown.bind(this)
@@ -257,7 +258,7 @@ export class Table extends View {
         this.measure = div()
         this.measure.classList.add("measure")
 
-        this.onkeydown = this.keyDown
+        this.onkeydown = this.hostKeyDown
         this.addEventListener("focusin", this.focusIn)
         this.addEventListener("focusout", this.focusOut)
 
@@ -291,8 +292,9 @@ export class Table extends View {
         }
     }
 
-    keyDown(ev: KeyboardEvent) {
-        // console.log(`keydown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+    hostKeyDown(ev: KeyboardEvent) {
+        // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        // console.log(ev)
         if (!this.selection)
             return
         // FIXME: based on the selection model we could plug in a behaviour class
@@ -318,24 +320,28 @@ export class Table extends View {
                         if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
                             ++pos.col
                             ev.preventDefault()
+                            ev.stopPropagation()
                         }
                         break
                     case "ArrowLeft":
                         if (this.editing === undefined && pos.col > 0) {
                             --pos.col
                             ev.preventDefault()
+                            ev.stopPropagation()
                         }
                         break
                     case "ArrowDown":
-                        if (this.editing === undefined && pos.row + 1 < this.adapter!.rowCount) {
+                        if (pos.row + 1 < this.adapter!.rowCount) {
                             ++pos.row
                             ev.preventDefault()
+                            ev.stopPropagation()
                         }
                         break
                     case "ArrowUp":
-                        if (this.editing === undefined && pos.row > 0) {
+                        if (pos.row > 0) {
                             --pos.row
                             ev.preventDefault()
+                            ev.stopPropagation()
                         }
                         break
                     case "Tab":
@@ -343,27 +349,34 @@ export class Table extends View {
                             if (pos.col > 0) {
                                 --pos.col
                                 ev.preventDefault()
+                                ev.stopPropagation()
                             } else {
                                 if (pos.row > 0) {
                                     pos.col = this.adapter!.colCount - 1
                                     --pos.row
                                     ev.preventDefault()
+                                    ev.stopPropagation()
                                 }
                             }
                         } else {
                             if (pos.col + 1 < this.adapter!.colCount) {
                                 ++pos.col
                                 ev.preventDefault()
+                                ev.stopPropagation()
                             } else {
                                 if (pos.row + 1 < this.adapter!.rowCount) {
                                     pos.col = 0
                                     ++pos.row
                                     ev.preventDefault()
+                                    ev.stopPropagation()
                                 }
                             }
                         }
                         break
                     case "Enter":
+                        if (this.adapter?.editMode !== EditMode.EDIT_ON_ENTER) {
+                            break
+                        }
                         if (this.editing === undefined) {
                             this.editCell()
                         } else {
@@ -375,6 +388,7 @@ export class Table extends View {
                             }
                         }
                         ev.preventDefault()
+                        ev.stopPropagation()
                         break
                     // default:
                     //     console.log(ev)
@@ -384,8 +398,20 @@ export class Table extends View {
         }
     }
 
+    cellKeyDown(ev: KeyboardEvent) {
+        // console.log(`Table.cellKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        switch(ev.key) {
+            case "ArrowDown":
+            case "ArrowUp":
+            case "Tab":
+            case "Enter":
+                this.hostKeyDown(ev)
+                break
+        }
+    }
+
     focusIn(event: FocusEvent) {
-        // console.log("Table.focusIn()")
+        // console.log("Table.focusIn() >>>>>>>>>>>>>")
         // console.log(event)
         if (event.target && event.relatedTarget) {
             try {
@@ -402,6 +428,7 @@ export class Table extends View {
             // console.log(`  target=${event.target}, relatedTarget=${event.relatedTarget}`)
         }
         this.selectionChanged() // HACK
+        // console.log("Table.focusIn() <<<<<<<<<<<<<<<")
     }
 
     focusOut(ev: FocusEvent) {
@@ -412,21 +439,24 @@ export class Table extends View {
     editCell() {
         const col = this.selection!.value.col
         const row = this.selection!.value.row
+        const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
         this.editing = new TablePos(col, row)
-        this.adapter!.editCell(
-            this.editing,
-            this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
-        )
+        this.adapter!.editCell(this.editing, cell)
+        cell.onkeydown = this.cellKeyDown
     }
 
     saveCell() {
         if (this.editing === undefined) {
             return
         }
+        const col = this.editing.col
+        const row = this.editing.row
+        const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
         // console.log(`save cell ${this.editing.col}, ${this.editing.row}`)
-        this.adapter!.saveCell(this.editing, this.body.children[this.editing.col + this.editing.row * this.adapter!.colCount] as HTMLSpanElement)
+        cell.onkeydown = null
+        this.adapter!.saveCell(this.editing, cell)
         this.editing = undefined
-        // this.focus()
+        this.focus()
     }
 
     pointerDown(ev: PointerEvent) {

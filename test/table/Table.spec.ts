@@ -8,7 +8,8 @@ import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 
 import { input } from "@toad/util/lsx"
 
-import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, keyboard, activeElement } from "../testlib"
+import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement } from "../testlib"
+import { EditMode } from '@toad/table/adapter/TableAdapter'
 
 // TODO:
 // [X] send modified-events
@@ -16,13 +17,18 @@ import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, keyb
 // [X] declare (insert/remove)(Row/Column) in a superclass for use by TableTool
 // [X] add tests for row/column insert/remove animations
 // [X] all of the above with row/col headers
-// [ ] header glitches
-// [ ] edit cells
-// [ ] adjust selection, caret, ...
-// [ ] tab in/out of table
-// [ ] display error
-
+// [X] tab in/out of table
+// [X] edit on enter
+// [ ] edit on focus
+// [ ] no edit
+// [ ] row select mode
 // [ ] insert more than one row/column
+// [ ] tree view
+// [ ] adjust selection, caret, after insert/remove row/column
+// [ ] adjust table tool to available commands
+
+// [ ] header glitches
+// [ ] display error
 // [ ] restrict minimal table size to at least one row or one column
 
 // cell editing follows google sheets shortcuts
@@ -155,7 +161,7 @@ describe("table", function () {
             const cell = getByText("C0R0")
             expect(cell?.classList.contains("selected")).is.true
         })
-        it("tab forward out of table", async function() {
+        it("tab forward out of table", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
             await sleep()
@@ -164,7 +170,7 @@ describe("table", function () {
             tabForward()
             expect(activeElement()).to.equal(getById("after"))
         })
-        it("tab backward out of table", async function() {
+        it("tab backward out of table", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
             await sleep()
@@ -180,8 +186,8 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
 
-            keyboard({key: "ArrowRight"})
-            
+            keyboard({ key: "ArrowRight" })
+
             const cell = getByText("C1R0")
             expect(cell?.classList.contains("selected")).is.true
         })
@@ -192,8 +198,8 @@ describe("table", function () {
 
             click(getByText("C1R0")!)
 
-            keyboard({key: "ArrowRight"})
-            
+            keyboard({ key: "ArrowRight" })
+
             const cell = getByText("C0R1")
             expect(cell?.classList.contains("selected")).is.true
         })
@@ -204,8 +210,8 @@ describe("table", function () {
 
             click(getByText("C1R0")!)
 
-            keyboard({key: "ArrowLeft"})
-            
+            keyboard({ key: "ArrowLeft" })
+
             const cell = getByText("C0R0")
             expect(cell?.classList.contains("selected")).is.true
         })
@@ -216,8 +222,8 @@ describe("table", function () {
 
             click(getByText("C0R1")!)
 
-            keyboard({key: "ArrowLeft"})
-            
+            keyboard({ key: "ArrowLeft" })
+
             const cell = getByText("C1R0")
             expect(cell?.classList.contains("selected")).is.true
         })
@@ -228,8 +234,8 @@ describe("table", function () {
 
             click(getByText("C0R1")!)
 
-            keyboard({key: "ArrowUp"})
-            
+            keyboard({ key: "ArrowUp" })
+
             const cell = getByText("C0R0")
             expect(cell?.classList.contains("selected")).is.true
         })
@@ -240,14 +246,99 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
 
-            keyboard({key: "ArrowDown"})
-            
+            keyboard({ key: "ArrowDown" })
+
             const cell = getByText("C0R1")
             expect(cell?.classList.contains("selected")).is.true
         })
 
         // different edit modes: normal, spreadsheet
-        it("edit cell")
+        describe("edit cell on enter (spreadsheet mode)", function () {
+            it("edit cell", async function () {
+                const model = createModel(2, 2)
+                document.body.innerHTML = `<tx-table model="model"></tx-table>`
+                await sleep()
+                const table = getTable(model)
+
+                const c0r0 = getByText("C0R0") as HTMLSpanElement
+                const c1r0 = getByText("C1R0") as HTMLSpanElement
+                const c0r1 = getByText("C0R1") as HTMLSpanElement
+                expect(c0r0.classList.contains("selected")).is.false
+                expect(c0r0.contentEditable).to.not.equal("true")
+
+                click(c0r0)
+                expect(c0r0.classList.contains("selected")).is.true
+                expect(c0r0.contentEditable).to.not.equal("true")
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+
+                // [enter] starts editing the cell
+                keyboard({ key: "Enter" })
+
+                expect(c0r0.classList.contains("selected")).is.true
+                expect(c0r0.contentEditable).to.equal("true")
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+
+                // when there is another row, [enter] saves value and edits next row
+                type("= 2 * 3", true)
+                expect(c0r0.textContent).to.equal("=2*3")
+
+                keyboard({ key: "Enter" })
+
+                expect(c0r0.classList.contains("selected")).is.false
+                expect(c0r0.contentEditable).to.not.equal("true")
+
+                expect(c0r1.classList.contains("selected")).is.true
+                expect(c0r1.contentEditable).to.equal("true")
+                expect(c0r0.textContent).to.equal("6")
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
+
+                type("= A1 * 2", true)
+
+                // when there is no other row, [enter] saves value, and stays in row without editing
+                // FIXME: this test does not cover that the code needs stopPropagation(), otherwise
+                // switching the focus from the cell to the table will create another 'Enter' event
+                // which switches the cell again into edit mode
+                keyboard({ key: "Enter" })
+                expect(c0r1.classList.contains("selected")).is.true
+                expect(c0r1.contentEditable).to.not.equal("true")
+                expect(c0r1.textContent).to.equal("12")
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
+                expect(activeElement()).to.equal(table.table)
+
+                // we can move to another cell
+                keyboard({ key: "ArrowUp" })
+                expect(c0r0.classList.contains("selected")).is.true
+                expect(c0r1.classList.contains("selected")).is.false
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+                expect(activeElement()).to.equal(table.table)
+
+                // in edit mode ArrowDown moves to another cell
+                keyboard({ key: "Enter" })
+                keyboard({ key: "ArrowDown" })
+                expect(c0r0.classList.contains("selected")).is.false
+                expect(c0r1.classList.contains("selected")).is.true
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
+                expect(activeElement()).to.equal(table.table)
+
+                // in edit mode ArrowUp moves to another cell
+                keyboard({ key: "Enter" })
+                keyboard({ key: "ArrowUp" })
+                expect(c0r0.classList.contains("selected")).is.true
+                expect(c0r1.classList.contains("selected")).is.false
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+                expect(activeElement()).to.equal(table.table)
+
+                // in edit mode Tab moves to another cell
+                keyboard({ key: "Enter" })
+                keyboard({ key: "Tab" })
+                expect(c0r0.classList.contains("selected")).is.false
+                expect(c1r0.classList.contains("selected")).is.true
+                expect(table.selection!.value).to.deep.equal({ col: 1, row: 0 })
+                expect(activeElement()).to.equal(table.table)
+
+                // allow shift + enter to create line break!
+            })
+        })
     })
 
     describe("edit columns/rows", function () {
@@ -609,7 +700,7 @@ function validateRender(model: TestModel) {
 }
 
 function str2cell(s: string[]) {
-    return s.map( (item) => new SpreadsheetCell(item))
+    return s.map((item) => new SpreadsheetCell(item))
 }
 
 export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
@@ -622,10 +713,10 @@ export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedT
             return undefined
         return text(cell.value)
     }
-    
+
     override getRowHead(row: number): Node | undefined {
         // console.log(`row ${row} -> ${row}`)
-        return text(`${row+1}`)
+        return text(`${row + 1}`)
     }
 
     override getColumnHead(col: number): Node | undefined {
@@ -644,8 +735,13 @@ export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedT
 }
 
 export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
+
+    override get editMode(): EditMode {
+        return EditMode.EDIT_ON_ENTER
+    }
+
     override editCell(pos: TablePos, cell: HTMLSpanElement) {
-        console.log("MyAdapter.editCell()")
+        // console.log("MyAdapter.editCell()")
         cell.tabIndex = -1
         cell.contentEditable = "true"
         cell.focus()
@@ -658,11 +754,12 @@ export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
     }
 
     override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
-        console.log("MyAdapter.saveCell()")
+        // console.log("MyAdapter.saveCell()")
         // this.model!.getCell(pos.col, pos.row)
         this.model!.setField(pos.col, pos.row, cell.innerText)
         cell.innerText = this.model!.getField(pos.col, pos.row) // HACK! The model should generate events to update the fields!!!
         cell.tabIndex = 0
-        cell.blur()
+        cell.contentEditable = "inherit"
+        // cell.blur()
     }
 }
