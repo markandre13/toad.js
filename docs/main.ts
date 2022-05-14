@@ -69,11 +69,10 @@ later
 */
 
 import { text } from '@toad/util/lsx'
-import { TableModel, TableAdapter, TypedTableModel, TypedTableAdapter, ArrayModel, ArrayAdapter, bindModel, refs, TablePos } from '@toad'
-import { GridTableModel } from '@toad/table/model/GridTableModel'
+import { TableModel, TableAdapter, ArrayModel, ArrayAdapter, bindModel, refs } from '@toad'
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
-import { InferTypedTableModelParameter } from '@toad/table/adapter/TypedTableAdapter'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
+import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 // https://www.bbcelite.com/deep_dives/generating_system_data.html
 // https://www.bbcelite.com/deep_dives/printing_text_tokens.html
@@ -219,58 +218,6 @@ for (let row = 0; row < m.rowCount; ++row) {
         m.setField(col, row, `C${col}R${row}`)
     }
 }
-export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
-    override getDisplayCell(col: number, row: number): Node | Node[] | undefined {
-        if (!this.model) {
-            return undefined
-        }
-        const cell = this.model.getCell(col, row)
-        if (cell === undefined)
-            return undefined
-        return text(cell.value)
-    }
-    
-    override getRowHead(row: number): Node | undefined {
-        // console.log(`row ${row} -> ${row}`)
-        return text(`${row+1}`)
-    }
 
-    override getColumnHead(col: number): Node | undefined {
-        let str = ""
-        let code = col
-        while (true) {
-            str = `${String.fromCharCode((code % 26) + 0x41)}${str}`
-            code = Math.floor(code / 26)
-            if (code === 0) {
-                break
-            }
-            code -= 1
-        }
-        return text(str)
-    }
-}
-export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
-    override editCell(pos: TablePos, cell: HTMLSpanElement) {
-        console.log("MyAdapter.editCell()")
-        cell.tabIndex = -1
-        cell.contentEditable = "true"
-        cell.focus()
-        const a = this.model!.getCell(pos.col, pos.row)
-        // console.log(a)
-        if (a !== undefined) {
-            cell.innerText = a._str!
-        }
-        return undefined
-    }
-
-    override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
-        console.log("MyAdapter.saveCell()")
-        // this.model!.getCell(pos.col, pos.row)
-        this.model!.setField(pos.col, pos.row, cell.innerText)
-        cell.innerText = this.model!.getField(pos.col, pos.row) // HACK! The model should generate events to update the fields!!!
-        cell.tabIndex = 0
-        cell.blur()
-    }
-}
 TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
 bindModel("spreadsheet", m)

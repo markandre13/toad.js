@@ -1,15 +1,12 @@
 import { expect } from '@esm-bundle/chai'
-import { TableAdapter, bindModel, unbind, text, Table, TablePos } from "@toad"
+import { TableAdapter, bindModel, unbind, Table } from "@toad"
 import { TableFriend } from '@toad/table/private/TableFriend'
-import { GridTableModel } from "@toad/table/model/GridTableModel"
-import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
-import { InferTypedTableModelParameter, TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
-import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
-
-import { input } from "@toad/util/lsx"
-
-import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement } from "../testlib"
 import { EditMode } from '@toad/table/adapter/TableAdapter'
+import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
+import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
+import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
+import { input } from "@toad/util/lsx"
+import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement } from "../testlib"
 
 // TODO:
 // [X] send modified-events
@@ -19,6 +16,7 @@ import { EditMode } from '@toad/table/adapter/TableAdapter'
 // [X] all of the above with row/col headers
 // [X] tab in/out of table
 // [X] edit on enter
+// [ ] display error (a cycle currrently complete disables table input)
 // [ ] edit on focus
 // [ ] no edit
 // [ ] row select mode
@@ -28,8 +26,15 @@ import { EditMode } from '@toad/table/adapter/TableAdapter'
 // [ ] adjust table tool to available commands
 
 // [ ] header glitches
-// [ ] display error
 // [ ] restrict minimal table size to at least one row or one column
+// [ ] make table sizing more dynamic
+//   [ ] never exceed the max width of the parent
+//   [ ] if width smaller than max width of parent, become smaller unless overridden by style
+//       (can we add some css in the element which can be overridden by element & page css?)
+
+// [ ] update doc
+// [ ] adjust other repositories to new table & style
+// [ ] publish version 0.1.0
 
 // cell editing follows google sheets shortcuts
 // not editing
@@ -551,11 +556,6 @@ describe("table", function () {
     })
 })
 
-class TestModel extends SpreadsheetModel {
-    showColumnHeaders = false
-    showRowHeaders = false
-}
-
 function createModel(cols: number, rows: number) {
     TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
     const model = new TestModel(cols, rows)
@@ -703,63 +703,14 @@ function str2cell(s: string[]) {
     return s.map((item) => new SpreadsheetCell(item))
 }
 
-export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
-    override getDisplayCell(col: number, row: number): Node | Node[] | undefined {
-        if (!this.model) {
-            return undefined
-        }
-        const cell = this.model.getCell(col, row)
-        if (cell === undefined)
-            return undefined
-        return text(cell.value)
-    }
-
-    override getRowHead(row: number): Node | undefined {
-        // console.log(`row ${row} -> ${row}`)
-        return text(`${row + 1}`)
-    }
-
-    override getColumnHead(col: number): Node | undefined {
-        let str = ""
-        let code = col
-        while (true) {
-            str = `${String.fromCharCode((code % 26) + 0x41)}${str}`
-            code = Math.floor(code / 26)
-            if (code === 0) {
-                break
-            }
-            code -= 1
-        }
-        return text(str)
-    }
+class TestModel extends SpreadsheetModel {
+    showColumnHeaders = false
+    showRowHeaders = false
+    editMode = EditMode.EDIT_ON_ENTER
 }
 
-export class SpreadsheetAdapter extends GridAdapter<SpreadsheetModel> {
-
+export class TestAdapter extends SpreadsheetAdapter<TestModel> {
     override get editMode(): EditMode {
-        return EditMode.EDIT_ON_ENTER
-    }
-
-    override editCell(pos: TablePos, cell: HTMLSpanElement) {
-        // console.log("MyAdapter.editCell()")
-        cell.tabIndex = -1
-        cell.contentEditable = "true"
-        cell.focus()
-        const a = this.model!.getCell(pos.col, pos.row)
-        // console.log(a)
-        if (a !== undefined) {
-            cell.innerText = a._str!
-        }
-        return undefined
-    }
-
-    override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
-        // console.log("MyAdapter.saveCell()")
-        // this.model!.getCell(pos.col, pos.row)
-        this.model!.setField(pos.col, pos.row, cell.innerText)
-        cell.innerText = this.model!.getField(pos.col, pos.row) // HACK! The model should generate events to update the fields!!!
-        cell.tabIndex = 0
-        cell.contentEditable = "inherit"
-        // cell.blur()
+        return this.model!.editMode
     }
 }
