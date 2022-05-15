@@ -13,7 +13,7 @@
         href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin" />
     <link rel="stylesheet" type="text/css"
         href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400&subset=latin" />
-    <link rel="stylesheet" type="text/css" href=" https://fonts.googleapis.com/css?family=Titan+One">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Titan+One">
     <link rel="stylesheet" type="text/css" href="style/tx-static.css" />
     <link rel="stylesheet" type="text/css" href="style/tx-dark.css" />
     <link rel="stylesheet" type="text/css" href="style/tx.css" />
@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="style/tx-tabs.css" />
 
     <script type="application/javascript" src="webcomponents-hi-sd-ce.js"></script>
-    <script type="module" src="main.js"></script>
+    <script type="module" src="main.js?hash=c227dbcfcb02824e7e76077f054cc88aae6e54d6"></script>
 
     <style>
         a:link {
@@ -69,7 +69,6 @@
 </head>
 
 <body>
-
     <p style="text-align: center">
         <img src="toad.gif" alt="TOAD" /><br />
         WebComponent/TypeScript Edition
@@ -95,8 +94,6 @@
                     comboboxes, search fields, horizontal and vertical tabs, etc.
                 </li>
             </ul>
-
-            <h2>Introduction</h2>
 
             <p>
                 A typical toad.js user interface divides the code running in the browser
@@ -465,6 +462,8 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
 
         <tx-tab label="Text">
 
+            <h2>Text &amp HTML Model</h2>
+
             <h3>&lt;tx-text&gt;</h3>
             <tx-text model="hello"></tx-text>
             <tx-text model="hello"></tx-text>
@@ -741,70 +740,27 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
             </tx-if>
 
         </tx-tab>
-        <tx-tab label="Array & Tree">
+        <tx-tab label="Table">
 
             <p>
-                <u>Please note:</u> The table's layout algorithm is rather tricky and, as you can see here, doesn't work within tabs. Hence
-                the tx-table element is currently being redesigned and rewritten.
+                While tables are a work in progress, the following should illustrate the intended versatility:
             </p>
 
-            <h3>&lt;tx-table&gt; from array</h3>
-            <div style="display: inline-block; width: 45%; border: inset;">
-                <b style="font-size: 150%">Alice</b>
-                <tx-tabletool></tx-tabletool>
-                <tx-table model="books"></tx-table>
-            </div>
-            <div style="display: inline-block; width: 45%; border: inset;">
-                <b style="font-size: 150%">Bob</b>
-                <tx-tabletool></tx-tabletool>
-                <tx-table model="books"></tx-table>
-            </div>
+            <h2>Array of Records</h2>
+            <tx-tabletool></tx-tabletool>
+            <tx-table style="width: 100%; height: 200px;" model="dynamicSystem"></tx-table>
 
-            <my-code-button condition="table-condition"></my-code-button>
-            <tx-if model="table-condition">
-                <h4>HTML</h4>
-                <pre>
-      &lt;div style="display: inline-block; width: 45%; border: inset;"&gt;
-        &lt;b style="font-size: 150%"&gt;Alice&lt;/b&gt;
-        &lt;tx-tabletool&gt;&lt;/tx-tabletool&gt;
-        &lt;tx-table model="books"&gt;&lt;/tx-table&gt;
-      &lt;/div&gt;
-      &lt;div style="display: inline-block; width: 45%; border: inset;"&gt;
-        &lt;b style="font-size: 150%"&gt;Bob&lt;/b&gt;
-        &lt;tx-tabletool&gt;&lt;/tx-tabletool&gt;
-        &lt;tx-table model="books"&gt;&lt;/tx-table&gt;
-      &lt;/div&gt;</pre>
+            <h2>Spreadsheet</h2>
 
-                <h4>TypeScript</h4>
-                <pre>
-      class Book {
-        title: string = ""
-        author: string = ""
-        year: number = 1970
-      }
-  
-      const bookList = [
-          { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
-          { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
-          { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
-          { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
-          { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
-          { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
-          { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
-          { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
-      ]
-      
-      class BookAdapter extends ArrayAdapter&lt;ArrayModel&lt;Book&gt;&gt; {
-          override getColumnHeads() { return ["Title", "Author", "Year"] }
-          override getRow(book: Book) { return refs(book, "title", "author", "year") }
-      }
-      
-      TableAdapter.register(BookAdapter, ArrayModel, Book)
-      const model = new ArrayModel&lt;Book&gt;(bookList, Book)
-      bind("books", model)</pre>
-            </tx-if>
+            <p>
+                Field values beginning with '=' define formulas. Valid operators are +, -, *, / and (, ).
+            </p>
 
-            <h3>&lt;tx-table&gt; from tree</h3>
+            <tx-tabletool></tx-tabletool>
+            <tx-table style="width: 100%; height: 200px;" model="spreadsheet"></tx-table>
+
+            <h2>Tree</h2>
+
             <tx-tabletool></tx-tabletool>
             <tx-table model="tree"></tx-table>
 
