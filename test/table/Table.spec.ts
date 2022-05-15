@@ -16,7 +16,7 @@ import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type
 // [X] all of the above with row/col headers
 // [X] tab in/out of table
 // [X] edit on enter
-// [ ] display error (a cycle currrently complete disables table input)
+// [X] display error
 // [ ] edit on focus
 // [ ] no edit
 // [ ] row select mode
@@ -108,6 +108,50 @@ describe("table", function () {
                 }
                 document.body.appendChild(element)
             }
+        })
+    })
+
+    describe("error display", function () {
+        it.only("cycle", async function () {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            await sleep()
+            const table = getTable(model)
+
+            const c0r0 = getByText("C0R0") as HTMLSpanElement
+            const c1r0 = getByText("C1R0") as HTMLSpanElement
+            const c0r1 = getByText("C0R1") as HTMLSpanElement
+
+            click(c0r0)
+            keyboard({ key: "Enter" })
+            type("=8", true)
+
+            click(c1r0)
+            keyboard({ key: "Enter" })
+            type("=A1*2", true)
+
+            click(c0r1)
+            keyboard({ key: "Enter" })
+            type("=B1*2", true)
+
+            click(c0r0)
+            keyboard({ key: "Enter" })
+            type("=A2", true)
+
+            keyboard({ key: "Enter" })
+
+            expect(c0r0.classList.contains("error")).to.be.true
+            expect(c1r0.classList.contains("error")).to.be.true
+            expect(c0r1.classList.contains("error")).to.be.true
+
+            click(c0r0)
+            keyboard({ key: "Enter" })
+            type("=7", true)
+            keyboard({ key: "Enter" })
+
+            expect(c0r0.classList.contains("error")).to.be.false
+            expect(c1r0.classList.contains("error")).to.be.false
+            expect(c0r1.classList.contains("error")).to.be.false
         })
     })
 

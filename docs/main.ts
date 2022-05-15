@@ -69,7 +69,7 @@ later
 */
 
 import { text } from '@toad/util/lsx'
-import { TableModel, TableAdapter, ArrayModel, ArrayAdapter, bindModel, refs } from '@toad'
+import { TableModel, TableAdapter, ArrayModel, ArrayAdapter, bindModel, refs, TablePos } from '@toad'
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
@@ -175,9 +175,9 @@ class FixedSystemAdapter extends TableAdapter<FixedSystemModel> {
         return text(`${row + 1}`)
     }
 
-    override getDisplayCell(col: number, row: number) {
-        return text(
-            this.model!.get(col, row)
+    override showCell(pos: TablePos, cell: HTMLSpanElement) {
+        cell.replaceChildren(
+            text(this.model!.get(pos.col, pos.row))
         )
     }
 }

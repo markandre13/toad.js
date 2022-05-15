@@ -1,3 +1,21 @@
+/*
+ *  The TOAD JavaScript/TypeScript GUI Library
+ *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { TableEvent } from '../TableEvent'
 import { span } from '@toad/util/lsx'
 import { Table, px2int, px2float } from '../Table'
@@ -57,9 +75,8 @@ export class InsertColumnAnimation extends TableAnimation {
     prepareCells() {
         for (let row = 0; row < this.rowCount; ++row) {
             for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
-                const cell = span(
-                    this.adapter.getDisplayCell(col, row) as Node
-                )
+                const cell = span()
+                this.adapter.showCell({col, row}, cell)
                 this.measure.appendChild(cell)
             }
         }

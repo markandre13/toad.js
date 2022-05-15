@@ -144,14 +144,27 @@ tableStyle.textContent = `
     background: #1a1a1a;
 }
 
+.body > span.error, .splitBody > span.error {
+    border-color: var(--tx-global-red-600);
+    z-index: 1;
+}
+
 .body > span.selected, .splitBody > span.selected {
     background: #0e2035;
     border-color: #2680eb;
-    z-index: 1;
+    z-index: 2;
 }
 
 .body > span.selected:hover {
     background: #112d4d;
+}
+
+.body > span.error, .splitBody > span.error {
+    background-color: #522426;
+}
+
+.body > span.error:hover {
+    background: #401111;
 }
 
 .cols > span.handle, .rows > span.handle {
@@ -592,11 +605,8 @@ export class Table extends View {
         // console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
-                const data = this.adapter!.getDisplayCell(event.col, event.row)
-                if (data !== undefined) {
-                    const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
-                    cell.replaceChildren(data as any)
-                }
+                const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
+                this.adapter!.showCell(event, cell)
             } break
             case TableEventType.INSERT_ROW: {
                 if (this.animation) {
@@ -682,9 +692,8 @@ export class Table extends View {
         // body
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
-                const cell = span(
-                    this.adapter!.getDisplayCell(col, row) as Node
-                )
+                const cell = span()
+                this.adapter!.showCell({col, row}, cell)
                 this.measure.appendChild(cell)
             }
         }

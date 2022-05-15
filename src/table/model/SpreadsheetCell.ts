@@ -1,24 +1,31 @@
+/*
+ *  The TOAD JavaScript/TypeScript GUI Library
+ *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 import { ExpressionNode } from '../../util/expressions/ExpressionNode'
 import { Lexer } from '../../util/expressions/Lexer'
 import { expression } from '../../util/expressions/expression'
 import { SpreadsheetModel } from './SpreadsheetModel'
 
-// export abstract class SpreadsheetAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
-//     override getDisplayCell(col: number, row: number): Node | Node[] | undefined {
-//         if (!this.model) {
-//             return undefined
-//         }
-//         const cell = this.model.getField(col, row)
-//         if (cell === undefined)
-//             return undefined
-//         return document.createTextNode(cell)
-//     }
-// }
-
 export class SpreadsheetCell {
-    _str?: string
+    _display?: string
     _node?: ExpressionNode
     _value?: number
+    _error?: string
     constructor(value?: string) {
         // console.log(`SpreadsheetCell(${value})`)
         if (value === undefined || value.trim().length === 0) {
@@ -34,14 +41,17 @@ export class SpreadsheetCell {
     set value(value: string) {
         // console.log(`SpreadsheetCell.value('${value}')`)
         this._node = expression(new Lexer(value))
-        this._str = value
+        this._display = value
     }
     get value(): string {
+        if (this._error && this._display !== undefined) {
+            return this._display
+        }
         if (this._node) {
             return `${this._value}`
         }
-        if (this._str !== undefined) {
-            return this._str
+        if (this._display !== undefined) {
+            return this._display
         }
         return ""
     }

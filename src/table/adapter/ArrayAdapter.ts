@@ -24,6 +24,7 @@ import { TableEventType } from "../TableEventType"
 import { Reference } from "src"
 import { TextModel } from "../../model/TextModel"
 import { Text } from "../../view/Text"
+import { TablePos } from "../TablePos"
 
 export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
 
@@ -43,24 +44,26 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
         return undefined
     }
 
-    override getDisplayCell(col: number, row: number): Node | undefined {
-        const text = this.getField(col, row)
+    override showCell(pos: TablePos, cell: HTMLSpanElement) {
+        const text = this.getField(pos.col, pos.row)
         if (text === undefined)
             return undefined
-        return document.createTextNode(text)
+        cell.replaceChildren(
+            document.createTextNode(text)
+        )
     }
 
-    override getEditorCell(col: number, row: number): Node | undefined {
-        const text = this.getField(col, row)
-        if (text === undefined)
-            return undefined
-        const model = new TextModel(text)
-        model.modified.add(() => {
-            this.setField(col, row, model.value)
-        })
-        const view = new Text()
-        view.setModel(model)
-        return view
+    override editCell(pos: TablePos, cell: HTMLSpanElement) {
+        // const text = this.getField(col, row)
+        // if (text === undefined)
+        //     return undefined
+        // const model = new TextModel(text)
+        // model.modified.add(() => {
+        //     this.setField(col, row, model.value)
+        // })
+        // const view = new Text()
+        // view.setModel(model)
+        // return view
     }
 
     private getField(col: number, row: number): string | undefined {
