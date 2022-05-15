@@ -163,7 +163,7 @@ export function pixelToNumber(pixel: string): number {
   if (pixel === "")
       return 0
   if (pixel.substr(pixel.length - 2) !== "px")
-    throw Error(`TableView.pixelToNumber('${pixel}') expected 'px' suffix`)
+    throw Error(`pixelToNumber('${pixel}') expected 'px' suffix`)
   return Number.parseFloat(pixel.substr(0, pixel.length - 2))
 }
 

@@ -577,7 +577,7 @@ export class Table extends View {
                 this.adapter = new adapter(model)
             }
             catch (e) {
-                console.log(`TableView.setModel(): failed to instantiate table adapter: ${e}`)
+                console.log(`Table.setModel(): failed to instantiate table adapter: ${e}`)
                 console.log(`setting TypeScript's target to 'es6' might help`)
                 throw e
             }
@@ -588,7 +588,7 @@ export class Table extends View {
             return
         }
         if ((model as any) instanceof Object) {
-            throw Error("TableView.setModel(): unexpected model of type " + (model as Object).constructor.name)
+            throw Error("Table.setModel(): unexpected model of type " + (model as Object).constructor.name)
         }
     }
 
@@ -600,7 +600,7 @@ export class Table extends View {
         this.saveCell()
         switch (this.selection.mode) {
             case TableEditMode.EDIT_CELL: {
-                // this.log(Log.SELECTION, `TableView.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
                 let allSelected = this.body.querySelectorAll(".selected")
                 for (let selected of allSelected) {
                     selected.classList.remove("selected")
@@ -617,7 +617,7 @@ export class Table extends View {
                 // delete (this.rootDiv as any).tabIndex
             } break
             case TableEditMode.SELECT_CELL: {
-                // this.log(Log.SELECTION, `TableView.createSelection(): mode=SELECT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
                 let allSelected = this.body.querySelectorAll(".selected")
                 for (let selected of allSelected) {
                     selected.classList.remove("selected")
@@ -630,7 +630,7 @@ export class Table extends View {
                 break
             }
             case TableEditMode.SELECT_ROW: {
-                // this.log(Log.SELECTION, `TableView.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
                 // let allSelected = this.bodyBody.querySelectorAll("tbody > tr.selected")
                 // for (let selected of allSelected)
                 //   selected.classList.remove("selected")

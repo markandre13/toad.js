@@ -5,8 +5,8 @@ import {
 
 describe("view", function () {
     describe("table", function () {
-        describe("class TableAdapter is used by TableView to render cells for TableModel", function () {
-            describe("TableView requires a TableAdapter to be registered for a TableModel type", function() {
+        describe("class TableAdapter is used by Table to render cells for TableModel", function () {
+            describe("Table requires a TableAdapter to be registered for a TableModel type", function() {
                 it("TableAdapter.register(adapter: new()=>TableAdapter, model: new()=>TableModel)", function () {
                     class FubarTableModel extends TableModel {
                         get colCount(): number { return 1 }
@@ -58,7 +58,7 @@ describe("view", function () {
                     // TODO: TBD
                 })
 
-                it.skip("one can register multiple TableAdapters per TableModel and let TableView choose one using an identifier", function() {})
+                it.skip("one can register multiple TableAdapters per TableModel and let Table choose one using an identifier", function() {})
             })
         })
     })

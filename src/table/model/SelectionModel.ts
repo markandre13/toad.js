@@ -23,7 +23,7 @@ import { TablePos } from "../TablePos"
 // FIXME: also needed is a model for range and 'random' selections
 
 export class SelectionModel extends Model {
-    mode: TableEditMode // FIXME: there might be a way to do without, just by the behaviour of a common API towards TableView
+    mode: TableEditMode // FIXME: there might be a way to do without, just by the behaviour of a common API towards Table
     protected _value: TablePos
 
     constructor(mode = TableEditMode.EDIT_CELL) {
