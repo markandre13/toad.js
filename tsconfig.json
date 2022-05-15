@@ -55,6 +55,6 @@
     "include": [
         "src",
         "test",
-        "docs/*.ts"
+        "docs"
     ]
 }

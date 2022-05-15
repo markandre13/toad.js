@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2021 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,208 +16,221 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
+/* the need to do the following is... not cool */
+import { Select } from "@toad/view/Select"
+Select
+import { Text } from "@toad/view/Text"
+Text
+import { Menu } from "@toad/menu/Menu"
+Menu
+import { TextArea } from "@toad/view/TextArea"
+TextArea
+import { TextTool } from "@toad/view/TextTool"
+TextTool
+import { TableTool } from "@toad/table/TableTool"
+TableTool
+import { Button } from "@toad/view/Button"
+Button
+import { RadioButton } from "@toad/view/RadioButton"
+RadioButton
+import { Checkbox } from "@toad/view/Checkbox"
+Checkbox
+import { Tab } from "@toad/view/Tab"
+Tab
+import { Table } from "@toad/table/Table"
+Table
+import { Slider } from "@toad/view/Slider"
+Slider
+import { Switch } from "@toad/view/Switch"
+Switch
+import { ToadIf } from "@toad/view/ToadIf"
+ToadIf
 
-this is the 2nd version of the table
-* stop using <table> internally...
-  => perform layout without fighting <table>'s own layout algorithm
-  => required tracking of all cell width x height makes it possible
-     to adjust table to content without flicker
-  => makes it possible to use sparse tables in case of huge datasets
-  => simplifies implementation of row/column insert/delete animation
-* stop using an input overlay (? it worked fine for the caret)
-* custom scrollbars matching the theme(?) (how do other libraries do that?)
+import { TextModel } from "@toad/model/TextModel"
+import { HtmlModel } from "@toad/model/HtmlModel"
+import { BooleanModel } from "@toad/model/BooleanModel"
+import { NumberModel } from "@toad/model/NumberModel"
+import { EnumModel } from "@toad/model/EnumModel"
 
-NEXT STEPS:
-[X] let Table2 use model & adapter similar to the old table
-[X] row & column headers
-[X] grab between col headers to get to initiate a resize
-[X] to resize a column with CSS
-    => plan:
-    * once when starting the animation
-      * put the right half into a div/span which we'll then translate
-      * extend the width of the left column to have row lines in the background
-    * then just transform: translateX the right div/span
-[X] scrollbar should be stable during resize (move splitBody into body?)
-[X] resize column when body is scrolled (vertically okay, not horizontal; previous point could also be the solution)
-[X] click to resize last column when scrolled to right end causes a glitch in the last column heading (filler needed)
-[X] scroll to right, move last handle to the left causes a glitch due to missing filler (use filler with size of scrollbar)
-[X] resize last column
-[X] resize last column has a glitch in the header
-[X] implement minimum column size (eg. 8px?)
-[X] implement the same thing for rows
-[X] handle overlapping animation
-[X] select cell
-[X] use it to implement insert/remove row animation
-[X] scroll to caret
-[ ] caret position != selection
-[ ] adjust selection after insert/remove row
-[ ] edit cell
-[ ] tab key
-[ ] select row (& let selection emit event information with the old & new selection value)
-[ ] tree
-[ ] restrict colHeads & rowHeads to body clientWidth & clientHeight (not working during adjust)
-[ ] refactor & add tests
-[ ] move rows
-[ ] move within tree
-[ ] default table to: width 100%, height to fit content and move column header down when scrolling page
+import { TablePos } from "@toad/table/TablePos"
+import { TableAdapter } from "@toad/table/adapter/TableAdapter"
+import { TreeNode } from "@toad/table/model/TreeNode"
+import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
+import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 
-later
-[ ] sort
-[ ] filter
-[ ] move columns (display only and model)
-*/
+import { bindModel as bind, action } from "@toad/controller/globalController"
+import { Template } from "@toad/controller/Template"
 
-import { text } from '@toad/util/lsx'
-import { TableModel, TableAdapter, ArrayModel, ArrayAdapter, bindModel, refs, TablePos } from '@toad'
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
-// https://www.bbcelite.com/deep_dives/generating_system_data.html
-// https://www.bbcelite.com/deep_dives/printing_text_tokens.html
-const token = ["AL", "LE", "XE", "GE", "ZA", "CE", "BI", "SO", "US", "ES", "AR", "MA", "IN", "DI", "RE", "A", "ER", "AT", "EN", "BE", "RA", "LA", "VE", "TI", "ED", "OR", "QU", "AN", "TE", "IS", "RI", "ON"]
-const government = ["Anarchy", "Feudal", "Multi-government", "Dictatorship", "Communist", "Confederacy", "Democracy", "Corporate State"]
-const prosperity = ["Rich", "Average", "Poor", "Mainly"]
-const economy = [" Industrial", " Agricultural"]
-// "Human Colonials"
-const species0 = ["Large ", "Fierce ", "Small "]
-const species1 = ["Green ", "Red ", "Yellow ", "Blue ", "Black ", "Harmless "]
-const species2 = ["Slimy ", "Bug-Eyed ", "Horned ", "Bony ", "Fat ", "Furry "]
-//                 0           1        2          3           4        5            6          7
-const species3 = ["Rodents ", "Frogs", "Lizards", "Lobsters", "Birds", "Humanoids", "Felines", "Insects"]
-// species3 := (random(4) + species2) % 7
-// radius = 6911 km to 2816 km
-// population := (tech level * 4) + economy + government + 1 (71 = 7.1 billion)
+import { initializeSodaMachine } from "./src/sodamachine"
+import { initializeStarSystem } from "./src/starsystem"
 
-class FixedSystemModel extends TableModel {
+window.onload = () => {
+    main()
+}
+
+export function main(): void {
+    initializeSodaMachine()
+    // initializeBooks()
+    initializeStarSystem()
+    initializeTree()
+}
+
+//
+// <tx-text>
+//
+
+let textModel = new TextModel("")
+bind("hello", textModel)
+
+//
+// <tx-texttool> & <tx-textarea>
+//
+let markupModel = new HtmlModel("")
+markupModel.modified.add(() => {
+    document.getElementById("rawhtml")!.innerText = markupModel.value
+})
+bind("markup", markupModel)
+
+//
+// <tx-button>
+//
+action("hitMe", () => {
+    textModel.value = "Hit me too!"
+    hitMeMore.enabled = true
+})
+var hitMeMore = action("hitMeMore", () => {
+    textModel.value = "You hit me!"
+    hitMeMore.enabled = false
+})
+
+//
+// <tx-checkbox>, <tx-switch> and <tx-if>
+//
+
+const off = new BooleanModel(false)
+const on = new BooleanModel(true)
+const offDisabled = new BooleanModel(false)
+offDisabled.enabled = false
+const onDisabled = new BooleanModel(true)
+onDisabled.enabled = false
+
+bind("off", off)
+bind("on", on)
+bind("offDisabled", offDisabled)
+bind("onDisabled", onDisabled)
+
+//
+// EnumModel
+//
+
+enum Color {
+    BLUEBERRY = 0,
+    GRAPE,
+    TANGERINE,
+    LIME,
+    STRAWBERRY,
+    BONDIBLUE
+}
+
+const flavourEnabled = new EnumModel<Color>(Color)
+flavourEnabled.value = Color.GRAPE
+bind("flavourEnabled", flavourEnabled)
+
+const flavourDisabled = new EnumModel<Color>(Color)
+flavourDisabled.enabled = false
+flavourDisabled.value = Color.TANGERINE
+bind("flavourDisabled", flavourDisabled)
+
+const customFlavour = new TextModel("")
+bind("customFlavour", customFlavour)
+const customFlavourDisabled = new TextModel("")
+bind("customFlavourDisabled", customFlavourDisabled)
+//
+// <tx-slider>
+//
+
+let size = new NumberModel(42, { min: 0, max: 99 })
+bind("size", size)
+
+// <toad-menu>
+action("file|logout", () => {
+    alert("You are about to logout")
+})
+action("help", () => {
+    alert("Please.")
+})
+
+//
+// Books
+//
+
+const spreadsheet = new SpreadsheetModel(5, 5)
+for (let row = 0; row < spreadsheet.rowCount; ++row) {
+    for (let col = 0; col < spreadsheet.colCount; ++col) {
+        spreadsheet.setField(col, row, `C${col}R${row}`)
+    }
+}
+TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
+bind("spreadsheet", spreadsheet)
+
+//
+// Tree
+//
+
+class MyNode implements TreeNode {
+    label: string
+    next?: MyNode
+    down?: MyNode
+    static counter = 0
+    constructor() {
+        this.label = `#${MyNode.counter++}`
+    }
+}
+
+class MyTreeAdapter extends TreeAdapter<MyNode> {
+    override showCell(pos: TablePos, cell: HTMLSpanElement) {
+        // return this.model && this.treeCell(row, this.model.rows[row].node.label)
+    }
+}
+
+function initializeTree(): void {
+    TreeAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
+    let model = new TreeNodeModel(MyNode)
+    model.addSiblingAfter(0)
+    model.addChildAfter(0)
+    model.addChildAfter(1)
+    model.addSiblingAfter(2)
+    model.addSiblingAfter(1)
+    model.addChildAfter(4)
+    model.addSiblingAfter(0)
+    bind("tree", model)
+}
+
+class MyCodeButton extends HTMLElement {
+    condition = new BooleanModel(false)
     constructor() {
         super()
-    }
-    get colCount() {
-        return 4
-    }
-    get rowCount() {
-        return 64
-    }
-    get(col: number, row: number) {
-        return FixedSystemModel.get(col, row)
-    }
-
-    static get(col: number, row: number) {
-        let h = this.hash(`${row}`)
-        switch (col) {
-            case 0: { // species
-                let name = ""
-                let l = (h % 6) + 1
-                for (let j = 0; j < l; ++j) {
-                    h = this.hash(`${row}`, h)
-                    name += token[h % token.length]
-                }
-                return name.charAt(0) + name.toLowerCase().substring(1)
+        let template = new Template("my-code-button") // FIXME: how about inlining the HTML?
+        let label = template.text("label", "Show Code")
+        template.action("action", () => {
+            if (this.condition.value) {
+                this.condition.value = false
+                label.value = "Show Code"
+            } else {
+                this.condition.value = true
+                label.value = "Hide Code"
             }
-            case 1: { // government
-                return government[h % government.length]
-            }
-            case 2: { // economy
-                h = h >>> 3
-                const h0 = h % prosperity.length
-                h = h >>> 2
-                const h1 = h % economy.length
-                return prosperity[h0] + economy[h1]
-            }
-            case 3: {
-                h = h >>> 6
-                let h0 = h % species0.length
-                h = h >>> 2
-                const h1 = h % species1.length
-                h = h >>> 3
-                const h2 = h % species2.length
-                h = h >>> 3
-                const h3 = (h % 4 + h2) % species3.length
-                return species0[h0] + species1[h1] + species2[h2] + species3[h3]
-            }
-        }
-
-        throw Error(`unreachable col ${col}, row ${row}`)
+        })
+        this.attachShadow({ mode: 'open' })
+        this.shadowRoot!.appendChild(template.root)
     }
-
-    // cyrb53 from https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript/7616484#7616484
-    static hash(str: string, seed = 0) {
-        let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed
-        for (let i = 0, ch; i < str.length; i++) {
-            ch = str.charCodeAt(i)
-            h1 = Math.imul(h1 ^ ch, 2654435761)
-            h2 = Math.imul(h2 ^ ch, 1597334677)
-        }
-        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909)
-        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909)
-        return 4294967296 * (2097151 & h2) + (h1 >>> 0)
+    connectedCallback() {
+        bind(this.getAttribute("condition")!, this.condition) // FIXME: bind to parents context
     }
 }
+window.customElements.define("my-code-button", MyCodeButton)
 
-class FixedSystemAdapter extends TableAdapter<FixedSystemModel> {
-
-    constructor(model: FixedSystemModel) {
-        super(model)
-    }
-
-    override getColumnHead(col: number): Node | undefined {
-        switch (col) {
-            case 0: return text("Name")
-            case 1: return text("Government")
-            case 2: return text("Economy")
-            case 3: return text("Species")
-        }
-    }
-
-    override getRowHead(row: number): Node | undefined {
-        return text(`${row + 1}`)
-    }
-
-    override showCell(pos: TablePos, cell: HTMLSpanElement) {
-        cell.replaceChildren(
-            text(this.model!.get(pos.col, pos.row))
-        )
-    }
-}
-
-class System {
-    name: string = "New Name"
-    government: string = "New Government"
-    economy: string = "New Economy"
-    species: string = "New Species"
-}
-
-const systemList: System[] = Array(64)
-for (let i = 0; i < 64; ++i) {
-    systemList[i] = {
-        name: FixedSystemModel.get(0, i),
-        government: FixedSystemModel.get(1, i),
-        economy: FixedSystemModel.get(2, i),
-        species: FixedSystemModel.get(3, i)
-    }
-}
-
-class DynamicSystemAdapter extends ArrayAdapter<ArrayModel<System>> {
-    override getColumnHeads() { return ["Name", "Government", "Economy", "Species"] }
-    override getRow(system: System) { return refs(system, "name", "government", "economy", "species") }
-}
-
-TableAdapter.register(DynamicSystemAdapter, ArrayModel, System)
-const dynamicModel = new ArrayModel<System>(systemList, System)
-bindModel("dynamicSystem", dynamicModel)
-
-const model = new FixedSystemModel()
-TableAdapter.register(FixedSystemAdapter, FixedSystemModel)
-bindModel("fixedSystem", model)
-
-const m = new SpreadsheetModel(2, 2)
-for (let row = 0; row < m.rowCount; ++row) {
-    for (let col = 0; col < m.colCount; ++col) {
-        m.setField(col, row, `C${col}R${row}`)
-    }
-}
-
-TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
-bindModel("spreadsheet", m)
