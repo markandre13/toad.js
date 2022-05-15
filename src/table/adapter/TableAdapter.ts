@@ -24,9 +24,14 @@ import { TypedTableAdapter } from "./TypedTableAdapter"
 export enum EditMode {
     // begin to edit the cell when it has the focus. this is the default
     EDIT_ON_FOCUS,
-    // begin to edit the cell when the enter key was pressed
-    // this is used in spreadsheets, where output and input may be different
-    // input: a formula, output: the result of the formula
+    // begin to edit the cell when the enter key was pressed.
+    // cell editing follows google sheets shortcuts:
+    // not editing
+    //   type    : replace cell content
+    //   [enter] : edit cell content/formula (ms excel & apple pages use these: ctrl+u, f2, ctrl+=)
+    // editing
+    //   [enter] : move down
+    //   [esc]   : revert changes
     EDIT_ON_ENTER
 }
 

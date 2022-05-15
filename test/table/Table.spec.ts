@@ -36,13 +36,7 @@ import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type
 // [ ] adjust other repositories to new table & style
 // [ ] publish version 0.1.0
 
-// cell editing follows google sheets shortcuts
-// not editing
-//   type    : replace cell content
-//   [enter] : edit cell content/formula (ms & apple use these: ctrl+u, f2, ctrl+=)
-// editing
-//   [enter] : move down
-//   [esc]   : revert changes
+
 
 // FIXME: use the 'with data' for all tests because with or without data is a property of the model, not the view
 
@@ -56,7 +50,7 @@ describe("table", function () {
 
         // FIXME: the test fails without these styles...
 
-        for (let path of ["/style/tx-static.css", "/style/tx-dark.css", "/style/tx.css"]) {
+        for (let path of ["/style/tx-static.css", "/style/tx-dark.css", "/style/tx.css", "/style/tx-tabs.css"]) {
             const link = document.createElement("link")
             link.rel = "stylesheet"
             link.type = "text/css"
@@ -111,8 +105,40 @@ describe("table", function () {
         })
     })
 
+    describe("regressions", function() {
+        it("layout formerly invisible table (e.g. within tabs)", async function() {
+            const model = createModel(2, 2)
+            document.body.innerHTML = `
+            <tx-tabs style="width: 100%">
+                <tx-tab label="TAB1">
+                    This page intentionally left blank.
+                </tx-tab>
+                <tx-tab label="TAB2">
+                    <tx-table model="model"></tx-table>
+                </tx-tab>
+            </tx-tabs>`
+            await sleep()
+
+            const tab2 = getByText("TAB2")!
+            click(tab2)
+
+            await sleep(20)
+            const c0r0 = getByText("C0R0")!
+            const c1r1 = getByText("C1R1")!
+
+            const b0 = c0r0.getBoundingClientRect()
+            const b1 = c1r1.getBoundingClientRect()
+
+            expect(b0.width).to.be.greaterThan(10)
+            expect(b0.height).to.be.greaterThan(10)
+
+            expect(b0.x + b0.width - 1).to.equal(b1.x)
+            expect(b0.y + b0.height - 1).to.equal(b1.y)
+        })
+    })
+
     describe("error display", function () {
-        it.only("cycle", async function () {
+        it("cycle", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
@@ -122,6 +148,7 @@ describe("table", function () {
             const c1r0 = getByText("C1R0") as HTMLSpanElement
             const c0r1 = getByText("C0R1") as HTMLSpanElement
 
+            // create cycle
             click(c0r0)
             keyboard({ key: "Enter" })
             type("=8", true)
@@ -144,6 +171,7 @@ describe("table", function () {
             expect(c1r0.classList.contains("error")).to.be.true
             expect(c0r1.classList.contains("error")).to.be.true
 
+            // break cycle
             click(c0r0)
             keyboard({ key: "Enter" })
             type("=7", true)

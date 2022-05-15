@@ -54,7 +54,7 @@ export class Tabs extends View {
                     )
                 )
             )
-            tabLabel.onmousedown = (ev: MouseEvent) => {
+            tabLabel.onpointerdown = (ev: PointerEvent) => {
                 ev.stopPropagation()
                 ev.preventDefault()
                 ev.cancelBubble = true

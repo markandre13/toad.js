@@ -205,7 +205,23 @@ export function px2float(s: string) {
     return parseFloat(s.substring(0, s.length - 2))
 }
 
+function isVisible(e: HTMLElement): boolean {
+    if (window.getComputedStyle(e).display === "none") {
+        return false
+    }
+    if (e.parentElement) {
+        return isVisible(e.parentElement)
+    }
+    return true
+}
+
 export class Table extends View {
+    // we can not calculate the layout when the table is not visible, hence we track the
+    // visibility
+    static observer: MutationObserver
+    static allTables = new Set<Table>()
+    visible = false
+
     // test api
     static transitionDuration = "500ms"
     animationDone?: () => void
@@ -248,7 +264,21 @@ export class Table extends View {
     constructor() {
         super()
 
-        this.tabIndex = 0 // FIXME: value depends on selection model
+        if (Table.observer === undefined) {
+            Table.observer = new MutationObserver( (mutations: MutationRecord[], observer: MutationObserver) => {
+                Table.allTables.forEach( table => {
+                    if (table.visible === false) {
+                        table.prepareCells()
+                    }
+                })
+            })
+            Table.observer.observe(document.body, {
+                attributes: true,
+                subtree: true
+            })
+        }
+
+        this.tabIndex = 0
 
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
         this.hostKeyDown = this.hostKeyDown.bind(this)
@@ -298,11 +328,16 @@ export class Table extends View {
     }
 
     override connectedCallback(): void {
+        Table.allTables.add(this)
         super.connectedCallback()
         if (this.selection === undefined) {
             this.selection = new SelectionModel(TableEditMode.SELECT_CELL)
             this.selection.modified.add(this.selectionChanged, this)
         }
+    }
+
+    override disconnectedCallback(): void {
+        Table.allTables.delete(this)
     }
 
     hostKeyDown(ev: KeyboardEvent) {
@@ -642,6 +677,11 @@ export class Table extends View {
     }
 
     prepareCells() {
+        this.visible = isVisible(this)
+        if (!this.visible) {
+            return
+        }
+
         const measureLineHeight = span(text("Tg")) // let the adapter provide this
         this.measure.appendChild(measureLineHeight)
 
