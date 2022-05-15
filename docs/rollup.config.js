@@ -16,7 +16,8 @@ export default {
                 compilerOptions: {
                     outDir: "docs"
                 },
-                include: [ "docs", "lib" ]
+                include: [ "docs", "lib" ],
+                exclude: [ "src", "test" ]
             },
         }),
         nodeResolve(),
