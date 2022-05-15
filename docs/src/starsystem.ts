@@ -132,8 +132,8 @@ class DynamicSystemAdapter extends ArrayAdapter<ArrayModel<System>> {
 }
 
 export function initializeStarSystem() {
-    const model = new FixedSystemModel()
     TableAdapter.register(FixedSystemAdapter, FixedSystemModel)
+    const model = new FixedSystemModel()
     bind("fixedSystem", model)
 
     const systemList: System[] = Array(64)
@@ -145,6 +145,7 @@ export function initializeStarSystem() {
             species: FixedSystemModel.get(3, i)
         }
     }
+
     TableAdapter.register(DynamicSystemAdapter, ArrayModel, System)
     const dynamicModel = new ArrayModel<System>(systemList, System)
     bind("dynamicSystem", dynamicModel)

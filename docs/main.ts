@@ -168,10 +168,20 @@ action("help", () => {
 // Books
 //
 
-const spreadsheet = new SpreadsheetModel(5, 5)
+const sheet = [
+    ["Name", "Pieces", "Price/Piece", "Price"],
+    ["Apple", "=4", "=0.98", "=B2*C2"],
+    ["Banana", "=2", "=1.98", "=B3*C3"],
+    ["Citrus", "=1", "=1.48", "=B4*C4"],
+    ["SUM", "", "", "=D2+D3+D4"],
+]
+
+const spreadsheet = new SpreadsheetModel(25, 25)
 for (let row = 0; row < spreadsheet.rowCount; ++row) {
     for (let col = 0; col < spreadsheet.colCount; ++col) {
-        spreadsheet.setField(col, row, `C${col}R${row}`)
+        if (row < sheet.length && col < sheet[row].length) {
+            spreadsheet.setField(col, row, sheet[row][col])
+        }
     }
 }
 TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
