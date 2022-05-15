@@ -35,6 +35,11 @@ export enum EditMode {
     EDIT_ON_ENTER
 }
 
+type ModelConstructor = new (...args: any[]) => TableModel
+type AdapterConstructor = new (model: TableModel) => TableAdapter<any>
+type TypeConstructor = (new (...args: any[]) => any)
+type TypeToAdapter = Map<TypeConstructor | null, AdapterConstructor>
+
 export class TableAdapter<T extends TableModel> {
     model?: T
     constructor(model: T) {
@@ -69,7 +74,8 @@ export class TableAdapter<T extends TableModel> {
     // FIXME: convert the comments below into clean code
     // data is used for TypeTableModel
     // Map<model, Map<data, adapter>>
-    private static modelToAdapter = new Map<new (...args: any[]) => TableModel, Map<new (...args: any[]) => any, new (model: TableModel) => TableAdapter<any>>>();
+
+    private static modelToAdapter = new Map<ModelConstructor, TypeToAdapter>();
 
     static register<M extends TableModel>(
         adapter: new (model: M) => TableAdapter<M>,
@@ -83,27 +89,28 @@ export class TableAdapter<T extends TableModel> {
         model: new (...args: any[]) => M,
         data: new (...args: any[]) => D): void
     static register(
-        adapter: new (model: TableModel) => TableAdapter<any>,
-        model: (new (...args: any[]) => TableModel),
-        data?: new (...args: any[]) => any): void {
-        // console.log("TableAdapter.register() ============")
-        // console.log(adapter)
-        // console.log(model)
-        // console.log(data)
+        adapter: AdapterConstructor,
+        model: ModelConstructor,
+        data?: TypeConstructor) {
 
-        let typeToModel = TableAdapter.modelToAdapter.get(model)
+        // console.log(`TableAdapter.register(${adapter.name}, ${model.name}, ${data?.name})`)
+
+        let typeToModel: TypeToAdapter | undefined = TableAdapter.modelToAdapter.get(model)
         if (typeToModel === undefined) {
-            typeToModel = new Map<any, any>()
-            if (data === undefined && typeToModel.has(model)) {
-                throw Error(`attempt to redefine existing table adapter`)
-            }
+            typeToModel = new Map()
             TableAdapter.modelToAdapter.set(model, typeToModel)
         }
+
         if (data !== undefined) {
             if (typeToModel.has(data)) {
                 throw Error(`attempt to redefine existing table adapter`)
             }
             typeToModel.set(data, adapter)
+        } else {
+            if (typeToModel.has(null)) {
+                throw Error(`attempt to redefine existing table adapter`)
+            }
+            typeToModel.set(null, adapter)
         }
     }
 
@@ -112,16 +119,18 @@ export class TableAdapter<T extends TableModel> {
     }
 
     static lookup(model: TableModel): (new (model: TableModel) => TableAdapter<any>) {
-        // console.log("TableAdapter.lookup() ============")
+        // console.log(`TableAdapter.lookup(${(model as any).constructor.name}) ============`)
 
         let dataType: any
         if (model instanceof TypedTableModel) {
             dataType = model.nodeClass
         } else {
-            dataType = undefined
+            dataType = null
         }
 
-        let adapter = TableAdapter.modelToAdapter.get(Object.getPrototypeOf(model).constructor)?.get(dataType)
+        const typeToAdapter = TableAdapter.modelToAdapter.get(Object.getPrototypeOf(model).constructor)
+        let adapter = typeToAdapter?.get(dataType)
+
         if (adapter === undefined) {
             for (let baseClass of TableAdapter.modelToAdapter.keys()) {
                 if (model instanceof baseClass) {
@@ -140,7 +149,7 @@ export class TableAdapter<T extends TableModel> {
                 for (const [modelX, typeToAdapterX] of TableAdapter.modelToAdapter) {
                     for (const [typeX, adapterX] of typeToAdapterX) {
                         msg += `\n        model=${modelX.name}`
-                        if (typeX !== undefined) {
+                        if (typeX !== undefined && typeX !== null) {
                             msg += `, type=${typeX.name}`
                         }
                     }

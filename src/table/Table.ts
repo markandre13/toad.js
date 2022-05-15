@@ -218,6 +218,11 @@ function isVisible(e: HTMLElement): boolean {
 export class Table extends View {
     // we can not calculate the layout when the table is not visible, hence we track the
     // visibility
+
+    // FIXME: this can be improved:
+    // * only add tables which are not visible
+    // * disable observer when not needed
+    // * don't observe the whole tree
     static observer: MutationObserver
     static allTables = new Set<Table>()
     visible = false
@@ -231,7 +236,7 @@ export class Table extends View {
 
     // this will be set to lineheight
     minCellHeight = 0
-    minCellWidth = 0
+    minCellWidth = 80
 
     protected editing?: TablePos
 
@@ -576,7 +581,7 @@ export class Table extends View {
                 console.log(`setting TypeScript's target to 'es6' might help`)
                 throw e
             }
-            this.adapter.setModel(model)
+            // this.adapter.setModel(model)
             // this.updateCompact()
             // this.updateView()
             this.prepareCells()
