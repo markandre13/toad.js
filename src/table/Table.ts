@@ -485,7 +485,6 @@ export class Table extends View {
     }
 
     focusOut(ev: FocusEvent) {
-        // console.log(`Table.focusOut()`)
         this.selectionChanged() // HACK
     }
 
@@ -593,7 +592,7 @@ export class Table extends View {
     }
 
     selectionChanged() {
-        // console.log(`Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}`)
+        // console.log(`Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}, mode=${this.selection ? TableEditMode[this.selection!.mode] : 'undefined'}`)
         if (this.selection === undefined) {
             return
         }
@@ -606,12 +605,9 @@ export class Table extends View {
                     selected.classList.remove("selected")
                 }
                 if (document.activeElement === this) {
-                    // console.log("table is active element, set focus")
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
                     cell.classList.add("selected")
                     scrollIntoView(cell)
-                // } else {
-                //     console.log("table is not active element, do not set focus")
                 }
                 // this.prepareInputOverlayForPosition(new TablePos(this.selectionModel.col, this.selectionModel.row))
                 // delete (this.rootDiv as any).tabIndex
@@ -622,11 +618,12 @@ export class Table extends View {
                 for (let selected of allSelected) {
                     selected.classList.remove("selected")
                 }
-                const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                cell.classList.add("selected")
-                // this.toggleCellSelection(this.selectionModel.value, true)
-                this.tabIndex = 0
-                scrollIntoView(cell)
+                if (document.activeElement === this) {
+                    const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
+                    cell.classList.add("selected")
+                    this.tabIndex = 0
+                    scrollIntoView(cell)
+                }
                 break
             }
             case TableEditMode.SELECT_ROW: {

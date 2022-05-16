@@ -36,8 +36,6 @@ import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type
 // [ ] adjust other repositories to new table & style
 // [ ] publish version 0.1.0
 
-
-
 // FIXME: use the 'with data' for all tests because with or without data is a property of the model, not the view
 
 describe("table", function () {
@@ -238,14 +236,16 @@ describe("table", function () {
             const cell = getByText("C0R0")
             expect(cell?.classList.contains("selected")).is.true
         })
-        it("tab forward out of table", async function () {
+        it.only("tab forward out of table", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
             await sleep()
 
-            click(getByText("C1R1")!)
+            const c1r1 = getByText("C1R1")!
+            click(c1r1)
             tabForward()
             expect(activeElement()).to.equal(getById("after"))
+            expect(c1r1?.classList.contains("selected")).is.false
         })
         it("tab backward out of table", async function () {
             const model = createModel(2, 2)
@@ -650,6 +650,12 @@ describe("table", function () {
                 validateRender(model)
             })
         )
+    })
+
+    // remove .selected when table looses focus (e.g. during tab out)
+
+    describe("tree view", function() {
+
     })
 })
 
