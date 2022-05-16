@@ -54,7 +54,6 @@
     },
     "include": [
         "src",
-        "test",
-        "docs"
+        "test"
     ]
 }
