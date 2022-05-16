@@ -329,8 +329,31 @@ describe("table", function () {
             expect(cell?.classList.contains("selected")).is.true
         })
 
+        function dumpCell(id: string, cell: SpreadsheetCell) {
+            console.log(`${id}: _inputValue=${cell._inputValue} (${typeof cell._inputValue}), _calculatedValue=${cell._calculatedValue} (${typeof cell._calculatedValue}), _error=${cell._error} (${typeof cell._error}), _node=${cell._node} (${typeof cell._node})`)
+        }
+
         // different edit modes: normal, spreadsheet
         describe("edit cell on enter (spreadsheet mode)", function () {
+            it("editing an empty cell will result in an empty cell", async function() {
+                TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
+                const model = new TestModel(2, 2)
+                bindModel("model", model)
+                document.body.innerHTML = `<tx-table model="model"></tx-table>`
+                await sleep()
+                const table = getTable(model)
+                const c0r0 = table.body.children[0]
+
+                click(c0r0)
+                expect(c0r0.textContent).to.equal("")
+
+                keyboard({ key: "Enter" })
+                expect(c0r0.textContent).to.equal("")
+
+                keyboard({ key: "Enter" })
+                expect(c0r0.textContent).to.equal("")
+            })
+
             it("edit cell", async function () {
                 const model = createModel(2, 2)
                 document.body.innerHTML = `<tx-table model="model"></tx-table>`
@@ -393,19 +416,19 @@ describe("table", function () {
                 keyboard({ key: "Enter" })
                 keyboard({ key: "ArrowDown" })
                 expect(c0r0.classList.contains("selected")).is.false
+                expect(c0r0.textContent).to.equal("6")
                 expect(c0r1.classList.contains("selected")).is.true
                 expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
                 expect(activeElement()).to.equal(table.table)
-                expect(c0r0.textContent).to.equal("6")
 
                 // in edit mode ArrowUp moves to another cell
                 keyboard({ key: "Enter" })
                 keyboard({ key: "ArrowUp" })
                 expect(c0r0.classList.contains("selected")).is.true
                 expect(c0r1.classList.contains("selected")).is.false
+                expect(c0r1.textContent).to.equal("12")
                 expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
                 expect(activeElement()).to.equal(table.table)
-                expect(c0r1.textContent).to.equal("12")
 
                 // in edit mode Tab moves to another cell
                 keyboard({ key: "Enter" })

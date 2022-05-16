@@ -52,10 +52,9 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
         cell.focus()
         const data = this.model!.getCell(pos.col, pos.row)
         // switch display to value entered by the user
-        if (data !== undefined) {
+        if (data !== undefined && data._inputValue !== undefined) {
             cell.innerText = data._inputValue!
         }
-        return undefined
     }
 
     override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
