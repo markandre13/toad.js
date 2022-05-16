@@ -51,9 +51,9 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
         cell.contentEditable = "true"
         cell.focus()
         const data = this.model!.getCell(pos.col, pos.row)
-        // console.log(a)
+        // switch display to value entered by the user
         if (data !== undefined) {
-            cell.innerText = data._display!
+            cell.innerText = data._inputValue!
         }
         return undefined
     }
@@ -66,7 +66,9 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
 
         try {
             this.model!.setField(pos.col, pos.row, cell.innerText)
-            // cell.innerText = this.model!.getField(pos.col, pos.row) // HACK! The model should generate events to update the fields!!!
+            // switch display back to the calculated value
+            const data = this.model!.getCell(pos.col, pos.row)
+            cell.innerText = data.value
         }
         catch (e) {
             console.log(`saveCell caught error`)

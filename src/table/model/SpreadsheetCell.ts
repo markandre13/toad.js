@@ -22,9 +22,9 @@ import { expression } from '../../util/expressions/expression'
 import { SpreadsheetModel } from './SpreadsheetModel'
 
 export class SpreadsheetCell {
-    _display?: string
+    _inputValue?: string
     _node?: ExpressionNode
-    _value?: number
+    _calculatedValue?: number
     _error?: string
     constructor(value?: string) {
         // console.log(`SpreadsheetCell(${value})`)
@@ -35,23 +35,23 @@ export class SpreadsheetCell {
     }
     eval(model: SpreadsheetModel) {
         if (this._node !== undefined) {
-            this._value = this._node!.eval(model)
+            this._calculatedValue = this._node!.eval(model)
         }
     }
     set value(value: string) {
         // console.log(`SpreadsheetCell.value('${value}')`)
         this._node = expression(new Lexer(value))
-        this._display = value
+        this._inputValue = value
     }
     get value(): string {
-        if (this._error && this._display !== undefined) {
-            return this._display
+        if (this._error && this._inputValue !== undefined) {
+            return this._inputValue
         }
         if (this._node) {
-            return `${this._value}`
+            return `${this._calculatedValue}`
         }
-        if (this._display !== undefined) {
-            return this._display
+        if (this._inputValue !== undefined) {
+            return this._inputValue
         }
         return ""
     }

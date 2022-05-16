@@ -396,6 +396,7 @@ describe("table", function () {
                 expect(c0r1.classList.contains("selected")).is.true
                 expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
                 expect(activeElement()).to.equal(table.table)
+                expect(c0r0.textContent).to.equal("6")
 
                 // in edit mode ArrowUp moves to another cell
                 keyboard({ key: "Enter" })
@@ -404,6 +405,7 @@ describe("table", function () {
                 expect(c0r1.classList.contains("selected")).is.false
                 expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
                 expect(activeElement()).to.equal(table.table)
+                expect(c0r1.textContent).to.equal("12")
 
                 // in edit mode Tab moves to another cell
                 keyboard({ key: "Enter" })

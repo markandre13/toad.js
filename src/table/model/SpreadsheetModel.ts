@@ -80,9 +80,9 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         marks.add(cell)
 
         // (evaluate)
-        const oldValue = cell._value
+        const oldValue = cell._calculatedValue
         cell.eval(this)
-        if (oldValue != cell._value) {
+        if (oldValue != cell._calculatedValue) {
             this.sendCellChanged(cell)
         }
 

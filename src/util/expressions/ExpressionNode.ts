@@ -19,7 +19,7 @@ export class ExpressionNode {
             if (model === undefined) {
                 throw Error(`yikes: no model to get cell [${this.value[0]},${this.value[1]}]`)
             }
-            return model.getCell(this.value[0], this.value[1])._value!
+            return model.getCell(this.value[0], this.value[1])._calculatedValue!
         }
         switch (this.value) {
             case '+':
