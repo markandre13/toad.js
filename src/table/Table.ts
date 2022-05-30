@@ -345,12 +345,12 @@ export class Table extends View {
     }
 
     hostKeyDown(ev: KeyboardEvent) {
-        // // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
         // // console.log(ev)
-        // if (!this.selection)
-        //     return
+        if (!this.selection)
+            return
         // // FIXME: based on the selection model we could plug in a behaviour class
-        // switch (this.selection.mode) {
+        switch (this.selection.mode) {
         //     case TableEditMode.SELECT_ROW: {
         //         let row = this.selection.value.row
         //         switch (ev.key) {
@@ -365,37 +365,37 @@ export class Table extends View {
         //         }
         //         this.selection.row = row
         //     } break
-        //     case TableEditMode.SELECT_CELL: {
-        //         let pos = { col: this.selection.col, row: this.selection.row }
-        //         switch (ev.key) {
-        //             case "ArrowRight":
-        //                 if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
-        //                     ++pos.col
-        //                     ev.preventDefault()
-        //                     ev.stopPropagation()
-        //                 }
-        //                 break
-        //             case "ArrowLeft":
-        //                 if (this.editing === undefined && pos.col > 0) {
-        //                     --pos.col
-        //                     ev.preventDefault()
-        //                     ev.stopPropagation()
-        //                 }
-        //                 break
-        //             case "ArrowDown":
-        //                 if (pos.row + 1 < this.adapter!.rowCount) {
-        //                     ++pos.row
-        //                     ev.preventDefault()
-        //                     ev.stopPropagation()
-        //                 }
-        //                 break
-        //             case "ArrowUp":
-        //                 if (pos.row > 0) {
-        //                     --pos.row
-        //                     ev.preventDefault()
-        //                     ev.stopPropagation()
-        //                 }
-        //                 break
+            case TableEditMode.SELECT_CELL: {
+                let pos = { col: this.selection.col, row: this.selection.row }
+                switch (ev.key) {
+                    case "ArrowRight":
+                        if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
+                            ++pos.col
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                        }
+                        break
+                    case "ArrowLeft":
+                        if (this.editing === undefined && pos.col > 0) {
+                            --pos.col
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                        }
+                        break
+                    case "ArrowDown":
+                        if (pos.row + 1 < this.adapter!.rowCount) {
+                            ++pos.row
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                        }
+                        break
+                    case "ArrowUp":
+                        if (pos.row > 0) {
+                            --pos.row
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                        }
+                        break
         //             case "Tab":
         //                 if (ev.shiftKey) {
         //                     if (pos.col > 0) {
@@ -442,19 +442,21 @@ export class Table extends View {
         //                 ev.preventDefault()
         //                 ev.stopPropagation()
         //                 break
-        //             // default:
-        //             //     console.log(ev)
-        //         }
-        //         this.selection.value = pos
-        //     } break
-        // }
+                    default:
+                        console.log(ev)
+                }
+                this.selection.value = pos
+            } break
+        }
     }
 
     cellKeyDown(ev: KeyboardEvent) {
-        // // console.log(`Table.cellKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        // console.log(`Table.cellKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
         // switch(ev.key) {
         //     case "ArrowDown":
         //     case "ArrowUp":
+        //     case "ArrowRight": // FIXME: not when editing
+        //     case "ArrowLeft": // FIXME: no when editing
         //     case "Tab":
         //     case "Enter":
         //         this.hostKeyDown(ev)
@@ -713,6 +715,7 @@ export class Table extends View {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = span()
                 cell.onfocus = this.cellFocus
+                cell.onkeydown = this.cellKeyDown
                 cell.tabIndex = 0
                 this.adapter!.showCell({col, row}, cell)
                 this.measure.appendChild(cell)

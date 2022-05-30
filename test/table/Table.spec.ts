@@ -279,10 +279,12 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
 
-            keyboard({ key: "ArrowRight" })
+            keyboard({ key: "ArrowRight", bubbles: true, cancelable: true })
 
             const cell = getByText("C1R0")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 1, row: 0})
         })
         xit("cursor right to next row", async function () {
             const model = createModel(2, 2)
@@ -303,10 +305,12 @@ describe("table", function () {
 
             click(getByText("C1R0")!)
 
-            keyboard({ key: "ArrowLeft" })
+            keyboard({ key: "ArrowLeft", bubbles: true })
 
             const cell = getByText("C0R0")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
         })
         xit("cursor left to previous row", async function () {
             const model = createModel(2, 2)
@@ -327,10 +331,12 @@ describe("table", function () {
 
             click(getByText("C0R1")!)
 
-            keyboard({ key: "ArrowUp" })
+            keyboard({ key: "ArrowUp", bubbles: true })
 
             const cell = getByText("C0R0")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
         })
         it("cursor down", async function () {
             const model = createModel(2, 2)
@@ -339,10 +345,12 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
 
-            keyboard({ key: "ArrowDown" })
+            keyboard({ key: "ArrowDown", bubbles: true})
 
             const cell = getByText("C0R1")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 0, row: 1})
         })
 
         function dumpCell(id: string, cell: SpreadsheetCell) {

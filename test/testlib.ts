@@ -76,7 +76,7 @@ export function type(text: string, clear = false) {
         active.dispatchEvent(
             new KeyboardEvent("keyup", {
                 bubbles: true,
-                cancelable: true,
+                cancelable: false,
                 key: text[i]
             })
         )
@@ -85,8 +85,31 @@ export function type(text: string, clear = false) {
 
 export function keyboard(init: KeyboardEventInit) {
     const active = activeElement()
-    active?.dispatchEvent(new KeyboardEvent("keydown", init))
-    active?.dispatchEvent(new KeyboardEvent("keyup", init))
+    if (active === undefined) {
+        console.log(`# KEYBOARD: no active element`)
+        return
+    }
+
+    // console.log(`KEYBOARD ${init.key} to ${active.nodeName}`)
+    // active.dispatchEvent(new KeyboardEvent("keydown", init))
+    // active.dispatchEvent(new KeyboardEvent("keyup", init))
+
+    // for some reason the above code does not bubble upwards,
+    // hence we do it manually...
+    let p: Node | null = active
+    while(p !== null) {
+        // console.log(`KEYBOARD ${init.key} to ${p.nodeName}`)
+        p.dispatchEvent(new KeyboardEvent("keydown", init))
+        p.dispatchEvent(new KeyboardEvent("keyup", init))
+        if (init.bubbles !== true) {
+            break
+        }
+        p = p.parentNode
+        if(p instanceof ShadowRoot) {
+            p = p.host
+        }
+    }
+    // console.log(`KEYBOARD DONE`)
 }
 
 export function click(node: Element) {
