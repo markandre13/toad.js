@@ -149,13 +149,13 @@ tableStyle.textContent = `
     z-index: 1;
 }
 
-.body > span.selected, .splitBody > span.selected {
+.body > span:focus, .splitBody > span:focus {
     background: #0e2035;
     border-color: #2680eb;
     z-index: 2;
 }
 
-.body > span.selected:hover {
+.body > span:focus:hover {
     background: #112d4d;
 }
 
@@ -283,8 +283,6 @@ export class Table extends View {
             })
         }
 
-        this.tabIndex = 0
-
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
         this.hostKeyDown = this.hostKeyDown.bind(this)
         this.cellKeyDown = this.cellKeyDown.bind(this)
@@ -346,146 +344,146 @@ export class Table extends View {
     }
 
     hostKeyDown(ev: KeyboardEvent) {
-        // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
-        // console.log(ev)
-        if (!this.selection)
-            return
-        // FIXME: based on the selection model we could plug in a behaviour class
-        switch (this.selection.mode) {
-            case TableEditMode.SELECT_ROW: {
-                let row = this.selection.value.row
-                switch (ev.key) {
-                    case "ArrowDown":
-                        if (row + 1 < this.adapter!.rowCount)
-                            ++row
-                        break
-                    case "ArrowUp":
-                        if (row > 0)
-                            --row
-                        break
-                }
-                this.selection.row = row
-            } break
-            case TableEditMode.SELECT_CELL: {
-                let pos = { col: this.selection.col, row: this.selection.row }
-                switch (ev.key) {
-                    case "ArrowRight":
-                        if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
-                            ++pos.col
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    case "ArrowLeft":
-                        if (this.editing === undefined && pos.col > 0) {
-                            --pos.col
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    case "ArrowDown":
-                        if (pos.row + 1 < this.adapter!.rowCount) {
-                            ++pos.row
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    case "ArrowUp":
-                        if (pos.row > 0) {
-                            --pos.row
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    case "Tab":
-                        if (ev.shiftKey) {
-                            if (pos.col > 0) {
-                                --pos.col
-                                ev.preventDefault()
-                                ev.stopPropagation()
-                            } else {
-                                if (pos.row > 0) {
-                                    pos.col = this.adapter!.colCount - 1
-                                    --pos.row
-                                    ev.preventDefault()
-                                    ev.stopPropagation()
-                                }
-                            }
-                        } else {
-                            if (pos.col + 1 < this.adapter!.colCount) {
-                                ++pos.col
-                                ev.preventDefault()
-                                ev.stopPropagation()
-                            } else {
-                                if (pos.row + 1 < this.adapter!.rowCount) {
-                                    pos.col = 0
-                                    ++pos.row
-                                    ev.preventDefault()
-                                    ev.stopPropagation()
-                                }
-                            }
-                        }
-                        break
-                    case "Enter":
-                        if (this.adapter?.editMode !== EditMode.EDIT_ON_ENTER) {
-                            break
-                        }
-                        if (this.editing === undefined) {
-                            this.editCell()
-                        } else {
-                            this.saveCell()
-                            if (pos.row + 1 < this.adapter!.rowCount) {
-                                ++pos.row
-                                this.selection.value = pos
-                                this.editCell()
-                            }
-                        }
-                        ev.preventDefault()
-                        ev.stopPropagation()
-                        break
-                    // default:
-                    //     console.log(ev)
-                }
-                this.selection.value = pos
-            } break
-        }
+        // // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        // // console.log(ev)
+        // if (!this.selection)
+        //     return
+        // // FIXME: based on the selection model we could plug in a behaviour class
+        // switch (this.selection.mode) {
+        //     case TableEditMode.SELECT_ROW: {
+        //         let row = this.selection.value.row
+        //         switch (ev.key) {
+        //             case "ArrowDown":
+        //                 if (row + 1 < this.adapter!.rowCount)
+        //                     ++row
+        //                 break
+        //             case "ArrowUp":
+        //                 if (row > 0)
+        //                     --row
+        //                 break
+        //         }
+        //         this.selection.row = row
+        //     } break
+        //     case TableEditMode.SELECT_CELL: {
+        //         let pos = { col: this.selection.col, row: this.selection.row }
+        //         switch (ev.key) {
+        //             case "ArrowRight":
+        //                 if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
+        //                     ++pos.col
+        //                     ev.preventDefault()
+        //                     ev.stopPropagation()
+        //                 }
+        //                 break
+        //             case "ArrowLeft":
+        //                 if (this.editing === undefined && pos.col > 0) {
+        //                     --pos.col
+        //                     ev.preventDefault()
+        //                     ev.stopPropagation()
+        //                 }
+        //                 break
+        //             case "ArrowDown":
+        //                 if (pos.row + 1 < this.adapter!.rowCount) {
+        //                     ++pos.row
+        //                     ev.preventDefault()
+        //                     ev.stopPropagation()
+        //                 }
+        //                 break
+        //             case "ArrowUp":
+        //                 if (pos.row > 0) {
+        //                     --pos.row
+        //                     ev.preventDefault()
+        //                     ev.stopPropagation()
+        //                 }
+        //                 break
+        //             case "Tab":
+        //                 if (ev.shiftKey) {
+        //                     if (pos.col > 0) {
+        //                         --pos.col
+        //                         ev.preventDefault()
+        //                         ev.stopPropagation()
+        //                     } else {
+        //                         if (pos.row > 0) {
+        //                             pos.col = this.adapter!.colCount - 1
+        //                             --pos.row
+        //                             ev.preventDefault()
+        //                             ev.stopPropagation()
+        //                         }
+        //                     }
+        //                 } else {
+        //                     if (pos.col + 1 < this.adapter!.colCount) {
+        //                         ++pos.col
+        //                         ev.preventDefault()
+        //                         ev.stopPropagation()
+        //                     } else {
+        //                         if (pos.row + 1 < this.adapter!.rowCount) {
+        //                             pos.col = 0
+        //                             ++pos.row
+        //                             ev.preventDefault()
+        //                             ev.stopPropagation()
+        //                         }
+        //                     }
+        //                 }
+        //                 break
+        //             case "Enter":
+        //                 if (this.adapter?.editMode !== EditMode.EDIT_ON_ENTER) {
+        //                     break
+        //                 }
+        //                 if (this.editing === undefined) {
+        //                     this.editCell()
+        //                 } else {
+        //                     this.saveCell()
+        //                     if (pos.row + 1 < this.adapter!.rowCount) {
+        //                         ++pos.row
+        //                         this.selection.value = pos
+        //                         this.editCell()
+        //                     }
+        //                 }
+        //                 ev.preventDefault()
+        //                 ev.stopPropagation()
+        //                 break
+        //             // default:
+        //             //     console.log(ev)
+        //         }
+        //         this.selection.value = pos
+        //     } break
+        // }
     }
 
     cellKeyDown(ev: KeyboardEvent) {
-        // console.log(`Table.cellKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
-        switch(ev.key) {
-            case "ArrowDown":
-            case "ArrowUp":
-            case "Tab":
-            case "Enter":
-                this.hostKeyDown(ev)
-                break
-        }
+        // // console.log(`Table.cellKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        // switch(ev.key) {
+        //     case "ArrowDown":
+        //     case "ArrowUp":
+        //     case "Tab":
+        //     case "Enter":
+        //         this.hostKeyDown(ev)
+        //         break
+        // }
     }
 
     focusIn(event: FocusEvent) {
         // console.log("Table.focusIn() >>>>>>>>>>>>>")
         // console.log(event)
-        if (event.target && event.relatedTarget) {
-            try {
-                if (isNodeBeforeNode(event.relatedTarget as Node, this)) {
-                    // console.log("Table.focusIn() -> 1st cell")
-                    this.selection!.value = { col: 0, row: 0 }
-                } else {
-                    // console.log("Table.focusIn() -> last cell")
-                    this.selection!.value = { col: this.adapter!.colCount - 1, row: this.adapter!.rowCount - 1 }
-                }
-            }
-            catch (e) { }
-        // } else {
-            // console.log(`  target=${event.target}, relatedTarget=${event.relatedTarget}`)
-        }
-        this.selectionChanged() // HACK
-        // console.log("Table.focusIn() <<<<<<<<<<<<<<<")
+        // if (event.target && event.relatedTarget) {
+        //     try {
+        //         if (isNodeBeforeNode(event.relatedTarget as Node, this)) {
+        //             // console.log("Table.focusIn() -> 1st cell")
+        //             this.selection!.value = { col: 0, row: 0 }
+        //         } else {
+        //             // console.log("Table.focusIn() -> last cell")
+        //             this.selection!.value = { col: this.adapter!.colCount - 1, row: this.adapter!.rowCount - 1 }
+        //         }
+        //     }
+        //     catch (e) { }
+        // // } else {
+        //     // console.log(`  target=${event.target}, relatedTarget=${event.relatedTarget}`)
+        // }
+        // this.selectionChanged() // HACK
+        // // console.log("Table.focusIn() <<<<<<<<<<<<<<<")
     }
 
     focusOut(ev: FocusEvent) {
-        this.selectionChanged() // HACK
+        // this.selectionChanged() // HACK
     }
 
     editCell() {
@@ -512,34 +510,34 @@ export class Table extends View {
     }
 
     pointerDown(ev: PointerEvent) {
-        // console.log("Table.pointerDown()")
-        ev.preventDefault()
-        this.focus()
+        // // console.log("Table.pointerDown()")
+        // ev.preventDefault()
+        // // this.focus()
 
-        const x = ev.clientX
-        const y = ev.clientY
+        // const x = ev.clientX
+        // const y = ev.clientY
 
-        let col, row
-        for (col = 0; col < this.adapter!.colCount; ++col) {
-            const b = this.body.children[col]!.getBoundingClientRect()
-            if (b.x <= x && x < b.x + b.width)
-                break
-        }
-        if (col >= this.adapter!.colCount) {
-            return
-        }
-        let idx = 0
-        for (row = 0; row < this.adapter!.rowCount; ++row) {
-            const b = this.body.children[idx]!.getBoundingClientRect()
-            if (b.y <= y && y < b.y + b.height)
-                break
-            idx += this.adapter!.colCount
-        }
-        if (row >= this.adapter!.rowCount) {
-            return
-        }
+        // let col, row
+        // for (col = 0; col < this.adapter!.colCount; ++col) {
+        //     const b = this.body.children[col]!.getBoundingClientRect()
+        //     if (b.x <= x && x < b.x + b.width)
+        //         break
+        // }
+        // if (col >= this.adapter!.colCount) {
+        //     return
+        // }
+        // let idx = 0
+        // for (row = 0; row < this.adapter!.rowCount; ++row) {
+        //     const b = this.body.children[idx]!.getBoundingClientRect()
+        //     if (b.y <= y && y < b.y + b.height)
+        //         break
+        //     idx += this.adapter!.colCount
+        // }
+        // if (row >= this.adapter!.rowCount) {
+        //     return
+        // }
 
-        this.selection!.value = new TablePos(col, row)
+        // this.selection!.value = new TablePos(col, row)
     }
 
     getModel(): TableModel | undefined {
@@ -600,27 +598,17 @@ export class Table extends View {
         switch (this.selection.mode) {
             case TableEditMode.EDIT_CELL: {
                 // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-                let allSelected = this.body.querySelectorAll(".selected")
-                for (let selected of allSelected) {
-                    selected.classList.remove("selected")
-                }
                 if (document.activeElement === this) {
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                    cell.classList.add("selected")
+                    cell.focus()
                     scrollIntoView(cell)
                 }
-                // this.prepareInputOverlayForPosition(new TablePos(this.selectionModel.col, this.selectionModel.row))
-                // delete (this.rootDiv as any).tabIndex
             } break
             case TableEditMode.SELECT_CELL: {
                 // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-                let allSelected = this.body.querySelectorAll(".selected")
-                for (let selected of allSelected) {
-                    selected.classList.remove("selected")
-                }
                 if (document.activeElement === this) {
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                    cell.classList.add("selected")
+                    cell.focus()
                     this.tabIndex = 0
                     scrollIntoView(cell)
                 }
@@ -628,9 +616,6 @@ export class Table extends View {
             }
             case TableEditMode.SELECT_ROW: {
                 // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-                // let allSelected = this.bodyBody.querySelectorAll("tbody > tr.selected")
-                // for (let selected of allSelected)
-                //   selected.classList.remove("selected")
                 // this.toggleRowSelection(this.selectionModel.value.row, true)
                 this.tabIndex = 0
                 break
@@ -735,6 +720,7 @@ export class Table extends View {
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = span()
+                cell.tabIndex = 0
                 this.adapter!.showCell({col, row}, cell)
                 this.measure.appendChild(cell)
             }
