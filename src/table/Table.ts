@@ -286,6 +286,7 @@ export class Table extends View {
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
         this.hostKeyDown = this.hostKeyDown.bind(this)
         this.cellKeyDown = this.cellKeyDown.bind(this)
+        this.cellFocus = this.cellFocus.bind(this)
         this.focusIn = this.focusIn.bind(this)
         this.focusOut = this.focusOut.bind(this)
         this.pointerDown = this.pointerDown.bind(this)
@@ -461,6 +462,18 @@ export class Table extends View {
         // }
     }
 
+    cellFocus(event: FocusEvent) {
+        // console.log("Table.cellFocus() >>>>>>>>>>>>>")
+        const cell = event.target
+        if (cell instanceof HTMLElement) {
+            const b = cell.getBoundingClientRect()
+                const p = this.clientPosToTablePos(b.x + b.width/2, b.y + b.height/2)
+                if ( p !== undefined) {
+                    this.selection!.value = p
+                }
+        }
+    }
+
     focusIn(event: FocusEvent) {
         // console.log("Table.focusIn() >>>>>>>>>>>>>")
         // console.log(event)
@@ -514,30 +527,11 @@ export class Table extends View {
         // ev.preventDefault()
         // // this.focus()
 
-        // const x = ev.clientX
-        // const y = ev.clientY
-
-        // let col, row
-        // for (col = 0; col < this.adapter!.colCount; ++col) {
-        //     const b = this.body.children[col]!.getBoundingClientRect()
-        //     if (b.x <= x && x < b.x + b.width)
-        //         break
-        // }
-        // if (col >= this.adapter!.colCount) {
+        // const pos = this.clientPosToTablePos(ev.clientX, ev.clientY)
+        // if (pos === undefined) {
         //     return
         // }
-        // let idx = 0
-        // for (row = 0; row < this.adapter!.rowCount; ++row) {
-        //     const b = this.body.children[idx]!.getBoundingClientRect()
-        //     if (b.y <= y && y < b.y + b.height)
-        //         break
-        //     idx += this.adapter!.colCount
-        // }
-        // if (row >= this.adapter!.rowCount) {
-        //     return
-        // }
-
-        // this.selection!.value = new TablePos(col, row)
+        // this.selection!.value = pos
     }
 
     getModel(): TableModel | undefined {
@@ -609,7 +603,6 @@ export class Table extends View {
                 if (document.activeElement === this) {
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
                     cell.focus()
-                    this.tabIndex = 0
                     scrollIntoView(cell)
                 }
                 break
@@ -617,7 +610,6 @@ export class Table extends View {
             case TableEditMode.SELECT_ROW: {
                 // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
                 // this.toggleRowSelection(this.selectionModel.value.row, true)
-                this.tabIndex = 0
                 break
             }
         }
@@ -720,6 +712,7 @@ export class Table extends View {
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = span()
+                cell.onfocus = this.cellFocus
                 cell.tabIndex = 0
                 this.adapter!.showCell({col, row}, cell)
                 this.measure.appendChild(cell)
@@ -1225,6 +1218,29 @@ export class Table extends View {
             (this.rowHeads.children[this.rowHeads.children.length - 1] as HTMLSpanElement).style.height = `${h}px`
             this.rowHeads.style.bottom = `${h}px`
         }
+    }
+
+    protected clientPosToTablePos(x: number, y :number): TablePos | undefined {
+        let col, row
+        for (col = 0; col < this.adapter!.colCount; ++col) {
+            const b = this.body.children[col]!.getBoundingClientRect()
+            if (b.x <= x && x < b.x + b.width)
+                break
+        }
+        if (col >= this.adapter!.colCount) {
+            return undefined
+        }
+        let idx = 0
+        for (row = 0; row < this.adapter!.rowCount; ++row) {
+            const b = this.body.children[idx]!.getBoundingClientRect()
+            if (b.y <= y && y < b.y + b.height)
+                break
+            idx += this.adapter!.colCount
+        }
+        if (row >= this.adapter!.rowCount) {
+            return undefined
+        }
+        return new TablePos(col, row)
     }
 }
 Table.define("tx-table", Table)

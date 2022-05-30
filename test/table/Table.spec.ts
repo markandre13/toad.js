@@ -182,14 +182,20 @@ describe("table", function () {
     })
 
     describe("interaction", function () {
-        it("click first cell", async function () {
+        it("click into cells", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable(model)
 
-            const cell = getByText("C0R0")
-            click(cell!)
-            expect(cell?.classList.contains("selected")).is.true
+            for(let row=0; row<2; ++row) {
+                for(let col=0; col<2; ++col) {
+                    const cell = getByText(`C${col}R${row}`)
+                    click(cell!)
+                    expect(activeElement()).to.equal(cell)
+                    expect(table.selection?.value).to.deep.equal({col, row})
+                }    
+            }
         })
 
         it("tab forward into table", async function () {
@@ -201,7 +207,9 @@ describe("table", function () {
             tabForward()
 
             const cell = getByText("C0R0")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
         })
 
         it("tab backward into table", async function () {
@@ -213,7 +221,9 @@ describe("table", function () {
             tabBackward()
 
             const cell = getByText("C1R1")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 1, row: 1})
         })
 
         it("tab to next cell", async function () {
@@ -223,8 +233,11 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
             tabForward()
+
             const cell = getByText("C1R0")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 1, row: 0})
         })
         it("tab to previous cell", async function () {
             const model = createModel(2, 2)
@@ -234,9 +247,11 @@ describe("table", function () {
             click(getByText("C1R0")!)
             tabBackward()
             const cell = getByText("C0R0")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(activeElement()).to.equal(cell)
+            const table = getTable(model)
+            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
         })
-        it.only("tab forward out of table", async function () {
+        it("tab forward out of table", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
             await sleep()
@@ -244,8 +259,8 @@ describe("table", function () {
             const c1r1 = getByText("C1R1")!
             click(c1r1)
             tabForward()
+
             expect(activeElement()).to.equal(getById("after"))
-            expect(c1r1?.classList.contains("selected")).is.false
         })
         it("tab backward out of table", async function () {
             const model = createModel(2, 2)
@@ -254,6 +269,7 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
             tabBackward()
+
             expect(activeElement()).to.equal(getById("before"))
         })
         it("cursor right to next cell", async function () {

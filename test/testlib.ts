@@ -80,7 +80,7 @@ export function type(text: string, clear = false) {
                 key: text[i]
             })
         )
-     }
+    }
 }
 
 export function keyboard(init: KeyboardEventInit) {
@@ -107,29 +107,32 @@ export function click(node: Element) {
             clientY
         })
     )
-    old?.dispatchEvent(
-        new FocusEvent("blur", {
-            bubbles: true,
-            relatedTarget: node
-        })
-    )
-    old?.dispatchEvent(
-        new FocusEvent("focusout", {
-            bubbles: true,
-            relatedTarget: node
-        })
-    )
-    node?.dispatchEvent(
-        new FocusEvent("focus", {
-            bubbles: true,
-        })
-    )
-    node?.dispatchEvent(
-        new FocusEvent("focusin", {
-            bubbles: true,
-            relatedTarget: old
-        })
-    )
+    if (node instanceof HTMLElement) {
+        node.focus()
+    }
+    // old?.dispatchEvent(
+    //     new FocusEvent("blur", {
+    //         bubbles: true,
+    //         relatedTarget: node
+    //     })
+    // )
+    // old?.dispatchEvent(
+    //     new FocusEvent("focusout", {
+    //         bubbles: true,
+    //         relatedTarget: node
+    //     })
+    // )
+    // node?.dispatchEvent(
+    //     new FocusEvent("focus", {
+    //         bubbles: true,
+    //     })
+    // )
+    // node?.dispatchEvent(
+    //     new FocusEvent("focusin", {
+    //         bubbles: true,
+    //         relatedTarget: old
+    //     })
+    // )
 
     // POINTER UP
     node.dispatchEvent(
@@ -144,21 +147,23 @@ export function click(node: Element) {
 //   0: can receive focus
 //   >0: can receive focus and uses a custom tab order (shouldn't be used)
 
+
+
+function forwardFocus() {
+    return findNextElementForFocus(true)
+}
+
+function backwardFocus() {
+    return findNextElementForFocus(false)
+}
+
 interface CTX {
     currentFocus?: Element
     passedCurrentFocus: boolean
     previousFocusable?: Element
 }
 
-function forwardFocus() {
-    return moveFocus(true)
-}
-
-function backwardFocus() {
-    return moveFocus(false)
-}
-
-function moveFocus(forward: boolean, element: Element = document.body, ctx: CTX | undefined = undefined): Element | undefined {
+function findNextElementForFocus(forward: boolean, element: Element = document.body, ctx: CTX | undefined = undefined): Element | undefined {
     if (ctx === undefined) {
         ctx = {
             currentFocus: activeElement(),
@@ -167,7 +172,7 @@ function moveFocus(forward: boolean, element: Element = document.body, ctx: CTX 
         }
     }
 
-    // console.log(`moveFocus(foward=${forward}, node=${element.nodeName}, previous=${ctx.previousFocusable?.nodeName}, found=${ctx.passedCurrentFocus}, active=${ctx.currentFocus?.nodeName})`)
+    // console.log(`moveFocus(forward=${forward}, node=${element.nodeName}, previous=${ctx.previousFocusable?.nodeName}, found=${ctx.passedCurrentFocus}, active=${ctx.currentFocus?.nodeName})`)
 
     if (element === ctx.currentFocus) {
         if (!forward) {
@@ -175,7 +180,7 @@ function moveFocus(forward: boolean, element: Element = document.body, ctx: CTX 
             return ctx.previousFocusable
         }
         ctx.passedCurrentFocus = true
-    } else
+    } else {
         if (element instanceof HTMLElement) {
             // console.log(`${element.nodeName} ${element.nodeType} ${element.tabIndex}`)
             if (element.tabIndex >= 0) {
@@ -186,9 +191,11 @@ function moveFocus(forward: boolean, element: Element = document.body, ctx: CTX 
                 ctx.previousFocusable = element
             }
         }
+    }
 
-    for (let n of element.children) {
-        const r = moveFocus(forward, n, ctx)
+    let children = element.shadowRoot ? element.shadowRoot.children : element.children
+    for (let n of children) {
+        const r = findNextElementForFocus(forward, n, ctx)
         if (r !== undefined) {
             return r
         }
@@ -240,12 +247,12 @@ function tab(next: Element | undefined, shiftKey: boolean) {
         })
     );
     (next as HTMLElement).focus()
-    // node.dispatchEvent(
-    //     new FocusEvent("focus", {
-    //         bubbles: true,
-    //         relatedTarget: old
-    //     })
-    // )
+    next.dispatchEvent(
+        new FocusEvent("focus", {
+            bubbles: true,
+            relatedTarget: old
+        })
+    )
     next.dispatchEvent(
         new FocusEvent("focusin", {
             bubbles: true,
