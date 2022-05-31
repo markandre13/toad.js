@@ -134,6 +134,7 @@ tableStyle.textContent = `
     font-weight: 400;
     overflow: hidden;
     cursor: default;
+    caret-color: transparent;
 }
 
 .splitBody {
@@ -194,6 +195,10 @@ tableStyle.textContent = `
 .measure {
     position: absolute;
     opacity: 0;
+}
+
+.body > span.edit, .splitBody > span.edit {
+    caret-color: currentcolor;
 }
 `
 
@@ -345,7 +350,7 @@ export class Table extends View {
     }
 
     hostKeyDown(ev: KeyboardEvent) {
-        // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
         // // console.log(ev)
         if (!this.selection)
             return
@@ -425,23 +430,23 @@ export class Table extends View {
         //                     }
         //                 }
         //                 break
-        //             case "Enter":
-        //                 if (this.adapter?.editMode !== EditMode.EDIT_ON_ENTER) {
-        //                     break
-        //                 }
-        //                 if (this.editing === undefined) {
-        //                     this.editCell()
-        //                 } else {
-        //                     this.saveCell()
-        //                     if (pos.row + 1 < this.adapter!.rowCount) {
-        //                         ++pos.row
-        //                         this.selection.value = pos
-        //                         this.editCell()
-        //                     }
-        //                 }
-        //                 ev.preventDefault()
-        //                 ev.stopPropagation()
-        //                 break
+                    case "Enter":
+                        if (this.adapter?.editMode !== EditMode.EDIT_ON_ENTER) {
+                            break
+                        }
+                        if (this.editing === undefined) {
+                            this.editCell()
+                        } else {
+                            this.saveCell()
+                            if (pos.row + 1 < this.adapter!.rowCount) {
+                                ++pos.row
+                                this.selection.value = pos
+                                this.editCell()
+                            }
+                        }
+                        ev.preventDefault()
+                        ev.stopPropagation()
+                        break
                     default:
                         console.log(ev)
                 }
@@ -451,6 +456,34 @@ export class Table extends View {
     }
 
     cellKeyDown(ev: KeyboardEvent) {
+        const cell = ev.target as HTMLElement
+        console.log(`### CELL KEYDOWN ${ev.key}, edit=${cell.classList.contains("edit")}, editing=${this.editing !== undefined}`)
+        // console.log(cell)
+        if (ev.key === "Enter") {
+            console.log(`### CELL ENTER`)
+            this.hostKeyDown(ev)
+            ev.preventDefault()
+            return
+        }
+
+        if (!cell.classList.contains("edit") && this.editing === undefined ) {
+            console.log(`### CELL SPECIAL`)
+            switch(ev.key) {
+                case "ArrowDown":
+                case "ArrowUp":
+                case "ArrowRight":
+                case "ArrowLeft":
+                case "Tab":
+                case "Enter":
+                    break
+                default:
+                    console.log("### CELL KEYDOWN PREVENT DEFAULT")
+                    ev.preventDefault()
+            }
+        } else {
+            console.log(`### CELL NO SPECIAL`)
+        }
+
         // console.log(`Table.cellKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
         // switch(ev.key) {
         //     case "ArrowDown":
@@ -506,8 +539,9 @@ export class Table extends View {
         const row = this.selection!.value.row
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
         this.editing = new TablePos(col, row)
+        cell.classList.add("edit")
         this.adapter!.editCell(this.editing, cell)
-        cell.onkeydown = this.cellKeyDown
+        // cell.onkeydown = this.cellKeyDown
     }
 
     saveCell() {
@@ -518,7 +552,8 @@ export class Table extends View {
         const row = this.editing.row
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
         // console.log(`save cell ${this.editing.col}, ${this.editing.row}`)
-        cell.onkeydown = null
+        // cell.onkeydown = null
+        cell.classList.remove("edit")
         this.adapter!.saveCell(this.editing, cell)
         this.editing = undefined
         this.focus()
@@ -717,6 +752,9 @@ export class Table extends View {
                 cell.onfocus = this.cellFocus
                 cell.onkeydown = this.cellKeyDown
                 cell.tabIndex = 0
+                if (this.adapter?.editMode === EditMode.EDIT_ON_ENTER) {
+                    cell.setAttribute("contenteditable", "")
+                }
                 this.adapter!.showCell({col, row}, cell)
                 this.measure.appendChild(cell)
             }

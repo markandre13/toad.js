@@ -31,6 +31,7 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
         if (!this.model) {
             return undefined
         }
+
         const data = this.model!.getCell(pos.col, pos.row)
         
         if (data._error) {
@@ -46,10 +47,10 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
     }
 
     override editCell(pos: TablePos, cell: HTMLSpanElement) {
-        // console.log("MyAdapter.editCell()")
-        cell.tabIndex = -1
-        cell.contentEditable = "true"
-        cell.focus()
+        console.log("SpreadsheetAdapter.editCell()")
+        // cell.tabIndex = -1
+        // cell.contentEditable = "true"
+        // cell.focus()
         const data = this.model!.getCell(pos.col, pos.row)
         // switch display to value entered by the user
         if (data !== undefined && data._inputValue !== undefined) {
@@ -58,10 +59,13 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
     }
 
     override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
-        // console.log("MyAdapter.saveCell()")
+        console.log("MyASpreadsheetAdapterdapter.saveCell()")
+
+        // cell.classList.remove("edit")
+
         // this.model!.getCell(pos.col, pos.row)
-        cell.tabIndex = 0
-        cell.contentEditable = "inherit"
+        // cell.tabIndex = 0
+        // cell.contentEditable = "inherit"
 
         try {
             this.model!.setField(pos.col, pos.row, cell.innerText)
