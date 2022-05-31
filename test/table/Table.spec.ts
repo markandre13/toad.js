@@ -279,7 +279,7 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
 
-            keyboard({ key: "ArrowRight", bubbles: true, cancelable: true })
+            keyboard({ key: "ArrowRight" })
 
             const cell = getByText("C1R0")
             expect(activeElement()).to.equal(cell)
@@ -305,7 +305,7 @@ describe("table", function () {
 
             click(getByText("C1R0")!)
 
-            keyboard({ key: "ArrowLeft", bubbles: true })
+            keyboard({ key: "ArrowLeft" })
 
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
@@ -331,7 +331,7 @@ describe("table", function () {
 
             click(getByText("C0R1")!)
 
-            keyboard({ key: "ArrowUp", bubbles: true })
+            keyboard({ key: "ArrowUp" })
 
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
@@ -345,7 +345,7 @@ describe("table", function () {
 
             click(getByText("C0R0")!)
 
-            keyboard({ key: "ArrowDown", bubbles: true})
+            keyboard({ key: "ArrowDown" })
 
             const cell = getByText("C0R1")
             expect(activeElement()).to.equal(cell)
@@ -378,7 +378,7 @@ describe("table", function () {
                 expect(c0r0.textContent).to.equal("")
             })
 
-            it.only("edit cell", async function () {
+            it("edit cell", async function () {
                 const model = createModel(2, 2)
                 document.body.innerHTML = `<tx-table model="model"></tx-table>`
                 await sleep()
@@ -389,79 +389,75 @@ describe("table", function () {
                 const c0r1 = getByText("C0R1") as HTMLSpanElement
 
                 click(c0r0)
-                // expect(c0r0.classList.contains("selected")).is.true
-                // expect(c0r0.contentEditable).to.not.equal("true")
+                expect(activeElement()).to.equal(c0r0)
                 expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
 
                 // [enter] starts editing the cell
-                console.log("### SEND ENTER")
                 keyboard({ key: "Enter" })
-
-                console.log(c0r0)
 
                 expect(c0r0.classList.contains("edit")).is.true
                 expect(c0r0.hasAttribute("contenteditable")).to.be.true
                 expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
 
-                // // when there is another row, [enter] saves value and edits next row
-                // type("= 2 * 3", true)
-                // expect(c0r0.textContent).to.equal("=2*3")
+                // when there is another row, [enter] saves value and edits next row
+                type("= 2 * 3", true)
+                expect(c0r0.textContent).to.equal("=2*3")
 
-                // keyboard({ key: "Enter" })
+                keyboard({ key: "Enter" })
 
-                // expect(c0r0.classList.contains("selected")).is.false
-                // expect(c0r0.contentEditable).to.not.equal("true")
+                expect(c0r0.classList.contains("edit")).is.false
+                expect(c0r0.textContent).to.equal("6")
 
-                // expect(c0r1.classList.contains("selected")).is.true
-                // expect(c0r1.contentEditable).to.equal("true")
-                // expect(c0r0.textContent).to.equal("6")
-                // expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
+                expect(c0r1.classList.contains("edit")).is.true
+                expect(c0r1.hasAttribute("contenteditable")).to.be.true
+                expect(activeElement()).to.equal(c0r1)
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
 
-                // type("= A1 * 2", true)
+                type("= A1 * 2", true)
 
-                // // when there is no other row, [enter] saves value, and stays in row without editing
-                // // FIXME: this test does not cover that the code needs stopPropagation(), otherwise
-                // // switching the focus from the cell to the table will create another 'Enter' event
-                // // which switches the cell again into edit mode
-                // keyboard({ key: "Enter" })
-                // expect(c0r1.classList.contains("selected")).is.true
-                // expect(c0r1.contentEditable).to.not.equal("true")
-                // expect(c0r1.textContent).to.equal("12")
-                // expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
-                // expect(activeElement()).to.equal(table.table)
+                // when there is no other row, [enter] saves value, and stays in row without editing
+                // FIXME: this test does not cover that the code needs stopPropagation(), otherwise
+                // switching the focus from the cell to the table will create another 'Enter' event
+                // which switches the cell again into edit mode
+                keyboard({ key: "Enter" })
 
-                // // we can move to another cell
-                // keyboard({ key: "ArrowUp" })
-                // expect(c0r0.classList.contains("selected")).is.true
-                // expect(c0r1.classList.contains("selected")).is.false
-                // expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
-                // expect(activeElement()).to.equal(table.table)
+                expect(c0r1.classList.contains("edit")).is.false
+                expect(c0r1.textContent).to.equal("12")
+                expect(activeElement()).to.equal(c0r1)
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
 
-                // // in edit mode ArrowDown moves to another cell
-                // keyboard({ key: "Enter" })
-                // keyboard({ key: "ArrowDown" })
-                // expect(c0r0.classList.contains("selected")).is.false
-                // expect(c0r0.textContent).to.equal("6")
-                // expect(c0r1.classList.contains("selected")).is.true
-                // expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
-                // expect(activeElement()).to.equal(table.table)
+                // we can move to another cell
+                keyboard({ key: "ArrowUp" })
+                expect(activeElement()).to.equal(c0r0)
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
 
-                // // in edit mode ArrowUp moves to another cell
-                // keyboard({ key: "Enter" })
-                // keyboard({ key: "ArrowUp" })
-                // expect(c0r0.classList.contains("selected")).is.true
-                // expect(c0r1.classList.contains("selected")).is.false
-                // expect(c0r1.textContent).to.equal("12")
-                // expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
-                // expect(activeElement()).to.equal(table.table)
+                // in edit mode ArrowDown moves to another cell
+                keyboard({ key: "Enter" })
+                keyboard({ key: "ArrowDown" })
+                expect(c0r0.classList.contains("edit")).is.false
+                expect(c0r0.textContent).to.equal("6")
+                expect(c0r1.classList.contains("edit")).is.false
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
+                expect(activeElement()).to.equal(c0r1)
 
-                // // in edit mode Tab moves to another cell
-                // keyboard({ key: "Enter" })
-                // keyboard({ key: "Tab" })
-                // expect(c0r0.classList.contains("selected")).is.false
-                // expect(c1r0.classList.contains("selected")).is.true
-                // expect(table.selection!.value).to.deep.equal({ col: 1, row: 0 })
-                // expect(activeElement()).to.equal(table.table)
+                // in edit mode ArrowUp moves to another cell
+                keyboard({ key: "Enter" })
+                keyboard({ key: "ArrowUp" })
+                expect(c0r0.classList.contains("edit")).is.false
+                expect(c0r1.classList.contains("edit")).is.false
+                expect(c0r1.textContent).to.equal("12")
+                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+                expect(activeElement()).to.equal(c0r0)
+
+                // in edit mode Tab moves to another cell
+                // FIXME: test fails but it works in real
+                keyboard({ key: "Enter" })
+                console.log("--------------------------")
+                keyboard({ key: "Tab" })
+                expect(c0r0.classList.contains("edit")).is.false
+                expect(c1r0.classList.contains("edit")).is.false
+                expect(table.selection!.value).to.deep.equal({ col: 1, row: 0 })
+                expect(activeElement()).to.equal(c1r0)
 
                 // allow shift + enter to create line break!
             })

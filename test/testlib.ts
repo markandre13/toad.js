@@ -97,10 +97,17 @@ export function keyboard(init: KeyboardEventInit) {
     // for some reason the above code does not bubble upwards,
     // hence we do it manually...
     let p: Node | null = active
+    if (init.bubbles === undefined) {
+        init.bubbles = true
+    }
+    if (init.cancelable === undefined) {
+        init.cancelable = true
+    }
     while(p !== null) {
         // console.log(`KEYBOARD ${init.key} to ${p.nodeName}`)
-        p.dispatchEvent(new KeyboardEvent("keydown", init))
-        p.dispatchEvent(new KeyboardEvent("keyup", init))
+        if (!p.dispatchEvent(new KeyboardEvent("keydown", init))) {
+            break
+        }
         if (init.bubbles !== true) {
             break
         }
@@ -109,6 +116,26 @@ export function keyboard(init: KeyboardEventInit) {
             p = p.host
         }
     }
+
+    p = active
+    init.bubbles = true
+    init.cancelable = true
+    while(p !== null) {
+        // console.log(`KEYBOARD ${init.key} to ${p.nodeName}`)
+        if (!p.dispatchEvent(new KeyboardEvent("keyup", init))) {
+            break
+        }
+        if (init.bubbles !== true) {
+            break
+        }
+        p = p.parentNode
+        if(p instanceof ShadowRoot) {
+            p = p.host
+        }
+    }
+
+
+
     // console.log(`KEYBOARD DONE`)
 }
 

@@ -47,7 +47,7 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
     }
 
     override editCell(pos: TablePos, cell: HTMLSpanElement) {
-        console.log("SpreadsheetAdapter.editCell()")
+        // console.log("SpreadsheetAdapter.editCell()")
         // cell.tabIndex = -1
         // cell.contentEditable = "true"
         // cell.focus()
@@ -59,7 +59,7 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
     }
 
     override saveCell(pos: TablePos, cell: HTMLSpanElement): void {
-        console.log("MyASpreadsheetAdapterdapter.saveCell()")
+        // console.log("MyASpreadsheetAdapterdapter.saveCell()")
 
         // cell.classList.remove("edit")
 

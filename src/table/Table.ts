@@ -350,7 +350,7 @@ export class Table extends View {
     }
 
     hostKeyDown(ev: KeyboardEvent) {
-        console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
         // // console.log(ev)
         if (!this.selection)
             return
@@ -447,8 +447,8 @@ export class Table extends View {
                         ev.preventDefault()
                         ev.stopPropagation()
                         break
-                    default:
-                        console.log(ev)
+                    // default:
+                    //     console.log(ev)
                 }
                 this.selection.value = pos
             } break
@@ -457,17 +457,17 @@ export class Table extends View {
 
     cellKeyDown(ev: KeyboardEvent) {
         const cell = ev.target as HTMLElement
-        console.log(`### CELL KEYDOWN ${ev.key}, edit=${cell.classList.contains("edit")}, editing=${this.editing !== undefined}`)
+        // console.log(`### CELL KEYDOWN ${ev.key}, edit=${cell.classList.contains("edit")}, editing=${this.editing !== undefined}`)
         // console.log(cell)
         if (ev.key === "Enter") {
-            console.log(`### CELL ENTER`)
+            // console.log(`### CELL ENTER`)
             this.hostKeyDown(ev)
             ev.preventDefault()
             return
         }
 
         if (!cell.classList.contains("edit") && this.editing === undefined ) {
-            console.log(`### CELL SPECIAL`)
+            // console.log(`### CELL SPECIAL`)
             switch(ev.key) {
                 case "ArrowDown":
                 case "ArrowUp":
@@ -475,13 +475,17 @@ export class Table extends View {
                 case "ArrowLeft":
                 case "Tab":
                 case "Enter":
+                    // either let it bubble or just force it right here:
+                    // this.hostKeyDown(ev)
+                    // ev.preventDefault()
+                    // return
                     break
                 default:
-                    console.log("### CELL KEYDOWN PREVENT DEFAULT")
+                    // console.log("### CELL KEYDOWN PREVENT DEFAULT")
                     ev.preventDefault()
             }
         } else {
-            console.log(`### CELL NO SPECIAL`)
+            // console.log(`### CELL NO SPECIAL`)
         }
 
         // console.log(`Table.cellKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
