@@ -69,9 +69,11 @@ export const td = (...children: Node[]) => element<HTMLTableCellElement>("td", c
 export const tr = (...children: Node[]) => element<HTMLTableRowElement>("tr", children)
 
 const ns = "http://www.w3.org/2000/svg"
-export function svg(child: Element) {
+export function svg(child?: Element) {
     const s = document.createElementNS(ns, "svg")
-    s.appendChild(child)
+    if (child !== undefined) {
+        s.appendChild(child)
+    }
     return s
 }
 export function path(d?: string) {
@@ -81,6 +83,35 @@ export function path(d?: string) {
     }
     return p
 }
+export function rect(x: number, y: number, width: number, height: number, stroke?: string, fill?: string) {
+    const r = document.createElementNS(ns, "rect")
+    r.setAttributeNS(null, "x", `${x}`)
+    r.setAttributeNS(null, "y", `${y}`)
+    r.setAttributeNS(null, "width", `${width}`)
+    r.setAttributeNS(null, "height", `${height}`)
+    if (stroke !== undefined) {
+        r.setAttributeNS(null, "stroke", stroke)
+    }
+    if (fill !== undefined) {
+        r.setAttributeNS(null, "fill", fill)
+    }
+    return r
+}
+export function line(x1: number, y1: number, x2: number, y2: number, stroke?: string, fill?: string) {
+    const l = document.createElementNS(ns, "line")
+    l.setAttributeNS(null, "x1", `${x1}`)
+    l.setAttributeNS(null, "y1", `${y1}`)
+    l.setAttributeNS(null, "x2", `${x2}`)
+    l.setAttributeNS(null, "y2", `${y2}`)
+    if (stroke !== undefined) {
+        l.setAttributeNS(null, "stroke", stroke)
+    }
+    if (fill !== undefined) {
+        l.setAttributeNS(null, "fill", fill)
+    }
+    return l
+}
+
 
 export function svgAndUse(ref: string) {
     const ns = "http://www.w3.org/2000/svg"

@@ -8,6 +8,13 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { input } from "@toad/util/lsx"
 import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement } from "../testlib"
 
+import { TablePos } from "@toad/table/TablePos"
+import { TreeNode } from "@toad/table/model/TreeNode"
+import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
+import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
+
+import { svg, span, text, rect, line } from "@toad/util/lsx"
+
 // TODO:
 // [X] send modified-events
 // [X] render table
@@ -17,13 +24,13 @@ import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type
 // [X] tab in/out of table
 // [X] edit on enter
 // [X] display error
+// [ ] tree view
+// [ ] insert more than one row/column
 // [ ] edit on focus
 // [ ] no edit
 // [ ] row select mode
-// [ ] insert more than one row/column
-// [ ] tree view
 // [ ] adjust selection, caret, after insert/remove row/column
-// [ ] adjust table tool to available commands
+// [ ] adjust table tool to indicate available commands
 
 // [ ] header glitches
 // [ ] restrict minimal table size to at least one row or one column
@@ -103,8 +110,8 @@ describe("table", function () {
         })
     })
 
-    describe("regressions", function() {
-        it("layout formerly invisible table (e.g. within tabs)", async function() {
+    describe("regressions", function () {
+        it("layout formerly invisible table (e.g. within tabs)", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `
             <tx-tabs style="width: 100%">
@@ -188,13 +195,13 @@ describe("table", function () {
             await sleep()
             const table = getTable(model)
 
-            for(let row=0; row<2; ++row) {
-                for(let col=0; col<2; ++col) {
+            for (let row = 0; row < 2; ++row) {
+                for (let col = 0; col < 2; ++col) {
                     const cell = getByText(`C${col}R${row}`)
                     click(cell!)
                     expect(activeElement()).to.equal(cell)
-                    expect(table.selection?.value).to.deep.equal({col, row})
-                }    
+                    expect(table.selection?.value).to.deep.equal({ col, row })
+                }
             }
         })
 
@@ -209,7 +216,7 @@ describe("table", function () {
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
+            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
 
         it("tab backward into table", async function () {
@@ -223,7 +230,7 @@ describe("table", function () {
             const cell = getByText("C1R1")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 1, row: 1})
+            expect(table.selection?.value).to.deep.equal({ col: 1, row: 1 })
         })
 
         it("tab to next cell", async function () {
@@ -237,7 +244,7 @@ describe("table", function () {
             const cell = getByText("C1R0")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 1, row: 0})
+            expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
         })
         it("tab to previous cell", async function () {
             const model = createModel(2, 2)
@@ -249,7 +256,7 @@ describe("table", function () {
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
+            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         it("tab forward out of table", async function () {
             const model = createModel(2, 2)
@@ -284,7 +291,7 @@ describe("table", function () {
             const cell = getByText("C1R0")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 1, row: 0})
+            expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
         })
         xit("cursor right to next row", async function () {
             const model = createModel(2, 2)
@@ -310,7 +317,7 @@ describe("table", function () {
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
+            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         xit("cursor left to previous row", async function () {
             const model = createModel(2, 2)
@@ -336,7 +343,7 @@ describe("table", function () {
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 0, row: 0})
+            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         it("cursor down", async function () {
             const model = createModel(2, 2)
@@ -350,7 +357,7 @@ describe("table", function () {
             const cell = getByText("C0R1")
             expect(activeElement()).to.equal(cell)
             const table = getTable(model)
-            expect(table.selection?.value).to.deep.equal({col: 0, row: 1})
+            expect(table.selection?.value).to.deep.equal({ col: 0, row: 1 })
         })
 
         function dumpCell(id: string, cell: SpreadsheetCell) {
@@ -359,7 +366,7 @@ describe("table", function () {
 
         // different edit modes: normal, spreadsheet
         describe("edit cell on enter (spreadsheet mode)", function () {
-            it("editing an empty cell will result in an empty cell", async function() {
+            it("editing an empty cell will result in an empty cell", async function () {
                 TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
                 const model = new TestModel(2, 2)
                 bindModel("model", model)
@@ -673,10 +680,11 @@ describe("table", function () {
         )
     })
 
-    // remove .selected when table looses focus (e.g. during tab out)
-
-    describe("tree view", function() {
-
+    describe("tree view", function () {
+        it.only("begins all here", function () {
+            const model = createTree()
+            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="tree"></tx-table>`
+        })
     })
 })
 
@@ -837,4 +845,161 @@ export class TestAdapter extends SpreadsheetAdapter<TestModel> {
     override get editMode(): EditMode {
         return this.model!.editMode
     }
+}
+
+// ---------------------
+
+
+class MyNode implements TreeNode {
+    label: string
+    next?: MyNode
+    down?: MyNode
+    static counter = 0
+    constructor() {
+        this.label = `#${MyNode.counter++}`
+    }
+}
+
+class MyTreeAdapter extends TreeAdapter<MyNode> {
+    override showCell(pos: TablePos, cell: HTMLSpanElement) {
+        if (this.model === undefined) {
+            console.log("no model")
+            return
+        }
+
+        const rowinfo = this.model.rows[pos.row]
+        const label = rowinfo.node.label
+        console.log(`render tree cell ${pos.col}, ${pos.row} '${label}'`)
+
+        // const x = this.treeCell(pos.row, this.model.rows[pos.row].node.label) as Element
+        // cell.replaceChildren(x.children[0])
+
+        // const row = this.model.getRow(this.rowinfo.node)
+        // if (row === undefined)
+        //     return
+
+        const rs = 8      // rectangle width and height
+        const sx = rs + 4 // horizontal step width, minimal vertical step width
+        const height = sx
+        const dx = 3.5    // additional step before and after drawing the rectangle
+        const dy = Math.round(height / 2 - rs / 2) - 0.5       // step from top to rectangle
+        const rx = 3      // horizontal line from rectangle to data on the left
+        const width = rowinfo.depth * sx + sx + dx
+
+        const svgNode = svg()
+        svgNode.setAttributeNS(null, `width`, `${width}`)
+        svgNode.setAttributeNS(null, `height`, `${sx}`)
+        svgNode.style.verticalAlign = "middle"
+        svgNode.style.background = "none"
+
+        const labelNode = span(text(label))
+        labelNode.style.verticalAlign = "middle"
+        labelNode.style.padding = "2px"
+
+        // if (true) {
+        //     const rowinfo = this.rowinfo
+        const d = rowinfo.depth
+
+        //     // when we have children, draw a box
+        if (this.model.getDown(rowinfo.node)) {
+            // TODO: port Rectangle from workflow to toad.js
+            const x0 = d * sx + dx
+
+            // box
+            const box = rect(x0, dy, rs, rs, "#000", "#fff")
+            box.style.cursor = "pointer"
+            svgNode.appendChild(box)
+
+            // minus
+            const l0 = line(x0 + (rs >> 2), dy + (rs >> 1), x0 + rs - (rs >> 2), dy + (rs >> 1), "#000")
+            l0.style.cursor = "pointer"
+            svgNode.appendChild(l0)
+
+            // plus
+            //         const plus = <line x1={x0 + (rs >> 1)} y1={dy + (rs >> 2)} x2={x0 + (rs >> 1)} y2={dy + rs - (rs >> 2)} stroke="#000" cursor="pointer" />
+            const plus = line(x0 + (rs >> 1), dy + (rs >> 2), x0 + (rs >> 1), dy + rs - (rs >> 2), "#000")
+            plus.style.cursor = "pointer"
+            plus.style.display = rowinfo.open ? "none" : ""
+            svgNode.appendChild(plus)
+
+            // horizontal line to data
+            svgNode.appendChild(line(x0 + rs, dy + (rs >> 1), x0 + rs + rx, dy + (rs >> 1), "#f80"))
+
+            svgNode.onmousedown = (event: MouseEvent) => {
+                event.preventDefault()
+                event.stopPropagation()
+
+                const rowNumber = this.model!.getRow(rowinfo.node)
+                if (rowNumber === undefined) {
+                    console.log("  ==> couldn't find row number for node")
+                    return
+                }
+
+                const bounds = svgNode.getBoundingClientRect()
+                const x = event.clientX - bounds.left
+                const y = event.clientY - bounds.top
+
+                // console.log(`TreeNodeCell.mouseDown(): ${event.clientX}, ${event.clientY} -> ${x}, ${y} (rect at ${x0}, ${dy}, ${rs}, ${rs})`)
+
+                if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy + rs) {
+                    console.log(`toggle row ${rowNumber}`)
+                    this.model?.toggleAt(rowNumber)
+                    plus.style.display = this.model!.isOpen(rowNumber) ? "none" : ""
+                }
+            }
+        } else {
+            // upper vertical line instead of box
+            svgNode.appendChild(line(d * sx + dx + (rs >> 1), 0, d * sx + dx + (rs >> 1), dy + (rs >> 1), "#f80"))
+            // horizontal line to data
+            svgNode.appendChild(line(d * sx + dx + (rs >> 1), dy + (rs >> 1), d * sx + dx + rs + rx, dy + (rs >> 1), "#f80"))
+        }
+
+        // the vertical lines connecting with the surrounding rows are done as background images in the <td> parent.
+        // this frees us to set a vertical size to meet the boundaries of the <td>
+        // as well as removing the vertical size while the table layout is recalculated
+        let lines = ""
+        for (let i = 0; i <= d; ++i) {
+            const x = i * sx + dx + (rs >> 1)
+            for (let j = pos.row + 1; j < this.model.rowCount; ++j) {
+                if (this.model.rows[j].depth < i)
+                    break
+                if (i === this.model.rows[j].depth) {
+                    if (i !== d) {
+                        // long line without box
+                        lines += `<line x1='${x}' y1='0' x2='${x}' y2='100%' stroke='%23f80' />`
+                    } else {
+                        if (this.model.getNext(rowinfo.node) !== undefined) {
+                            // there's more below (either subtree or next sibling), draw a full line
+                            lines += `<line x1='${x}' y1='0' x2='${x}' y2='100%' stroke='%23f80' />`
+                        }
+                    }
+                    break
+                }
+            }
+        }
+        // there isn't more below, draw a line from the top to the middle
+        if (this.model.getDown(rowinfo.node) === undefined || this.model.getNext(rowinfo.node) === undefined) {
+            const x = d * sx + dx + (rs >> 1)
+            lines += `<line x1='${x}' y1='0' x2='${x}' y2='50%' stroke='%23f80' />`
+        }
+
+        cell.style.background = `url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'>${lines}</svg>\")`
+        cell.style.backgroundRepeat = "repeat-y"
+
+        cell.replaceChildren(svgNode, labelNode)
+    }
+}
+
+function createTree(): TreeNodeModel<MyNode> {
+    TreeAdapter.register(MyTreeAdapter, TreeNodeModel, MyNode)
+    let model = new TreeNodeModel(MyNode)
+    model.addSiblingAfter(0)
+    model.addChildAfter(0)
+    model.addChildAfter(1)
+    model.addSiblingAfter(2)
+    model.addSiblingAfter(1)
+    model.addChildAfter(4)
+    model.addSiblingAfter(0)
+    bindModel("tree", model)
+    return model
 }
