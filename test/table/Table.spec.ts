@@ -8,6 +8,7 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { input } from "@toad/util/lsx"
 import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement } from "../testlib"
 
+import { Model } from "@toad/model/Model"
 import { TablePos } from "@toad/table/TablePos"
 import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
@@ -25,6 +26,8 @@ import { svg, span, text, rect, line } from "@toad/util/lsx"
 // [X] edit on enter
 // [X] display error
 // [ ] tree view
+//   [ ] add 'seamless' option to TableAdapter (formerly known as 'compact')
+//   [ ] fix that opening and closing several times make the row smaller and smaller
 // [ ] insert more than one row/column
 // [ ] edit on focus
 // [ ] no edit
@@ -681,9 +684,16 @@ describe("table", function () {
     })
 
     describe("tree view", function () {
-        it.only("begins all here", function () {
+        it.only("begins all here", async function () {
+            Table.transitionDuration = "500ms"
             const model = createTree()
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="tree"></tx-table>`
+            await sleep()
+
+            // black background for split body?
+
+            const table = getTable(model)
+            // click(table.body.children[0].children[0])
         })
     })
 })
@@ -700,7 +710,7 @@ function createModel(cols: number, rows: number) {
     return model
 }
 
-function getTable(model: TestModel) {
+function getTable(model: Model<any>) {
     const table = document.querySelector("tx-table") as Table
     if (table === undefined) {
         throw Error("No <tx-table> found.")
@@ -922,7 +932,8 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
             // horizontal line to data
             svgNode.appendChild(line(x0 + rs, dy + (rs >> 1), x0 + rs + rx, dy + (rs >> 1), "#f80"))
 
-            svgNode.onmousedown = (event: MouseEvent) => {
+            svgNode.onpointerdown = (event: MouseEvent) => {
+                // console.log(`MyTreeAdapter.pointerdown()`)
                 event.preventDefault()
                 event.stopPropagation()
 
@@ -939,7 +950,7 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
                 // console.log(`TreeNodeCell.mouseDown(): ${event.clientX}, ${event.clientY} -> ${x}, ${y} (rect at ${x0}, ${dy}, ${rs}, ${rs})`)
 
                 if (x0 <= x && x <= x0 + rs && dy <= y && y <= dy + rs) {
-                    console.log(`toggle row ${rowNumber}`)
+                    // console.log(`toggle row ${rowNumber}`)
                     this.model?.toggleAt(rowNumber)
                     plus.style.display = this.model!.isOpen(rowNumber) ? "none" : ""
                 }
@@ -980,7 +991,7 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
             lines += `<line x1='${x}' y1='0' x2='${x}' y2='50%' stroke='%23f80' />`
         }
 
-        cell.style.background = `url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'>${lines}</svg>\")`
+        cell.style.background = `url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='background: %23000;'>${lines}</svg>\")`
         cell.style.backgroundRepeat = "repeat-y"
 
         cell.replaceChildren(svgNode, labelNode)
