@@ -896,11 +896,9 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
         labelNode.style.verticalAlign = "middle"
         labelNode.style.padding = "2px"
 
-        // if (true) {
-        //     const rowinfo = this.rowinfo
         const d = rowinfo.depth
 
-        //     // when we have children, draw a box
+        // when we have children, draw a box
         if (this.model.getDown(rowinfo.node)) {
             // TODO: port Rectangle from workflow to toad.js
             const x0 = d * sx + dx
@@ -911,12 +909,11 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
             svgNode.appendChild(box)
 
             // minus
-            const l0 = line(x0 + (rs >> 2), dy + (rs >> 1), x0 + rs - (rs >> 2), dy + (rs >> 1), "#000")
-            l0.style.cursor = "pointer"
-            svgNode.appendChild(l0)
+            const minus = line(x0 + (rs >> 2), dy + (rs >> 1), x0 + rs - (rs >> 2), dy + (rs >> 1), "#000")
+            minus.style.cursor = "pointer"
+            svgNode.appendChild(minus)
 
             // plus
-            //         const plus = <line x1={x0 + (rs >> 1)} y1={dy + (rs >> 2)} x2={x0 + (rs >> 1)} y2={dy + rs - (rs >> 2)} stroke="#000" cursor="pointer" />
             const plus = line(x0 + (rs >> 1), dy + (rs >> 2), x0 + (rs >> 1), dy + rs - (rs >> 2), "#000")
             plus.style.cursor = "pointer"
             plus.style.display = rowinfo.open ? "none" : ""
@@ -949,7 +946,7 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
             }
         } else {
             // upper vertical line instead of box
-            svgNode.appendChild(line(d * sx + dx + (rs >> 1), 0, d * sx + dx + (rs >> 1), dy + (rs >> 1), "#f80"))
+            svgNode.appendChild(line(d * sx + dx + (rs >> 1) - 0.5, 0, d * sx + dx + (rs >> 1), dy + (rs >> 1), "#f80"))
             // horizontal line to data
             svgNode.appendChild(line(d * sx + dx + (rs >> 1), dy + (rs >> 1), d * sx + dx + rs + rx, dy + (rs >> 1), "#f80"))
         }
@@ -959,7 +956,7 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
         // as well as removing the vertical size while the table layout is recalculated
         let lines = ""
         for (let i = 0; i <= d; ++i) {
-            const x = i * sx + dx + (rs >> 1)
+            const x = i * sx + dx + (rs >> 1) + 2
             for (let j = pos.row + 1; j < this.model.rowCount; ++j) {
                 if (this.model.rows[j].depth < i)
                     break
@@ -979,7 +976,7 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
         }
         // there isn't more below, draw a line from the top to the middle
         if (this.model.getDown(rowinfo.node) === undefined || this.model.getNext(rowinfo.node) === undefined) {
-            const x = d * sx + dx + (rs >> 1)
+            const x = d * sx + dx + (rs >> 1) + 2
             lines += `<line x1='${x}' y1='0' x2='${x}' y2='50%' stroke='%23f80' />`
         }
 
