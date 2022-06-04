@@ -28,6 +28,10 @@ import { svg, span, text, rect, line } from "@toad/util/lsx"
 // [ ] tree view
 //   [ ] add 'seamless' option to TableAdapter (formerly known as 'compact')
 //   [ ] fix that opening and closing several times make the row smaller and smaller
+//   [ ] don't let the scrollbars flicker (e.g. place the splitBody inside this.root instead of this.body?)
+//   [X] hide below bottom when shrinking
+//   [ ] hide behind right side when shrinking
+//   [ ] space bar to open/close node with focus
 // [ ] insert more than one row/column
 // [ ] edit on focus
 // [ ] no edit
@@ -685,7 +689,7 @@ describe("table", function () {
 
     describe("tree view", function () {
         it.only("begins all here", async function () {
-            Table.transitionDuration = "500ms"
+            Table.transitionDuration = "1500ms"
             const model = createTree()
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="tree"></tx-table>`
             await sleep()

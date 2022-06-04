@@ -1197,6 +1197,18 @@ export class Table extends View {
                 this.splitBody.appendChild(this.body.children[idx])
             }
         }
+        
+        const filler = span()
+        idx = this.splitBody.children.length - 1
+        const last = this.splitBody.children[idx] as HTMLElement
+        const bf = this.splitBody.children[idx].getBoundingClientRect()
+        filler.style.border = 'none'
+        filler.style.backgroundColor = '#1e1e1e'
+        filler.style.top = `${px2int(last.style.top) + bf.height}px`
+        filler.style.left = `0px`
+        filler.style.width = `${b.width}px`
+        filler.style.height = `${b.height - px2int(last.style.top)}px`
+        this.splitBody.appendChild(filler)
     }
 
     // move 'splitBody' back into 'body' to end animation
