@@ -83,7 +83,7 @@ export class InsertRowAnimation extends TableAnimation {
 
     arrangeMeasuredRowsInGrid() {
 
-        const seam = this.adapter.isSeamless ? 0 : 1
+        const overlap = this.adapter.isSeamless ? 1 : 0
         
         // y := position of new row
         let idx = this.event.index * this.colCount
@@ -156,10 +156,10 @@ export class InsertRowAnimation extends TableAnimation {
                 cell.style.height = `${rowHeight}px`
                 this.body.insertBefore(cell, beforeChild)
             }
-            y += rowHeight + 1 - 1 + seam
+            y += rowHeight + 1 - overlap
             totalHeight += rowHeight
         }
-        this.totalHeight = totalHeight + 1
+        this.totalHeight = totalHeight + 1 - overlap
 
         // let txt = `InsertRowAnimation: table size ${this.colCount}, ${this.rowCount}\n`
         // idx = 0

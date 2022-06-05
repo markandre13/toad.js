@@ -6,7 +6,7 @@ import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { input } from "@toad/util/lsx"
-import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement } from "../testlib"
+import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
 
 import { Model } from "@toad/model/Model"
 import { TablePos } from "@toad/table/TablePos"
@@ -688,16 +688,64 @@ describe("table", function () {
     })
 
     describe("tree view", function () {
-        it.only("begins all here", async function () {
-            Table.transitionDuration = "1500ms"
+        it("rows are placed correctly after closing and opening subtree", async function () {
+            Table.transitionDuration = "1ms"
             const model = createTree()
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="tree"></tx-table>`
             await sleep()
 
-            // black background for split body?
+            // validateRender(model)
 
             const table = getTable(model)
-            // click(table.body.children[0].children[0])
+
+            let expectH = 19
+            let expectY = 0
+            for (let row = 0; row < model.rowCount; ++row) {
+                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
+                const y = px2float(cell.style.top)
+                const h = px2float(cell.style.height)
+                // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
+                expect(y).to.equal(expectY)
+                expect(h).to.equal(expectH)
+                expectY += h
+            }
+            
+            const animationDone = new Promise<void>((resolve, reject) => {
+                table.animationDone = () => {
+                    resolve()
+                }
+            })
+
+            click(table.body.children[0].children[0])
+            await animationDone
+            await sleep(100)
+
+            expectY = 0
+            for (let row = 0; row < model.rowCount; ++row) {
+                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
+                const y = px2float(cell.style.top)
+                const h = px2float(cell.style.height)
+                // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
+                expect(y).to.equal(expectY)
+                expect(h).to.equal(expectH)
+                expectY += h
+            }
+
+            click(table.body.children[0].children[0])
+            await animationDone
+            await sleep(100)
+
+            expectY = 0
+            for (let row = 0; row < model.rowCount; ++row) {
+                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
+                const y = px2float(cell.style.top)
+                const h = px2float(cell.style.height)
+                // console.log(`expectRow[${row}] = {y: ${y} (${expectY}), h: ${h}}`)
+                expect(y).to.equal(expectY)
+                expect(h).to.equal(expectH)
+                expectY += h
+            }
+
         })
     })
 })
@@ -886,14 +934,7 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
 
         const rowinfo = this.model.rows[pos.row]
         const label = rowinfo.node.label
-        console.log(`render tree cell ${pos.col}, ${pos.row} '${label}'`)
-
-        // const x = this.treeCell(pos.row, this.model.rows[pos.row].node.label) as Element
-        // cell.replaceChildren(x.children[0])
-
-        // const row = this.model.getRow(this.rowinfo.node)
-        // if (row === undefined)
-        //     return
+        // console.log(`render tree cell ${pos.col}, ${pos.row} '${label}'`)
 
         const rs = 8      // rectangle width and height
         const sx = rs + 4 // horizontal step width, minimal vertical step width

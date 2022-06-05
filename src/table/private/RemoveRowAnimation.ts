@@ -37,11 +37,13 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     run() {
+        const overlap = this.adapter.isSeamless ? 1 : 0
+
         let totalHeight = 0
         let idx = this.event.index * this.colCount
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             const cell = this.body.children[idx] as HTMLSpanElement
-            totalHeight += Math.ceil(px2float(cell.style.height) + 1)
+            totalHeight += Math.ceil(px2float(cell.style.height) + 1) - overlap
         }
         this.totalHeight = totalHeight
 
