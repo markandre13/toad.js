@@ -83,6 +83,8 @@ export class InsertRowAnimation extends TableAnimation {
 
     arrangeMeasuredRowsInGrid() {
 
+        const seam = this.adapter.isSeamless ? 0 : 1
+        
         // y := position of new row
         let idx = this.event.index * this.colCount
         let beforeChild
@@ -154,7 +156,7 @@ export class InsertRowAnimation extends TableAnimation {
                 cell.style.height = `${rowHeight}px`
                 this.body.insertBefore(cell, beforeChild)
             }
-            y += rowHeight + 1
+            y += rowHeight + 1 - 1 + seam
             totalHeight += rowHeight
         }
         this.totalHeight = totalHeight + 1

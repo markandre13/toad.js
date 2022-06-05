@@ -48,6 +48,9 @@ export class TableAdapter<T extends TableModel> {
     get editMode(): EditMode {
         return EditMode.EDIT_ON_FOCUS
     }
+    get isSeamless(): boolean {
+        return false
+    }
     get colCount(): number {
         return this.model === undefined ? 0 : this.model.colCount
     }

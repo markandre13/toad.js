@@ -875,6 +875,9 @@ class MyNode implements TreeNode {
 }
 
 class MyTreeAdapter extends TreeAdapter<MyNode> {
+    override get isSeamless(): boolean {
+        return true
+    }
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
         if (this.model === undefined) {
             console.log("no model")

@@ -32,7 +32,6 @@ import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
 
 import { span, div, text } from '@toad/util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
-import { isNodeBeforeNode } from '@toad/util/dom'
 
 // --spectrum-table-row-background-color-selected
 // --spectrum-alias-highlight-selected
@@ -135,6 +134,14 @@ tableStyle.textContent = `
     overflow: hidden;
     cursor: default;
     caret-color: transparent;
+}
+
+.seamless > .body > span,
+.seamless > .body > .splitBody > span,
+.seamless > .cols > span,
+.seamless > .rows > span,
+.seamless > .measure > span {
+    border: none 0px;
 }
 
 .splitBody {
@@ -701,6 +708,9 @@ export class Table extends View {
         if (!this.visible) {
             return
         }
+        if (this.adapter!.isSeamless) {
+            this.root.classList.add("seamless")
+        }
 
         const measureLineHeight = span(text("Tg")) // let the adapter provide this
         this.measure.appendChild(measureLineHeight)
@@ -768,7 +778,9 @@ export class Table extends View {
     }
 
     arrangeAllMeasuredInGrid() {
-        // use line height as minimal row height
+        const seam = this.adapter!.isSeamless ? 0 : 1;
+
+        // use line height as minimal row height        
         const measureLineHeight = this.measure.children[0] as HTMLElement
         const b = measureLineHeight.getBoundingClientRect()
         this.minCellHeight = Math.ceil(b.height)
@@ -842,7 +854,7 @@ export class Table extends View {
                 child.style.width = `${colWidth[col] - WIDTH_ADJUST}px`
                 child.style.height = `${colHeadHeight - HEIGHT_ADJUST}px`
                 this.colHeads.appendChild(child)
-                x += colWidth[col] - 1
+                x += colWidth[col] - 1 - 1 + seam
             }
 
             let filler = span()
@@ -886,7 +898,7 @@ export class Table extends View {
                 child.style.width = `${rowHeadWidth - WIDTH_ADJUST}px`
                 child.style.height = `${rowHeight[row] - HEIGHT_ADJUST}px`
                 this.rowHeads.appendChild(child)
-                y += rowHeight[row] - 1
+                y += rowHeight[row] - 1 - 1 + seam
             }
 
             let filler = span()
@@ -933,9 +945,9 @@ export class Table extends View {
                 child.style.width = `${colWidth[col] - WIDTH_ADJUST}px` 
                 child.style.height = `${rowHeight[row] - HEIGHT_ADJUST}px`
                 this.body.appendChild(child)
-                x += colWidth[col] - 1
+                x += colWidth[col] - 1 - 1 + seam
             }
-            y += rowHeight[row] - 1
+            y += rowHeight[row] - 1 - 1 + seam
         }
         if (rowHeadWidth > 0) {
             --rowHeadWidth
