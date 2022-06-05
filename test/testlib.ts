@@ -104,7 +104,7 @@ export function keyboard(init: KeyboardEventInit) {
         init.cancelable = true
     }
     while(p !== null) {
-        // console.log(`KEYBOARD ${init.key} to ${p.nodeName}`)
+        // console.log(`KEYBOARD DOWN ${init.key} to ${p.nodeName}`)
         if (!p.dispatchEvent(new KeyboardEvent("keydown", init))) {
             break
         }
@@ -121,7 +121,7 @@ export function keyboard(init: KeyboardEventInit) {
     init.bubbles = true
     init.cancelable = true
     while(p !== null) {
-        // console.log(`KEYBOARD ${init.key} to ${p.nodeName}`)
+        // console.log(`KEYBOARD UP ${init.key} to ${p.nodeName}`)
         if (!p.dispatchEvent(new KeyboardEvent("keyup", init))) {
             break
         }
@@ -133,8 +133,6 @@ export function keyboard(init: KeyboardEventInit) {
             p = p.host
         }
     }
-
-
 
     // console.log(`KEYBOARD DONE`)
 }
