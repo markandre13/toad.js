@@ -19,19 +19,29 @@
 import { TreeModel } from "../model/TreeModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 import { TablePos } from "../TablePos"
-import { svg, rect, line } from "@toad/util/lsx"
+import { svg, rect, line, span, text } from "@toad/util/lsx"
 
 export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
     override get isSeamless(): boolean {
         return true
     }
-    override showCell(pos: TablePos, cell: HTMLSpanElement) {
+    treeCell(pos: TablePos, cell: HTMLSpanElement, label: string): void {
+        this._showCell(pos, cell)
+        const labelNode = span(text(label))
+        labelNode.style.verticalAlign = "middle"
+        labelNode.style.padding = "2px"
+        cell.appendChild(labelNode)
+    }
+    override showCell(pos: TablePos, cell: HTMLSpanElement): void {
+        this._showCell(pos, cell)
+    }
+    _showCell(pos: TablePos, cell: HTMLSpanElement): void {
         if (this.model === undefined) {
             console.log("no model")
             return
         }
 
-        // console.log(`render tree cell ${pos.col}, ${pos.row}`)
+        console.log(`render tree cell ${pos.col}, ${pos.row}`)
 
         const rowinfo = this.model.rows[pos.row]
         const rs = 8      // rectangle width and height

@@ -218,15 +218,9 @@ class MyTreeAdapter extends TreeAdapter<MyNode> {
             console.log("no model")
             return
         }
-        super.showCell(pos, cell)
-
         const rowinfo = this.model.rows[pos.row]
         const label = rowinfo.node.label
-
-        const labelNode = span(text(label))
-        labelNode.style.verticalAlign = "middle"
-        labelNode.style.padding = "2px"
-        cell.appendChild(labelNode)
+        super.treeCell(pos, cell, label)
     }
 }
 

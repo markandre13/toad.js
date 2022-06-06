@@ -674,6 +674,9 @@ describe("table", function () {
         )
     })
 
+    // JSX
+    // tree view via JSX
+
     describe("tree view", function () {
         it("rows are placed correctly after closing and opening subtree", async function () {
             // Table.transitionDuration = "1000ms"

@@ -30,6 +30,8 @@ import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertColumnAnimation } from './private/InsertColumnAnimation'
 import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
 
+import { Fragment, ref, HTMLElementProps, setInitialProperties } from 'toad.jsx'
+
 import { span, div, text } from '../util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
 import { style as txTable } from './style/tx-table'
@@ -54,6 +56,11 @@ function isVisible(e: HTMLElement): boolean {
         return isVisible(e.parentElement)
     }
     return true
+}
+
+interface TableProps extends HTMLElementProps {
+    model?: TableModel
+    selectionModel?: SelectionModel
 }
 
 export class Table extends View {
@@ -106,12 +113,12 @@ export class Table extends View {
 
     animation?: TableAnimation
 
-    constructor() {
+    constructor(props?: TableProps) {
         super()
 
         if (Table.observer === undefined) {
-            Table.observer = new MutationObserver( (mutations: MutationRecord[], observer: MutationObserver) => {
-                Table.allTables.forEach( table => {
+            Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
+                Table.allTables.forEach(table => {
                     if (table.visible === false) {
                         table.prepareCells()
                     }
@@ -168,6 +175,12 @@ export class Table extends View {
         this.attachStyle(txTable)
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
+
+        if (props) {
+            setInitialProperties(this, props)
+            if (props.selectionModel)
+                this.setModel(props.selectionModel)
+        }
     }
 
     override connectedCallback(): void {
@@ -190,20 +203,20 @@ export class Table extends View {
             return
         // // FIXME: based on the selection model we could plug in a behaviour class
         switch (this.selection.mode) {
-        //     case TableEditMode.SELECT_ROW: {
-        //         let row = this.selection.value.row
-        //         switch (ev.key) {
-        //             case "ArrowDown":
-        //                 if (row + 1 < this.adapter!.rowCount)
-        //                     ++row
-        //                 break
-        //             case "ArrowUp":
-        //                 if (row > 0)
-        //                     --row
-        //                 break
-        //         }
-        //         this.selection.row = row
-        //     } break
+            //     case TableEditMode.SELECT_ROW: {
+            //         let row = this.selection.value.row
+            //         switch (ev.key) {
+            //             case "ArrowDown":
+            //                 if (row + 1 < this.adapter!.rowCount)
+            //                     ++row
+            //                 break
+            //             case "ArrowUp":
+            //                 if (row > 0)
+            //                     --row
+            //                 break
+            //         }
+            //         this.selection.row = row
+            //     } break
             case TableEditMode.SELECT_CELL: {
                 let pos = { col: this.selection.col, row: this.selection.row }
                 switch (ev.key) {
@@ -235,35 +248,35 @@ export class Table extends View {
                             ev.stopPropagation()
                         }
                         break
-        //             case "Tab":
-        //                 if (ev.shiftKey) {
-        //                     if (pos.col > 0) {
-        //                         --pos.col
-        //                         ev.preventDefault()
-        //                         ev.stopPropagation()
-        //                     } else {
-        //                         if (pos.row > 0) {
-        //                             pos.col = this.adapter!.colCount - 1
-        //                             --pos.row
-        //                             ev.preventDefault()
-        //                             ev.stopPropagation()
-        //                         }
-        //                     }
-        //                 } else {
-        //                     if (pos.col + 1 < this.adapter!.colCount) {
-        //                         ++pos.col
-        //                         ev.preventDefault()
-        //                         ev.stopPropagation()
-        //                     } else {
-        //                         if (pos.row + 1 < this.adapter!.rowCount) {
-        //                             pos.col = 0
-        //                             ++pos.row
-        //                             ev.preventDefault()
-        //                             ev.stopPropagation()
-        //                         }
-        //                     }
-        //                 }
-        //                 break
+                    //             case "Tab":
+                    //                 if (ev.shiftKey) {
+                    //                     if (pos.col > 0) {
+                    //                         --pos.col
+                    //                         ev.preventDefault()
+                    //                         ev.stopPropagation()
+                    //                     } else {
+                    //                         if (pos.row > 0) {
+                    //                             pos.col = this.adapter!.colCount - 1
+                    //                             --pos.row
+                    //                             ev.preventDefault()
+                    //                             ev.stopPropagation()
+                    //                         }
+                    //                     }
+                    //                 } else {
+                    //                     if (pos.col + 1 < this.adapter!.colCount) {
+                    //                         ++pos.col
+                    //                         ev.preventDefault()
+                    //                         ev.stopPropagation()
+                    //                     } else {
+                    //                         if (pos.row + 1 < this.adapter!.rowCount) {
+                    //                             pos.col = 0
+                    //                             ++pos.row
+                    //                             ev.preventDefault()
+                    //                             ev.stopPropagation()
+                    //                         }
+                    //                     }
+                    //                 }
+                    //                 break
                     case "Enter":
                         if (this.adapter?.editMode !== EditMode.EDIT_ON_ENTER) {
                             break
@@ -300,9 +313,9 @@ export class Table extends View {
             return
         }
 
-        if (!cell.classList.contains("edit") && this.editing === undefined ) {
+        if (!cell.classList.contains("edit") && this.editing === undefined) {
             // console.log(`### CELL SPECIAL`)
-            switch(ev.key) {
+            switch (ev.key) {
                 case "ArrowDown":
                 case "ArrowUp":
                 case "ArrowRight":
@@ -340,10 +353,10 @@ export class Table extends View {
         const cell = event.target
         if (cell instanceof HTMLElement) {
             const b = cell.getBoundingClientRect()
-                const p = this.clientPosToTablePos(b.x + b.width/2, b.y + b.height/2)
-                if ( p !== undefined) {
-                    this.selection!.value = p
-                }
+            const p = this.clientPosToTablePos(b.x + b.width / 2, b.y + b.height / 2)
+            if (p !== undefined) {
+                this.selection!.value = p
+            }
         }
     }
 
@@ -531,6 +544,9 @@ export class Table extends View {
     }
 
     prepareCells() {
+        if (!this.adapter) {
+            return
+        }
         this.visible = isVisible(this)
         if (!this.visible) {
             return
@@ -596,16 +612,16 @@ export class Table extends View {
                 if (this.adapter?.editMode === EditMode.EDIT_ON_ENTER) {
                     cell.setAttribute("contenteditable", "")
                 }
-                this.adapter!.showCell({col, row}, cell)
+                this.adapter!.showCell({ col, row }, cell)
                 this.measure.appendChild(cell)
             }
         }
-        
+
         setTimeout(this.arrangeAllMeasuredInGrid, 0)
     }
 
     arrangeAllMeasuredInGrid() {
-        const seam = this.adapter!.isSeamless ? 0 : 1;
+        const seam = this.adapter!.isSeamless ? 0 : 1
 
         // use line height as minimal row height        
         const measureLineHeight = this.measure.children[0] as HTMLElement
@@ -669,7 +685,7 @@ export class Table extends View {
 
         const WIDTH_ADJUST = 6 // border left & right + padding top
         const HEIGHT_ADJUST = 2 // border left + padding top & bottom
-        
+
         // move and place column heads
         let x, y
         if (this.colHeads) {
@@ -737,7 +753,7 @@ export class Table extends View {
             this.rowHeads.appendChild(filler)
 
             // this.rowHeads.style.left = `0px`
-            this.rowHeads.style.top = `${colHeadHeight-1}px`
+            this.rowHeads.style.top = `${colHeadHeight - 1}px`
             this.rowHeads.style.width = `${rowHeadWidth}px`
             // this.rowHeads.style.bottom = `0`
 
@@ -769,7 +785,7 @@ export class Table extends View {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`
-                child.style.width = `${colWidth[col] - WIDTH_ADJUST}px` 
+                child.style.width = `${colWidth[col] - WIDTH_ADJUST}px`
                 child.style.height = `${rowHeight[row] - HEIGHT_ADJUST}px`
                 this.body.appendChild(child)
                 x += colWidth[col] - 1 - 1 + seam
@@ -1036,7 +1052,7 @@ export class Table extends View {
                 this.splitBody.appendChild(this.body.children[idx])
             }
         }
-        
+
         if (this.splitBody.children.length > 0) {
             const filler = span()
             idx = this.splitBody.children.length - 1
@@ -1118,7 +1134,7 @@ export class Table extends View {
         }
     }
 
-    protected clientPosToTablePos(x: number, y :number): TablePos | undefined {
+    protected clientPosToTablePos(x: number, y: number): TablePos | undefined {
         let col, row
         for (col = 0; col < this.adapter!.colCount; ++col) {
             const b = this.body.children[col]!.getBoundingClientRect()
