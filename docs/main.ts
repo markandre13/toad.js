@@ -70,14 +70,7 @@ import { span, text } from "@toad/util/lsx"
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
 
-import { style as txBase } from "@toad/style/tx"
-import { style as txStatic } from "@toad/style/tx-static"
-import { style as txDark } from "@toad/style/tx-dark"
-
 window.onload = () => {
-    document.head.appendChild(txBase)
-    document.head.appendChild(txStatic)
-    document.head.appendChild(txDark)
     main()
 }
 

@@ -35,7 +35,7 @@
         "dev:build": "ttsc --watch",
         "dev:test": "wtr --watch",
         "dev:serve": "wds --node-resolve --watch --open --app-index docs/index.dev.html",
-        "build:docs": "hash=`date | shasum` ; hash=${hash%% *} ; rollup --config docs/rollup.config.js && sed \"s|../lib/docs/main.js|main.js?hash=${hash}|;s|../style/|style/|g;s|../polyfill/||\" docs/index.dev.html > docs/index.html",
+        "build:docs": "hash=`date | shasum` ; hash=${hash%% *} ; rollup --config docs/rollup.config.js && sed \"s|../lib/docs/main.js|main.js?hash=${hash}|;s|../style/|style/|g;s|../polyfill/||\" docs/index.dev.html > docs/index.html && mkdir -p docs/style && cp style/* docs/style",
         "update": "npx npm-check-updates -u && npm install"
     },
     "devDependencies": {
