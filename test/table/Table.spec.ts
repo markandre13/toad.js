@@ -14,7 +14,7 @@ import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 
-import { svg, span, text, rect, line } from "@toad/util/lsx"
+import { span, text } from "@toad/util/lsx"
 
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
@@ -41,7 +41,7 @@ import { style as txDark } from "@toad/style/tx-dark"
 // [ ] no edit
 // [ ] row select mode
 // [ ] adjust selection, caret, after insert/remove row/column !!!
-// [ ] adjust table tool to indicate available commands !!!
+// [ ] adjust table tool to indicate available commands !!
 
 // [ ] header glitches
 // [ ] restrict minimal table size to at least one row or one column
@@ -675,8 +675,8 @@ describe("table", function () {
     })
 
     describe("tree view", function () {
-        it.only("rows are placed correctly after closing and opening subtree", async function () {
-            Table.transitionDuration = "1ms"
+        it("rows are placed correctly after closing and opening subtree", async function () {
+            // Table.transitionDuration = "1000ms"
             const model = createTree()
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="tree"></tx-table>`
             await sleep()

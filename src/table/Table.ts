@@ -1037,7 +1037,7 @@ export class Table extends View {
             }
         }
         
-        if (splitRow < this.adapter!.rowCount) {
+        if (this.splitBody.children.length > 0) {
             const filler = span()
             idx = this.splitBody.children.length - 1
             const last = this.splitBody.children[idx] as HTMLElement
