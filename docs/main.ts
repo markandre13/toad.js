@@ -65,10 +65,19 @@ import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
+import { span, text } from "@toad/util/lsx"
+
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
 
+import { style as txBase } from "@toad/style/tx"
+import { style as txStatic } from "@toad/style/tx-static"
+import { style as txDark } from "@toad/style/tx-dark"
+
 window.onload = () => {
+    document.head.appendChild(txBase)
+    document.head.appendChild(txStatic)
+    document.head.appendChild(txDark)
     main()
 }
 
@@ -201,9 +210,30 @@ class MyNode implements TreeNode {
     }
 }
 
+// class MyTreeAdapter extends TreeAdapter<MyNode> {
+//     override showCell(pos: TablePos, cell: HTMLSpanElement) {
+//         // return this.model && this.treeCell(row, this.model.rows[row].node.label)
+//     }
+// }
+
 class MyTreeAdapter extends TreeAdapter<MyNode> {
+    override get isSeamless(): boolean {
+        return true
+    }
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
-        // return this.model && this.treeCell(row, this.model.rows[row].node.label)
+        if (this.model === undefined) {
+            console.log("no model")
+            return
+        }
+        super.showCell(pos, cell)
+
+        const rowinfo = this.model.rows[pos.row]
+        const label = rowinfo.node.label
+
+        const labelNode = span(text(label))
+        labelNode.style.verticalAlign = "middle"
+        labelNode.style.padding = "2px"
+        cell.appendChild(labelNode)
     }
 }
 
