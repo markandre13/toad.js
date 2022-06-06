@@ -19,7 +19,6 @@ import { svg, span, text, rect, line } from "@toad/util/lsx"
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { style as txTabs } from "@toad/style/tx-tabs"
 
 // TODO:
 // [X] send modified-events
@@ -62,7 +61,7 @@ describe("table", function () {
         unbind()
         TableAdapter.unbind()
         Table.transitionDuration = "1ms"
-        document.head.replaceChildren(txBase, txStatic, txDark, txTabs)
+        document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
     describe("render", function () {

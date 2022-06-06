@@ -32,7 +32,7 @@ import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
 
 import { span, div, text } from '../util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
-import { tableStyle } from './style/tx-table.css'
+import { style as txTable } from './style/tx-table'
 
 // --spectrum-table-row-background-color-selected
 // --spectrum-alias-highlight-selected
@@ -86,7 +86,6 @@ export class Table extends View {
     selection?: SelectionModel
     protected adapter?: TableAdapter<any>
 
-    _style: HTMLStyleElement
     protected root: HTMLDivElement // div containing everything else
     protected body: HTMLDivElement
     protected colHeads?: HTMLDivElement
@@ -166,8 +165,7 @@ export class Table extends View {
         this.body.onpointerdown = this.pointerDown
 
         this.attachShadow({ mode: 'open' })
-        this._style = document.importNode(tableStyle, true)
-        this.shadowRoot!.appendChild(this._style)
+        this.attachStyle(txTable)
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
     }

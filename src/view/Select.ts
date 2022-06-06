@@ -23,6 +23,9 @@ import { placePopupVertical } from "@toad/menu/PopupMenu"
 import { TextModel } from "@toad/model/TextModel"
 import { globalController } from "../controller/globalController"
 
+import { style as txCombobox } from "../style/tx-combobox"
+import { style as txMenu } from "../style/tx-menu"
+
 export class Select extends ModelView<OptionModelBase> {
     input: HTMLInputElement
     button: HTMLButtonElement
@@ -118,8 +121,8 @@ export class Select extends ModelView<OptionModelBase> {
 
         this.classList.add("tx-combobox")
         this.attachShadow({ mode: 'open' })
-        this.attachStyle("combobox")
-        this.attachStyle("menu") // menu & popover
+        this.attachStyle(txCombobox)
+        this.attachStyle(txMenu) // menu & popover
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(b)
     }

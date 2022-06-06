@@ -18,6 +18,7 @@
 
 import { View } from "../view/View"
 import { ul, li, span, text, div, slot } from "../util/lsx"
+import { style as txTabs } from "../style/tx-tabs"
 
 export class Tabs extends View {
     markerLine: HTMLElement
@@ -70,7 +71,7 @@ export class Tabs extends View {
         }
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle("tabs")
+        this.shadowRoot!.appendChild(document.importNode(txTabs, true))
         this.shadowRoot!.appendChild(tabContainer)
         this.shadowRoot!.appendChild(this.markerLine = div())
         this.shadowRoot!.appendChild(this.content = div(slot()))

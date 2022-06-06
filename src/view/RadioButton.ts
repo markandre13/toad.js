@@ -19,6 +19,7 @@
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 import { input, span } from "../util/lsx"
+import { style as txRadio } from "../style/tx-radio"
 
 export interface RadioButtonProps extends ModelViewProps<OptionModelBase> {
     value: string,
@@ -47,7 +48,7 @@ export class RadioButton extends ModelView<OptionModelBase> {
         }
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle("radio")
+        this.attachStyle(txRadio)
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(span())
     }

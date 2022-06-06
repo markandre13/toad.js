@@ -18,6 +18,7 @@
 
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
+import { style as txSlider } from "../style/tx-slider"
 
 export class Slider extends ModelView<NumberModel> {
   input: HTMLInputElement
@@ -32,7 +33,7 @@ export class Slider extends ModelView<NumberModel> {
     }
     this.classList.add("tx-slider")
     this.attachShadow({mode: 'open'})
-    this.attachStyle("slider")
+    this.attachStyle(txSlider)
     this.shadowRoot!.appendChild(this.input)
   }
   

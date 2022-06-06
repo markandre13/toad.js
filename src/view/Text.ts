@@ -19,6 +19,7 @@
 import { TextModel } from "../model/TextModel"
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
+import { style as txText } from "../style/tx-text"
 
 export class Text extends ModelView<TextModel|NumberModel> {
   input: HTMLInputElement
@@ -29,7 +30,7 @@ export class Text extends ModelView<TextModel|NumberModel> {
     this.input.classList.add("tx-text")
     this.input.oninput = () => { this.updateModel() }
     this.attachShadow({mode: 'open'})
-    this.attachStyle("text")
+    this.attachStyle(txText)
     this.shadowRoot!.appendChild(this.input)
   }
   

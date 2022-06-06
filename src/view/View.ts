@@ -24,75 +24,66 @@ import { HTMLElementProps, setInitialProperties } from "toad.jsx"
 // TODO: do we use this directly or is GenericView it's only subclass?
 export class View extends HTMLElement {
 
-  public static define(name: string, view: CustomElementConstructor, options?: ElementDefinitionOptions) {
-    const element = window.customElements.get(name)
-    if (element === undefined) {
-      window.customElements.define(name, view, options)
-    } else {  
-      if (element !== view) {
-        console.trace(`View::define(${name}, ...): attempt to redefine view with different constructor`)
-      }
-    }
-  }
-
-  constructor(props?: HTMLElementProps) {
-    super()
-    setInitialProperties(this, props)
-  }
-
-  controller?: Controller
-
-  attachStyle(name: string) {
-    if (this.shadowRoot === null) {
-        console.trace(`this.shadowRoot === null`)
-        return
-    }
-    for(let i = 0; i < document.styleSheets.length; ++i) {
-        const style = document.styleSheets.item(i)
-        if (style!.href && style!.href.endsWith(`/tx-${name}.css`)) {
-            this.shadowRoot.appendChild(document.importNode(style!.ownerNode!, true))
-            return
+    public static define(name: string, view: CustomElementConstructor, options?: ElementDefinitionOptions) {
+        const element = window.customElements.get(name)
+        if (element === undefined) {
+            window.customElements.define(name, view, options)
+        } else {
+            if (element !== view) {
+                console.trace(`View::define(${name}, ...): attempt to redefine view with different constructor`)
+            }
         }
     }
-    console.log(`failed to locate tx-${name}.css in document`)
-}
 
-  setModel(model?: Model<any>): void {
-    console.trace(`Please note that View.setModel(model) has no implementation.`)
-  }
-
-  getModelId(): string {
-    if (!this.hasAttribute("model"))
-      throw Error("no 'model' attribute")
-    let modelId = this.getAttribute("model") // FIXME: both hasAttribute & getAttribute? really?
-    if (!modelId)
-      throw Error("no model id")
-    return "M:" + modelId
-  }
-
-  getActionId(): string {
-    if (!this.hasAttribute("action"))
-      throw Error("no 'action' attribute")
-    let actionId = this.getAttribute("action") // FIXME: both hasAttribute & getAttribute? really?
-    if (!actionId)
-      throw Error("no action id")
-    return "A:" + actionId
-  }
-
-  connectedCallback() {
-    if (this.controller)
-      return
-    let modelId = ""
-    try {
-      modelId = this.getModelId()
-    } catch (error) {
+    constructor(props?: HTMLElementProps) {
+        super()
+        setInitialProperties(this, props)
     }
-    if (modelId != "")
-      globalController.registerView(modelId, this)
-  }
 
-  disconnectedCallback() {
-    if (this.controller)
-      this.controller.unregisterView(this)
-  }
+    controller?: Controller
+
+    attachStyle(style: HTMLStyleElement) {
+        this.shadowRoot!.appendChild(
+            document.importNode(style, true)
+        )
+    }
+
+    setModel(model?: Model<any>): void {
+        console.trace(`Please note that View.setModel(model) has no implementation.`)
+    }
+
+    getModelId(): string {
+        if (!this.hasAttribute("model"))
+            throw Error("no 'model' attribute")
+        let modelId = this.getAttribute("model") // FIXME: both hasAttribute & getAttribute? really?
+        if (!modelId)
+            throw Error("no model id")
+        return "M:" + modelId
+    }
+
+    getActionId(): string {
+        if (!this.hasAttribute("action"))
+            throw Error("no 'action' attribute")
+        let actionId = this.getAttribute("action") // FIXME: both hasAttribute & getAttribute? really?
+        if (!actionId)
+            throw Error("no action id")
+        return "A:" + actionId
+    }
+
+    connectedCallback() {
+        if (this.controller)
+            return
+        let modelId = ""
+        try {
+            modelId = this.getModelId()
+        } catch (error) {
+        }
+        if (modelId != "")
+            globalController.registerView(modelId, this)
+    }
+
+    disconnectedCallback() {
+        if (this.controller)
+            this.controller.unregisterView(this)
+    }
 }

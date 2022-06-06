@@ -22,6 +22,7 @@ import { form, input, button, svg, path, div } from "@toad/util/lsx"
 import { placePopupVertical } from "@toad/menu/PopupMenu"
 import { TextModel } from "@toad/model/TextModel"
 import { globalController } from "../controller/globalController"
+import { style as txSearch } from "../style/tx-search"
 
 export class Search extends ModelView<TextModel> {
     constructor() {
@@ -53,7 +54,7 @@ export class Search extends ModelView<TextModel> {
 
         f.classList.add("tx-search")
         this.attachShadow({ mode: 'open' })
-        this.attachStyle("search")
+        this.attachStyle(txSearch)
         this.shadowRoot!.appendChild(f)
         //         this.attachStyle("menu") // menu & popover
         //         this.shadowRoot!.appendChild(this.input)

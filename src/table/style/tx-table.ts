@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const tableStyle = document.createElement("style")
-tableStyle.textContent = css`
+export const style = document.createElement("style")
+style.textContent = css`
 :host {
     position: relative;
     display: inline-block;

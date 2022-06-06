@@ -19,6 +19,7 @@
 import { BooleanView } from "./BooleanView"
 
 import { input, svg, path } from "../util/lsx"
+import { style as txCheckbox } from "../style/tx-checkbox"
 
 export class Checkbox extends BooleanView {
 
@@ -37,7 +38,7 @@ export class Checkbox extends BooleanView {
         )
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle("checkbox")
+        this.attachStyle(txCheckbox)
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(checkmark)
     }

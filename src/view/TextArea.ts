@@ -20,6 +20,7 @@ import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
 import { ModelView } from "./ModelView"
 import { TextTool } from "./TextTool"
+import { style as txText } from "../style/tx-text"
 
 export class TextArea extends ModelView<TextModel> {
 
@@ -57,6 +58,13 @@ export class TextArea extends ModelView<TextModel> {
             if (event.metaKey === true && event.key === "b") {
                 event.preventDefault()
                 document.execCommand("bold", false)
+
+                // const strongElement = document.createElement("b");
+                // const userSelection = window.getSelection();
+                // const selectedTextRange = userSelection!.getRangeAt(0);
+                // selectedTextRange.surroundContents(strongElement);
+
+
                 this.updateTextTool()
             } else
             if (event.metaKey === true && event.key === "i") {
@@ -122,7 +130,7 @@ export class TextArea extends ModelView<TextModel> {
         }
 
         this.attachShadow({mode: 'open'})
-        this.attachStyle("text")
+        this.attachStyle(txText)
         this.shadowRoot!.appendChild(content)
     }
     

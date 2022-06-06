@@ -20,6 +20,7 @@ import { HtmlModel } from "../model/HtmlModel"
 import { ActionView, ActionViewProps } from "./ActionView"
 
 import { button, span } from "../util/lsx"
+import { style as txButton } from  "../style/tx-button"
 
 export class Button extends ActionView {
     button: HTMLButtonElement
@@ -42,7 +43,7 @@ export class Button extends ActionView {
         this.button.disabled = true
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle("button")
+        this.attachStyle(txButton)
         this.shadowRoot!.appendChild(this.button)
     }
 

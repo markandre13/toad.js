@@ -18,6 +18,7 @@
 
 import { input, span } from "../util/lsx"
 import { BooleanView } from "./BooleanView"
+import { style as txSwitch } from "../style/tx-switch"
 
 export class Switch extends BooleanView {
     constructor() {
@@ -32,7 +33,7 @@ export class Switch extends BooleanView {
         }
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle("switch")
+        this.attachStyle(txSwitch)
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(span())
     }
