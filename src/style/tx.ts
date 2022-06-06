@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 :root {
   font-size: 100%;
   text-size-adjust: none;
@@ -99,3 +103,4 @@ a:link:active, a:visited:active {
   content: "→";
   text-decoration: none;
 } */
+`

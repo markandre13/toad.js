@@ -16,6 +16,11 @@ import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 
 import { svg, span, text, rect, line } from "@toad/util/lsx"
 
+import { style as txBase } from "@toad/style/tx"
+import { style as txStatic } from "@toad/style/tx-static"
+import { style as txDark } from "@toad/style/tx-dark"
+import { style as txTabs } from "@toad/style/tx-tabs"
+
 // TODO:
 // [X] send modified-events
 // [X] render table
@@ -26,18 +31,18 @@ import { svg, span, text, rect, line } from "@toad/util/lsx"
 // [X] edit on enter
 // [X] display error
 // [ ] tree view
-//   [ ] add 'seamless' option to TableAdapter (formerly known as 'compact')
-//   [ ] fix that opening and closing several times make the row smaller and smaller
+//   [X] add 'seamless' option to TableAdapter (formerly known as 'compact')
+//   [X] fix that opening and closing several times make the row smaller and smaller
 //   [ ] don't let the scrollbars flicker (e.g. place the splitBody inside this.root instead of this.body?)
 //   [X] hide below bottom when shrinking
 //   [ ] hide behind right side when shrinking
 //   [ ] space bar to open/close node with focus
-// [ ] insert more than one row/column
+// [X] insert more than one row/column
 // [ ] edit on focus
 // [ ] no edit
 // [ ] row select mode
-// [ ] adjust selection, caret, after insert/remove row/column
-// [ ] adjust table tool to indicate available commands
+// [ ] adjust selection, caret, after insert/remove row/column !!!
+// [ ] adjust table tool to indicate available commands !!!
 
 // [ ] header glitches
 // [ ] restrict minimal table size to at least one row or one column
@@ -57,28 +62,7 @@ describe("table", function () {
         unbind()
         TableAdapter.unbind()
         Table.transitionDuration = "1ms"
-        let links = []
-        let promises = []
-
-        // FIXME: the test fails without these styles...
-
-        for (let path of ["/style/tx-static.css", "/style/tx-dark.css", "/style/tx.css", "/style/tx-tabs.css"]) {
-            const link = document.createElement("link")
-            link.rel = "stylesheet"
-            link.type = "text/css"
-            link.href = path
-            promises.push(new Promise<void>((resolve, reject) => {
-                link.onload = () => {
-                    resolve()
-                }
-            }))
-            links.push(link)
-        }
-        document.head.replaceChildren(...links)
-        for (let promise of promises) {
-            await promise
-        }
-        await sleep(0)
+        document.head.replaceChildren(txBase, txStatic, txDark, txTabs)
     })
 
     describe("render", function () {

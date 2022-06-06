@@ -8,6 +8,10 @@
  *
  */
 
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 :host(.tx-slider) {
     height: 14px;
     position: relative;
@@ -80,3 +84,4 @@
 :host(.tx-slider) > input:disabled::-moz-range-thumb {
     border: 2px solid var(--tx-gray-500); /* knob border */
 }
+`

@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 .tx-button {
     padding: 2px 14px 2px 14px;
     margin: 0;
@@ -80,4 +84,4 @@
     /* align children in the center */
     text-align: center;
 }
-
+`

@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 .tx-label {
     display: block;
     box-sizing: border-box;
@@ -9,3 +13,4 @@
 .tx-label.disabled {
     color: var(--tx-fg-color-disabled)
 }
+`

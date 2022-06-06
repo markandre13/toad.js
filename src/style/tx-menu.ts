@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 .tx-popover {
     background-color: var(--tx-gray-50);
     border: 1px solid var(--tx-gray-400);
@@ -50,4 +54,4 @@
 }
 .tx-menu > li.tx-disabled:hover {
     background-color: var(--tx-gray-50);
-}
+}`

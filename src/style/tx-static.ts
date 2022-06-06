@@ -13,6 +13,10 @@
  *                              -- https://spectrum.adobe.com/page/color/
  */
 
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 :root {
     --tx-static-white: #ffffff;
     --tx-static-black: #000000;
@@ -47,4 +51,4 @@
     --tx-static-green-500: #2d9d78;
     --tx-static-green-600: #268e6c;
     --tx-static-green-700: #12805c;
-}
+}`

@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 /* Layout */
 
 :host(.tx-tabs) {
@@ -107,4 +111,4 @@
     width: 2px;
     pointer-events: none;
 }
-
+`

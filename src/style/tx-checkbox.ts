@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 :host(.tx-checkbox) {
     display: inline-block;
     position: relative;
@@ -70,3 +74,4 @@
 :host(.tx-checkbox) > input:checked:disabled {
     background-color: var(--tx-gray-400);
 }
+`

@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 .tx-helptext {
     display: flex;
     margin: 0;
@@ -26,3 +30,4 @@
     color: var(--tx-warning-color);
     fill: var(--tx-warning-color);
 }
+`

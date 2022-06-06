@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 /* a div on top serves as the container for elements used for the switch*/
 :host(.tx-switch) {
     display: inline-flex;
@@ -88,4 +92,4 @@
 }
 :host(.tx-switch) > input:disabled + span + label {
     color: var(--tx-gray-400);
-}
+}`

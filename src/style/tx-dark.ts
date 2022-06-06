@@ -1,25 +1,32 @@
-/*
- * Light Theme https://spectrum.adobe.com/page/color/
+/* 
+ * Dark Theme https://spectrum.adobe.com/page/color/
  */
 
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 :root {
     /* alternate background */
-    --tx-gray-50: #ffffff;
-    --tx-gray-75: #fafafa;
+    --tx-gray-50: #252525;
+    --tx-gray-75: #2f2f2f;
     /* base background */
-    --tx-gray-100: #f5f5f5;
+    --tx-gray-100: #323232;
+    
     /* other */
-    --tx-gray-200: #eaeaea;
-    --tx-gray-300: #e1e1e1;
-    --tx-gray-400: #cacaca;
+    --tx-gray-200: #3e3e3e;
+    --tx-gray-300: #4a4a4a;
+    --tx-gray-400: #5a5a5a;
+
     /* disabled text */
-    --tx-gray-500: #b3b3b3;
+    --tx-gray-500: #6e6e6e;
     /* placeholder text */
-    --tx-gray-600: #8e8e8e;
+    --tx-gray-600: #909090;
     /* text content */
-    --tx-gray-700: #6e6e6e;
-    --tx-gray-800: #4b4b4b;
-    --tx-gray-900: #2c2c2c;
+    --tx-gray-700: #b9b9b9;
+    --tx-gray-800: #e3e3e3;
+    --tx-gray-900: #ffffff;
+
     /* informative */
     --tx-blue-400: #2680eb;
     --tx-blue-500: #378ef0;
@@ -42,9 +49,10 @@
     --tx-green-700: #107154;
 
     /* focus */
-    --tx-global-blue-500: #1473e6;
+    --tx-global-blue-500: #378ef0;
     /* error */
-    --tx-global-red-600: #c9252d;
+    --tx-global-red-600: #f76d74;
     /* okay */
-    --tx-global-green-600: #39b990;
+    --tx-global-green-600: #12805c;
 }
+`

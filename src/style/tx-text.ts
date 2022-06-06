@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 .tx-text {
     /* display: inline-block; */
     box-shadow: none;
@@ -42,3 +46,4 @@
 .tx-text:focus {
     border-color: var(--tx-outline-color);
 }
+`

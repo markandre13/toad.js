@@ -1,3 +1,7 @@
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 :host(.tx-combobox) {
     display: inline-flex;
     align-items: flex-start;
@@ -93,3 +97,4 @@
 :host(.tx-combobox) > input:disabled + button > svg {
     fill: var(--tx-gray-400);
 }
+`

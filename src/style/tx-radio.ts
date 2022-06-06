@@ -1,4 +1,8 @@
 /* a div on top serves as the container for elements used for the switch*/
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
 :host(.tx-radio) {
     display: inline-flex;
     align-items: flex-start;
@@ -77,3 +81,4 @@
 :host(.tx-radio) > input:disabled + span {
     border-color: var(--tx-gray-500);
 }
+`

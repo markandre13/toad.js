@@ -23,6 +23,16 @@
 
 // }
 
+// while the 'css' tagged template string function returns the string as is,
+// it's use enables CSS syntax highlightning in Visual Studio Code
+export function css(strings: TemplateStringsArray, ...values: any) {
+    let str = strings[0]
+    values.forEach( (s: string, i: number) => {
+        str = str.concat(s).concat(strings[i+1])
+    })
+    return str
+}
+
 export function element<T>(type: string, children: Node[]): T {
     const element = document.createElement(type)
     for (let i = 0; i < children.length; ++i) {

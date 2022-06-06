@@ -1,15 +1,19 @@
-:host {
+import { css } from 'src/util/lsx'
+
+export const style = document.createElement("style")
+style.textContent = css`
+.tx-calendar {
     display: inline-block;
     width: fit-content;
 }
 
-:host>div {
+.tx-calendar>div {
     display: flex;
     align-items: center;
     width: 100%;
 }
 
-:host>div>div {
+.tx-calendar>div>div {
     flex-grow: 1;
     order: 1;
     text-align: center;
@@ -18,32 +22,32 @@
     font-weight: bold;
 }
 
-:host>div button {
+.tx-calendar>div button {
     background: none;
     border: none;
     position: relative;
 }
 
-:host>div button>svg {
+.tx-calendar>div button>svg {
     width: 10px;
     height: 10px;
     fill: var(--tx-gray-900)
 }
 
-:host>div>div+button {
+.tx-calendar>div>div+button {
     order: 0;
     transform: rotate(180deg);
 }
 
-:host>div>div+button+button {
+.tx-calendar>div>div+button+button {
     order: 2;
 }
 
-:host td {
+.tx-calendar td {
     text-align: center;
 }
 
-:host td span {
+.tx-calendar td span {
     display: inline-block;
     margin: 2px;
     width: 28px;
@@ -56,16 +60,16 @@
     font-weight: bold;
 }
 
-:host td span:hover {
+.tx-calendar td span:hover {
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
 
-:host td span.tx-today {
+.tx-calendar td span.tx-today {
     border-color: var(--tx-gray-900);
 }
 
-:host td span.tx-selected {
+.tx-calendar td span.tx-selected {
     background: #334961;
     border-color: #334961;
-}
+}`
