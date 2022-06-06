@@ -45,6 +45,7 @@ style.textContent = css`
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    background-color: var(--tx-gray-50);
 }
 
 :host(.tx-tabs.tx-vertical) > ul {
