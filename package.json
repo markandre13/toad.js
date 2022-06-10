@@ -49,7 +49,7 @@
         "@zerollup/ts-transform-paths": "^1.7.18",
         "@zoltu/typescript-transformer-append-js-extension": "^1.0.1",
         "rollup-plugin-terser": "^7.0.2",
-        "rollup-plugin-typescript2": "^0.32.0",
+        "rollup-plugin-typescript2": "^0.32.1",
         "ttypescript": "^1.5.13",
         "typescript": "^4.7.3"
     },
