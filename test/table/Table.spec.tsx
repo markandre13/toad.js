@@ -693,7 +693,6 @@ describe("table", function () {
             await table.animation
             await sleep(0)
 
-
             expect(rowLabel(table, 0)).to.equal("#0")
             expect(rowLabel(table, 1)).to.equal("#1")
             expect(rowLabel(table, 2)).to.equal("#2")

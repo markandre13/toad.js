@@ -99,11 +99,7 @@ export class InsertRowAnimation extends TableAnimation {
                 y = 0
             } else {
                 const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-                y = px2int(cell.style.top)
-            }
-            if (this.event.index+1 >= this.rowCount) {
-                const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-                y += px2int(cell.style.height) + 2 - 1
+                y = px2int(cell.style.top) + px2int(cell.style.height) + 1 - overlap
             }
         }
 
