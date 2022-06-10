@@ -14,6 +14,11 @@ import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 
+import { NumberModel } from "@toad/model/NumberModel"
+
+import { Text as TextView } from "@toad/view/Text"
+import { Slider } from "@toad/view/Slider"
+
 import { span, text } from "@toad/util/lsx"
 
 import { style as txBase } from "@toad/style/tx"
@@ -474,16 +479,11 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            const animationDone = new Promise<void>((resolve, reject) => {
-                table.animationDone = () => {
-                    resolve()
-                }
-            })
 
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await animationDone
+            await table.animation
 
             validateRender(model)
         })
@@ -495,16 +495,11 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            const animationDone = new Promise<void>((resolve, reject) => {
-                table.animationDone = () => {
-                    resolve()
-                }
-            })
 
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await animationDone
+            await table.animation
 
             validateRender(model)
         })
@@ -516,17 +511,12 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            const animationDone = new Promise<void>((resolve, reject) => {
-                table.animationDone = () => {
-                    resolve()
-                }
-            })
 
             await sleep()
             // also test wrong row size, and multiple rows
             model.removeRow(2)
             expect(model.rowCount).to.equal(3)
-            await animationDone
+            await table.animation
 
             validateRender(model)
         })
@@ -538,17 +528,12 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            const animationDone = new Promise<void>((resolve, reject) => {
-                table.animationDone = () => {
-                    resolve()
-                }
-            })
 
             await sleep()
             // also test wrong row size, and multiple rows
             model.removeColumn(2)
             expect(model.colCount).to.equal(3)
-            await animationDone
+            await table.animation
 
             validateRender(model)
         })
@@ -558,16 +543,11 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            const animationDone = new Promise<void>((resolve, reject) => {
-                table.animationDone = () => {
-                    resolve()
-                }
-            })
 
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await animationDone
+            await table.animation
 
             validateRender(model)
         })
@@ -577,16 +557,11 @@ describe("table", function () {
 
             document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
             const table = getTable(model)
-            const animationDone = new Promise<void>((resolve, reject) => {
-                table.animationDone = () => {
-                    resolve()
-                }
-            })
 
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await animationDone
+            await table.animation
 
             validateRender(model)
         });
@@ -597,15 +572,10 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                const animationDone = new Promise<void>((resolve, reject) => {
-                    table.animationDone = () => {
-                        resolve()
-                    }
-                })
 
                 await sleep()
                 model.insertRow(row)
-                await animationDone
+                await table.animation
 
                 validateRender(model)
             })
@@ -617,15 +587,10 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                const animationDone = new Promise<void>((resolve, reject) => {
-                    table.animationDone = () => {
-                        resolve()
-                    }
-                })
 
                 await sleep()
                 model.insertColumn(row)
-                await animationDone
+                await table.animation
 
                 validateRender(model)
             })
@@ -637,16 +602,11 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                const animationDone = new Promise<void>((resolve, reject) => {
-                    table.animationDone = () => {
-                        resolve()
-                    }
-                })
 
                 await sleep()
                 // also test wrong row size, and multiple rows
                 model.removeRow(row, 1)
-                await animationDone
+                await table.animation
 
                 validateRender(model)
             })
@@ -658,24 +618,107 @@ describe("table", function () {
 
                 document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
                 const table = getTable(model)
-                const animationDone = new Promise<void>((resolve, reject) => {
-                    table.animationDone = () => {
-                        resolve()
-                    }
-                })
 
                 await sleep()
                 // also test wrong row size, and multiple rows
                 model.removeColumn(column, 1)
-                await animationDone
+                await table.animation
 
                 validateRender(model)
             })
         )
     })
 
-    // JSX
-    // tree view via JSX
+    describe("jsx", function () {
+        it("table accepts 'model' and 'style' attributes", async function () {
+            const model = createModel(4, 4)
+            const x = (<>
+                <style>{"body{background: #888;}"}</style>
+                <Table model={model} style={{ width: '42%' }} />
+            </>)
+            document.body.replaceChildren(...x)
+            await sleep()
+
+            validateRender(model)
+
+            const table = getTable(model)!
+            expect(table.style.width).to.equal("42%")
+        })
+    })
+
+    describe("layout", function () {
+        it("expand", async function () {
+            Table.transitionDuration = "500ms"
+            const model = createWidgetTree()
+            // TODO
+            // * while when a TreeNodeModel is initialized from a populated tree,
+            //   all nodes are closed.
+            //   but an emtpy tree is used, which is then populated using add*()
+            //   methods, all nodes are open
+            //   => this should be consistent
+            // * the leaf nodes don't render correctly
+            model.collapse()
+
+            document.body.replaceChildren(
+                <Table model={model} style={{
+                    position: 'absolute',
+                    inset: 0,
+                }} />
+            )
+            await sleep()
+            const table = getTable(model).table
+            const bounds = table.getBoundingClientRect()
+            expect(bounds.width).to.equal(window.innerWidth)
+            expect(bounds.height).to.equal(window.innerHeight)
+        })
+    })
+
+    describe("tree", function () {
+
+        it.only("cells with widgets and position absolute", async function () {
+            // Table.transitionDuration = "500ms"
+            const model = createTreeModelFromTree()
+
+            document.body.replaceChildren(
+                <Table model={model} style={{ position: 'absolute', inset: 0 }} />
+            )
+            await sleep()
+            const table = getTable(model)
+
+            expect(rowLabel(table, 0)).to.equal("#0")
+            expect(rowLabel(table, 1)).to.equal("#3")
+            expect(rowCount(table)).to.equal(2)
+
+            click(getByText("#0")!.previousElementSibling!)
+            await table.animation
+            await sleep(0)
+
+
+            expect(rowLabel(table, 0)).to.equal("#0")
+            expect(rowLabel(table, 1)).to.equal("#1")
+            expect(rowLabel(table, 2)).to.equal("#2")
+            expect(rowLabel(table, 3)).to.equal("#3")
+            expect(rowCount(table)).to.equal(4)
+
+            click(getByText("#3")!.previousElementSibling!)
+            await table.animation
+            await sleep(0)
+
+            for(let row=0; row<6; ++row) {
+                console.log((table.body.children[row*2].children[0].nextElementSibling as HTMLElement).innerText)
+            }
+
+            // check what's going on during the update
+
+            expect(rowLabel(table, 0)).to.equal("#0")
+            expect(rowLabel(table, 1)).to.equal("#1")
+            expect(rowLabel(table, 2)).to.equal("#2")
+            expect(rowLabel(table, 3)).to.equal("#3")
+            expect(rowLabel(table, 4)).to.equal("#4")
+            expect(rowLabel(table, 5)).to.equal("#5")
+            expect(rowCount(table)).to.equal(6)
+        })
+    })
 
     describe("tree view", function () {
         it("rows are placed correctly after closing and opening subtree", async function () {
@@ -686,56 +729,50 @@ describe("table", function () {
 
             // validateRender(model)
 
-            // const table = getTable(model)
+            const table = getTable(model)
 
-            // let expectH = 19
-            // let expectY = 0
-            // for (let row = 0; row < model.rowCount; ++row) {
-            //     const cell = table.body.children[row * model.colCount] as HTMLSpanElement
-            //     const y = px2float(cell.style.top)
-            //     const h = px2float(cell.style.height)
-            //     // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
-            //     expect(y).to.equal(expectY)
-            //     expect(h).to.equal(expectH)
-            //     expectY += h
-            // }
-            
-            // const animationDone = new Promise<void>((resolve, reject) => {
-            //     table.animationDone = () => {
-            //         resolve()
-            //     }
-            // })
+            let expectH = 19
+            let expectY = 0
+            for (let row = 0; row < model.rowCount; ++row) {
+                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
+                const y = px2float(cell.style.top)
+                const h = px2float(cell.style.height)
+                // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
+                expect(y).to.equal(expectY)
+                expect(h).to.equal(expectH)
+                expectY += h
+            }
 
-            // click(table.body.children[0].children[0])
-            // await animationDone
-            // await sleep(100)
 
-            // expectY = 0
-            // for (let row = 0; row < model.rowCount; ++row) {
-            //     const cell = table.body.children[row * model.colCount] as HTMLSpanElement
-            //     const y = px2float(cell.style.top)
-            //     const h = px2float(cell.style.height)
-            //     // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
-            //     expect(y).to.equal(expectY)
-            //     expect(h).to.equal(expectH)
-            //     expectY += h
-            // }
+            click(table.body.children[0].children[0])
+            await table.animation
+            await sleep(100)
 
-            // click(table.body.children[0].children[0])
-            // await animationDone
-            // await sleep(100)
+            expectY = 0
+            for (let row = 0; row < model.rowCount; ++row) {
+                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
+                const y = px2float(cell.style.top)
+                const h = px2float(cell.style.height)
+                // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
+                expect(y).to.equal(expectY)
+                expect(h).to.equal(expectH)
+                expectY += h
+            }
 
-            // expectY = 0
-            // for (let row = 0; row < model.rowCount; ++row) {
-            //     const cell = table.body.children[row * model.colCount] as HTMLSpanElement
-            //     const y = px2float(cell.style.top)
-            //     const h = px2float(cell.style.height)
-            //     // console.log(`expectRow[${row}] = {y: ${y} (${expectY}), h: ${h}}`)
-            //     expect(y).to.equal(expectY)
-            //     expect(h).to.equal(expectH)
-            //     expectY += h
-            // }
+            click(table.body.children[0].children[0])
+            await table.animation
+            await sleep(100)
 
+            expectY = 0
+            for (let row = 0; row < model.rowCount; ++row) {
+                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
+                const y = px2float(cell.style.top)
+                const h = px2float(cell.style.height)
+                // console.log(`expectRow[${row}] = {y: ${y} (${expectY}), h: ${h}}`)
+                expect(y).to.equal(expectY)
+                expect(h).to.equal(expectH)
+                expectY += h
+            }
         })
     })
 })
@@ -752,6 +789,18 @@ function createModel(cols: number, rows: number) {
     return model
 }
 
+class TableWrapper extends TableFriend {
+    animation: Promise<void>
+    constructor(table: Table) {
+        super(table)
+        this.animation = new Promise<void>((resolve, reject) => {
+            table.animationDone = () => {
+                resolve()
+            }
+        })
+    }
+}
+
 function getTable(model: Model<any>) {
     const table = document.querySelector("tx-table") as Table
     if (table === undefined) {
@@ -760,7 +809,7 @@ function getTable(model: Model<any>) {
     if (table.getModel() !== model) {
         throw Error("<tx-model> has wrong model")
     }
-    return new TableFriend(table)
+    return new TableWrapper(table)
 }
 
 function validateRender(model: TestModel) {
@@ -944,4 +993,90 @@ function createTree(): TreeNodeModel<MyNode> {
     model.addSiblingAfter(0)
     bindModel("tree", model)
     return model
+}
+
+class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
+    override get isSeamless(): boolean {
+        return true
+    }
+    override get colCount(): number {
+        return 2
+    }
+    override showCell(pos: TablePos, cell: HTMLSpanElement) {
+        if (this.model === undefined) {
+            console.log("no model")
+            return
+        }
+        const node = this.model.rows[pos.row].node
+        switch (pos.col) {
+            case 0:
+                this.treeCell(pos, cell, node.label)
+                break
+            case 1:
+                if (node.model && node.down === undefined) {
+                    const x = <>
+                        <TextView model={node.model} style={{ width: '50px', margin: '10px' }} />
+                        <Slider model={node.model} style={{ margin: '10px' }} />
+                    </>
+                    cell.replaceChildren(...x)
+                }
+                break
+        }
+    }
+}
+
+function createWidgetTree(): TreeNodeModel<WidgetNode> {
+    TreeAdapter.register(WidgetTreeAdapter, TreeNodeModel, WidgetNode)
+
+    let model = new TreeNodeModel(WidgetNode)
+    model.addSiblingAfter(0)
+    model.addChildAfter(0)
+    model.addChildAfter(1)
+    model.addSiblingAfter(2)
+    model.addSiblingAfter(1)
+    model.addChildAfter(4)
+    // model.addSiblingAfter(0)
+    return model
+}
+
+class WidgetNode implements TreeNode {
+    label: string
+    next?: WidgetNode
+    down?: WidgetNode
+    model = new NumberModel(0, { min: 0, max: 1, step: 0.01 })
+    static counter = 0
+    constructor(label?: string, ...children: WidgetNode[]) {
+        this.label = label ? label : ""
+        if (children.length > 0) {
+            this.down = children[0]
+        }
+        for (let i = 1; i < children.length; ++i) {
+            children[i - 1].next = children[i]
+        }
+    }
+}
+
+function createTreeModelFromTree(): TreeNodeModel<WidgetNode> {
+    TreeAdapter.register(WidgetTreeAdapter, TreeNodeModel, WidgetNode)
+    return new TreeNodeModel(WidgetNode,
+        new WidgetNode("",
+            new WidgetNode("#0",
+                new WidgetNode("#1"),
+                new WidgetNode("#2")
+            ),
+            new WidgetNode("#3",
+                new WidgetNode("#4"),
+                new WidgetNode("#5")
+            )
+        ).down
+    )
+}
+
+function rowLabel(table: TableFriend, row: number): string {
+    // console.log(`${row} * ${table.adapter.colCount}`)
+    // console.log(table.body.children[row * table.adapter.colCount])
+    return (table.body.children[row * table.adapter.colCount].children[1] as HTMLElement).innerText
+}
+function rowCount(table: TableFriend): number {
+    return table.adapter.rowCount
 }

@@ -195,8 +195,6 @@ export function click(node: Element) {
 //   0: can receive focus
 //   >0: can receive focus and uses a custom tab order (shouldn't be used)
 
-
-
 function forwardFocus() {
     return findNextElementForFocus(true)
 }

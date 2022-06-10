@@ -38,6 +38,9 @@ export class TableFriend {
     get selection() {
         return this.table.selection
     }
+    get style() {
+        return this.table.style
+    }
     clearAnimation() {
         (this.table as any).animation = undefined
     }

@@ -116,20 +116,6 @@ export class Table extends View {
     constructor(props?: TableProps) {
         super()
 
-        if (Table.observer === undefined) {
-            Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
-                Table.allTables.forEach(table => {
-                    if (table.visible === false) {
-                        table.prepareCells()
-                    }
-                })
-            })
-            Table.observer.observe(document.body, {
-                attributes: true,
-                subtree: true
-            })
-        }
-
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
         this.hostKeyDown = this.hostKeyDown.bind(this)
         this.cellKeyDown = this.cellKeyDown.bind(this)
@@ -181,6 +167,21 @@ export class Table extends View {
             if (props.selectionModel)
                 this.setModel(props.selectionModel)
         }
+
+        if (Table.observer === undefined) {
+            Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
+                Table.allTables.forEach(table => {
+                    if (table.visible === false) {
+                        table.prepareCells()
+                    }
+                })
+            })
+            Table.observer.observe(document.body, {
+                attributes: true,
+                subtree: true
+            })
+        }
+
     }
 
     override connectedCallback(): void {
@@ -449,6 +450,7 @@ export class Table extends View {
         }
 
         if (model instanceof TableModel) {
+            console.log(`Table.setModel(TableModel)`)
             this.model = model
             this.model.modified.add(this.modelChanged, this)
             const adapter = TableAdapter.lookup(model) as new (model: TableModel) => TableAdapter<any>
@@ -504,7 +506,7 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        // console.log(`Table.modelChanged(${event})`)
+        console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
@@ -551,6 +553,10 @@ export class Table extends View {
         if (!this.visible) {
             return
         }
+
+        console.log(`Table.prepareCells()`)
+        console.log(`  rows=${this.adapter!.rowCount}`)
+
         if (this.adapter!.isSeamless) {
             this.root.classList.add("seamless")
         }

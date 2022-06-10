@@ -229,6 +229,19 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         this.modified.trigger(new TableEvent(TableEventType.REMOVE_ROW, row+1, count))
     }
 
+    collapse() {
+        // close all visible open nodes
+        let row = 0
+        while(row < this.rowCount) {
+            this.closeAt(row)
+            ++row
+        }
+        // mark remaining nodes as closed
+        for (let rowinfo of this.rows) {
+            rowinfo.open = false
+        }
+    }
+
     createRowInfo(row: number) {
         const newRows = new Array<RowInfo<T>>()
         // this.rows.splice(row, 0, new TreeModelRow(nn, depth))

@@ -25,8 +25,8 @@ style.textContent = css`
     height: fill-available;
     */
 
-    height: 200px;
-    width: 200px;
+    min-height: 100px;
+    min-width: 100px;
 }
 
 .body, .cols, .rows {
