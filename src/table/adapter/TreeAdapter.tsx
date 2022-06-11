@@ -41,9 +41,10 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
             return
         }
 
-        // console.log(`render tree cell ${pos.col}, ${pos.row}`)
-
         const rowinfo = this.model.rows[pos.row]
+
+        // console.log(`render tree cell ${pos.col}, ${pos.row} (${this.model.getDown(rowinfo.node) === undefined ? "leaf" : "branch"}), '${(rowinfo.node as any).label}', depth=${rowinfo.depth}`)
+
         const rs = 8      // rectangle width and height
         const sx = rs + 4 // horizontal step width, minimal vertical step width
         const height = sx
@@ -61,7 +62,7 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
         const d = rowinfo.depth
 
         // when we have children, draw a box
-        if (this.model.getDown(rowinfo.node)) {
+        if (this.model.getDown(rowinfo.node) !== undefined) {
             // TODO: port Rectangle from workflow to toad.js
             const x0 = d * sx + dx
 
@@ -138,7 +139,7 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
         // there isn't more below, draw a line from the top to the middle
         if (this.model.getDown(rowinfo.node) === undefined || this.model.getNext(rowinfo.node) === undefined) {
             const x = d * sx + dx + (rs >> 1) + 2
-            lines += `<line x1='${x}' y1='0' x2='${x}' y2='50%' stroke='%23f80' />`
+            lines += `<line x1='${x}' y1='0' x2='${x}' y2='${rs >> 1}' stroke='%23f80' />`
         }
 
         cell.style.background = `url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' style='background: %23000;'>${lines}</svg>\")`

@@ -676,7 +676,7 @@ describe("table", function () {
 
     describe("tree", function () {
 
-        it("opening and closing a tree renders properly", async function () {
+        it.only("opening and closing a tree renders properly", async function () {
             // Table.transitionDuration = "500ms"
 
             // GIVEN an initial tree view
@@ -724,9 +724,15 @@ describe("table", function () {
             expect(rowCount(table)).to.equal(6)
             validateRender(model)
         })
-    })
 
-    describe("tree view", function () {
+        it("center tree control vertically in row (?)", function() {
+
+        })
+
+        it("expand columns during insert row", function() {
+
+        })
+
         it("rows are placed correctly after closing and opening subtree", async function () {
             // Table.transitionDuration = "1000ms"
             const model = createTree()
