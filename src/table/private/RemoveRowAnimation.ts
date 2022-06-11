@@ -37,7 +37,7 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     run() {
-        const overlap = this.adapter.isSeamless ? 1 : 0
+        const overlap = this.adapter.config.seamless ? 1 : 0
 
         let totalHeight = 0
         let idx = this.event.index * this.colCount

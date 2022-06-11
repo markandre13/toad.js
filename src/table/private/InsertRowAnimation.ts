@@ -83,7 +83,7 @@ export class InsertRowAnimation extends TableAnimation {
 
     arrangeMeasuredRowsInGrid() {
 
-        const overlap = this.adapter.isSeamless ? 1 : 0
+        const overlap = this.adapter.config.seamless ? 1 : 0
         
         // y := position of new row
         let idx = this.event.index * this.colCount

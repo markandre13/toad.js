@@ -50,7 +50,6 @@ export function validateRender(model: TestModel, print: boolean = false) {
     // console.log(`validateRender: size ${adapter.colCount} x ${adapter.rowCount} = ${adapter.colCount * adapter.rowCount}`)
 
     const table = getTable(model)
-    // const overlap = table.adapter.isSeamless ? 0 : 1
     const adapter = table.adapter
     const body = table.body
     // console.log(`  body has length ${body.children.length}`)
@@ -63,7 +62,7 @@ export function validateRender(model: TestModel, print: boolean = false) {
         expectCol.push({ x, w })
         // console.log(`expectCol[${col}] = {x: ${x}, w: ${w}}`)
         x += w + 6 - 1
-        if (table.adapter.isSeamless) {
+        if (table.adapter.config.seamless) {
             --x
         }
     }
@@ -76,7 +75,7 @@ export function validateRender(model: TestModel, print: boolean = false) {
         expectRow.push({ y, h })
         // console.log(`expectRow[${row}] = {x: ${y}, w: ${h}}`)
         y += h + 2 - 1
-        if (table.adapter.isSeamless) {
+        if (table.adapter.config.seamless) {
             --y
         }
     }

@@ -40,17 +40,19 @@ type AdapterConstructor = new (model: TableModel) => TableAdapter<any>
 type TypeConstructor = (new (...args: any[]) => any)
 type TypeToAdapter = Map<TypeConstructor | null, AdapterConstructor>
 
+class TableAdapterConfig {
+    editMode = EditMode.EDIT_ON_FOCUS
+    seamless = false
+    expandColum = false
+}
+
 export class TableAdapter<T extends TableModel> {
     model?: T
+    config = new TableAdapterConfig()
     constructor(model: T) {
         this.model = model
     }
-    get editMode(): EditMode {
-        return EditMode.EDIT_ON_FOCUS
-    }
-    get isSeamless(): boolean {
-        return false
-    }
+
     get colCount(): number {
         return this.model === undefined ? 0 : this.model.colCount
     }

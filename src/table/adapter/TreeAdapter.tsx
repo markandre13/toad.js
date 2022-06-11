@@ -22,9 +22,11 @@ import { TablePos } from "../TablePos"
 import { svg, rect, line, span, text } from "@toad/util/lsx"
 
 export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
-    override get isSeamless(): boolean {
-        return true
+    constructor(model: TreeModel<T>) {
+        super(model)
+        this.config.seamless = true
     }
+
     treeCell(pos: TablePos, cell: HTMLSpanElement, label: string): void {
         this._showCell(pos, cell)
         const labelNode = span(text(label))

@@ -210,8 +210,9 @@ class MyNode implements TreeNode {
 // }
 
 class MyTreeAdapter extends TreeAdapter<MyNode> {
-    override get isSeamless(): boolean {
-        return true
+    constructor(model: TreeNodeModel<MyNode>) {
+        super(model)
+        this.config.seamless = true
     }
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
         if (this.model === undefined) {

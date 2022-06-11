@@ -676,7 +676,7 @@ describe("table", function () {
 
     describe("tree", function () {
 
-        it.only("opening and closing a tree renders properly", async function () {
+        it("opening and closing a tree renders properly", async function () {
             // Table.transitionDuration = "500ms"
 
             // GIVEN an initial tree view
@@ -697,6 +697,8 @@ describe("table", function () {
             click(getByText("#0")!.previousElementSibling!)
 
             await table.animation()
+
+            // return
 
             // THEN it renders correctly
             expect(rowLabel(table, 0)).to.equal("#0")
@@ -819,9 +821,6 @@ class TestSpreadsheetModel extends SpreadsheetModel implements TestModel {
 }
 
 export class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> {
-    override get editMode(): EditMode {
-        return this.model!.editMode
-    }
 }
 
 // ---------------------
@@ -837,9 +836,6 @@ class MyNode implements TreeNode {
 }
 
 class MyTreeAdapter extends TreeAdapter<MyNode> {
-    override get isSeamless(): boolean {
-        return true
-    }
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
         if (this.model === undefined) {
             console.log("no model")
@@ -872,9 +868,6 @@ function createTree(): TreeNodeModel<MyNode> {
 }
 
 class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
-    override get isSeamless(): boolean {
-        return true
-    }
     override get colCount(): number {
         return 2
     }

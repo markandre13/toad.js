@@ -18,10 +18,10 @@
 
 import { text } from "@toad"
 import { GridTableModel } from "@toad/table/model/GridTableModel"
-import { InferTypedTableModelParameter, TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
+import { TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
 import { TablePos } from "../TablePos"
 
-export abstract class GridAdapter<M extends GridTableModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
+export abstract class GridAdapter<M extends GridTableModel<any>> extends TypedTableAdapter<M> {
     override showCell(pos: TablePos, cell: HTMLSpanElement){
         if (!this.model) {
             return undefined

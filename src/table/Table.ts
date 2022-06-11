@@ -279,7 +279,7 @@ export class Table extends View {
                     //                 }
                     //                 break
                     case "Enter":
-                        if (this.adapter?.editMode !== EditMode.EDIT_ON_ENTER) {
+                        if (this.adapter?.config.editMode !== EditMode.EDIT_ON_ENTER) {
                             break
                         }
                         if (this.editing === undefined) {
@@ -557,7 +557,7 @@ export class Table extends View {
         // console.log(`Table.prepareCells()`)
         // console.log(`  rows=${this.adapter!.rowCount}`)
 
-        if (this.adapter!.isSeamless) {
+        if (this.adapter!.config.seamless) {
             this.root.classList.add("seamless")
         }
 
@@ -615,7 +615,7 @@ export class Table extends View {
                 cell.onfocus = this.cellFocus
                 cell.onkeydown = this.cellKeyDown
                 cell.tabIndex = 0
-                if (this.adapter?.editMode === EditMode.EDIT_ON_ENTER) {
+                if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
                     cell.setAttribute("contenteditable", "")
                 }
                 this.adapter!.showCell({ col, row }, cell)
@@ -627,7 +627,7 @@ export class Table extends View {
     }
 
     arrangeAllMeasuredInGrid() {
-        const seam = this.adapter!.isSeamless ? 0 : 1
+        const seam = this.adapter!.config.seamless ? 0 : 1
 
         // use line height as minimal row height        
         const measureLineHeight = this.measure.children[0] as HTMLElement

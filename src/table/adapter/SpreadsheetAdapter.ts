@@ -23,8 +23,9 @@ import { GridAdapter } from "./GridAdapter"
 
 export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<T> {
 
-    override get editMode(): EditMode {
-        return EditMode.EDIT_ON_ENTER
+    constructor(model: T) {
+        super(model)
+        this.config.editMode = EditMode.EDIT_ON_ENTER
     }
 
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
