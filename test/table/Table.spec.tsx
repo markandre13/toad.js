@@ -484,7 +484,7 @@ describe("table", function () {
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation
+            await table.animation()
 
             validateRender(model)
         })
@@ -500,7 +500,7 @@ describe("table", function () {
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation
+            await table.animation()
 
             validateRender(model)
         })
@@ -517,7 +517,7 @@ describe("table", function () {
             // also test wrong row size, and multiple rows
             model.removeRow(2)
             expect(model.rowCount).to.equal(3)
-            await table.animation
+            await table.animation()
 
             validateRender(model)
         })
@@ -534,7 +534,7 @@ describe("table", function () {
             // also test wrong row size, and multiple rows
             model.removeColumn(2)
             expect(model.colCount).to.equal(3)
-            await table.animation
+            await table.animation()
 
             validateRender(model)
         })
@@ -548,7 +548,7 @@ describe("table", function () {
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation
+            await table.animation()
 
             validateRender(model)
         })
@@ -562,7 +562,7 @@ describe("table", function () {
             await sleep()
             // also test wrong row size, and multiple rows
             model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation
+            await table.animation()
 
             validateRender(model)
         });
@@ -576,7 +576,7 @@ describe("table", function () {
 
                 await sleep()
                 model.insertRow(row)
-                await table.animation
+                await table.animation()
 
                 validateRender(model)
             })
@@ -591,7 +591,7 @@ describe("table", function () {
 
                 await sleep()
                 model.insertColumn(row)
-                await table.animation
+                await table.animation()
 
                 validateRender(model)
             })
@@ -607,7 +607,7 @@ describe("table", function () {
                 await sleep()
                 // also test wrong row size, and multiple rows
                 model.removeRow(row, 1)
-                await table.animation
+                await table.animation()
 
                 validateRender(model)
             })
@@ -623,7 +623,7 @@ describe("table", function () {
                 await sleep()
                 // also test wrong row size, and multiple rows
                 model.removeColumn(column, 1)
-                await table.animation
+                await table.animation()
 
                 validateRender(model)
             })
@@ -676,7 +676,7 @@ describe("table", function () {
 
     describe("tree", function () {
 
-        it.only("opening and closing a tree renders properly", async function () {
+        it("opening and closing a tree renders properly", async function () {
             // Table.transitionDuration = "500ms"
 
             // GIVEN an initial tree view
@@ -695,8 +695,8 @@ describe("table", function () {
 
             // WHEN opening the 1st node
             click(getByText("#0")!.previousElementSibling!)
-            await table.animation
-            await sleep(0)
+
+            await table.animation()
 
             // THEN it renders correctly
             expect(rowLabel(table, 0)).to.equal("#0")
@@ -708,12 +708,11 @@ describe("table", function () {
 
             // WHEN opening the 2dn node
             click(getByText("#3")!.previousElementSibling!)
-            await table.animation
-            await sleep(0)
+            await table.animation()
 
-            for(let row=0; row<6; ++row) {
-                console.log((table.body.children[row*2].children[0].nextElementSibling as HTMLElement).innerText)
-            }
+            // for(let row=0; row<6; ++row) {
+            //     console.log((table.body.children[row*2].children[0].nextElementSibling as HTMLElement).innerText)
+            // }
 
             // THEN it renders correctly
             expect(rowLabel(table, 0)).to.equal("#0")
@@ -752,7 +751,7 @@ describe("table", function () {
 
 
             click(table.body.children[0].children[0])
-            await table.animation
+            await table.animation()
             await sleep(100)
 
             expectY = 0
@@ -767,7 +766,7 @@ describe("table", function () {
             }
 
             click(table.body.children[0].children[0])
-            await table.animation
+            await table.animation()
             await sleep(100)
 
             expectY = 0
@@ -804,8 +803,12 @@ class TestSpreadsheetModel extends SpreadsheetModel implements TestModel {
     showColumnHeaders = false
     showRowHeaders = false
     editMode = EditMode.EDIT_ON_ENTER
-    getValueOf(col: number, row: number): string {
+    getModelValueOf(col: number, row: number): string {
         return this.getField(col, row).valueOf()
+    }
+    getCellValueOf(table: TableFriend, col: number, row: number): string {
+        const cell = table.body.children[col + row * table.adapter.colCount] as HTMLElement
+        return cell.innerText
     }
 }
 
@@ -892,17 +895,26 @@ class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
     }
 }
 
-class TestTreeNodeModel<T> extends TreeNodeModel<T> implements TestModel {
+class TestTreeNodeModel extends TreeNodeModel<WidgetNode> implements TestModel {
     showColumnHeaders = false
     showRowHeaders = false
     editMode = EditMode.EDIT_ON_ENTER
-    getValueOf(col: number, row: number): string {
-        // return this.rows[row].node
-        return "whut?"
+    getModelValueOf(col: number, row: number): string {
+        if (col !== 0) {
+            return ""
+        }
+        return this.rows[row].node.label
+    }
+    getCellValueOf(table: TableFriend, col: number, row: number): string {
+        if (col !== 0) {
+            return ""
+        }
+        const cell = table.body.children[col + row * table.adapter.colCount] as HTMLElement
+        return cell.innerText
     }
 }
 
-function createWidgetTree(): TestTreeNodeModel<WidgetNode> {
+function createWidgetTree(): TestTreeNodeModel {
     TreeAdapter.register(WidgetTreeAdapter, TreeNodeModel, WidgetNode)
 
     let model = new TestTreeNodeModel(WidgetNode)
@@ -933,7 +945,7 @@ class WidgetNode implements TreeNode {
     }
 }
 
-function createTreeModelFromTree(): TestTreeNodeModel<WidgetNode> {
+function createTreeModelFromTree(): TestTreeNodeModel {
     TreeAdapter.register(WidgetTreeAdapter, TreeNodeModel, WidgetNode)
     return new TestTreeNodeModel(WidgetNode,
         new WidgetNode("",

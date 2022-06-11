@@ -41,7 +41,7 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
             return
         }
 
-        console.log(`render tree cell ${pos.col}, ${pos.row}`)
+        // console.log(`render tree cell ${pos.col}, ${pos.row}`)
 
         const rowinfo = this.model.rows[pos.row]
         const rs = 8      // rectangle width and height
@@ -85,7 +85,7 @@ export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
             svgNode.appendChild(line(x0 + rs, dy + (rs >> 1), x0 + rs + rx, dy + (rs >> 1), "#f80"))
 
             svgNode.onpointerdown = (event: MouseEvent) => {
-                console.log(`TreeAdapter.pointerdown()`)
+                // console.log(`TreeAdapter.pointerdown()`)
                 event.preventDefault()
                 event.stopPropagation()
 

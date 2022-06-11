@@ -450,7 +450,7 @@ export class Table extends View {
         }
 
         if (model instanceof TableModel) {
-            console.log(`Table.setModel(TableModel)`)
+            // console.log(`Table.setModel(TableModel)`)
             this.model = model
             this.model.modified.add(this.modelChanged, this)
             const adapter = TableAdapter.lookup(model) as new (model: TableModel) => TableAdapter<any>
@@ -506,7 +506,7 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        console.log(`Table.modelChanged(${event})`)
+        // console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
@@ -554,8 +554,8 @@ export class Table extends View {
             return
         }
 
-        console.log(`Table.prepareCells()`)
-        console.log(`  rows=${this.adapter!.rowCount}`)
+        // console.log(`Table.prepareCells()`)
+        // console.log(`  rows=${this.adapter!.rowCount}`)
 
         if (this.adapter!.isSeamless) {
             this.root.classList.add("seamless")
