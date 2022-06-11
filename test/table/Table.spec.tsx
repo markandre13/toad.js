@@ -1,29 +1,30 @@
 import { expect } from '@esm-bundle/chai'
-import { TableAdapter, bindModel, unbind, Table } from "@toad"
-import { TableFriend } from '@toad/table/private/TableFriend'
-import { EditMode } from '@toad/table/adapter/TableAdapter'
-import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
-import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
-import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
-import { input } from "@toad/util/lsx"
-import { sleep, px2int, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
 
-import { Model } from "@toad/model/Model"
+import { bindModel, unbind } from "@toad"
+
+import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
+import { TableAdapter, EditMode } from '@toad/table/adapter/TableAdapter'
 import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
+import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
+import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
+import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
+
+import { TableFriend } from '@toad/table/private/TableFriend'
 
 import { NumberModel } from "@toad/model/NumberModel"
-
 import { Text as TextView } from "@toad/view/Text"
 import { Slider } from "@toad/view/Slider"
 
-import { span, text } from "@toad/util/lsx"
-
+import { span, input, text } from "@toad/util/lsx"
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
+
+import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
+import { validateRender, TestModel, getTable } from "./util"
 
 // TODO:
 // [X] send modified-events
@@ -363,7 +364,7 @@ describe("table", function () {
         describe("edit cell on enter (spreadsheet mode)", function () {
             it("editing an empty cell will result in an empty cell", async function () {
                 TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
-                const model = new TestModel(2, 2)
+                const model = new TestSpreadsheetModel(2, 2)
                 bindModel("model", model)
                 document.body.innerHTML = `<tx-table model="model"></tx-table>`
                 await sleep()
@@ -675,30 +676,37 @@ describe("table", function () {
 
     describe("tree", function () {
 
-        it.only("cells with widgets and position absolute", async function () {
+        it.only("opening and closing a tree renders properly", async function () {
             // Table.transitionDuration = "500ms"
-            const model = createTreeModelFromTree()
 
+            // GIVEN an initial tree view
+            const model = createTreeModelFromTree()
             document.body.replaceChildren(
                 <Table model={model} style={{ position: 'absolute', inset: 0 }} />
             )
             await sleep()
             const table = getTable(model)
 
+            // THEN it renders correctly
             expect(rowLabel(table, 0)).to.equal("#0")
             expect(rowLabel(table, 1)).to.equal("#3")
             expect(rowCount(table)).to.equal(2)
+            validateRender(model)
 
+            // WHEN opening the 1st node
             click(getByText("#0")!.previousElementSibling!)
             await table.animation
             await sleep(0)
 
+            // THEN it renders correctly
             expect(rowLabel(table, 0)).to.equal("#0")
             expect(rowLabel(table, 1)).to.equal("#1")
             expect(rowLabel(table, 2)).to.equal("#2")
             expect(rowLabel(table, 3)).to.equal("#3")
             expect(rowCount(table)).to.equal(4)
+            validateRender(model)
 
+            // WHEN opening the 2dn node
             click(getByText("#3")!.previousElementSibling!)
             await table.animation
             await sleep(0)
@@ -707,8 +715,7 @@ describe("table", function () {
                 console.log((table.body.children[row*2].children[0].nextElementSibling as HTMLElement).innerText)
             }
 
-            // check what's going on during the update
-
+            // THEN it renders correctly
             expect(rowLabel(table, 0)).to.equal("#0")
             expect(rowLabel(table, 1)).to.equal("#1")
             expect(rowLabel(table, 2)).to.equal("#2")
@@ -716,6 +723,7 @@ describe("table", function () {
             expect(rowLabel(table, 4)).to.equal("#4")
             expect(rowLabel(table, 5)).to.equal("#5")
             expect(rowCount(table)).to.equal(6)
+            validateRender(model)
         })
     })
 
@@ -778,7 +786,7 @@ describe("table", function () {
 
 function createModel(cols: number, rows: number) {
     TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
-    const model = new TestModel(cols, rows)
+    const model = new TestSpreadsheetModel(cols, rows)
     for (let row = 0; row < 4; ++row) {
         for (let col = 0; col < 4; ++col) {
             model.setField(col, row, `C${col}R${row}`)
@@ -788,160 +796,20 @@ function createModel(cols: number, rows: number) {
     return model
 }
 
-class TableWrapper extends TableFriend {
-    animation: Promise<void>
-    constructor(table: Table) {
-        super(table)
-        this.animation = new Promise<void>((resolve, reject) => {
-            table.animationDone = () => {
-                resolve()
-            }
-        })
-    }
-}
-
-function getTable(model: Model<any>) {
-    const table = document.querySelector("tx-table") as Table
-    if (table === undefined) {
-        throw Error("No <tx-table> found.")
-    }
-    if (table.getModel() !== model) {
-        throw Error("<tx-model> has wrong model")
-    }
-    return new TableWrapper(table)
-}
-
-function validateRender(model: TestModel) {
-
-    // console.log(`validateRender: size ${model.colCount} x ${model.rowCount} = ${model.colCount * model.rowCount}`)
-
-    const table = getTable(model)
-    const body = table.body
-    // console.log(`  body has length ${body.children.length}`)
-
-    const expectCol: { x: number, w: number }[] = []
-    let x = 0
-    for (let col = 0; col < model.colCount; ++col) {
-        const cell = body.children[col] as HTMLSpanElement
-        const w = px2int(cell.style.width)
-        expectCol.push({ x, w })
-        // console.log(`expectCol[${col}] = {x: ${x}, w: ${w}}`)
-        x += w + 6 - 1
-    }
-
-    const expectRow: { y: number, h: number }[] = []
-    let y = 0
-    for (let row = 0; row < model.rowCount; ++row) {
-        const cell = body.children[row * model.colCount] as HTMLSpanElement
-        const h = px2int(cell.style.height)
-        expectRow.push({ y, h })
-        // console.log(`expectRow[${row}] = {x: ${y}, w: ${h}}`)
-        y += h + 2 - 1
-    }
-
-    // let idx0 = 0
-    // let txt = "cols (x,w): "
-    // for (let col = 0; col < model.colCount; ++col) {
-    //     txt += `${expectCol[col].x},${expectCol[col].w} `
-    // }
-    // console.log(txt)
-
-    // txt = "rows (y,h): "
-    // for (let row = 0; row < model.rowCount; ++row) {
-    //     txt += `${expectRow[row].y},${expectRow[row].h} `
-    // }
-    // console.log(txt)
-    // txt = ""
-
-    // for (let row = 0; row < model.rowCount; ++row) {
-    //     for (let col = 0; col < model.colCount; ++col) {
-    //         const cell = body.children[idx0++] as HTMLSpanElement
-    //         txt = `${txt}[${col},${row}]='${cell.textContent}' (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
-    //     }
-    //     console.log(txt)
-    //     txt = ""
-    // }
-
-    if (model.showColumnHeaders) {
-        const colHeads = table.colHeads!
-        const colHandles = table.colResizeHandles!
-        expect(colHeads.children.length).to.equal(model.colCount + 1)
-        expect(colHandles.children.length).to.equal(model.colCount + 1)
-        const height = px2int((colHeads.children[0] as HTMLSpanElement).style.height)
-        for (let col = 0; col < model.colCount; ++col) {
-            const rowHeader = colHeads.children[col] as HTMLSpanElement
-            expect(rowHeader.innerText, `column header ${col}`).to.equal((table.adapter.getColumnHead(col) as Text).data)
-            expect(px2int(rowHeader.style.left), `column header ${col} left`).to.equal(expectCol[col].x)
-            expect(px2int(rowHeader.style.width), `column header ${col} width`).to.equal(expectCol[col].w)
-            expect(px2int(rowHeader.style.top), `column header ${col} top`).to.equal(0)
-            expect(px2int(rowHeader.style.height), `column header ${col} height`).to.equal(height)
-
-            const rowHandle = colHandles.children[col] as HTMLSpanElement
-            expect(rowHandle.dataset["idx"], `row handle ${col} index`).to.equal(`${col}`)
-            if (col + 1 < model.colCount) {
-                expect(px2int(rowHandle.style.left), `row handle ${col} left`).to.equal(expectCol[col + 1].x - 3)
-            } else {
-                expect(px2int(rowHandle.style.left), `row handle last left`).to.equal(expectCol[col].x + expectCol[col].w + 5 - 3)
-            }
-            expect(px2int(rowHandle.style.width), `row handle ${col} width`).to.equal(5)
-            expect(px2int(rowHandle.style.top), `row handle ${col} top`).to.equal(0)
-            expect(px2int(rowHandle.style.height), `row handle ${col} height`).to.equal(height + 2)
-        }
-    }
-
-    if (model.showRowHeaders) {
-        const rowHeads = table.rowHeads!
-        const rowHandles = table.rowResizeHandles!
-        expect(rowHeads.children.length).to.equal(model.rowCount + 1)
-        expect(rowHandles.children.length).to.equal(model.rowCount + 1)
-        const width = px2int((rowHeads.children[0] as HTMLSpanElement).style.width)
-        for (let row = 0; row < model.rowCount; ++row) {
-            const cell = rowHeads.children[row] as HTMLSpanElement
-            expect(cell.innerText, `row header ${row}`).to.equal((table.adapter.getRowHead(row) as Text).data)
-            expect(px2int(cell.style.left), `row header ${row} left`).to.equal(0)
-            expect(px2int(cell.style.width), `row header ${row} width`).to.equal(width)
-            expect(px2int(cell.style.top), `row header ${row} top`).to.equal(expectRow[row].y)
-            expect(px2int(cell.style.height), `row header ${row} height`).to.equal(expectRow[row].h)
-
-            const colHandle = rowHandles.children[row] as HTMLSpanElement
-            expect(colHandle.dataset["idx"], `column handle ${row} index`).to.equal(`${row}`)
-            expect(px2int(colHandle.style.left), `column handle ${row} left`).to.equal(0)
-            expect(px2int(colHandle.style.width), `column handle ${row} width`).to.equal(width + 6)
-            if (row + 1 < model.rowCount) {
-                expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row + 1].y - 3)
-            } else {
-                expect(px2int(colHandle.style.top), `column handle last top`).to.equal(expectRow[row].y + expectRow[row].h - 2)
-            }
-            expect(px2int(colHandle.style.height), `column handle ${row} height`).to.equal(5)
-        }
-    }
-
-    let idx = 0
-
-    expect(body.children.length).to.equal(model.colCount * model.rowCount)
-    for (let row = 0; row < model.rowCount; ++row) {
-        for (let col = 0; col < model.colCount; ++col) {
-            const cell = body.children[idx++] as HTMLSpanElement
-            expect(cell.innerText).to.equal(model.getField(col, row).valueOf())
-            expect(px2int(cell.style.left), `[${col},${row}] left`).to.equal((expectCol[col].x))
-            expect(px2int(cell.style.width), `[${col},${row}] width`).to.equal((expectCol[col].w))
-            expect(px2int(cell.style.top), `[${col},${row}] top`).to.equal((expectRow[row].y))
-            expect(px2int(cell.style.height), `[${col},${row}] height`).to.equal((expectRow[row].h))
-        }
-    }
-}
-
 function str2cell(s: string[]) {
     return s.map((item) => new SpreadsheetCell(item))
 }
 
-class TestModel extends SpreadsheetModel {
+class TestSpreadsheetModel extends SpreadsheetModel implements TestModel {
     showColumnHeaders = false
     showRowHeaders = false
     editMode = EditMode.EDIT_ON_ENTER
+    getValueOf(col: number, row: number): string {
+        return this.getField(col, row).valueOf()
+    }
 }
 
-export class TestAdapter extends SpreadsheetAdapter<TestModel> {
+export class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> {
     override get editMode(): EditMode {
         return this.model!.editMode
     }
@@ -1024,10 +892,20 @@ class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
     }
 }
 
-function createWidgetTree(): TreeNodeModel<WidgetNode> {
+class TestTreeNodeModel<T> extends TreeNodeModel<T> implements TestModel {
+    showColumnHeaders = false
+    showRowHeaders = false
+    editMode = EditMode.EDIT_ON_ENTER
+    getValueOf(col: number, row: number): string {
+        // return this.rows[row].node
+        return "whut?"
+    }
+}
+
+function createWidgetTree(): TestTreeNodeModel<WidgetNode> {
     TreeAdapter.register(WidgetTreeAdapter, TreeNodeModel, WidgetNode)
 
-    let model = new TreeNodeModel(WidgetNode)
+    let model = new TestTreeNodeModel(WidgetNode)
     model.addSiblingAfter(0)
     model.addChildAfter(0)
     model.addChildAfter(1)
@@ -1055,9 +933,9 @@ class WidgetNode implements TreeNode {
     }
 }
 
-function createTreeModelFromTree(): TreeNodeModel<WidgetNode> {
+function createTreeModelFromTree(): TestTreeNodeModel<WidgetNode> {
     TreeAdapter.register(WidgetTreeAdapter, TreeNodeModel, WidgetNode)
-    return new TreeNodeModel(WidgetNode,
+    return new TestTreeNodeModel(WidgetNode,
         new WidgetNode("",
             new WidgetNode("#0",
                 new WidgetNode("#1"),
@@ -1076,6 +954,7 @@ function rowLabel(table: TableFriend, row: number): string {
     // console.log(table.body.children[row * table.adapter.colCount])
     return (table.body.children[row * table.adapter.colCount].children[1] as HTMLElement).innerText
 }
+
 function rowCount(table: TableFriend): number {
     return table.adapter.rowCount
 }

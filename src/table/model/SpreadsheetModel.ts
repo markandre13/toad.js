@@ -21,6 +21,9 @@ import { TableEventType } from '../TableEventType'
 import { GridTableModel } from './GridTableModel'
 import { SpreadsheetCell } from "./SpreadsheetCell"
 
+/**
+ * A simple spreadsheet.
+ */
 export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
     protected dependencies = new Map<SpreadsheetCell, Set<SpreadsheetCell>>();
 
