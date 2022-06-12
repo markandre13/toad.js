@@ -2,8 +2,12 @@ import { css } from 'src/util/lsx'
 
 export const style = document.createElement("style")
 style.textContent = css`
+:host {
+    display: inline-block;
+}
+
 .tx-text {
-    /* display: inline-block; */
+    width: 100%;
     box-shadow: none;
     box-sizing: border-box;
     color: var(--tx-edit-fg-color);

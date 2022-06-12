@@ -6,6 +6,7 @@ import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
 import { TableAdapter, EditMode } from '@toad/table/adapter/TableAdapter'
 import { TreeNode } from "@toad/table/model/TreeNode"
+import { TreeModel } from "@toad/table/model/TreeModel"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
@@ -650,7 +651,7 @@ describe("table", function () {
     describe("layout", function () {
         it("expand", async function () {
             Table.transitionDuration = "500ms"
-            const model = createWidgetTree()
+            const model = createWidgetTree();
             // TODO
             // * while when a TreeNodeModel is initialized from a populated tree,
             //   all nodes are closed.
@@ -658,7 +659,7 @@ describe("table", function () {
             //   methods, all nodes are open
             //   => this should be consistent
             // * the leaf nodes don't render correctly
-            model.collapse()
+            (model as TreeModel<any>).collapse()
 
             document.body.replaceChildren(
                 <Table model={model} style={{
@@ -729,7 +730,7 @@ describe("table", function () {
 
         it("center tree control vertically in row (?)")
 
-        it.only("expand columns during insert row", async function() {
+        it("expand columns during insert row", async function() {
             Table.transitionDuration = "500ms"
 
             // GIVEN an initial tree view

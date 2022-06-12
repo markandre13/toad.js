@@ -143,7 +143,6 @@ export class InsertRowAnimation extends TableAnimation {
 
         if (this.adapter.config.expandColumn) {
             const colWidth = this.calculateColumnWidths(true)
-            // console.log(colWidth)
             this.setColumnWidths(true, colWidth) // FIXME: THIS ALSO NEEDS TO ADJUST COLUMN HEADERS AND THE HANDLES!!!
         }
 

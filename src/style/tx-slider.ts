@@ -12,10 +12,11 @@ import { css } from 'src/util/lsx'
 
 export const style = document.createElement("style")
 style.textContent = css`
+
 :host(.tx-slider) {
     height: 14px;
     position: relative;
-    width: 270px;
+    width: 100%;
     display: inline-block;
 }
 :host(.tx-slider) > input {

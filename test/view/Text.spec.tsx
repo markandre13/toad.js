@@ -1,14 +1,28 @@
 import { expect } from '@esm-bundle/chai'
 import { Fragment, Text, TextModel, NumberModel, bindModel, unbind } from "@toad"
 
+import { style as txBase } from "@toad/style/tx"
+import { style as txStatic } from "@toad/style/tx-static"
+import { style as txDark } from "@toad/style/tx-dark"
+
 describe("view", function () {
 
-    beforeEach( () => {
+    beforeEach(async function () {
         unbind()
-        document.body.innerHTML = ""
+        document.body.replaceChildren()
+        document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
     describe("Text", function () {
+
+        describe("layout", function () {
+            it.only("style.width", async function () {
+                const model = new TextModel("A")
+                document.body.replaceChildren(
+                    <Text model={model} style={{width: '16px'}}/>
+                )
+            })
+        })
 
         describe("NumberModel", function () {
             it("view and model are in sync", function () {
@@ -33,7 +47,7 @@ describe("view", function () {
                 document.body.appendChild(<Text model={model} />)
 
                 let view = document.body.children[0]
-                expect(view.getAttribute("value")).to.equal("0.5")   
+                expect(view.getAttribute("value")).to.equal("0.5")
             })
             // range
             // scroll wheel
@@ -52,12 +66,12 @@ describe("view", function () {
 
                 it("does so when the view is defined before the model", function () {
                     document.body.innerHTML = "<tx-text model='model'></tx-text>"
-                    
+
                     const model = new TextModel("alpha")
                     bindModel("model", model)
-                    
+
                     const view = document.body.children[0]
-                    expect(view.getAttribute("value")).to.equal("alpha")              
+                    expect(view.getAttribute("value")).to.equal("alpha")
                 })
 
                 it("works when using JSX", async function () {
@@ -68,7 +82,7 @@ describe("view", function () {
                     document.body.appendChild(<Text model={model} />)
 
                     let view = document.body.children[0]
-                    expect(view.getAttribute("value")).to.equal("alpha")   
+                    expect(view.getAttribute("value")).to.equal("alpha")
                 })
             })
 
@@ -97,15 +111,15 @@ describe("view", function () {
             it("unregisters the view from the model when the view is removed from the dom", function () {
                 let model = new TextModel("alfa")
                 bindModel("text", model)
-    
+
                 expect(model.modified.count()).to.equal(0)
-    
+
                 document.body.innerHTML = "<tx-text model='text'></tx-text><tx-text model='text'></tx-text>"
                 expect(model.modified.count()).to.equal(2)
-    
+
                 document.body.removeChild(document.body.children[0])
                 expect(model.modified.count()).to.equal(1)
-    
+
                 document.body.innerHTML = ""
                 expect(model.modified.count()).to.equal(0)
             })
