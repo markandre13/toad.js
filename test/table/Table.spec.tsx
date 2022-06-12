@@ -727,12 +727,30 @@ describe("table", function () {
             validateRender(model)
         })
 
-        it("center tree control vertically in row (?)", function() {
+        it("center tree control vertically in row (?)")
 
-        })
+        it.only("expand columns during insert row", async function() {
+            Table.transitionDuration = "500ms"
 
-        it("expand columns during insert row", function() {
+            // GIVEN an initial tree view
+            const model = createTreeModelFromTree()
+            document.body.replaceChildren(
+                <Table model={model} style={{ position: 'absolute', inset: 0 }} />
+            )
+            await sleep()
+            const table = getTable(model)
+            table.adapter.config.expandColumn = true
 
+            // THEN it renders correctly
+            expect(rowLabel(table, 0)).to.equal("#0")
+            expect(rowLabel(table, 1)).to.equal("#3")
+            expect(rowCount(table)).to.equal(2)
+            validateRender(model)
+
+            // WHEN opening the 1st node
+            // click(getByText("#0")!.previousElementSibling!)
+
+            // await table.animation()
         })
 
         it("rows are placed correctly after closing and opening subtree", async function () {

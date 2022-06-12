@@ -37,10 +37,10 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     run() {
-        this.prepareCells()
+        this.prepareCellsToBeMeasured()
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
-            this.arrangeMeasuredRowsInGrid()
+            this.arrangeMeasuredRowsBody()
             this.splitHorizontal(this.event.index + this.event.size)
             this.splitBody.style.transitionProperty = "transform"
             this.splitBody.style.transitionDuration = Table.transitionDuration
@@ -52,26 +52,7 @@ export class InsertRowAnimation extends TableAnimation {
         })
     }
 
-    stop() {
-        this.joinHorizontal()
-        this.clearAnimation()
-    }
-
-    splitHorizontal(splitRow: number, extra: number = 0) {
-        this.table.splitHorizontal(splitRow, extra)
-    }
-
-    joinHorizontal() {
-        if (!this.done) {
-            this.done = true
-            this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight, 0, this.colCount, this.rowCount)
-            if (this.table.animationDone) {
-                this.table.animationDone()
-            }
-        }
-    }
-
-    prepareCells() {
+    prepareCellsToBeMeasured() {
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.colCount; ++col) {
                 const cell = span()
@@ -81,8 +62,7 @@ export class InsertRowAnimation extends TableAnimation {
         }
     }
 
-    arrangeMeasuredRowsInGrid() {
-
+    arrangeMeasuredRowsBody() {
         const overlap = this.adapter.config.seamless ? 1 : 0
         
         // y := position of new row
@@ -119,7 +99,9 @@ export class InsertRowAnimation extends TableAnimation {
                 newRowHead.className = "head"
                 newRowHead.style.left = "0px"
                 newRowHead.style.top = `${y}px`
-                newRowHead.style.width = `${px2int(this.rowHeads.style.width)-6}px`
+                if (!this.adapter.config.expandColumn) {
+                    newRowHead.style.width = `${px2int(this.rowHeads.style.width)-6}px`
+                }
                 newRowHead.style.height = `${rowHeight}px`
                 this.rowHeads.insertBefore(newRowHead, this.rowHeads.children[row])
 
@@ -148,7 +130,9 @@ export class InsertRowAnimation extends TableAnimation {
                 }
                 cell.style.left = neighbour.style.left
                 cell.style.top = `${y}px`
-                cell.style.width = neighbour.style.width
+                if (!this.adapter.config.expandColumn) {
+                    cell.style.width = neighbour.style.width
+                }
                 cell.style.height = `${rowHeight}px`
                 this.body.insertBefore(cell, beforeChild)
             }
@@ -156,6 +140,12 @@ export class InsertRowAnimation extends TableAnimation {
             totalHeight += rowHeight
         }
         this.totalHeight = totalHeight + 1 - overlap
+
+        if (this.adapter.config.expandColumn) {
+            const colWidth = this.calculateColumnWidths(true)
+            // console.log(colWidth)
+            this.setColumnWidths(true, colWidth) // FIXME: THIS ALSO NEEDS TO ADJUST COLUMN HEADERS AND THE HANDLES!!!
+        }
 
         // let txt = `InsertRowAnimation: table size ${this.colCount}, ${this.rowCount}\n`
         // idx = 0
@@ -167,5 +157,24 @@ export class InsertRowAnimation extends TableAnimation {
         //     txt += "\n"
         // }
         // console.log(txt)
+    }
+
+    splitHorizontal(splitRow: number, extra: number = 0) {
+        this.table.splitHorizontal(splitRow, extra)
+    }
+
+    stop() {
+        this.joinHorizontal()
+        this.clearAnimation()
+    }
+
+    joinHorizontal() {
+        if (!this.done) {
+            this.done = true
+            this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight, 0, this.colCount, this.rowCount)
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
+        }
     }
 }

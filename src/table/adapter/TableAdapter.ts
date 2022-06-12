@@ -43,7 +43,7 @@ type TypeToAdapter = Map<TypeConstructor | null, AdapterConstructor>
 class TableAdapterConfig {
     editMode = EditMode.EDIT_ON_FOCUS
     seamless = false
-    expandColum = false
+    expandColumn = false
 }
 
 export class TableAdapter<T extends TableModel> {
