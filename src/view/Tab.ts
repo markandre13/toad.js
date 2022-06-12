@@ -19,6 +19,7 @@
 import { View } from "../view/View"
 import { ul, li, span, text, div, slot } from "../util/lsx"
 import { style as txTabs } from "../style/tx-tabs"
+import { HTMLElementProps } from "toad.jsx"
 
 export class Tabs extends View {
     markerLine: HTMLElement
@@ -27,8 +28,8 @@ export class Tabs extends View {
     activeTab?: HTMLElement
     activePanel?: HTMLElement
 
-    constructor() {
-        super()
+    constructor(init?: HTMLElementProps) {
+        super(init)
 
         this.setTab = this.setTab.bind(this)
 
@@ -105,5 +106,15 @@ export class Tabs extends View {
 
 Tabs.define("tx-tabs", Tabs)
 
-export class Tab extends HTMLElement { }
+export interface TabProps extends HTMLElementProps {
+    label?: string
+}
+
+export class Tab extends View {
+    label?: string
+    constructor(init?: TabProps) {
+        super(init)
+        this.label = init?.label
+    }
+}
 View.define("tx-tab", Tab)
