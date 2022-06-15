@@ -38,7 +38,8 @@ export class Tabs extends View {
             this.classList.add("tx-vertical")
         }
 
-        this.content = div()
+        this.content = div(slot())
+        this.content.classList.add("content")
 
         const tabContainer = ul()
         for (let i = 0; i < this.children.length; ++i) {
@@ -75,9 +76,8 @@ export class Tabs extends View {
         this.shadowRoot!.appendChild(document.importNode(txTabs, true))
         this.shadowRoot!.appendChild(tabContainer)
         this.shadowRoot!.appendChild(this.markerLine = div())
-        this.shadowRoot!.appendChild(this.content = div(slot()))
+        this.shadowRoot!.appendChild(this.content)
         this.markerLine.classList.add("line")
-        this.content.classList.add("content")
 
         if (this.activeTab) {
             this.setTab(this.activeTab, this.activePanel!)
@@ -90,6 +90,7 @@ export class Tabs extends View {
             line.style.top = `${tab.offsetTop}px`
             line.style.height = `${tab.clientHeight}px`
         } else {
+            line.style.top = `-2px`
             line.style.left = `${tab.offsetLeft}px`
             line.style.width = `${tab.clientWidth}px`
         }
