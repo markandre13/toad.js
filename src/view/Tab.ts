@@ -20,15 +20,17 @@ import { View } from "../view/View"
 import { ul, li, span, text, div, slot } from "../util/lsx"
 import { style as txTabs } from "../style/tx-tabs"
 import { HTMLElementProps } from "toad.jsx"
+import { ModelView, ModelViewProps } from "./ModelView"
+import { OptionModelBase } from "@toad/model/OptionModelBase"
 
-export class Tabs extends View {
+export class Tabs extends ModelView<OptionModelBase> {
     markerLine: HTMLElement
     content: HTMLElement
 
     activeTab?: HTMLElement
-    activePanel?: HTMLElement
+    activePanel?: Tab
 
-    constructor(init?: HTMLElementProps) {
+    constructor(init?: ModelViewProps<OptionModelBase>) {
         super(init)
 
         this.setTab = this.setTab.bind(this)
@@ -84,7 +86,7 @@ export class Tabs extends View {
         }
     }
 
-    setTab(tab: HTMLElement, panel: HTMLElement) {
+    setTab(tab: HTMLElement, panel: Tab) {
         const line = this.markerLine
         if (this.hasAttribute("vertical")) {
             line.style.top = `${tab.offsetTop}px`
@@ -102,20 +104,26 @@ export class Tabs extends View {
         this.activePanel!.style.display = "none"
         this.activePanel = panel
         this.activePanel.style.display = ""
+
+        if (this.model && panel.value) {
+            this.model.stringValue = panel.value
+        }
     }
 }
-
 Tabs.define("tx-tabs", Tabs)
 
 export interface TabProps extends HTMLElementProps {
     label?: string
+    value?: string
 }
 
 export class Tab extends View {
     label?: string
+    value?: string
     constructor(init?: TabProps) {
         super(init)
         this.label = init?.label
+        this.value = init?.value
     }
 }
 View.define("tx-tab", Tab)

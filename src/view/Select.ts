@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "@toad/model/OptionModelBase"
 import { input, button, svg, path, div, ul, li, array, text } from "@toad/util/lsx"
 import { placePopupVertical } from "@toad/menu/PopupMenu"
@@ -33,8 +33,8 @@ export class Select extends ModelView<OptionModelBase> {
     hover?: HTMLLIElement
     text?: TextModel // TODO: | NumberModel
 
-    constructor() {
-        super()
+    constructor(init?: ModelViewProps<OptionModelBase>) {
+        super(init)
         this.input = input()
         this.input.type = "text"
 
