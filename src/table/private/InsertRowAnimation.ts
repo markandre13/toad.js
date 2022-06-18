@@ -41,7 +41,7 @@ export class InsertRowAnimation extends TableAnimation {
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
             this.arrangeMeasuredRowsBody()
-            this.splitHorizontal(this.event.index + this.event.size)
+            this.splitHorizontal(this.event.index + this.event.size, 0, this.event)
             this.splitBody.style.transitionProperty = "transform"
             this.splitBody.style.transitionDuration = Table.transitionDuration
             this.splitBody.ontransitionend = this.joinHorizontal
@@ -158,8 +158,8 @@ export class InsertRowAnimation extends TableAnimation {
         // console.log(txt)
     }
 
-    splitHorizontal(splitRow: number, extra: number = 0) {
-        this.table.splitHorizontal(splitRow, extra)
+    splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
+        this.table.splitHorizontal(splitRow, extra, event)
     }
 
     stop() {

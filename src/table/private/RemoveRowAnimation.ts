@@ -68,8 +68,8 @@ export class RemoveRowAnimation extends TableAnimation {
         this.clearAnimation()
     }
 
-    splitHorizontal(splitRow: number, extra: number = 0) {
-        this.table.splitHorizontal(splitRow, extra)
+    splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
+        this.table.splitHorizontal(splitRow, extra, event)
     }
 
     joinHorizontal() {

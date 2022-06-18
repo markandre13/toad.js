@@ -677,14 +677,15 @@ describe("table", function () {
 
     describe("tree", function () {
 
-        it("opening and closing a tree renders properly", async function () {
-            // Table.transitionDuration = "500ms"
+        it.only("opening and closing a tree renders properly", async function () {
+            Table.transitionDuration = "500ms"
 
             // GIVEN an initial tree view
             const model = createTreeModelFromTree()
             document.body.replaceChildren(
                 <Table model={model} style={{ position: 'absolute', inset: 0 }} />
             )
+            return
             await sleep()
             const table = getTable(model)
 

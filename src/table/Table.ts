@@ -1063,7 +1063,7 @@ export class Table extends View {
         this.splitBody = undefined
     }
 
-    splitHorizontal(splitRow: number, extra: number = 0) {
+    splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
         // initialize splitHead
         if (this.rowHeads !== undefined) {
             this.splitHead = div()
@@ -1107,17 +1107,53 @@ export class Table extends View {
         }
 
         if (this.splitBody.children.length > 0) {
+            // console.log("[0]")
             const filler = span()
             idx = this.splitBody.children.length - 1
             const last = this.splitBody.children[idx] as HTMLElement
             const bf = this.splitBody.children[idx].getBoundingClientRect()
             filler.style.border = 'none'
             filler.style.backgroundColor = '#1e1e1e'
-            filler.style.top = `${px2int(last.style.top) + bf.height}px`
+            const top = px2int(last.style.top) + bf.height
+            filler.style.top = `${top}px`
             filler.style.left = `0px`
-            filler.style.width = `${b.width}px`
-            filler.style.height = `${b.height - px2int(last.style.top)}px`
+            filler.style.width = `${b.width - 2}px`
+            filler.style.height = `${b.height - top}px`
             this.splitBody.appendChild(filler)
+        } else
+        if (event !== undefined && this.body.children.length > 0) {
+            // console.log("[1]")
+            const filler = span()
+            idx = event.index * this.adapter!.colCount
+            const last = this.body.children[idx] as HTMLElement
+            filler.style.border = 'none'
+            filler.style.backgroundColor = '#1e1e1e'
+            const top = px2int(last.style.top)
+            filler.style.top = `${top}px`
+            filler.style.left = `0px`
+            filler.style.width = `${b.width - 2}px`
+            filler.style.height = `${b.height - top}px`
+            this.splitBody.appendChild(filler)
+        } else
+        if (this.body.children.length > 0) {
+            // console.log("[2]")
+            const filler = span()
+            idx = this.body.children.length - 2
+            const last = this.body.children[idx] as HTMLElement
+            const bf = this.body.children[idx].getBoundingClientRect()
+            filler.style.border = 'none'
+            filler.style.backgroundColor = '#1e1e1e'
+            // filler.style.backgroundColor = '#f80'
+            const top = px2int(last.style.top) + bf.height
+            console.log(last)
+            filler.style.top = `${top}px`
+            filler.style.left = `0px`
+            filler.style.width = `${b.width - 2}px`
+            filler.style.height = `${b.height - top}px`
+            this.splitBody.appendChild(filler)
+        } else {
+            // FIXME: handle case when that are no children, then top is 0
+            // console.log("[3]")
         }
     }
 
