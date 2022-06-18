@@ -5,4 +5,7 @@ js
 docs/main.js
 docs/main.js.map
 .DS_Store
+docs/**/*.d.ts
+docs/index.html
+docs/style/*.css
 *~
