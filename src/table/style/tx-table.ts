@@ -108,9 +108,9 @@ style.textContent = css`
     border: none 0px;
 }
 
-.splitBody {
+/* .splitBody {
     transition: transform 5s;
-}
+} */
 
 .body > span:hover {
     background: #1a1a1a;

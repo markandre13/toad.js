@@ -1080,6 +1080,7 @@ export class Table extends View {
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "splitBody"
+        // this.splitBody.style.backgroundColor = '#f80'
 
         const b = this.body.getBoundingClientRect()
         this.splitBody.style.width = `${b.width}px`
@@ -1107,22 +1108,32 @@ export class Table extends View {
         }
 
         if (this.splitBody.children.length > 0) {
-            // console.log("[0]")
+            console.log("[0]")
             const filler = span()
             idx = this.splitBody.children.length - 1
             const last = this.splitBody.children[idx] as HTMLElement
             const bf = this.splitBody.children[idx].getBoundingClientRect()
             filler.style.border = 'none'
             filler.style.backgroundColor = '#1e1e1e'
-            const top = px2int(last.style.top) + bf.height
+            const top = px2int(last.style.top) // + bf.height
             filler.style.top = `${top}px`
             filler.style.left = `0px`
             filler.style.width = `${b.width - 2}px`
             filler.style.height = `${b.height - top}px`
-            this.splitBody.appendChild(filler)
+
+            console.log(top)
+            this.splitBody.style.top = `${top}px`
+            for(let i=0; i<this.splitBody.children.length; ++i) {
+                const c = this.splitBody.children[i] as HTMLElement
+                const y = px2int(c.style.top)
+                c.style.top = `${y - top}px`
+            }
+            this.splitBody.style.backgroundColor = '#f80'
+
+            // this.splitBody.appendChild(filler)
         } else
         if (event !== undefined && this.body.children.length > 0) {
-            // console.log("[1]")
+            console.log("[1]")
             const filler = span()
             idx = event.index * this.adapter!.colCount
             const last = this.body.children[idx] as HTMLElement
@@ -1136,7 +1147,7 @@ export class Table extends View {
             this.splitBody.appendChild(filler)
         } else
         if (this.body.children.length > 0) {
-            // console.log("[2]")
+            console.log("[2]")
             const filler = span()
             idx = this.body.children.length - 2
             const last = this.body.children[idx] as HTMLElement
@@ -1153,7 +1164,7 @@ export class Table extends View {
             this.splitBody.appendChild(filler)
         } else {
             // FIXME: handle case when that are no children, then top is 0
-            // console.log("[3]")
+            console.log("[3]")
         }
     }
 

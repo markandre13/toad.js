@@ -22,6 +22,8 @@ import { TableAnimation } from "./TableAnimation"
 import { span } from '@toad/util/lsx'
 
 export class InsertRowAnimation extends TableAnimation {
+    static halt = false
+    static current?: InsertRowAnimation
     event: TableEvent
     totalHeight!: number
     done = false;
@@ -37,15 +39,19 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     run() {
+        if (InsertRowAnimation.halt) {
+            InsertRowAnimation.current = this
+            return
+        }
         this.prepareCellsToBeMeasured()
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
             this.arrangeMeasuredRowsBody()
-            this.splitHorizontal(this.event.index + this.event.size, 0, this.event)
+            this.splitHorizontal()
             this.splitBody.style.transitionProperty = "transform"
             this.splitBody.style.transitionDuration = Table.transitionDuration
-            this.splitBody.ontransitionend = this.joinHorizontal
-            this.splitBody.ontransitioncancel = this.joinHorizontal
+            // this.splitBody.ontransitionend = this.joinHorizontal
+            // this.splitBody.ontransitioncancel = this.joinHorizontal
             setTimeout(() => {
                 this.splitBody.style.transform = `translateY(${this.totalHeight}px)` // TODO: make this an animation
             }, Table.renderDelay)
@@ -158,8 +164,8 @@ export class InsertRowAnimation extends TableAnimation {
         // console.log(txt)
     }
 
-    splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
-        this.table.splitHorizontal(splitRow, extra, event)
+    splitHorizontal() {
+        this.table.splitHorizontal(this.event.index + this.event.size, 0, this.event)
     }
 
     stop() {

@@ -26,6 +26,8 @@ import { style as txDark } from "@toad/style/tx-dark"
 
 import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
 import { validateRender, TestModel, getTable } from "./util"
+import { TableAnimation } from '@toad/table/private/TableAnimation'
+import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 
 // TODO:
 // [X] send modified-events
@@ -68,6 +70,7 @@ describe("table", function () {
         unbind()
         TableAdapter.unbind()
         Table.transitionDuration = "1ms"
+        InsertRowAnimation.halt = false
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
@@ -677,8 +680,70 @@ describe("table", function () {
 
     describe("tree", function () {
 
-        it.only("opening and closing a tree renders properly", async function () {
-            Table.transitionDuration = "500ms"
+        // basically, modelChanged() delegates all the work
+        // this.animation = new InsertRowAnimation(this, event)
+        // this.animation.run()
+
+        // I shouldn't do this with a tree, but with a normal array for more
+        // flexibility
+
+        it.only("insert row animation (middle)", async function () {
+            // Table.transitionDuration = "5000ms"
+            InsertRowAnimation.halt = true
+
+            const model = createTreeModelFromTree()
+            document.body.replaceChildren(
+                <Table model={model} style={{ position: 'absolute', inset: 0 }} />
+            )
+            await sleep()
+            const table = getTable(model)
+
+            expect(rowCount(table)).to.equal(2)
+            expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
+            expect(rowPosAndLabelTop(table, 1)).to.equal("0,19: #3")
+
+            click(getByText("#0")!.previousElementSibling!)
+
+            const animation = InsertRowAnimation.current!
+            animation.prepareCellsToBeMeasured()
+            await sleep()
+
+            // move measured cells into the body
+            animation.arrangeMeasuredRowsBody()
+
+            expect(table.body.children.length).to.equal(2 * 4)
+            expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
+            expect(rowPosAndLabelTop(table, 1)).to.equal("0,19: #1")
+            expect(rowPosAndLabelTop(table, 2)).to.equal("0,78: #2")
+            expect(rowPosAndLabelTop(table, 3)).to.equal("0,19: #3")
+
+            // now split at row 3
+            animation.splitHorizontal()
+            expect(table.body.children.length).to.equal(2 * 3 + 1)
+            expect(table.splitBody.children.length).to.equal(2 * 1)
+            expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
+            expect(rowPosAndLabelTop(table, 1)).to.equal("0,19: #1")
+            expect(rowPosAndLabelTop(table, 2)).to.equal("0,78: #2")
+
+            expect(table.splitBody.style.top).to.equal("19px")
+            expect(rowPosAndLabelBottom(table, 0)).to.equal("0,0: #3")
+
+            // animation thingy (should check for transform being to to splitBody)
+            expect(animation.totalHeight).to.equal(118)
+
+            animation.joinHorizontal()
+            expect(table.body.children.length).to.equal(2 * 4)
+            expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
+            expect(rowPosAndLabelTop(table, 1)).to.equal("0,19: #1")
+            expect(rowPosAndLabelTop(table, 2)).to.equal("0,78: #2")
+            expect(rowPosAndLabelTop(table, 3)).to.equal("0,118: #3")
+        })
+
+        // INCLUDING THE ANIMATION, BUT SPLIT THAT OFF
+        // ALSO FOR HEAD,MIDDLE,TAIL
+        // ALSO TRY TO SET A BACKGROUND FOR SPLIT BODY AND GET RID OF THE FILLER
+        it("opening and closing a tree renders properly", async function () {
+            Table.transitionDuration = "5000ms"
 
             // GIVEN an initial tree view
             const model = createTreeModelFromTree()
@@ -731,7 +796,7 @@ describe("table", function () {
 
         it("center tree control vertically in row (?)")
 
-        it("expand columns during insert row", async function() {
+        it("expand columns during insert row", async function () {
             Table.transitionDuration = "500ms"
 
             // GIVEN an initial tree view
@@ -984,6 +1049,20 @@ function rowLabel(table: TableFriend, row: number): string {
     // console.log(`${row} * ${table.adapter.colCount}`)
     // console.log(table.body.children[row * table.adapter.colCount])
     return (table.body.children[row * table.adapter.colCount].children[1] as HTMLElement).innerText
+}
+
+function rowPosAndLabelTop(table: TableFriend, row: number): string {
+    const child = table.body.children[row * table.adapter.colCount] as HTMLElement
+    const x = px2float(child.style.left)
+    const y = px2float(child.style.top)
+    return `${x},${y}: ${(child.children[1] as HTMLElement).innerText}`
+}
+
+function rowPosAndLabelBottom(table: TableFriend, row: number): string {
+    const child = table.splitBody.children[row * table.adapter.colCount] as HTMLElement
+    const x = px2float(child.style.left)
+    const y = px2float(child.style.top)
+    return `${x},${y}: ${(child.children[1] as HTMLElement).innerText}`
 }
 
 function rowCount(table: TableFriend): number {
