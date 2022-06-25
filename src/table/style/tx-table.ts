@@ -29,11 +29,7 @@ style.textContent = css`
     min-width: 100px;
 }
 
-.body, .cols, .rows {
-    position: absolute;
-}
-
-.splitBody {
+.staging, .body, .splitBody, .cols, .rows {
     position: absolute;
 }
 
@@ -47,10 +43,9 @@ style.textContent = css`
     bottom: 0;
 }
 
-.body {
+.staging, .body {
     overflow: auto;
-    right: 0;
-    bottom: 0;
+    inset: 0;
 }
 
 .cols, .rows {
@@ -85,7 +80,7 @@ style.textContent = css`
     background: var(--tx-gray-500);
 }
 
-.body > span, .splitBody > span, .cols > span, .rows > span, .measure > span {
+.staging > span, .body > span, .splitBody > span, .cols > span, .rows > span, .measure > span {
     position: absolute;
     box-sizing: content-box;
     white-space: nowrap;

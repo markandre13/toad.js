@@ -14,6 +14,9 @@ export class TableFriend {
     get measure() {
         return (this.table as any).measure as HTMLDivElement
     }
+    get staging() {
+        return (this.table as any).staging as HTMLDivElement
+    }
     get body() {
         return (this.table as any).body as HTMLDivElement
     }

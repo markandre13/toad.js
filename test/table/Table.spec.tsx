@@ -4,13 +4,17 @@ import { bindModel, unbind } from "@toad"
 
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
-import { TableAdapter, EditMode } from '@toad/table/adapter/TableAdapter'
+
+import { ArrayTableModel } from "@toad/table/model/ArrayTableModel"
 import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeModel } from "@toad/table/model/TreeModel"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
+
+import { TableAdapter, EditMode } from '@toad/table/adapter/TableAdapter'
+import { ArrayAdapter } from '@toad/table/adapter/ArrayAdapter'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { TableFriend } from '@toad/table/private/TableFriend'
@@ -709,7 +713,7 @@ describe("table", function () {
             await sleep()
 
             // move measured cells into the body
-            animation.arrangeMeasuredRowsBody()
+            animation.arrangeNewRowsInStaging()
 
             expect(table.body.children.length).to.equal(2 * 4)
             expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
@@ -892,6 +896,8 @@ function str2cell(s: string[]) {
     return s.map((item) => new SpreadsheetCell(item))
 }
 
+// --------------------
+
 class TestSpreadsheetModel extends SpreadsheetModel implements TestModel {
     showColumnHeaders = false
     showRowHeaders = false
@@ -905,7 +911,7 @@ class TestSpreadsheetModel extends SpreadsheetModel implements TestModel {
     }
 }
 
-export class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> {
+class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> {
 }
 
 // ---------------------

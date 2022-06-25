@@ -28,11 +28,14 @@ import { TablePos } from "../TablePos"
 
 export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
 
-    abstract getColumnHeads(): Array<string>
+    abstract getColumnHeads(): Array<string> | undefined
     abstract getRow(row: T): Array<Reference<T>>
 
     override getColumnHead(col: number): Node | undefined {
         const headers = this.getColumnHeads()
+        if (headers === undefined) {
+            return undefined
+        }
         return document.createTextNode(headers[col])
     }
     
@@ -66,7 +69,7 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
         // return view
     }
 
-    private getField(col: number, row: number): string | undefined {
+    protected getField(col: number, row: number): string | undefined {
         if (!this.model)
             return undefined
         const struct = this.model.data[row]
@@ -74,7 +77,7 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
         return array[col].toString()
     }
 
-    private setField(col: number, row: number, text: string): void {
+    protected setField(col: number, row: number, text: string): void {
         if (!this.model)
             return
         this.getRow(this.model.data[row])[col].fromString(text)

@@ -30,7 +30,7 @@ import { RemoveRowAnimation } from './private/RemoveRowAnimation'
 import { InsertColumnAnimation } from './private/InsertColumnAnimation'
 import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
 
-import { Fragment, ref, HTMLElementProps, setInitialProperties } from 'toad.jsx'
+import { HTMLElementProps, setInitialProperties } from 'toad.jsx'
 
 import { span, div, text } from '../util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
@@ -96,7 +96,8 @@ export class Table extends View {
     selection?: SelectionModel
     protected adapter?: TableAdapter<any>
 
-    protected root: HTMLDivElement // div containing everything else
+    protected root: HTMLDivElement // div containing everything else (why not host?)
+    protected staging: HTMLDivElement
     protected body: HTMLDivElement
     protected colHeads?: HTMLDivElement
     protected colResizeHandles?: HTMLDivElement
@@ -134,9 +135,11 @@ export class Table extends View {
         this.modelChanged = this.modelChanged.bind(this)
 
         this.root = div(
+            this.staging = div(),
             this.body = div()
         )
         this.root.className = "root"
+        this.staging.className = "staging"
         this.body.className = "body"
         this.measure = div()
         this.measure.classList.add("measure")
@@ -509,7 +512,7 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        // console.log(`Table.modelChanged(${event})`)
+        console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
@@ -1063,6 +1066,15 @@ export class Table extends View {
         this.splitBody = undefined
     }
 
+    splitHorizontalNew(beforeRow: number) {
+        this.splitBody = div()
+        this.splitBody.className = "splitBody"
+        this.splitBody.style.backgroundColor = 'rgba(255,128,0,0.5)'
+        const b = this.body.getBoundingClientRect()
+        this.splitBody.style.top =  `0px`
+        this.splitBody.style.height = `${0}px`
+    }
+
     splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
         // initialize splitHead
         if (this.rowHeads !== undefined) {
@@ -1080,7 +1092,7 @@ export class Table extends View {
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "splitBody"
-        // this.splitBody.style.backgroundColor = '#f80'
+        this.splitBody.style.backgroundColor = 'rgba(255,128,0,0.5)'
 
         const b = this.body.getBoundingClientRect()
         this.splitBody.style.width = `${b.width}px`
@@ -1109,42 +1121,25 @@ export class Table extends View {
 
         if (this.splitBody.children.length > 0) {
             console.log("[0]")
-            const filler = span()
             idx = this.splitBody.children.length - 1
             const last = this.splitBody.children[idx] as HTMLElement
-            const bf = this.splitBody.children[idx].getBoundingClientRect()
-            filler.style.border = 'none'
-            filler.style.backgroundColor = '#1e1e1e'
-            const top = px2int(last.style.top) // + bf.height
-            filler.style.top = `${top}px`
-            filler.style.left = `0px`
-            filler.style.width = `${b.width - 2}px`
-            filler.style.height = `${b.height - top}px`
-
-            console.log(top)
-            this.splitBody.style.top = `${top}px`
+            const top = px2int(last.style.top)
             for(let i=0; i<this.splitBody.children.length; ++i) {
                 const c = this.splitBody.children[i] as HTMLElement
                 const y = px2int(c.style.top)
                 c.style.top = `${y - top}px`
             }
-            this.splitBody.style.backgroundColor = '#f80'
-
-            // this.splitBody.appendChild(filler)
+            this.splitBody.style.backgroundColor = '#f80' // #1e1e1e
+            this.splitBody.style.top = `${top}px`
+            this.splitBody.style.height = `${b.height - top}px`
         } else
         if (event !== undefined && this.body.children.length > 0) {
             console.log("[1]")
-            const filler = span()
             idx = event.index * this.adapter!.colCount
             const last = this.body.children[idx] as HTMLElement
-            filler.style.border = 'none'
-            filler.style.backgroundColor = '#1e1e1e'
             const top = px2int(last.style.top)
-            filler.style.top = `${top}px`
-            filler.style.left = `0px`
-            filler.style.width = `${b.width - 2}px`
-            filler.style.height = `${b.height - top}px`
-            this.splitBody.appendChild(filler)
+            this.splitBody.style.top = `${top}px`
+            this.splitBody.style.height = `${b.height - top}px`
         } else
         if (this.body.children.length > 0) {
             console.log("[2]")
