@@ -45,7 +45,7 @@ export class InsertRowAnimation extends TableAnimation {
             InsertRowAnimation.current = this
             return
         }
-        console.log("RUNNING INSERT ROW ANIMATION") 
+        console.log("RUNNING INSERT ROW ANIMATION")
         this.prepareCellsToBeMeasured()
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
@@ -81,29 +81,38 @@ export class InsertRowAnimation extends TableAnimation {
         const overlap = this.adapter.config.seamless ? 0 : 1
 
         // measure row
-        let rowHeight = this.table.minCellHeight
+        this.totalHeight = 0
         let colWidth = new Array<number>(this.adapter.colCount)
-        for (let col = 0; col < this.adapter.colCount; ++col) {
-            const cell = this.measure.children[col]
-            const bounds = cell.getBoundingClientRect()
-            colWidth[col] = Math.ceil(bounds.width)
-            rowHeight = Math.max(rowHeight, bounds.height)
-            console.log(`measured ${col} bounds to be ${bounds.width} x ${bounds.height}`)
+        let rowHeight = new Array<number>(this.event.size)
+        rowHeight.fill(this.table.minCellHeight)
+        let idx = 0
+        for (let row = 0; row < this.event.size; ++row) {
+            for (let col = 0; col < this.adapter.colCount; ++col) {
+                const cell = this.measure.children[idx++]
+                const bounds = cell.getBoundingClientRect()
+                colWidth[col] = Math.ceil(bounds.width)
+                rowHeight[row] = Math.max(rowHeight[row], bounds.height)
+                console.log(`measured ${col} bounds to be ${bounds.width} x ${bounds.height}`)
+            }
+            this.totalHeight += rowHeight[row] + 2 - overlap
         }
-        this.totalHeight = rowHeight + 2
+        this.totalHeight += 1
 
         // place row
         let y = 0
-        let x = 0
-        for (let col = 0; col < this.adapter.colCount; ++col) {
-            const cell = this.measure.children[0] as HTMLElement
-            cell.style.left = `${x}px`
-            cell.style.top = `${y}px`
-            cell.style.width = `${colWidth[col]}px`
-            cell.style.height = `${rowHeight}px`
-            console.log(`move cell ${col} to staging`)
-            this.staging.appendChild(cell)
-            x += colWidth[col] + 6 - overlap
+        for (let row = 0; row < this.event.size; ++row) {
+            let x = 0
+            for (let col = 0; col < this.adapter.colCount; ++col) {
+                const cell = this.measure.children[0] as HTMLElement
+                cell.style.left = `${x}px`
+                cell.style.top = `${y}px`
+                cell.style.width = `${colWidth[col]}px`
+                cell.style.height = `${rowHeight[row]}px`
+                console.log(`move cell ${col} to staging`)
+                this.staging.appendChild(cell)
+                x += colWidth[col] + 6 - overlap
+            }
+            y += rowHeight[row] + 2 - overlap
         }
 
         this.mask = span()
@@ -134,7 +143,7 @@ export class InsertRowAnimation extends TableAnimation {
             this.done = true
 
             this.staging.removeChild(this.mask)
-            while(this.staging.children.length > 0) {
+            while (this.staging.children.length > 0) {
                 this.body.appendChild(this.staging.children[0])
             }
 

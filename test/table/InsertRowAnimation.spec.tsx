@@ -34,19 +34,15 @@ describe("table", function () {
     })
 
     describe("no headers", function () {
-        describe("insert", function () {
+        describe("empty table", function () {
             // test cases: empty table, head, middle, tail
-            it.only("one row", async function () {
-                Table.transitionDuration = "500ms"
-                InsertRowAnimation.halt = false
-
+            it("one row", async function () {
                 // WHEN we have an empty table without headings
                 const model = await prepare([])
                 const table = getTable(model)
 
                 // ...insert a 1st row
                 model.insertRow(0, new MeasureRow(1, 64))
-                return
 
                 // ...and ask for the new cells to be measured
                 const animation = InsertRowAnimation.current!
@@ -84,54 +80,60 @@ describe("table", function () {
 
                 expect(table.body.children).to.have.lengthOf(2)
             })
-            // middle: insert < tail, insert > tail, insert > rest of window
 
-            it("middle, insert > tail, insert < frame", async function () {
+            it("two rows", async function () {
                 // Table.transitionDuration = "500ms"
                 // InsertRowAnimation.halt = false
 
-                // GIVEN a table with two rows
-                const model = await prepare([
+                // WHEN we have an empty table without headings
+                const model = await prepare([])
+                const table = getTable(model)
+
+                // ...insert the 1st two rows
+                model.insertRow(0, [
                     new MeasureRow(1, 32),
-                    new MeasureRow(3, 64)
+                    new MeasureRow(2, 64)
                 ])
-                expect(bodyRowInfo(0)).to.equal(`#1,Y:0,H:32`)
-                expect(bodyRowInfo(1)).to.equal(`#3,Y:33,H:64`)
 
-                // WHEN we insert a row between them
-                model.insertRow(1, new MeasureRow(2, 128))
-
-                // THEN we measure the size of the rows to be inserted
+                // ...and ask for the new cells to be measured
                 const animation = InsertRowAnimation.current!
                 animation.prepareCellsToBeMeasured()
                 await sleep()
 
-                // THEN we move the new row into the staging
-                // animation.prepareStaging()
-                // expect(bodyRowInfo(0)).to.equal(`#1,Y:0,H:32`)
-                // expect(bodyRowInfo(1)).to.equal(`#3,Y:33,H:64`)
-                // expect(stagingRowInfo(0)).to.equal(`#2,Y:33,H:128`)
+                // THEN then two cells have been measured.
+                expect(table.measure.children.length).to.equal(4)
 
-                // THEN we move the rows after the new one into split body for the animation
-                // animation.splitHorizontal()
-                // expect(bodyRowInfo(0)).to.equal(`#1,Y:0,H:32`)
-                // expect(bodyRowInfo(1)).to.equal(`#2,Y:33,H:128`)
-                // AND the splitBody has y and height for the rows to be inserted
-                // so that during the animation the scrollbars match the start...
-                // nope, this won't work. we can hide the new rows, but they still endup be seen...
-                // BUT if we'd place the rows to be inserted behind/before the body, they would be visible
-                // without affecting the scrollbars, while the split body within the body well make sure
-                // the scrollbars will have the expected size
-                // expect(splitRowInfo(0)).to.equal(`#3,Y:0,H:64`)
-                // expect(splitBodyY()).to.equal(33)
-                // expect(splitBodyH()).to.equal(128)
-                // expect(animation.totalHeight).to.equal(67 + 1)
+                // WHEN ask for the new rows to be placed
+                animation.arrangeNewRowsInStaging()
 
-                // animation.joinHorizontal()
-                // expect(bodyRowInfo(0)).to.equal(`#1,Y:0,H:61`)
-                // expect(bodyRowInfo(1)).to.equal(`#2,Y:62,H:67`)
-                // expect(bodyRowInfo(2)).to.equal(`#3,Y:130,H:71`)
+                // THEN they have been placed in staging
+                expect(stagingRowInfo(0)).to.equal(`#1:0,0,86,34`)
+                expect(stagingRowInfo(1)).to.equal(`#2:0,35,86,66`)
+
+                // ...and are hidden by a mask
+                expect(maskY()).to.equal(0)
+                expect(maskH()).to.equal(32+64+8-1)
+
+                // WHEN we split the table for the animation
+                animation.splitHorizontal()
+
+                // THEN splitbody
+                expect(splitBodyY()).to.equal(0)
+                expect(splitBodyH()).to.equal(0)
+
+                // WHEN we animate
+                animation.animate()
+
+                expect(maskTY()).to.equal(103)
+                expect(splitBodyTY()).to.equal(103)
+
+                animation.joinHorizontal()
+                expect(bodyRowInfo(0)).to.equal(`#1:0,0,86,34`)
+                expect(bodyRowInfo(1)).to.equal(`#2:0,35,86,66`)
+
+                expect(table.body.children).to.have.lengthOf(4)
             })
+            // middle: insert < tail, insert > tail, insert > rest of window
         })
     })
 })
@@ -156,13 +158,13 @@ function stagingRowInfo(row: number) {
 function maskY() {
     const tableX = document.querySelector("tx-table") as Table
     const table = new TableFriend(tableX)
-    const mask = table.staging.children[table.staging.children.length-1] as HTMLSpanElement
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
     return px2float(mask.style.top)
 }
 function maskTY() {
     const tableX = document.querySelector("tx-table") as Table
     const table = new TableFriend(tableX)
-    const mask = table.staging.children[table.staging.children.length-1] as HTMLSpanElement
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
     const match = mask.style.transform.match(/translateY\((.*)\)/)!
     return px2float(match[1])
 }
@@ -171,14 +173,14 @@ function maskTY() {
 function maskH() {
     const tableX = document.querySelector("tx-table") as Table
     const table = new TableFriend(tableX)
-    const mask = table.staging.children[table.staging.children.length-1] as HTMLSpanElement
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
     return px2float(mask.style.height)
 }
 
 function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) {
     const idx = row * table.adapter.colCount
     if (idx >= body.children.length) {
-        throw Error(`Row ${row} does not exist. There are only ${ body.children.length/table.adapter.colCount}.`)
+        throw Error(`Row ${row} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
     }
     const child = body.children[idx] as HTMLElement
     const x = px2float(child.style.left)
@@ -219,7 +221,7 @@ let model!: ArrayTableModel<MeasureRow>
 async function prepare(data: MeasureRow[]) {
     TableAdapter.register(MeasureAdapter, ArrayModel, MeasureRow)
     model = new ArrayModel<MeasureRow>(data, MeasureRow)
-    document.body.appendChild(<Table style={{ width: '100%', height: '500px' }} model={model} />)
+    document.body.replaceChildren(<Table style={{ width: '100%', height: '250px' }} model={model} />)
     await sleep()
     return model
 }
@@ -260,7 +262,7 @@ class MeasureAdapter extends ArrayAdapter<ArrayTableModel<MeasureRow>> {
         if (pos.col === 1) {
             cell.style.height = `${row.height}px`
         }
-        cell.style.width = `${80 * (pos.col+1)}px`
+        cell.style.width = `${80 * (pos.col + 1)}px`
         return undefined // ??? why do we return something ???
     }
 }
