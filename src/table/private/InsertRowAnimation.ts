@@ -83,9 +83,14 @@ export class InsertRowAnimation extends TableAnimation {
         const splitRow = this.event.index
         let idx = splitRow * this.adapter!.colCount
         let top = 0
+        if (this.body.children.length === 0) {} else
         if (idx < this.body.children.length) {
             let cell = this.body.children[idx] as HTMLSpanElement
             top = px2float(cell.style.top)
+        } else {
+            let cell = this.body.children[this.body.children.length-1] as HTMLSpanElement
+            let b = cell.getBoundingClientRect()
+            top = px2float(cell.style.top) + b.height - overlap
         }
 
         // measure row

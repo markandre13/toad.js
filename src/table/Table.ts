@@ -1085,31 +1085,38 @@ export class Table extends View {
         this.splitBody.style.right = `0`
         this.splitBody.style.backgroundColor = 'rgba(255,128,0,0.5)'
         const idx = splitRow * this.adapter!.colCount
-        if (idx < this.body.children.length) {
-            console.log(`  split at existing row`)
-            let cell = this.body.children[idx] as HTMLSpanElement
-            let col = this.adapter!.colCount
-            let height = 0
-            const top = px2float(cell.style.top)
-            while(idx < this.body.children.length) {
-                cell = this.body.children[idx] as HTMLSpanElement
-                --col
-                if (col === 0) {
-                    const b = cell.getBoundingClientRect()
-                    height += b.height - overlap
-                    col = this.adapter!.colCount
+        if (this.body.children.length === 0) {
+            this.splitBody.style.top = `0px`
+            this.splitBody.style.height = `0px`
+        } else
+            if (idx < this.body.children.length) {
+                console.log(`  split at existing row`)
+                let cell = this.body.children[idx] as HTMLSpanElement
+                let col = this.adapter!.colCount
+                let height = 0
+                const top = px2float(cell.style.top)
+                while (idx < this.body.children.length) {
+                    cell = this.body.children[idx] as HTMLSpanElement
+                    --col
+                    if (col === 0) {
+                        const b = cell.getBoundingClientRect()
+                        height += b.height - overlap
+                        col = this.adapter!.colCount
+                    }
+                    let y = px2float(cell.style.top)
+                    cell.style.top = `${y - top}px`
+                    this.splitBody.appendChild(cell)
                 }
-                let y = px2float(cell.style.top)
-                cell.style.top = `${y-top}px`
-                this.splitBody.appendChild(cell)
+                height += overlap
+                this.splitBody.style.top = `${top}px`
+                this.splitBody.style.height = `${height}px`
+            } else {
+                let cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+                let b = cell.getBoundingClientRect()
+                let top = px2float(cell.style.top) + b.height - overlap
+                this.splitBody.style.top = `${top}px`
+                this.splitBody.style.height = `0px`
             }
-            height += overlap
-            this.splitBody.style.top =  `${top}px`
-            this.splitBody.style.height = `${height}px`
-        } else {
-            this.splitBody.style.top =  `0px`
-            this.splitBody.style.height = `${0}px`
-        }
         this.body.appendChild(this.splitBody)
     }
 
@@ -1162,7 +1169,7 @@ export class Table extends View {
             idx = this.splitBody.children.length - 1
             const last = this.splitBody.children[idx] as HTMLElement
             const top = px2int(last.style.top)
-            for(let i=0; i<this.splitBody.children.length; ++i) {
+            for (let i = 0; i < this.splitBody.children.length; ++i) {
                 const c = this.splitBody.children[i] as HTMLElement
                 const y = px2int(c.style.top)
                 c.style.top = `${y - top}px`
@@ -1171,34 +1178,34 @@ export class Table extends View {
             this.splitBody.style.top = `${top}px`
             this.splitBody.style.height = `${b.height - top}px`
         } else
-        if (event !== undefined && this.body.children.length > 0) {
-            console.log("[1]")
-            idx = event.index * this.adapter!.colCount
-            const last = this.body.children[idx] as HTMLElement
-            const top = px2int(last.style.top)
-            this.splitBody.style.top = `${top}px`
-            this.splitBody.style.height = `${b.height - top}px`
-        } else
-        if (this.body.children.length > 0) {
-            console.log("[2]")
-            const filler = span()
-            idx = this.body.children.length - 2
-            const last = this.body.children[idx] as HTMLElement
-            const bf = this.body.children[idx].getBoundingClientRect()
-            filler.style.border = 'none'
-            filler.style.backgroundColor = '#1e1e1e'
-            // filler.style.backgroundColor = '#f80'
-            const top = px2int(last.style.top) + bf.height
-            console.log(last)
-            filler.style.top = `${top}px`
-            filler.style.left = `0px`
-            filler.style.width = `${b.width - 2}px`
-            filler.style.height = `${b.height - top}px`
-            this.splitBody.appendChild(filler)
-        } else {
-            // FIXME: handle case when that are no children, then top is 0
-            console.log("[3]")
-        }
+            if (event !== undefined && this.body.children.length > 0) {
+                console.log("[1]")
+                idx = event.index * this.adapter!.colCount
+                const last = this.body.children[idx] as HTMLElement
+                const top = px2int(last.style.top)
+                this.splitBody.style.top = `${top}px`
+                this.splitBody.style.height = `${b.height - top}px`
+            } else
+                if (this.body.children.length > 0) {
+                    console.log("[2]")
+                    const filler = span()
+                    idx = this.body.children.length - 2
+                    const last = this.body.children[idx] as HTMLElement
+                    const bf = this.body.children[idx].getBoundingClientRect()
+                    filler.style.border = 'none'
+                    filler.style.backgroundColor = '#1e1e1e'
+                    // filler.style.backgroundColor = '#f80'
+                    const top = px2int(last.style.top) + bf.height
+                    console.log(last)
+                    filler.style.top = `${top}px`
+                    filler.style.left = `0px`
+                    filler.style.width = `${b.width - 2}px`
+                    filler.style.height = `${b.height - top}px`
+                    this.splitBody.appendChild(filler)
+                } else {
+                    // FIXME: handle case when that are no children, then top is 0
+                    console.log("[3]")
+                }
     }
 
     // move 'splitBody' back into 'body' to end animation
