@@ -205,6 +205,66 @@ describe("table", function () {
                         expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
                         expect(table.body.children).to.have.lengthOf(8)
                     })
+                    it.only("two rows at middle", async function () {
+                        // Table.transitionDuration = "5000ms"
+                        // InsertRowAnimation.halt = false
+
+                        // WHEN we have an empty table without headings
+                        const model = await prepare([
+                            new MeasureRow(1, 32),
+                            new MeasureRow(4, 64)
+                        ])
+                        const table = getTable(model)
+
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+
+                        // ...at the head insert two rows
+                        model.insertRow(1, [
+                            new MeasureRow(2, 48),
+                            new MeasureRow(3, 72)
+                        ])
+
+                        // ...and ask for the new cells to be measured
+                        const animation = InsertRowAnimation.current!
+                        animation.prepareCellsToBeMeasured()
+                        await sleep()
+
+                        // THEN then two cells have been measured.
+                        expect(table.measure.children.length).to.equal(4)
+
+                        // WHEN ask for the new rows to be placed
+                        animation.arrangeNewRowsInStaging()
+
+                        // THEN they have been placed in staging
+                        expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
+                        expect(stagingRowInfo(1)).to.equal(`#3:0,82,80,72`)
+
+                        // ...and are hidden by a mask
+                        const insertHeight = 48 + 72 + 4 - 1
+                        expect(maskY()).to.equal(33)
+                        expect(maskH()).to.equal(insertHeight)
+
+                        // WHEN we split the table for the animation
+                        animation.splitHorizontal()
+                        expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
+                        // THEN splitbody
+                        expect(splitBodyY()).to.equal(33)
+                        expect(splitBodyH()).to.equal(64 + 2)
+
+                        // WHEN we animate
+                        animation.animate()
+
+                        expect(maskTY()).to.equal(insertHeight-1)
+                        expect(splitBodyTY()).to.equal(insertHeight-1)
+
+                        animation.joinHorizontal()
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,48`)
+                        expect(bodyRowInfo(2)).to.equal(`#3:0,82,80,72`)
+                        expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+                        expect(table.body.children).to.have.lengthOf(8)
+                    })
                 })
             })
         })

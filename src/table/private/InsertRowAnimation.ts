@@ -80,12 +80,20 @@ export class InsertRowAnimation extends TableAnimation {
     arrangeNewRowsInStaging() {
         const overlap = this.adapter.config.seamless ? 0 : 1
 
+        const splitRow = this.event.index
+        let idx = splitRow * this.adapter!.colCount
+        let top = 0
+        if (idx < this.body.children.length) {
+            let cell = this.body.children[idx] as HTMLSpanElement
+            top = px2float(cell.style.top)
+        }
+
         // measure row
         this.totalHeight = 0
         let colWidth = new Array<number>(this.adapter.colCount)
         let rowHeight = new Array<number>(this.event.size)
         rowHeight.fill(this.table.minCellHeight)
-        let idx = 0
+        idx = 0
         for (let row = 0; row < this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++]
@@ -100,7 +108,7 @@ export class InsertRowAnimation extends TableAnimation {
         this.totalHeight += overlap
 
         // place row
-        let y = 0
+        let y = top
         for (let row = 0; row < this.event.size; ++row) {
             let x = 0
             for (let col = 0; col < this.adapter.colCount; ++col) {
@@ -121,7 +129,7 @@ export class InsertRowAnimation extends TableAnimation {
         this.mask.style.boxSizing = `content-box`
         this.mask.style.left = `0`
         this.mask.style.right = `0`
-        this.mask.style.top = `0px`
+        this.mask.style.top = `${top}px`
         this.mask.style.border = 'none'
         this.mask.style.transitionProperty = "transform"
         this.mask.style.transitionDuration = Table.transitionDuration
