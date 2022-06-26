@@ -43,7 +43,12 @@ style.textContent = css`
     bottom: 0;
 }
 
-.staging, .body {
+.staging {
+    overflow: hidden;
+    inset: 0;
+}
+
+.body {
     overflow: auto;
     inset: 0;
 }

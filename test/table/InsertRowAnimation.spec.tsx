@@ -24,6 +24,8 @@ import { validateRender, TestModel, getTable } from "./util"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { TableFriend } from '@toad/table/private/TableFriend'
 
+import { Animator, AnimationBase } from '@toad/util/animation'
+
 describe("table", function () {
     beforeEach(async function () {
         unbind()
@@ -37,7 +39,6 @@ describe("table", function () {
 
             describe("no headers", function () {
                 describe("empty table", function () {
-                    // test cases: empty table, head, middle, tail
                     it("one row", async function () {
                         // Table.transitionDuration = "500ms"
                         // InsertRowAnimation.halt = false
@@ -143,6 +144,7 @@ describe("table", function () {
                     // middle: insert < tail, insert > tail, insert > rest of window
                 })
                 describe("populated table", function () {
+                    // todo: test when the table body has been scrolled
                     it("two rows at head", async function () {
                         // Table.transitionDuration = "5000ms"
                         // InsertRowAnimation.halt = false
@@ -266,7 +268,7 @@ describe("table", function () {
                         expect(table.body.children).to.have.lengthOf(8)
                     })
                     it.only("two rows at end", async function () {
-                        Table.transitionDuration = "5000ms"
+                        Table.transitionDuration = "500ms"
                         // InsertRowAnimation.halt = false
     
                         // WHEN we have an empty table without headings
@@ -309,26 +311,46 @@ describe("table", function () {
                         animation.splitHorizontal()
                         // THEN splitbody
                         expect(splitBodyY()).to.equal(98)
-                        expect(splitBodyH()).to.equal(0)
-    
+                        expect(splitBodyH()).to.equal(1);
+
+                        await sleep(1000)
+
+                        // transform does not influence the scrollbar during the animation
+                        const a = new class extends AnimationBase {
+                            override animationFrame(n: number) {
+                                const y = 98 + n * animation.totalHeight
+                                table.splitBody.style.top = `${y}px`
+                                animation.mask.style.top = `${y}px`
+                            }
+                        }
+                        a.start()
+
                         // WHEN we animate
-                        animation.animate()
+                        // animation.animate()
     
-                        expect(maskTY()).to.equal(insertHeight-1)
-                        expect(splitBodyTY()).to.equal(insertHeight-1)
+                        // expect(maskTY()).to.equal(insertHeight-1)
+                        // expect(splitBodyTY()).to.equal(insertHeight-1)
     
-                        animation.joinHorizontal()
-                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                        expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-                        expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
-                        expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
-                        expect(table.body.children).to.have.lengthOf(8)
+                        // animation.joinHorizontal()
+                        // expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        // expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+                        // expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
+                        // expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
+                        // expect(table.body.children).to.have.lengthOf(8)
                     })
                 })
             })
         })
     })
 })
+
+async function prepare(data: MeasureRow[]) {
+    TableAdapter.register(MeasureAdapter, ArrayModel, MeasureRow)
+    model = new ArrayModel<MeasureRow>(data, MeasureRow)
+    document.body.replaceChildren(<Table style={{ width: '100%', height: '150px' }} model={model} />)
+    await sleep()
+    return model
+}
 
 function bodyRowInfo(row: number) {
     const tableX = document.querySelector("tx-table") as Table
@@ -360,8 +382,6 @@ function maskTY() {
     const match = mask.style.transform.match(/translateY\((.*)\)/)!
     return px2float(match[1])
 }
-
-
 function maskH() {
     const tableX = document.querySelector("tx-table") as Table
     const table = new TableFriend(tableX)
@@ -409,14 +429,6 @@ function splitBodyH() {
 }
 
 let model!: ArrayTableModel<MeasureRow>
-
-async function prepare(data: MeasureRow[]) {
-    TableAdapter.register(MeasureAdapter, ArrayModel, MeasureRow)
-    model = new ArrayModel<MeasureRow>(data, MeasureRow)
-    document.body.replaceChildren(<Table style={{ width: '100%', height: '250px' }} model={model} />)
-    await sleep()
-    return model
-}
 
 function validateRow(model: TableModel, modelrow: number) {
     const table = getTable(model)

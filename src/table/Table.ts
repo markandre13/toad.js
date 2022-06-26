@@ -1087,7 +1087,7 @@ export class Table extends View {
         const idx = splitRow * this.adapter!.colCount
         if (this.body.children.length === 0) {
             this.splitBody.style.top = `0px`
-            this.splitBody.style.height = `0px`
+            this.splitBody.style.height = `1px`
         } else
             if (idx < this.body.children.length) {
                 console.log(`  split at existing row`)
@@ -1115,7 +1115,7 @@ export class Table extends View {
                 let b = cell.getBoundingClientRect()
                 let top = px2float(cell.style.top) + b.height - overlap
                 this.splitBody.style.top = `${top}px`
-                this.splitBody.style.height = `0px`
+                this.splitBody.style.height = `1px`
             }
         this.body.appendChild(this.splitBody)
     }
