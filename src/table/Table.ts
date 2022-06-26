@@ -67,8 +67,12 @@ export class Table extends View {
     // we can not calculate the layout when the table is not visible, hence we track the
     // visibility
 
-    protected WIDTH_ADJUST = 6 // border left & right + padding top
-    protected HEIGHT_ADJUST = 2 // border left + padding top & bottom
+    // when getBoundingClientRect() is used to measure the size of a cell, this
+    // includes the padding and border, hence when using this size to set the size
+    // of cells, we need to substract padding and border. which is where these
+    // constants come in:
+    public WIDTH_ADJUST = 6 // border left & right + padding top
+    public HEIGHT_ADJUST = 2 // border left + padding top & bottom
 
     // FIXME: this can be improved:
     // * only add tables which are not visible
@@ -163,7 +167,7 @@ export class Table extends View {
         }
         this.body.onpointerdown = this.pointerDown
 
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: 'open', delegatesFocus: true })
         this.attachStyle(txTable)
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
@@ -632,6 +636,8 @@ export class Table extends View {
         setTimeout(this.arrangeAllMeasuredInGrid, 0)
     }
 
+    // this method is called once during the initial setup
+    // TODO: refactor so that it can also be used for insert operations
     arrangeAllMeasuredInGrid() {
         const seam = this.adapter!.config.seamless ? 0 : 1
 
@@ -802,7 +808,7 @@ export class Table extends View {
     }
 
     setColumnWidths(withinBody = false, colWidth: number[]) {
-        const seam = this.adapter!.config.seamless ? 0 : 1
+        const overlap = this.adapter!.config.seamless ? 1 : 0
         let idx = 0
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             let x = 0
@@ -816,13 +822,13 @@ export class Table extends View {
                 }
                 child.style.left = `${x}px`
                 child.style.width = `${colWidth[col] - this.WIDTH_ADJUST}px`
-                x += colWidth[col] - 2 + seam
+                x += colWidth[col] - 4 - overlap
             }
         }
     }
 
     calculateColumnWidths(withinBody = false): number[] {
-        // console.log(`calculateColumnWidths(withinBody = ${withinBody})`)
+        console.log(`calculateColumnWidths(withinBody = ${withinBody})`)
         // header
         const colWidth = Array<number>(this.adapter!.colCount)
         if (this.colHeads) {
@@ -1066,13 +1072,42 @@ export class Table extends View {
         this.splitBody = undefined
     }
 
-    splitHorizontalNew(beforeRow: number) {
+    // move all rows in body into splitBody, starting with row splitRow
+    // splitRow refers to the actual display, not to the model
+    splitHorizontalNew(splitRow: number) {
+        console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
+        const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()
+        this.splitBody.style.transitionProperty = "transform"
+        this.splitBody.style.transitionDuration = Table.transitionDuration
         this.splitBody.className = "splitBody"
         this.splitBody.style.backgroundColor = 'rgba(255,128,0,0.5)'
-        const b = this.body.getBoundingClientRect()
-        this.splitBody.style.top =  `0px`
-        this.splitBody.style.height = `${0}px`
+        const idx = splitRow * this.adapter!.colCount
+        if (idx < this.body.children.length) {
+            console.log(`  split at existing row`)
+            let cell = this.body.children[idx] as HTMLSpanElement
+            let col = this.adapter!.colCount
+            let height = 0
+            const top = px2float(cell.style.top)
+            while(idx < this.body.children.length) {
+                cell = this.body.children[idx] as HTMLSpanElement
+                let y = px2float(cell.style.top)
+                cell.style.top = `${y-top}px`
+                this.splitBody.appendChild(cell)
+                --col
+                if (col === 0) {
+                    height += px2float(cell.style.height) - overlap
+                    col = this.adapter!.colCount
+                }
+            }
+            --height
+            this.splitBody.style.top =  `${top}px`
+            this.splitBody.style.height = `${height}px`
+        } else {
+            this.splitBody.style.top =  `0px`
+            this.splitBody.style.height = `${0}px`
+        }
+        this.body.appendChild(this.splitBody)
     }
 
     splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {

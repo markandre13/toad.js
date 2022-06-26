@@ -90,13 +90,14 @@ export class InsertRowAnimation extends TableAnimation {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++]
                 const bounds = cell.getBoundingClientRect()
+                console.log(`C${col}R${row} = ${bounds.width} ⨉ ${bounds.height}`)
                 colWidth[col] = Math.ceil(bounds.width)
                 rowHeight[row] = Math.max(rowHeight[row], bounds.height)
                 console.log(`measured ${col} bounds to be ${bounds.width} x ${bounds.height}`)
             }
-            this.totalHeight += rowHeight[row] + 2 - overlap
+            this.totalHeight += rowHeight[row] - overlap
         }
-        this.totalHeight += 1
+        // this.totalHeight += 1
 
         // place row
         let y = 0
@@ -106,13 +107,13 @@ export class InsertRowAnimation extends TableAnimation {
                 const cell = this.measure.children[0] as HTMLElement
                 cell.style.left = `${x}px`
                 cell.style.top = `${y}px`
-                cell.style.width = `${colWidth[col]}px`
-                cell.style.height = `${rowHeight[row]}px`
+                cell.style.width = `${colWidth[col] - this.table.WIDTH_ADJUST}px`
+                cell.style.height = `${rowHeight[row] - this.table.HEIGHT_ADJUST}px`
                 console.log(`move cell ${col} to staging`)
                 this.staging.appendChild(cell)
-                x += colWidth[col] + 6 - overlap
+                x += colWidth[col] - overlap
             }
-            y += rowHeight[row] + 2 - overlap
+            y += rowHeight[row] - overlap
         }
 
         this.mask = span()
@@ -123,7 +124,7 @@ export class InsertRowAnimation extends TableAnimation {
         this.mask.style.border = 'none'
         this.mask.style.transitionProperty = "transform"
         this.mask.style.transitionDuration = Table.transitionDuration
-        this.mask.style.height = `${this.totalHeight}px`
+        this.mask.style.height = `${this.totalHeight + 2}px`
         this.mask.style.backgroundColor = `rgba(0,0,128,0.3)`
         this.staging.appendChild(this.mask)
     }
@@ -143,8 +144,17 @@ export class InsertRowAnimation extends TableAnimation {
             this.done = true
 
             this.staging.removeChild(this.mask)
+            this.body.removeChild(this.splitBody)
             while (this.staging.children.length > 0) {
                 this.body.appendChild(this.staging.children[0])
+            }
+            if (this.splitBody.children.length > 0) {
+                const top = px2float(this.splitBody.style.top) + this.totalHeight
+                while (this.splitBody.children.length > 0) {
+                    const cell = this.splitBody.children[0] as HTMLSpanElement
+                    cell.style.top = `${px2float(cell.style.top) + top}px`
+                    this.body.appendChild(cell)
+                }
             }
 
             // this should work without any arguments
