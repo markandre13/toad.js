@@ -1081,6 +1081,8 @@ export class Table extends View {
         this.splitBody.style.transitionProperty = "transform"
         this.splitBody.style.transitionDuration = Table.transitionDuration
         this.splitBody.className = "splitBody"
+        this.splitBody.style.left = `0`
+        this.splitBody.style.right = `0`
         this.splitBody.style.backgroundColor = 'rgba(255,128,0,0.5)'
         const idx = splitRow * this.adapter!.colCount
         if (idx < this.body.children.length) {
@@ -1091,16 +1093,17 @@ export class Table extends View {
             const top = px2float(cell.style.top)
             while(idx < this.body.children.length) {
                 cell = this.body.children[idx] as HTMLSpanElement
+                --col
+                if (col === 0) {
+                    const b = cell.getBoundingClientRect()
+                    height += b.height - overlap
+                    col = this.adapter!.colCount
+                }
                 let y = px2float(cell.style.top)
                 cell.style.top = `${y-top}px`
                 this.splitBody.appendChild(cell)
-                --col
-                if (col === 0) {
-                    height += px2float(cell.style.height) - overlap
-                    col = this.adapter!.colCount
-                }
             }
-            --height
+            height += overlap
             this.splitBody.style.top =  `${top}px`
             this.splitBody.style.height = `${height}px`
         } else {

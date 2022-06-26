@@ -36,7 +36,7 @@ export class InsertRowAnimation extends TableAnimation {
         this.event = event
         this.joinHorizontal = this.joinHorizontal.bind(this)
         this.initialColCount = this.adapter.colCount
-        this.initialRowCount = this.adapter.rowCount
+        this.initialRowCount = this.adapter.rowCount - event.size
     }
 
     run() {
@@ -97,7 +97,7 @@ export class InsertRowAnimation extends TableAnimation {
             }
             this.totalHeight += rowHeight[row] - overlap
         }
-        // this.totalHeight += 1
+        this.totalHeight += overlap
 
         // place row
         let y = 0
@@ -118,13 +118,14 @@ export class InsertRowAnimation extends TableAnimation {
 
         this.mask = span()
         // this.mask.className = "mask"
+        this.mask.style.boxSizing = `content-box`
         this.mask.style.left = `0`
         this.mask.style.right = `0`
         this.mask.style.top = `0px`
         this.mask.style.border = 'none'
         this.mask.style.transitionProperty = "transform"
         this.mask.style.transitionDuration = Table.transitionDuration
-        this.mask.style.height = `${this.totalHeight + 2}px`
+        this.mask.style.height = `${this.totalHeight}px`
         this.mask.style.backgroundColor = `rgba(0,0,128,0.3)`
         this.staging.appendChild(this.mask)
     }
@@ -135,8 +136,15 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     animate() {
-        this.mask.style.transform = `translateY(${this.totalHeight}px)`
-        this.splitBody.style.transform = `translateY(${this.totalHeight}px)`
+        console.log(`ANIMATE: initialRowCount=${this.initialRowCount}`)
+        if (this.initialRowCount === 0) {
+            this.mask.style.transform = `translateY(${this.totalHeight}px)`
+            this.splitBody.style.transform = `translateY(${this.totalHeight}px)`
+        } else {
+            const overlap = this.adapter.config.seamless ? 0 : 1
+            this.mask.style.transform = `translateY(${this.totalHeight - overlap}px)`
+            this.splitBody.style.transform = `translateY(${this.totalHeight - overlap}px)`
+        }
     }
 
     joinHorizontal() {
@@ -149,7 +157,11 @@ export class InsertRowAnimation extends TableAnimation {
                 this.body.appendChild(this.staging.children[0])
             }
             if (this.splitBody.children.length > 0) {
-                const top = px2float(this.splitBody.style.top) + this.totalHeight
+                let top = px2float(this.splitBody.style.top) + this.totalHeight
+                if (this.initialRowCount !== 0) {
+                    const overlap = this.adapter.config.seamless ? 0 : 1
+                    top -= overlap
+                }
                 while (this.splitBody.children.length > 0) {
                     const cell = this.splitBody.children[0] as HTMLSpanElement
                     cell.style.top = `${px2float(cell.style.top) + top}px`

@@ -39,6 +39,9 @@ describe("table", function () {
                 describe("empty table", function () {
                     // test cases: empty table, head, middle, tail
                     it("one row", async function () {
+                        // Table.transitionDuration = "500ms"
+                        // InsertRowAnimation.halt = false
+
                         // WHEN we have an empty table without headings
                         const model = await prepare([])
                         const table = getTable(model)
@@ -61,8 +64,9 @@ describe("table", function () {
                         expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,64`)
 
                         // ...and are hidden by a mask
+                        const insertHeight = 64 + 2
                         expect(maskY()).to.equal(0)
-                        expect(maskH()).to.equal(66)
+                        expect(maskH(), "mask height in pixels").to.equal(insertHeight)
 
                         // WHEN we split the table for the animation
                         animation.splitHorizontal()
@@ -74,8 +78,8 @@ describe("table", function () {
                         // WHEN we animate
                         animation.animate()
 
-                        expect(maskTY()).to.equal(66)
-                        expect(splitBodyTY()).to.equal(66)
+                        expect(maskTY()).to.equal(insertHeight)
+                        expect(splitBodyTY()).to.equal(insertHeight)
 
                         animation.joinHorizontal()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,64`)
@@ -113,8 +117,9 @@ describe("table", function () {
                         expect(stagingRowInfo(1)).to.equal(`#2:0,33,80,64`)
 
                         // ...and are hidden by a mask
+                        const insertHeight = 32 + 64 + 4 - 1
                         expect(maskY()).to.equal(0)
-                        expect(maskH()).to.equal(32 + 64 + 4 - 1)
+                        expect(maskH()).to.equal(insertHeight)
 
                         // WHEN we split the table for the animation
                         animation.splitHorizontal()
@@ -126,8 +131,8 @@ describe("table", function () {
                         // WHEN we animate
                         animation.animate()
 
-                        expect(maskTY()).to.equal(32 + 64 + 4 - 1)
-                        expect(splitBodyTY()).to.equal(32 + 64 + 4 - 1)
+                        expect(maskTY()).to.equal(insertHeight)
+                        expect(splitBodyTY()).to.equal(insertHeight)
 
                         animation.joinHorizontal()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
@@ -138,8 +143,8 @@ describe("table", function () {
                     // middle: insert < tail, insert > tail, insert > rest of window
                 })
                 describe("populated table", function () {
-                    it.only("head", async function () {
-                        Table.transitionDuration = "5000ms"
+                    it("two rows at head", async function () {
+                        // Table.transitionDuration = "5000ms"
                         // InsertRowAnimation.halt = false
 
                         // WHEN we have an empty table without headings
@@ -174,7 +179,7 @@ describe("table", function () {
                         expect(stagingRowInfo(1)).to.equal(`#2:0,49,80,72`)
 
                         // ...and are hidden by a mask
-                        const insertHeight = 48 + 72 + 4
+                        const insertHeight = 48 + 72 + 4 - 1
                         expect(maskY()).to.equal(0)
                         expect(maskH()).to.equal(insertHeight)
 
@@ -184,13 +189,14 @@ describe("table", function () {
                         expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
                         // THEN splitbody
                         expect(splitBodyY()).to.equal(0)
-                        expect(splitBodyH()).to.equal(32 + 64 - 3) // ???
 
-                        // // WHEN we animate
+                        expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
+
+                        // WHEN we animate
                         animation.animate()
 
-                        expect(maskTY()).to.equal(insertHeight - 2) // ???
-                        expect(splitBodyTY()).to.equal(insertHeight - 2) // ???
+                        expect(maskTY()).to.equal(insertHeight-1)
+                        expect(splitBodyTY()).to.equal(insertHeight-1)
 
                         animation.joinHorizontal()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
