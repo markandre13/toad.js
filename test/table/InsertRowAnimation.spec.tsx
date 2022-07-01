@@ -343,11 +343,6 @@ describe("table", function () {
 
                 // ...and ask for the new cells to be measured
                 const animation = RemoveRowAnimation.current!
-                // animation.prepareCellsToBeMeasured()
-                // await sleep()
-
-                // THEN then two cells have been measured.
-                // expect(table.measure.children.length).to.equal(8)
 
                 // WHEN ask for the new rows to be placed
                 animation.arrangeRowsInStaging()
@@ -359,33 +354,29 @@ describe("table", function () {
                 expect(bodyRowInfo(0)).to.equal(`#3:0,122,80,32`)
                 expect(bodyRowInfo(1)).to.equal(`#4:0,155,80,64`)
 
-                // ...and there is a mask at the end of the table
-                // const insertHeight = 48 + 72 + 4 - 1
-                // expect(maskY()).to.equal(0)
-                // expect(maskH()).to.equal(insertHeight)
+                // ...and there is a mask at the end of staging?
+                const removeHeight = 48 + 72 + 2
+                expect(maskY()).to.equal(removeHeight)
+                expect(maskH()).to.equal(removeHeight)
 
-                // // WHEN we split the table for the animation
-                // animation.splitHorizontal()
-                // expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                // expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
-                // // THEN splitbody
-                // expect(splitBodyY()).to.equal(0)
-                // expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
+                // WHEN we split the table for the animation
+                animation.splitHorizontal()
+                expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                // THEN splitbody
+                expect(splitBodyY()).to.equal(removeHeight)
+                expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
 
-                // console.log(`mask height = ${insertHeight}`)
-                // console.log(`animation total height = ${animation.totalHeight}`)
+                // WHEN we animate
+                animation.animate()
 
-                // // WHEN we animate
-                // animation.animate()
+                expect(maskY()).to.equal(0)
+                expect(splitBodyY()).to.equal(0)
 
-                // expect(maskY()).to.equal(insertHeight - 1)
-                // expect(splitBodyY()).to.equal(insertHeight - 1)
-
-                // animation.joinHorizontal()
-                // expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                // expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
-
-                // expect(table.body.children).to.have.lengthOf(4)
+                animation.joinHorizontal()
+                expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                expect(table.body.children).to.have.lengthOf(4)
             })
         })
     })

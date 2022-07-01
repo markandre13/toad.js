@@ -19,6 +19,8 @@
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
+import { AnimationBase } from "../../util/animation"
+import { span } from '@toad/util/lsx'
 
 export class RemoveRowAnimation extends TableAnimation {
     static halt = false
@@ -28,6 +30,7 @@ export class RemoveRowAnimation extends TableAnimation {
     done = false;
     colCount: number
     rowCount: number
+    mask!: HTMLSpanElement
 
     constructor(table: Table, event: TableEvent) {
         super(table)
@@ -79,16 +82,90 @@ export class RemoveRowAnimation extends TableAnimation {
     arrangeRowsInStaging() {
         const idx = this.event.index * this.adapter.colCount
         const cellCount = this.event.size * this.adapter.colCount
+        const start = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
         for(let i=0; i<cellCount; ++i) {
             this.staging.appendChild(this.body.children[idx])
         }
+
+        const bottom = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
+        this.totalHeight = bottom - start
+
+        this.mask = span()
+        // this.mask.className = "mask"
+        this.mask.style.boxSizing = `content-box`
+        this.mask.style.left = `0`
+        this.mask.style.right = `0`
+        this.mask.style.top = `${bottom}px`
+        this.mask.style.border = 'none'
+        this.mask.style.transitionProperty = "transform"
+        this.mask.style.transitionDuration = Table.transitionDuration
+        this.mask.style.height = `${this.totalHeight}px`
+        this.mask.style.backgroundColor = `rgba(0,0,128,0.3)`
+        this.staging.appendChild(this.mask)
     }
 
-    splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
-        // this.table.splitHorizontal(splitRow, extra, event)
+    splitHorizontal() {
+        this.table.splitHorizontalNew(this.event.index)
+    }
+
+    animate() {
+        // // console.log(`ANIMATE: initialRowCount=${this.initialRowCount}`)
+        let height: number
+        height = this.totalHeight
+        // if (this.initialRowCount !== 0) {
+        //     const overlap = this.adapter.config.seamless ? 0 : 1
+        //     // console.log(`this is not the 1st row, reduce height by one overlap of ${overlap}`)
+        //     height -= overlap
+        // }
+        const top = px2float(this.splitBody.style.top)
+        // // console.log(`split body is at ${top}, height is ${height}`)
+        if (RemoveRowAnimation.halt) {
+            const y = top - height
+            this.splitBody.style.top = `${y}px`
+            this.mask.style.top = `${y}px`
+            return
+        }
+        const self = this
+        const a = new class extends AnimationBase {
+            override animationFrame(n: number) {
+                const y = top - n * height
+                self.splitBody.style.top = `${y}px`
+                self.mask.style.top = `${y}px`
+            }
+        }
+        a.start()
     }
 
     joinHorizontal() {
+        if (!this.done) {
+            this.done = true
+
+            this.staging.removeChild(this.mask)
+            this.body.removeChild(this.splitBody)
+            while (this.staging.children.length > 0) {
+                this.staging.removeChild(this.staging.children[0])
+            }
+            if (this.splitBody.children.length > 0) {
+                let top = px2float(this.splitBody.style.top)
+                // if (this.initialRowCount !== 0) {
+                //     const overlap = this.adapter.config.seamless ? 0 : 1
+                //     top -= overlap
+                // }
+                while (this.splitBody.children.length > 0) {
+                    const cell = this.splitBody.children[0] as HTMLSpanElement
+                    cell.style.top = `${px2float(cell.style.top) + top}px`
+                    this.body.appendChild(cell)
+                }
+            }
+
+            // this should work without any arguments
+            // * append splitbody to body
+            // * adjust cells y from split body by splitbody y
+            // this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight, 0, this.initialColCount, this.initialRowCount)
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
+        }
         // if (!this.done) {
         //     this.done = true
 
