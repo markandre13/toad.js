@@ -322,7 +322,7 @@ describe("table", function () {
             })
         })
         describe("remove", function () {
-            it.only("two rows at head", async function () {
+            it("two rows at head", async function () {
                 // WHEN we have a table without headings
                 const model = await prepare([
                     new MeasureRow(1, 48),
@@ -341,7 +341,6 @@ describe("table", function () {
                 // ...at the head remove two rows
                 model.removeRow(0, 2)
 
-                // ...and ask for the new cells to be measured
                 const animation = RemoveRowAnimation.current!
 
                 // WHEN ask for the new rows to be placed
@@ -375,6 +374,61 @@ describe("table", function () {
 
                 animation.joinHorizontal()
                 expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                expect(table.body.children).to.have.lengthOf(4)
+            })
+            it.only("two rows at middle", async function () {
+                // Table.transitionDuration = "5000ms"
+                // InsertRowAnimation.halt = false
+
+                // WHEN we have an empty table without headings
+                const model = await prepare([
+                    new MeasureRow(1, 32),
+                    new MeasureRow(2, 48),
+                    new MeasureRow(3, 72),
+                    new MeasureRow(4, 64)
+                ])
+                const table = getTable(model)
+
+                expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,48`)
+                expect(bodyRowInfo(2)).to.equal(`#3:0,82,80,72`)
+                expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+                expect(table.body.children).to.have.lengthOf(8)
+
+                // ...at the head insert two rows
+                model.removeRow(1, 2)
+
+                const animation = RemoveRowAnimation.current!
+
+                // WHEN ask for the new rows to be placed
+                animation.arrangeRowsInStaging()
+
+                // THEN they have been placed in staging
+                expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
+                expect(stagingRowInfo(1)).to.equal(`#3:0,82,80,72`)
+
+                // ...and are hidden by a mask
+                const removeHeight = 48 + 72 + 2
+                expect(maskY()).to.equal(155)
+                expect(maskH()).to.equal(removeHeight)
+
+                // WHEN we split the table for the animation
+                animation.splitHorizontal()
+                // THEN splitbody
+                expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
+                expect(splitBodyY()).to.equal(155)
+                expect(splitBodyH()).to.equal(64 + 2)
+
+                // WHEN we animate
+                animation.animate()
+
+                expect(maskY()).to.equal(33)
+                expect(splitBodyY()).to.equal(33)
+
+                animation.joinHorizontal()
+
+                expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
                 expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
                 expect(table.body.children).to.have.lengthOf(4)
             })
