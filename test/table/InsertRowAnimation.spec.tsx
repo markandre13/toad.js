@@ -1,30 +1,20 @@
 import { expect } from '@esm-bundle/chai'
-
 import { Reference, unbind } from "@toad"
-
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
-
 import { ArrayModel } from "@toad/table/model/ArrayModel"
 import { ArrayTableModel } from "@toad/table/model/ArrayTableModel"
 import { TableModel } from "@toad/table/model/TableModel"
-
-
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { ArrayAdapter } from '@toad/table/adapter/ArrayAdapter'
-
-import { refs } from "toad.jsx/lib/jsx-runtime"
-
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-
-import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
-import { validateRender, TestModel, getTable } from "./util"
+import { sleep, px2float } from "../testlib"
+import { getTable } from "./util"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
+import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { TableFriend } from '@toad/table/private/TableFriend'
-
-import { Animator, AnimationBase } from '@toad/util/animation'
 
 describe("table", function () {
     beforeEach(async function () {
@@ -32,11 +22,11 @@ describe("table", function () {
         TableAdapter.unbind()
         Table.transitionDuration = "1ms"
         InsertRowAnimation.halt = true
+        RemoveRowAnimation.halt = true
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
     describe("row", function () {
         describe("insert", function () {
-
             describe("no headers", function () {
                 describe("empty table", function () {
                     it("one row", async function () {
@@ -74,13 +64,13 @@ describe("table", function () {
 
                         // THEN splitbody
                         expect(splitBodyY()).to.equal(0)
-                        expect(splitBodyH()).to.equal(0)
+                        expect(splitBodyH()).to.equal(1)
 
                         // WHEN we animate
                         animation.animate()
 
-                        expect(maskTY()).to.equal(insertHeight)
-                        expect(splitBodyTY()).to.equal(insertHeight)
+                        expect(maskY()).to.equal(insertHeight)
+                        expect(splitBodyY()).to.equal(insertHeight)
 
                         animation.joinHorizontal()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,64`)
@@ -127,13 +117,13 @@ describe("table", function () {
 
                         // THEN splitbody
                         expect(splitBodyY()).to.equal(0)
-                        expect(splitBodyH()).to.equal(0)
+                        expect(splitBodyH()).to.equal(1)
 
                         // WHEN we animate
                         animation.animate()
 
-                        expect(maskTY()).to.equal(insertHeight)
-                        expect(splitBodyTY()).to.equal(insertHeight)
+                        expect(maskY()).to.equal(insertHeight)
+                        expect(splitBodyY()).to.equal(insertHeight)
 
                         animation.joinHorizontal()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
@@ -191,14 +181,16 @@ describe("table", function () {
                         expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
                         // THEN splitbody
                         expect(splitBodyY()).to.equal(0)
-
                         expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
+
+                        console.log(`mask height = ${insertHeight}`)
+                        console.log(`animation total height = ${animation.totalHeight}`)
 
                         // WHEN we animate
                         animation.animate()
 
-                        expect(maskTY()).to.equal(insertHeight-1)
-                        expect(splitBodyTY()).to.equal(insertHeight-1)
+                        expect(maskY()).to.equal(insertHeight - 1)
+                        expect(splitBodyY()).to.equal(insertHeight - 1)
 
                         animation.joinHorizontal()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
@@ -257,8 +249,8 @@ describe("table", function () {
                         // WHEN we animate
                         animation.animate()
 
-                        expect(maskTY()).to.equal(insertHeight-1)
-                        expect(splitBodyTY()).to.equal(insertHeight-1)
+                        expect(maskY()).to.equal(33 + insertHeight - 1)
+                        expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
                         animation.joinHorizontal()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
@@ -267,78 +259,133 @@ describe("table", function () {
                         expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
                         expect(table.body.children).to.have.lengthOf(8)
                     })
-                    it.only("two rows at end", async function () {
-                        Table.transitionDuration = "500ms"
+                    it("two rows at end", async function () {
+                        // Table.transitionDuration = "500ms"
                         // InsertRowAnimation.halt = false
-    
+
                         // WHEN we have an empty table without headings
                         const model = await prepare([
                             new MeasureRow(1, 32),
                             new MeasureRow(2, 64)
                         ])
                         const table = getTable(model)
-    
+
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
                         expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-    
+
                         // ...at the head insert two rows
                         model.insertRow(2, [
                             new MeasureRow(3, 48),
                             new MeasureRow(4, 72)
                         ])
-    
+
                         // ...and ask for the new cells to be measured
                         const animation = InsertRowAnimation.current!
                         animation.prepareCellsToBeMeasured()
                         await sleep()
-    
+
                         // THEN then two cells have been measured.
                         expect(table.measure.children.length).to.equal(4)
-    
+
                         // WHEN ask for the new rows to be placed
                         animation.arrangeNewRowsInStaging()
-    
+
                         // THEN they have been placed in staging
                         expect(stagingRowInfo(0)).to.equal(`#3:0,98,80,48`)
                         expect(stagingRowInfo(1)).to.equal(`#4:0,147,80,72`)
-    
+
                         // ...and are hidden by a mask
                         const insertHeight = 48 + 72 + 4 - 1
                         expect(maskY()).to.equal(98)
                         expect(maskH()).to.equal(insertHeight)
-    
+
                         // WHEN we split the table for the animation
                         animation.splitHorizontal()
                         // THEN splitbody
                         expect(splitBodyY()).to.equal(98)
-                        expect(splitBodyH()).to.equal(1);
-
-                        await sleep(1000)
-
-                        // transform does not influence the scrollbar during the animation
-                        const a = new class extends AnimationBase {
-                            override animationFrame(n: number) {
-                                const y = 98 + n * animation.totalHeight
-                                table.splitBody.style.top = `${y}px`
-                                animation.mask.style.top = `${y}px`
-                            }
-                        }
-                        a.start()
+                        expect(splitBodyH()).to.equal(1)
 
                         // WHEN we animate
-                        // animation.animate()
-    
-                        // expect(maskTY()).to.equal(insertHeight-1)
-                        // expect(splitBodyTY()).to.equal(insertHeight-1)
-    
-                        // animation.joinHorizontal()
-                        // expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                        // expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-                        // expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
-                        // expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
-                        // expect(table.body.children).to.have.lengthOf(8)
+                        animation.animate()
+
+                        expect(maskY()).to.equal(98 + insertHeight - 1)
+                        expect(splitBodyY()).to.equal(98 + insertHeight - 1)
+
+                        animation.joinHorizontal()
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+                        expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
+                        expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
+                        expect(table.body.children).to.have.lengthOf(8)
                     })
                 })
+            })
+        })
+        describe("remove", function () {
+            it.only("two rows at head", async function () {
+                // WHEN we have a table without headings
+                const model = await prepare([
+                    new MeasureRow(1, 48),
+                    new MeasureRow(2, 72),
+                    new MeasureRow(3, 32),
+                    new MeasureRow(4, 64)
+                ])
+                const table = getTable(model)
+
+                expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
+                expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
+                expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
+                expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+                expect(table.body.children).to.have.lengthOf(8)
+
+                // ...at the head remove two rows
+                model.removeRow(0, 2)
+
+                // ...and ask for the new cells to be measured
+                const animation = RemoveRowAnimation.current!
+                // animation.prepareCellsToBeMeasured()
+                // await sleep()
+
+                // THEN then two cells have been measured.
+                // expect(table.measure.children.length).to.equal(8)
+
+                // WHEN ask for the new rows to be placed
+                animation.arrangeRowsInStaging()
+
+                // THEN they have been placed in staging
+                expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,48`)
+                expect(stagingRowInfo(1)).to.equal(`#2:0,49,80,72`)
+
+                expect(bodyRowInfo(0)).to.equal(`#3:0,122,80,32`)
+                expect(bodyRowInfo(1)).to.equal(`#4:0,155,80,64`)
+
+                // ...and there is a mask at the end of the table
+                // const insertHeight = 48 + 72 + 4 - 1
+                // expect(maskY()).to.equal(0)
+                // expect(maskH()).to.equal(insertHeight)
+
+                // // WHEN we split the table for the animation
+                // animation.splitHorizontal()
+                // expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                // expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                // // THEN splitbody
+                // expect(splitBodyY()).to.equal(0)
+                // expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
+
+                // console.log(`mask height = ${insertHeight}`)
+                // console.log(`animation total height = ${animation.totalHeight}`)
+
+                // // WHEN we animate
+                // animation.animate()
+
+                // expect(maskY()).to.equal(insertHeight - 1)
+                // expect(splitBodyY()).to.equal(insertHeight - 1)
+
+                // animation.joinHorizontal()
+                // expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                // expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+
+                // expect(table.body.children).to.have.lengthOf(4)
             })
         })
     })
@@ -347,7 +394,7 @@ describe("table", function () {
 async function prepare(data: MeasureRow[]) {
     TableAdapter.register(MeasureAdapter, ArrayModel, MeasureRow)
     model = new ArrayModel<MeasureRow>(data, MeasureRow)
-    document.body.replaceChildren(<Table style={{ width: '100%', height: '150px' }} model={model} />)
+    document.body.replaceChildren(<Table style={{ width: '100%', height: '250px' }} model={model} />)
     await sleep()
     return model
 }

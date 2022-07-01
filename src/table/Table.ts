@@ -621,19 +621,24 @@ export class Table extends View {
         // body
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
-                const cell = span()
-                cell.onfocus = this.cellFocus
-                cell.onkeydown = this.cellKeyDown
-                cell.tabIndex = 0
-                if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
-                    cell.setAttribute("contenteditable", "")
-                }
+                const cell = this.createCell()
                 this.adapter!.showCell({ col, row }, cell)
                 this.measure.appendChild(cell)
             }
         }
 
         setTimeout(this.arrangeAllMeasuredInGrid, 0)
+    }
+
+    createCell() {
+        const cell = span()
+        cell.onfocus = this.cellFocus
+        cell.onkeydown = this.cellKeyDown
+        cell.tabIndex = 0
+        if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
+            cell.setAttribute("contenteditable", "")
+        }
+        return cell
     }
 
     // this method is called once during the initial setup
