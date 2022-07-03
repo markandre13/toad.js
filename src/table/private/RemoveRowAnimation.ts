@@ -26,6 +26,7 @@ export class RemoveRowAnimation extends TableAnimation {
     static halt = false
     static current?: RemoveRowAnimation
     event: TableEvent
+    initialHeight: number
     totalHeight!: number
     done = false;
     colCount: number
@@ -39,6 +40,15 @@ export class RemoveRowAnimation extends TableAnimation {
 
         this.colCount = this.adapter.colCount
         this.rowCount = this.adapter.rowCount
+
+        if (this.body.children.length === 0) {
+            this.initialHeight = 0
+        } else {
+            const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+            const top = px2float(cell.style.top)
+            const bounds = cell.getBoundingClientRect()
+            this.initialHeight = top + bounds.height
+        }
     }
 
     run() {
@@ -47,31 +57,7 @@ export class RemoveRowAnimation extends TableAnimation {
             RemoveRowAnimation.current = this
             return
         }
-        console.log("RUNNING INSERT ROW ANIMATION")
-        // const overlap = this.adapter.config.seamless ? 1 : 0
-
-        // let totalHeight = 0
-        // let idx = this.event.index * this.colCount
-        // for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
-        //     const cell = this.body.children[idx] as HTMLSpanElement
-        //     totalHeight += Math.ceil(px2float(cell.style.height) + 1) - overlap
-        // }
-        // this.totalHeight = totalHeight
-
-        // let allSelected = this.body.querySelectorAll(".selected")
-        // for (let selected of allSelected) {
-        //     selected.classList.remove("selected")
-        // }
-
-        // this.splitHorizontal(this.event.index + this.event.size, this.event.size)
-
-        // this.splitBody.style.transitionProperty = "transform"
-        // this.splitBody.style.transitionDuration = Table.transitionDuration
-        // this.splitBody.ontransitionend = this.joinHorizontal
-        // this.splitBody.ontransitioncancel = this.joinHorizontal
-        // setTimeout(() => {
-        //     this.splitBody.style.transform = `translateY(${-this.totalHeight}px)` // TODO: make this an animation
-        // }, Table.renderDelay)
+        console.log("RUNNING REMOVE ROW ANIMATION")
     }
 
     override stop() {
@@ -83,54 +69,66 @@ export class RemoveRowAnimation extends TableAnimation {
         const idx = this.event.index * this.adapter.colCount
         const cellCount = this.event.size * this.adapter.colCount
         const start = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
-        for(let i=0; i<cellCount; ++i) {
+        for (let i = 0; i < cellCount; ++i) {
             this.staging.appendChild(this.body.children[idx])
         }
 
-        const bottom = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
-        this.totalHeight = bottom - start
+        let bottomOfStaging
+        if (idx < this.body.children.length) {
+            bottomOfStaging = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
+        } else {
+            const cell = this.staging.children[this.staging.children.length - 1] as HTMLSpanElement
+            bottomOfStaging = px2float(cell.style.top) + px2float(cell.style.height) + this.table.HEIGHT_ADJUST
+        }
+        this.totalHeight = bottomOfStaging - start
 
         this.mask = span()
         // this.mask.className = "mask"
         this.mask.style.boxSizing = `content-box`
         this.mask.style.left = `0`
         this.mask.style.right = `0`
-        this.mask.style.top = `${bottom}px`
+        this.mask.style.top = `${bottomOfStaging + 1}px`
         this.mask.style.border = 'none'
         this.mask.style.transitionProperty = "transform"
         this.mask.style.transitionDuration = Table.transitionDuration
-        this.mask.style.height = `${this.totalHeight}px`
+        this.mask.style.height = `${this.totalHeight + 1}px`
         this.mask.style.backgroundColor = `rgba(0,0,128,0.3)`
         this.staging.appendChild(this.mask)
     }
 
     splitHorizontal() {
         this.table.splitHorizontalNew(this.event.index)
+
+        const top = px2float(this.splitBody.style.top)
+        this.splitBody.style.height = `${this.initialHeight - top}px`
     }
 
     animate() {
-        // // console.log(`ANIMATE: initialRowCount=${this.initialRowCount}`)
+        // console.log(`ANIMATE: initialRowCount=${this.initialRowCount}`)
         let height: number
         height = this.totalHeight
-        // if (this.initialRowCount !== 0) {
-        //     const overlap = this.adapter.config.seamless ? 0 : 1
-        //     // console.log(`this is not the 1st row, reduce height by one overlap of ${overlap}`)
-        //     height -= overlap
-        // }
-        const top = px2float(this.splitBody.style.top)
+        console.log(`================> this.adapter.rowCount = ${this.adapter.rowCount}`)
+        if (this.event.index >= this.adapter.rowCount) {
+            const overlap = this.adapter.config.seamless ? 0 : 1
+            // console.log(`this is not the 1st row, reduce height by one overlap of ${overlap}`)
+            height -= overlap
+        }
+        console.log(`animate: move by ${height}`)
+        const topSplitBody = px2float(this.splitBody.style.top)
+        const topMask = px2float(this.mask.style.top)
         // // console.log(`split body is at ${top}, height is ${height}`)
         if (RemoveRowAnimation.halt) {
-            const y = top - height
-            this.splitBody.style.top = `${y}px`
-            this.mask.style.top = `${y}px`
+            console.log(`this.splitBody.style.top = ${topSplitBody - height}px`)
+            console.log(`this.mask.style.top = ${topMask - height}px`)
+            this.splitBody.style.top = `${topSplitBody - height}px`
+            this.mask.style.top = `${topMask - height}px`
             return
         }
         const self = this
         const a = new class extends AnimationBase {
             override animationFrame(n: number) {
-                const y = top - n * height
-                self.splitBody.style.top = `${y}px`
-                self.mask.style.top = `${y}px`
+                self.splitBody.style.top = `${topSplitBody - n * height}px`
+                self.mask.style.top = `${topMask - n * height}px`
             }
         }
         a.start()
