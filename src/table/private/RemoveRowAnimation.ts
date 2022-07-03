@@ -53,11 +53,9 @@ export class RemoveRowAnimation extends TableAnimation {
 
     run() {
         if (RemoveRowAnimation.halt) {
-            console.log("NO ANIMATION")
             RemoveRowAnimation.current = this
             return
         }
-        console.log("RUNNING REMOVE ROW ANIMATION")
     }
 
     override stop() {
@@ -104,22 +102,15 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     animate() {
-        // console.log(`ANIMATE: initialRowCount=${this.initialRowCount}`)
         let height: number
         height = this.totalHeight
-        console.log(`================> this.adapter.rowCount = ${this.adapter.rowCount}`)
         if (this.event.index >= this.adapter.rowCount) {
             const overlap = this.adapter.config.seamless ? 0 : 1
-            // console.log(`this is not the 1st row, reduce height by one overlap of ${overlap}`)
             height -= overlap
         }
-        console.log(`animate: move by ${height}`)
         const topSplitBody = px2float(this.splitBody.style.top)
         const topMask = px2float(this.mask.style.top)
-        // // console.log(`split body is at ${top}, height is ${height}`)
         if (RemoveRowAnimation.halt) {
-            console.log(`this.splitBody.style.top = ${topSplitBody - height}px`)
-            console.log(`this.mask.style.top = ${topMask - height}px`)
             this.splitBody.style.top = `${topSplitBody - height}px`
             this.mask.style.top = `${topMask - height}px`
             return
@@ -145,53 +136,15 @@ export class RemoveRowAnimation extends TableAnimation {
             }
             if (this.splitBody.children.length > 0) {
                 let top = px2float(this.splitBody.style.top)
-                // if (this.initialRowCount !== 0) {
-                //     const overlap = this.adapter.config.seamless ? 0 : 1
-                //     top -= overlap
-                // }
                 while (this.splitBody.children.length > 0) {
                     const cell = this.splitBody.children[0] as HTMLSpanElement
                     cell.style.top = `${px2float(cell.style.top) + top}px`
                     this.body.appendChild(cell)
                 }
             }
-
-            // this should work without any arguments
-            // * append splitbody to body
-            // * adjust cells y from split body by splitbody y
-            // this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight, 0, this.initialColCount, this.initialRowCount)
             if (this.table.animationDone) {
                 this.table.animationDone()
             }
         }
-        // if (!this.done) {
-        //     this.done = true
-
-        //     let idx = this.event.index * this.colCount
-        //     for (let row = 0; row < this.event.size; ++row) {
-        //         for (let col = 0; col < this.colCount; ++col) {
-        //             this.body.removeChild(this.body.children[idx])
-        //         }
-        //     }
-        //     this.table.joinHorizontal(this.event.index + this.event.size, -this.totalHeight, this.event.size, this.colCount, this.rowCount)
-
-        //     if (this.rowHeads) {
-        //         for (let row = 0; row < this.event.size; ++row) {
-        //             this.rowHeads.removeChild(this.rowHeads.children[this.event.index])
-        //             this.rowResizeHandles.removeChild(this.rowResizeHandles.children[this.event.index])
-        //         }
-        //         // adjust subsequent row heads and handles
-        //         for (let subsequentRow = this.event.index; subsequentRow < this.rowCount; ++subsequentRow) {
-        //             this.rowHeads.children[subsequentRow].replaceChildren(
-        //                 this.adapter.getRowHead(subsequentRow)!
-        //             );
-        //             (this.rowResizeHandles.children[subsequentRow] as HTMLSpanElement).dataset["idx"] = `${subsequentRow}`
-        //         }
-        //     }
-
-        //     if (this.table.animationDone) {
-        //         this.table.animationDone()
-        //     }
-        // }
     }
 }

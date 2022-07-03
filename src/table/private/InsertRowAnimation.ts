@@ -42,11 +42,9 @@ export class InsertRowAnimation extends TableAnimation {
 
     run() {
         if (InsertRowAnimation.halt) {
-            console.log("NO ANIMATION")
             InsertRowAnimation.current = this
             return
         }
-        console.log("RUNNING INSERT ROW ANIMATION")
         this.prepareCellsToBeMeasured()
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
@@ -64,7 +62,6 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     prepareCellsToBeMeasured() {
-        console.log(`InsertRowAnimation.prepareCellsToBeMeasured(): ${this.initialColCount} x ${this.event.size}`)
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.initialColCount; ++col) {
                 const cell = this.table.createCell()
@@ -100,10 +97,8 @@ export class InsertRowAnimation extends TableAnimation {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++]
                 const bounds = cell.getBoundingClientRect()
-                console.log(`C${col}R${row} = ${bounds.width} ⨉ ${bounds.height}`)
                 colWidth[col] = Math.ceil(bounds.width)
                 rowHeight[row] = Math.max(rowHeight[row], bounds.height)
-                console.log(`measured ${col} bounds to be ${bounds.width} x ${bounds.height}`)
             }
             this.totalHeight += rowHeight[row] - overlap
         }
@@ -119,7 +114,6 @@ export class InsertRowAnimation extends TableAnimation {
                 cell.style.top = `${y}px`
                 cell.style.width = `${colWidth[col] - this.table.WIDTH_ADJUST}px`
                 cell.style.height = `${rowHeight[row] - this.table.HEIGHT_ADJUST}px`
-                console.log(`move cell ${col} to staging`)
                 this.staging.appendChild(cell)
                 x += colWidth[col] - overlap
             }
@@ -145,16 +139,13 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     animate() {
-        // console.log(`ANIMATE: initialRowCount=${this.initialRowCount}`)
         let height: number
         height = this.totalHeight
         if (this.initialRowCount !== 0) {
             const overlap = this.adapter.config.seamless ? 0 : 1
-            // console.log(`this is not the 1st row, reduce height by one overlap of ${overlap}`)
             height -= overlap
         }
         const top = px2float(this.splitBody.style.top)
-        // console.log(`split body is at ${top}, height is ${height}`)
         if (InsertRowAnimation.halt) {
             const y = top + height
             this.splitBody.style.top = `${y}px`
@@ -183,21 +174,12 @@ export class InsertRowAnimation extends TableAnimation {
             }
             if (this.splitBody.children.length > 0) {
                 let top = px2float(this.splitBody.style.top)
-                // if (this.initialRowCount !== 0) {
-                //     const overlap = this.adapter.config.seamless ? 0 : 1
-                //     top -= overlap
-                // }
                 while (this.splitBody.children.length > 0) {
                     const cell = this.splitBody.children[0] as HTMLSpanElement
                     cell.style.top = `${px2float(cell.style.top) + top}px`
                     this.body.appendChild(cell)
                 }
             }
-
-            // this should work without any arguments
-            // * append splitbody to body
-            // * adjust cells y from split body by splitbody y
-            // this.table.joinHorizontal(this.event.index + this.event.size, this.totalHeight, 0, this.initialColCount, this.initialRowCount)
             if (this.table.animationDone) {
                 this.table.animationDone()
             }

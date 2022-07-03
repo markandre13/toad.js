@@ -4,7 +4,6 @@ import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
 import { ArrayModel } from "@toad/table/model/ArrayModel"
 import { ArrayTableModel } from "@toad/table/model/ArrayTableModel"
-import { TableModel } from "@toad/table/model/TableModel"
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { ArrayAdapter } from '@toad/table/adapter/ArrayAdapter'
 import { style as txBase } from "@toad/style/tx"
@@ -183,9 +182,6 @@ describe("table", function () {
                         expect(splitBodyY()).to.equal(0)
                         expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
 
-                        console.log(`mask height = ${insertHeight}`)
-                        console.log(`animation total height = ${animation.totalHeight}`)
-
                         // WHEN we animate
                         animation.animate()
 
@@ -306,17 +302,17 @@ describe("table", function () {
                         expect(splitBodyH()).to.equal(1)
 
                         // WHEN we animate
-                        // animation.animate()
+                        animation.animate()
 
-                        // expect(maskY()).to.equal(98 + insertHeight - 1)
-                        // expect(splitBodyY()).to.equal(98 + insertHeight - 1)
+                        expect(maskY()).to.equal(98 + insertHeight - 1)
+                        expect(splitBodyY()).to.equal(98 + insertHeight - 1)
 
-                        // animation.joinHorizontal()
-                        // expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                        // expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-                        // expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
-                        // expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
-                        // expect(table.body.children).to.have.lengthOf(8)
+                        animation.joinHorizontal()
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+                        expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
+                        expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
+                        expect(table.body.children).to.have.lengthOf(8)
                     })
                 })
             })
@@ -392,8 +388,8 @@ describe("table", function () {
                 // WHEN we animate
                 animation.animate()
 
-                expect(maskY()).to.equal(1)
-                expect(splitBodyY()).to.equal(0)
+                expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
+                expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
 
                 animation.joinHorizontal()
                 expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
@@ -472,8 +468,8 @@ describe("table", function () {
                 // RemoveRowAnimation.halt = false
                 animation.animate()
 
-                expect(splitBodyY(), "splitBodyY after animation").to.equal(33)
-                expect(maskY(), "maskY after animation").to.equal(34)
+                expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
+                expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
 
                 animation.joinHorizontal()
 
@@ -516,8 +512,8 @@ describe("table", function () {
                 const maskY0 = initialHeight + 1 // TODO: would this also work without the border?
                 const maskH0 = removeHeight + border + 1 // TODO: do we really need need the '+ border'?
                 // the split body has a border on top and bottom
-                const splitY0 = y3
-                const splitH0 = border + 64 + border
+                const splitY0 = y2
+                const splitH0 = border + 48 + border + 72 + border
 
                 expect(bodyRowInfo(0)).to.equal(`#1:0,${y0},80,32`)
                 expect(bodyRowInfo(1)).to.equal(`#2:0,${y1},80,64`)
@@ -537,24 +533,20 @@ describe("table", function () {
                 expect(stagingRowInfo(1)).to.equal(`#4:0,${y3},80,72`)
 
                 // ...and are hidden by a mask
-                const insertHeight = 48 + 72 + 4 - 1
-
-                console.log(animation.initialHeight)
-
                 expect(maskY()).to.equal(maskY0)
                 expect(maskH()).to.equal(maskH0)
 
                 // WHEN we split the table for the animation
                 animation.splitHorizontal()
                 // THEN splitbody (the splitbody must meet the mask, height doesn't matter)
-                expect(splitBodyY()).to.equal(98)
-                expect(splitBodyH()).to.equal(123)
+                expect(splitBodyY()).to.equal(splitY0)
+                expect(splitBodyH()).to.equal(splitH0)
 
                 // WHEN we animate
                 animation.animate()
 
-                expect(splitBodyY()).to.equal(98 - insertHeight + 1)
-                expect(maskY()).to.equal(98 + 2)
+                expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
+                expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
 
                 animation.joinHorizontal()
                 expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
@@ -638,11 +630,6 @@ function splitBodyH() {
 }
 
 let model!: ArrayTableModel<MeasureRow>
-
-function validateRow(model: TableModel, modelrow: number) {
-    const table = getTable(model)
-    console.log(table.body)
-}
 
 // each row has an id to identify it and a variable height, to check that heights are calculated correctly
 class MeasureRow {

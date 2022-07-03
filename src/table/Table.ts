@@ -516,7 +516,7 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        console.log(`Table.modelChanged(${event})`)
+        // console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
@@ -833,7 +833,7 @@ export class Table extends View {
     }
 
     calculateColumnWidths(withinBody = false): number[] {
-        console.log(`calculateColumnWidths(withinBody = ${withinBody})`)
+        // console.log(`calculateColumnWidths(withinBody = ${withinBody})`)
         // header
         const colWidth = Array<number>(this.adapter!.colCount)
         if (this.colHeads) {
@@ -1080,7 +1080,7 @@ export class Table extends View {
     // move all rows in body into splitBody, starting with row splitRow
     // splitRow refers to the actual display, not to the model
     splitHorizontalNew(splitRow: number) {
-        console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
+        // console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()
         this.splitBody.style.transitionProperty = "transform"
@@ -1095,7 +1095,7 @@ export class Table extends View {
             this.splitBody.style.height = `1px`
         } else
             if (idx < this.body.children.length) {
-                console.log(`  split at existing row`)
+                // console.log(`  split at existing row`)
                 let cell = this.body.children[idx] as HTMLSpanElement
                 let col = this.adapter!.colCount
                 let height = 0
@@ -1170,7 +1170,7 @@ export class Table extends View {
         }
 
         if (this.splitBody.children.length > 0) {
-            console.log("[0]")
+            // console.log("[0]")
             idx = this.splitBody.children.length - 1
             const last = this.splitBody.children[idx] as HTMLElement
             const top = px2int(last.style.top)
@@ -1184,7 +1184,7 @@ export class Table extends View {
             this.splitBody.style.height = `${b.height - top}px`
         } else
             if (event !== undefined && this.body.children.length > 0) {
-                console.log("[1]")
+                // console.log("[1]")
                 idx = event.index * this.adapter!.colCount
                 const last = this.body.children[idx] as HTMLElement
                 const top = px2int(last.style.top)
@@ -1192,7 +1192,7 @@ export class Table extends View {
                 this.splitBody.style.height = `${b.height - top}px`
             } else
                 if (this.body.children.length > 0) {
-                    console.log("[2]")
+                    // console.log("[2]")
                     const filler = span()
                     idx = this.body.children.length - 2
                     const last = this.body.children[idx] as HTMLElement
@@ -1201,7 +1201,7 @@ export class Table extends View {
                     filler.style.backgroundColor = '#1e1e1e'
                     // filler.style.backgroundColor = '#f80'
                     const top = px2int(last.style.top) + bf.height
-                    console.log(last)
+                    // console.log(last)
                     filler.style.top = `${top}px`
                     filler.style.left = `0px`
                     filler.style.width = `${b.width - 2}px`
@@ -1209,7 +1209,7 @@ export class Table extends View {
                     this.splitBody.appendChild(filler)
                 } else {
                     // FIXME: handle case when that are no children, then top is 0
-                    console.log("[3]")
+                    // console.log("[3]")
                 }
     }
 
