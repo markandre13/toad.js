@@ -260,6 +260,71 @@ describe("table", function () {
         })
         describe("remove", function () {
             describe("no headers", function () {
+                it("all rows", async function() {
+                    // WHEN we have a table without headings
+                    const model = await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(2, 64)
+                    ])
+                    const table = getTable()
+
+                    //   initial       initialHeight
+                    // y0 ┏━━━ 1 ━━━┓ ┐ ┐
+                    //    ┃    32   ┃ │ │
+                    // y1 ┣━━━ 1 ━━━┫ │ │ removeHeight & splitBody
+                    //    ┃    64   ┃ │ │
+                    //    ┗━━━ 1 ━━━┛ ┘ ┘
+                    const border = 1
+                    const y0 = 0
+                    const y1 = border + 32
+                    const initialHeight = y1 + border + 64 + border
+                    const removeHeight = initialHeight - 1 // FIXME: remove -1
+                    // the split body has a border on top and bottom
+                    const splitY0 = 0
+                    const splitH0 = initialHeight
+                    // the mask will hide the rows to be removed, hence it is placed directly below them
+                    const maskY0 = initialHeight+1 // FIXME: remove +1
+                    const maskH0 = initialHeight+1 // FIXME: remove +1
+
+                    expect(bodyRowInfo(0)).to.equal(`#1:0,${y0},80,32`)
+                    expect(bodyRowInfo(1)).to.equal(`#2:0,${y1},80,64`)
+                    expect(table.body.children).to.have.lengthOf(4)
+
+                    // ...remote all rows
+                    model.removeRow(0, 2)
+
+                    const animation = RemoveRowAnimation.current!
+                    expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeRowsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowInfo(0)).to.equal(`#1:0,${y0},80,32`)
+                    expect(stagingRowInfo(1)).to.equal(`#2:0,${y1},80,64`)
+                    expect(table.body.children).to.have.lengthOf(0)
+
+                    // ...and there is a mask at the end of staging?
+                    expect(maskY()).to.equal(maskY0)
+                    expect(maskH()).to.equal(maskH0)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+                    expect(table.splitBody.children).has.length(0)
+
+                    // THEN splitbody
+                    expect(splitBodyY()).to.equal(splitY0)
+                    expect(splitBodyH()).to.equal(splitH0)
+
+                    // WHEN we animate
+                    animation.animate()
+
+                    expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
+                    expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
+
+                    animation.joinHorizontal()
+                    expect(table.body.children).to.have.lengthOf(0)
+                })
                 it("two rows at head", async function () {
                     // WHEN we have a table without headings
                     const model = await prepare([
