@@ -32,12 +32,41 @@ export class InsertRowAnimation extends TableAnimation {
     initialRowCount: number
     mask!: HTMLSpanElement
 
+    animationTop!: number
+    animationHeight!: number
+
     constructor(table: Table, event: TableEvent) {
         super(table)
         this.event = event
         this.joinHorizontal = this.joinHorizontal.bind(this)
         this.initialColCount = this.adapter.colCount
         this.initialRowCount = this.adapter.rowCount - event.size
+    }
+
+    prepare(): void {
+        this.prepareCellsToBeMeasured()
+    }
+    firstFrame(): void {
+        this.arrangeNewRowsInStaging()
+        this.splitHorizontal()
+
+        this.animationHeight = this.totalHeight
+        if (this.initialRowCount !== 0) {
+            const overlap = this.adapter.config.seamless ? 0 : 1
+            this.animationHeight -= overlap
+        }
+        this.animationTop = px2float(this.splitBody.style.top)
+    }
+    animationFrame(n: number): void {
+        const y = this.animationTop + n * this.animationHeight
+        this.splitBody.style.top = `${y}px`
+        this.mask.style.top = `${y}px`
+    }
+    lastFrame(): void {
+        const y = this.animationTop + this.animationHeight
+        this.splitBody.style.top = `${y}px`
+        this.mask.style.top = `${y}px`
+        this.joinHorizontal()
     }
 
     run() {

@@ -36,6 +36,11 @@ export class InsertColumnAnimation extends TableAnimation {
         this.rowCount = this.adapter.rowCount
     }
 
+    prepare(): void {}
+    firstFrame(): void {}
+    animationFrame(value: number): void {}
+    lastFrame(): void {}
+
     run() {
         this.prepareCells()
         setTimeout(() => {

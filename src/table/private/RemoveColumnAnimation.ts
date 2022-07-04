@@ -36,6 +36,11 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.rowCount = this.adapter.rowCount
     }
 
+    prepare(): void {}
+    firstFrame(): void {}
+    animationFrame(value: number): void {}
+    lastFrame(): void {}
+
     run() {
         let totalWidth = 0
         for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {

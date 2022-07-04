@@ -50,6 +50,11 @@ export class RemoveRowAnimation extends TableAnimation {
         this.removeAll = this.event.index >= this.adapter.rowCount
     }
 
+    prepare(): void {}
+    firstFrame(): void {}
+    animationFrame(value: number): void {}
+    lastFrame(): void {}
+
     run() {
         if (RemoveRowAnimation.halt) {
             RemoveRowAnimation.current = this

@@ -24,6 +24,7 @@ import { TableEvent } from './TableEvent'
 import { TablePos } from './TablePos'
 import { TableEditMode } from './TableEditMode'
 import { TableEventType } from './TableEventType'
+import { Animator } from '../util/animation'
 import { TableAnimation } from './private/TableAnimation'
 import { InsertRowAnimation } from './private/InsertRowAnimation'
 import { RemoveRowAnimation } from './private/RemoveRowAnimation'
@@ -119,6 +120,7 @@ export class Table extends View {
     protected splitHead?: HTMLDivElement
     protected splitBody?: HTMLDivElement
 
+    private animator = new Animator()
     animation?: TableAnimation
 
     constructor(props?: TableProps) {
@@ -523,18 +525,10 @@ export class Table extends View {
                 this.adapter!.showCell(event, cell)
             } break
             case TableEventType.INSERT_ROW: {
-                if (this.animation) {
-                    this.animation.stop()
-                }
-                this.animation = new InsertRowAnimation(this, event)
-                this.animation.run()
+                this.animator.run(new InsertRowAnimation(this, event))
             } break
             case TableEventType.REMOVE_ROW: {
-                if (this.animation) {
-                    this.animation.stop()
-                }
-                this.animation = new RemoveRowAnimation(this, event)
-                this.animation.run()
+                this.animator.run(new RemoveRowAnimation(this, event))
             } break
             case TableEventType.INSERT_COL: {
                 if (this.animation) {
