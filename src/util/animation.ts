@@ -99,18 +99,54 @@ export class AnimationBase {
     }
 }
 
+// TODO: get rid of AnimationBase by merging it into Animator
+export interface Animation {
+    prepare(): void
+    firstFrame(): void
+    animationFrame(value: number): void
+    lastFrame(): void
+}
+
+class AnimationWrapper extends AnimationBase {
+    animation: Animation
+    constructor(animation: Animation) {
+        super()
+        this.animation = animation
+    }
+
+    override prepare() { 
+        this.animation.prepare()
+    }
+    override firstFrame() { 
+        this.animation.firstFrame()
+    }
+    override animationFrame(value: number) {
+        this.animation.animationFrame(value)
+    }
+    override lastFrame() {
+        this.animation.lastFrame()
+    }
+}
+
+
 // FIXME: no tests
 export class Animator {
     current?: AnimationBase
-    run(animation: AnimationBase) {
+    run(animation: AnimationBase | Animation) {
+        let animationBase: AnimationBase
+        if (!(animation instanceof AnimationBase)) {
+            animationBase = new AnimationWrapper(animation)
+        } else {
+            animationBase = animation
+        }
         const current = this.current
-        this.current = animation
-        animation.animator = this
+        this.current = animationBase
+        animationBase.animator = this
         if (current) {
             current.animator = undefined
-            current.replace(animation)
+            current.replace(animationBase)
         } else {
-            animation.start()
+            animationBase.start()
         }
     }
 }

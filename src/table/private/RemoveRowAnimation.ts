@@ -102,9 +102,6 @@ export class RemoveRowAnimation extends TableAnimation {
     animate() {
         let height: number
         height = this.heightToRemove
-        // if (this.removeAll) {
-        //     height -= this.overlap
-        // }
         const topSplitBody = px2float(this.splitBody.style.top)
         const topMask = px2float(this.mask.style.top)
         if (RemoveRowAnimation.halt) { // TODO: instead call stop() after animate() in the test
