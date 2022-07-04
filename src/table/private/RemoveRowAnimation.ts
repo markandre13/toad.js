@@ -27,12 +27,10 @@ export class RemoveRowAnimation extends TableAnimation {
     static current?: RemoveRowAnimation
     event: TableEvent
     initialHeight: number
-    totalHeight!: number
+    heightToRemove!: number
     removeAll: boolean
     overlap: number
     done = false;
-    // colCount: number
-    // rowCount: number
     mask!: HTMLSpanElement
 
     constructor(table: Table, event: TableEvent) {
@@ -79,17 +77,17 @@ export class RemoveRowAnimation extends TableAnimation {
             const cell = this.staging.children[this.staging.children.length - 1] as HTMLSpanElement
             bottomOfStaging = px2float(cell.style.top) + px2float(cell.style.height) + this.table.HEIGHT_ADJUST
         }
-        this.totalHeight = bottomOfStaging - start
+        this.heightToRemove = bottomOfStaging - start
 
         this.mask = span()
         this.mask.style.boxSizing = `content-box`
         this.mask.style.left = `0`
         this.mask.style.right = `0`
-        this.mask.style.top = `${bottomOfStaging + 1}px`
+        this.mask.style.top = `${bottomOfStaging}px`
         this.mask.style.border = 'none'
         this.mask.style.transitionProperty = "transform"
         this.mask.style.transitionDuration = Table.transitionDuration
-        this.mask.style.height = `${this.totalHeight + 1}px`
+        this.mask.style.height = `${this.heightToRemove}px`
         this.mask.style.backgroundColor = `rgba(0,0,128,0.3)`
         this.staging.appendChild(this.mask)
     }
@@ -103,10 +101,10 @@ export class RemoveRowAnimation extends TableAnimation {
 
     animate() {
         let height: number
-        height = this.totalHeight
-        if (this.removeAll) {
-            height -= this.overlap
-        }
+        height = this.heightToRemove
+        // if (this.removeAll) {
+        //     height -= this.overlap
+        // }
         const topSplitBody = px2float(this.splitBody.style.top)
         const topMask = px2float(this.mask.style.top)
         if (RemoveRowAnimation.halt) { // TODO: instead call stop() after animate() in the test
