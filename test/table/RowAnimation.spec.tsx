@@ -23,6 +23,15 @@ describe("table", function () {
         RemoveRowAnimation.halt = true
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
+
+    // TODO
+    // [ ] headers
+    //   [ ] with row headers
+    //   [ ] with column headers
+    //   [ ] with row and column headers
+    // [ ] table body has been scrolled (mask, etc. need to be place properly)
+    // [ ] fast forward animation (aka. stop())
+    // ...
     describe("row", function () {
         describe("insert", function () {
             describe("no headers", function () {
