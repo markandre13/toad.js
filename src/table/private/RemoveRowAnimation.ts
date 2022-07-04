@@ -28,18 +28,17 @@ export class RemoveRowAnimation extends TableAnimation {
     event: TableEvent
     initialHeight: number
     totalHeight!: number
+    removeAll: boolean
+    overlap: number
     done = false;
-    colCount: number
-    rowCount: number
+    // colCount: number
+    // rowCount: number
     mask!: HTMLSpanElement
 
     constructor(table: Table, event: TableEvent) {
         super(table)
         this.event = event
         this.joinHorizontal = this.joinHorizontal.bind(this)
-
-        this.colCount = this.adapter.colCount
-        this.rowCount = this.adapter.rowCount
 
         if (this.body.children.length === 0) {
             this.initialHeight = 0
@@ -49,6 +48,8 @@ export class RemoveRowAnimation extends TableAnimation {
             const bounds = cell.getBoundingClientRect()
             this.initialHeight = top + bounds.height
         }
+        this.overlap = this.adapter.config.seamless ? 0 : 1
+        this.removeAll = this.event.index >= this.adapter.rowCount
     }
 
     run() {
@@ -81,7 +82,6 @@ export class RemoveRowAnimation extends TableAnimation {
         this.totalHeight = bottomOfStaging - start
 
         this.mask = span()
-        // this.mask.className = "mask"
         this.mask.style.boxSizing = `content-box`
         this.mask.style.left = `0`
         this.mask.style.right = `0`
@@ -104,13 +104,12 @@ export class RemoveRowAnimation extends TableAnimation {
     animate() {
         let height: number
         height = this.totalHeight
-        if (this.event.index >= this.adapter.rowCount) {
-            const overlap = this.adapter.config.seamless ? 0 : 1
-            height -= overlap
+        if (this.removeAll) {
+            height -= this.overlap
         }
         const topSplitBody = px2float(this.splitBody.style.top)
         const topMask = px2float(this.mask.style.top)
-        if (RemoveRowAnimation.halt) {
+        if (RemoveRowAnimation.halt) { // TODO: instead call stop() after animate() in the test
             this.splitBody.style.top = `${topSplitBody - height}px`
             this.mask.style.top = `${topMask - height}px`
             return
@@ -126,25 +125,29 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     joinHorizontal() {
-        if (!this.done) {
-            this.done = true
+        if (this.done) {
+            return
+        }
+        this.done = true
 
-            this.staging.removeChild(this.mask)
-            this.body.removeChild(this.splitBody)
-            while (this.staging.children.length > 0) {
-                this.staging.removeChild(this.staging.children[0])
-            }
-            if (this.splitBody.children.length > 0) {
-                let top = px2float(this.splitBody.style.top)
-                while (this.splitBody.children.length > 0) {
-                    const cell = this.splitBody.children[0] as HTMLSpanElement
-                    cell.style.top = `${px2float(cell.style.top) + top}px`
-                    this.body.appendChild(cell)
-                }
-            }
-            if (this.table.animationDone) {
-                this.table.animationDone()
-            }
+        this.staging.removeChild(this.mask)
+        this.body.removeChild(this.splitBody)
+        this.staging.replaceChildren()
+        this.moveSplitBodyToBody()
+        if (this.table.animationDone) {
+            this.table.animationDone()
+        }
+    }
+
+    private moveSplitBodyToBody() {
+        if (this.splitBody.children.length === 0) {
+            return
+        }
+        let top = px2float(this.splitBody.style.top)
+        while (this.splitBody.children.length > 0) {
+            const cell = this.splitBody.children[0] as HTMLSpanElement
+            cell.style.top = `${px2float(cell.style.top) + top}px`
+            this.body.appendChild(cell)
         }
     }
 }

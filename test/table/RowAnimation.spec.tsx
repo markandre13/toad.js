@@ -278,13 +278,13 @@ describe("table", function () {
                     const y0 = 0
                     const y1 = border + 32
                     const initialHeight = y1 + border + 64 + border
-                    const removeHeight = initialHeight - 1 // FIXME: remove -1
+                    const removeHeight = initialHeight
                     // the split body has a border on top and bottom
                     const splitY0 = 0
                     const splitH0 = initialHeight
                     // the mask will hide the rows to be removed, hence it is placed directly below them
-                    const maskY0 = initialHeight+1 // FIXME: remove +1
-                    const maskH0 = initialHeight+1 // FIXME: remove +1
+                    const maskY0 = initialHeight
+                    const maskH0 = initialHeight
 
                     expect(bodyRowInfo(0)).to.equal(`#1:0,${y0},80,32`)
                     expect(bodyRowInfo(1)).to.equal(`#2:0,${y1},80,64`)
