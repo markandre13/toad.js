@@ -10,7 +10,6 @@ import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 import { sleep, px2float } from "../testlib"
-import { getTable } from "./util"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { TableFriend } from '@toad/table/private/TableFriend'
@@ -28,12 +27,9 @@ describe("table", function () {
         describe("insert", function () {
             describe("no headers", function () {
                 it("two rows into empty", async function () {
-                    // Table.transitionDuration = "500ms"
-                    // InsertRowAnimation.halt = false
-
                     // WHEN we have an empty table without headings
                     const model = await prepare([])
-                    const table = getTable(model)
+                    const table = getTable()
 
                     // ...insert the 1st two rows
                     model.insertRow(0, [
@@ -80,19 +76,13 @@ describe("table", function () {
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
-                // middle: insert < tail, insert > tail, insert > rest of window
-
-                // todo: test when the table body has been scrolled
                 it("two rows at head", async function () {
-                    // Table.transitionDuration = "5000ms"
-                    // InsertRowAnimation.halt = false
-
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(3, 32),
                         new MeasureRow(4, 64)
                     ])
-                    const table = getTable(model)
+                    const table = getTable()
 
                     expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
                     expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
@@ -145,15 +135,12 @@ describe("table", function () {
                     expect(table.body.children).to.have.lengthOf(8)
                 })
                 it("two rows at middle", async function () {
-                    // Table.transitionDuration = "5000ms"
-                    // InsertRowAnimation.halt = false
-
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(1, 32),
                         new MeasureRow(4, 64)
                     ])
-                    const table = getTable(model)
+                    const table = getTable()
 
                     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
                     expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
@@ -205,15 +192,12 @@ describe("table", function () {
                     expect(table.body.children).to.have.lengthOf(8)
                 })
                 it("two rows at end", async function () {
-                    // Table.transitionDuration = "500ms"
-                    // InsertRowAnimation.halt = false
-
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(1, 32),
                         new MeasureRow(2, 64)
                     ])
-                    const table = getTable(model)
+                    const table = getTable()
 
                     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
                     expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
@@ -275,7 +259,7 @@ describe("table", function () {
                         new MeasureRow(3, 32),
                         new MeasureRow(4, 64)
                     ])
-                    const table = getTable(model)
+                    const table = getTable()
 
                     //   initial       initialHeight
                     // y0 ┏━━━ 1 ━━━┓ ┐ ┐
@@ -358,7 +342,7 @@ describe("table", function () {
                         new MeasureRow(3, 72),
                         new MeasureRow(4, 64)
                     ])
-                    const table = getTable(model)
+                    const table = getTable()
 
                     //   initial
                     // y0 ┏━━━ 1 ━━━┓ ┐
@@ -436,7 +420,7 @@ describe("table", function () {
                         new MeasureRow(3, 48),
                         new MeasureRow(4, 72)
                     ])
-                    const table = getTable(model)
+                    const table = getTable()
 
                     //   initial
                     // y0 ┏━━━ 1 ━━━┓ ┐
@@ -506,80 +490,6 @@ describe("table", function () {
     })
 })
 
-async function prepare(data: MeasureRow[]) {
-    TableAdapter.register(MeasureAdapter, ArrayModel, MeasureRow)
-    model = new ArrayModel<MeasureRow>(data, MeasureRow)
-    document.body.replaceChildren(<Table style={{ width: '100%', height: '350px' }} model={model} />)
-    await sleep()
-    return model
-}
-
-function bodyRowInfo(row: number) {
-    const tableX = document.querySelector("tx-table") as Table
-    const table = new TableFriend(tableX)
-    return bodyRowInfoCore(row, table, table.body)
-}
-
-function splitRowInfo(row: number) {
-    const tableX = document.querySelector("tx-table") as Table
-    const table = new TableFriend(tableX)
-    return bodyRowInfoCore(row, table, table.splitBody)
-}
-
-function stagingRowInfo(row: number) {
-    const tableX = document.querySelector("tx-table") as Table
-    const table = new TableFriend(tableX)
-    return bodyRowInfoCore(row, table, table.staging)
-}
-function maskY() {
-    const tableX = document.querySelector("tx-table") as Table
-    const table = new TableFriend(tableX)
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.top)
-}
-function maskH() {
-    const tableX = document.querySelector("tx-table") as Table
-    const table = new TableFriend(tableX)
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.height)
-}
-
-function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) {
-    const idx = row * table.adapter.colCount
-    if (idx >= body.children.length) {
-        throw Error(`Row ${row} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
-    }
-    const child = body.children[idx] as HTMLElement
-    const x = px2float(child.style.left)
-    const y = px2float(child.style.top)
-    const w = px2float(child.style.width)
-    const h = px2float(child.style.height)
-
-    // expectAllCellsInRowToBeAligned()
-    for (let i = 1; i < table.adapter.colCount; ++i) {
-        const childOther = body.children[idx + i] as HTMLElement
-        // expect(childOther.style.top).to.equal(child.style.top)
-        // expect(childOther.style.height).to.equal(child.style.height)
-    }
-    let id = child.innerText
-    id = id.substring(0, id.indexOf('C'))
-    return `${id}:${x},${y},${w},${h}`
-}
-
-function splitBodyY() {
-    const tableX = document.querySelector("tx-table") as Table
-    const table = new TableFriend(tableX)
-    return px2float(table.splitBody.style.top)
-}
-
-function splitBodyH() {
-    const tableX = document.querySelector("tx-table") as Table
-    const table = new TableFriend(tableX)
-    return px2float(table.splitBody.style.height)
-}
-
-let model!: ArrayTableModel<MeasureRow>
-
 // each row has an id to identify it and a variable height, to check that heights are calculated correctly
 class MeasureRow {
     id: number
@@ -603,7 +513,6 @@ class MeasureAdapter extends ArrayAdapter<ArrayTableModel<MeasureRow>> {
         return 2
     }
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
-        // super.showCell(pos, cell)
         const row = this.model!.data[pos.row]
         cell.replaceChildren(
             document.createTextNode(`#${row.id}C${pos.col}`)
@@ -615,3 +524,67 @@ class MeasureAdapter extends ArrayAdapter<ArrayTableModel<MeasureRow>> {
         return undefined // ??? why do we return something ???
     }
 }
+
+async function prepare(data: MeasureRow[]) {
+    TableAdapter.register(MeasureAdapter, ArrayModel, MeasureRow)
+    const model = new ArrayModel<MeasureRow>(data, MeasureRow)
+    document.body.replaceChildren(<Table style={{ width: '100%', height: '350px' }} model={model} />)
+    await sleep()
+    return model
+}
+function getTable() {
+    return new TableFriend(
+        document.querySelector("tx-table") as Table
+    )
+}
+function bodyRowInfo(row: number) {
+    const table = getTable()
+    return bodyRowInfoCore(row, table, table.body)
+}
+function splitRowInfo(row: number) {
+    const table = getTable()
+    return bodyRowInfoCore(row, table, table.splitBody)
+}
+function stagingRowInfo(row: number) {
+    const table = getTable()
+    return bodyRowInfoCore(row, table, table.staging)
+}
+function splitBodyY() {
+    const table = getTable()
+    return px2float(table.splitBody.style.top)
+}
+function splitBodyH() {
+    const table = getTable()
+    return px2float(table.splitBody.style.height)
+}
+function maskY() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.top)
+}
+function maskH() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.height)
+}
+function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) {
+    const indexOf1stCellInRow = row * table.adapter.colCount
+    if (indexOf1stCellInRow >= body.children.length) {
+        throw Error(`Row ${row} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
+    }
+    const firstCellOfRow = body.children[indexOf1stCellInRow] as HTMLElement
+    const x = px2float(firstCellOfRow.style.left)
+    const y = px2float(firstCellOfRow.style.top)
+    const w = px2float(firstCellOfRow.style.width)
+    const h = px2float(firstCellOfRow.style.height)
+
+    for (let i = 1; i < table.adapter.colCount; ++i) {
+        const otherCellInRow = body.children[indexOf1stCellInRow + i] as HTMLElement
+        expect(otherCellInRow.style.top).to.equal(firstCellOfRow.style.top)
+        expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
+    }
+    let id = firstCellOfRow.innerText
+    id = id.substring(0, id.indexOf('C'))
+    return `${id}:${x},${y},${w},${h}`
+}
+
