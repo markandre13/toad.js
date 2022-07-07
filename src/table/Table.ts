@@ -524,26 +524,26 @@ export class Table extends View {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
                 this.adapter!.showCell(event, cell)
             } break
-            case TableEventType.INSERT_ROW: {
+            case TableEventType.INSERT_ROW:
                 this.animator.run(new InsertRowAnimation(this, event))
-            } break
-            case TableEventType.REMOVE_ROW: {
+                break
+            case TableEventType.REMOVE_ROW:
                 this.animator.run(new RemoveRowAnimation(this, event))
-            } break
-            case TableEventType.INSERT_COL: {
+                break
+            case TableEventType.INSERT_COL:
                 if (this.animation) {
                     this.animation.stop()
                 }
                 this.animation = new InsertColumnAnimation(this, event)
                 this.animation.run()
-            } break
-            case TableEventType.REMOVE_COL: {
+                break
+            case TableEventType.REMOVE_COL:
                 if (this.animation) {
                     this.animation.stop()
                 }
                 this.animation = new RemoveColumnAnimation(this, event)
                 this.animation.run()
-            } break
+                break
             default:
                 console.log(`Table.modelChanged(): ${event} is not implemented`)
         }

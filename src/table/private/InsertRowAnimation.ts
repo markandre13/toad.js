@@ -19,7 +19,6 @@
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
-import { AnimationBase } from "../../util/animation"
 import { span } from '@toad/util/lsx'
 
 export class InsertRowAnimation extends TableAnimation {
@@ -41,6 +40,7 @@ export class InsertRowAnimation extends TableAnimation {
         this.joinHorizontal = this.joinHorizontal.bind(this)
         this.initialColCount = this.adapter.colCount
         this.initialRowCount = this.adapter.rowCount - event.size
+        InsertRowAnimation.current = this
     }
 
     prepare(): void {
@@ -49,13 +49,6 @@ export class InsertRowAnimation extends TableAnimation {
     firstFrame(): void {
         this.arrangeNewRowsInStaging()
         this.splitHorizontal()
-
-        this.animationHeight = this.totalHeight
-        if (this.initialRowCount !== 0) {
-            const overlap = this.adapter.config.seamless ? 0 : 1
-            this.animationHeight -= overlap
-        }
-        this.animationTop = px2float(this.splitBody.style.top)
     }
     animationFrame(n: number): void {
         const y = this.animationTop + n * this.animationHeight
@@ -69,28 +62,28 @@ export class InsertRowAnimation extends TableAnimation {
         this.joinHorizontal()
     }
 
-    run() {
-        if (InsertRowAnimation.halt) {
-            InsertRowAnimation.current = this
-            return
-        }
-        this.prepareCellsToBeMeasured()
-        setTimeout(() => {
-            // FIXME: if stop is called before this is executed (unlikely), stop will fail
-            this.arrangeNewRowsInStaging()
-            this.splitHorizontal()
-            setTimeout(() => {
-                this.animate()
-            }, Table.renderDelay)
-        }, 0)
-    }
+    // run() {
+    //     if (InsertRowAnimation.halt) {
+    //         InsertRowAnimation.current = this
+    //         return
+    //     }
+    //     this.prepareCellsToBeMeasured()
+    //     setTimeout(() => {
+    //         // FIXME: if stop is called before this is executed (unlikely), stop will fail
+    //         this.arrangeNewRowsInStaging()
+    //         this.splitHorizontal()
+    //         setTimeout(() => {
+    //             this.animate()
+    //         }, Table.renderDelay)
+    //     }, 0)
+    // }
 
-    stop() {
-        this.joinHorizontal()
-        this.clearAnimation()
-    }
+    // stop() {
+    //     this.joinHorizontal()
+    //     this.clearAnimation()
+    // }
 
-    prepareCellsToBeMeasured() {
+    public prepareCellsToBeMeasured() {
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.initialColCount; ++col) {
                 const cell = this.table.createCell()
@@ -100,7 +93,7 @@ export class InsertRowAnimation extends TableAnimation {
         }
     }
 
-    arrangeNewRowsInStaging() {
+    public arrangeNewRowsInStaging() {
         const overlap = this.adapter.config.seamless ? 0 : 1
 
         const splitRow = this.event.index
@@ -165,31 +158,12 @@ export class InsertRowAnimation extends TableAnimation {
 
     splitHorizontal() {
         this.table.splitHorizontalNew(this.event.index)
-    }
-
-    animate() {
-        let height: number
-        height = this.totalHeight
+        this.animationHeight = this.totalHeight
         if (this.initialRowCount !== 0) {
             const overlap = this.adapter.config.seamless ? 0 : 1
-            height -= overlap
+            this.animationHeight -= overlap
         }
-        const top = px2float(this.splitBody.style.top)
-        if (InsertRowAnimation.halt) {
-            const y = top + height
-            this.splitBody.style.top = `${y}px`
-            this.mask.style.top = `${y}px`
-            return
-        }
-        const self = this
-        const a = new class extends AnimationBase {
-            override animationFrame(n: number) {
-                const y = top + n * height
-                self.splitBody.style.top = `${y}px`
-                self.mask.style.top = `${y}px`
-            }
-        }
-        a.start()
+        this.animationTop = px2float(this.splitBody.style.top)
     }
 
     joinHorizontal() {

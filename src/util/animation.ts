@@ -131,6 +131,7 @@ class AnimationWrapper extends AnimationBase {
 
 // FIXME: no tests
 export class Animator {
+    static halt = false
     current?: AnimationBase
     run(animation: AnimationBase | Animation) {
         let animationBase: AnimationBase
@@ -146,6 +147,9 @@ export class Animator {
             current.animator = undefined
             current.replace(animationBase)
         } else {
+            if (Animator.halt) {
+                return
+            }
             animationBase.start()
         }
     }

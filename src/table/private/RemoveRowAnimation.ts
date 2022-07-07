@@ -19,7 +19,6 @@
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
-import { AnimationBase } from "../../util/animation"
 import { span } from '@toad/util/lsx'
 
 export class RemoveRowAnimation extends TableAnimation {
@@ -27,11 +26,13 @@ export class RemoveRowAnimation extends TableAnimation {
     static current?: RemoveRowAnimation
     event: TableEvent
     initialHeight: number
-    heightToRemove!: number
+    animationHeight!: number
     removeAll: boolean
     overlap: number
     done = false;
     mask!: HTMLSpanElement
+    topSplitBody!: number
+    topMask!: number
 
     constructor(table: Table, event: TableEvent) {
         super(table)
@@ -48,23 +49,20 @@ export class RemoveRowAnimation extends TableAnimation {
         }
         this.overlap = this.adapter.config.seamless ? 0 : 1
         this.removeAll = this.event.index >= this.adapter.rowCount
+        RemoveRowAnimation.current = this
     }
 
-    prepare(): void {}
+    prepare(): void {
+        this.arrangeRowsInStaging()
+        this.splitHorizontal()
+    }
     firstFrame(): void {}
-    animationFrame(value: number): void {}
-    lastFrame(): void {}
-
-    run() {
-        if (RemoveRowAnimation.halt) {
-            RemoveRowAnimation.current = this
-            return
-        }
+    animationFrame(n: number): void {
+        this.splitBody.style.top = `${this.topSplitBody - n * this.animationHeight}px`
+        this.mask.style.top = `${this.topMask - n * this.animationHeight}px`
     }
-
-    override stop() {
-        // this.joinHorizontal()
-        // this.clearAnimation()
+    lastFrame(): void {
+        this.joinHorizontal()
     }
 
     arrangeRowsInStaging() {
@@ -82,7 +80,7 @@ export class RemoveRowAnimation extends TableAnimation {
             const cell = this.staging.children[this.staging.children.length - 1] as HTMLSpanElement
             bottomOfStaging = px2float(cell.style.top) + px2float(cell.style.height) + this.table.HEIGHT_ADJUST
         }
-        this.heightToRemove = bottomOfStaging - start
+        this.animationHeight = bottomOfStaging - start
 
         this.mask = span()
         this.mask.style.boxSizing = `content-box`
@@ -92,7 +90,7 @@ export class RemoveRowAnimation extends TableAnimation {
         this.mask.style.border = 'none'
         this.mask.style.transitionProperty = "transform"
         this.mask.style.transitionDuration = Table.transitionDuration
-        this.mask.style.height = `${this.heightToRemove}px`
+        this.mask.style.height = `${this.animationHeight}px`
         this.mask.style.backgroundColor = `rgba(0,0,128,0.3)`
         this.staging.appendChild(this.mask)
     }
@@ -102,26 +100,8 @@ export class RemoveRowAnimation extends TableAnimation {
 
         const top = px2float(this.splitBody.style.top)
         this.splitBody.style.height = `${this.initialHeight - top}px`
-    }
-
-    animate() {
-        let height: number
-        height = this.heightToRemove
-        const topSplitBody = px2float(this.splitBody.style.top)
-        const topMask = px2float(this.mask.style.top)
-        if (RemoveRowAnimation.halt) { // TODO: instead call stop() after animate() in the test
-            this.splitBody.style.top = `${topSplitBody - height}px`
-            this.mask.style.top = `${topMask - height}px`
-            return
-        }
-        const self = this
-        const a = new class extends AnimationBase {
-            override animationFrame(n: number) {
-                self.splitBody.style.top = `${topSplitBody - n * height}px`
-                self.mask.style.top = `${topMask - n * height}px`
-            }
-        }
-        a.start()
+        this.topSplitBody = top
+        this.topMask = px2float(this.mask.style.top)
     }
 
     joinHorizontal() {

@@ -41,7 +41,7 @@ export class RemoveColumnAnimation extends TableAnimation {
     animationFrame(value: number): void {}
     lastFrame(): void {}
 
-    run() {
+    override run() {
         let totalWidth = 0
         for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
             const cell = this.body.children[col] as HTMLSpanElement

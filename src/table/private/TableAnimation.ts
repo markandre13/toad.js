@@ -11,6 +11,6 @@ export abstract class TableAnimation extends TableFriend implements Animation {
     abstract animationFrame(value: number): void
     abstract lastFrame(): void
     
-    abstract run(): void
-    abstract stop(): void
+    run(): void {}
+    stop(): void {}
 }

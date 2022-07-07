@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { Reference, unbind } from "@toad"
+import { Animator, Reference, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
 import { ArrayModel } from "@toad/table/model/ArrayModel"
@@ -19,8 +19,7 @@ describe("table", function () {
         unbind()
         TableAdapter.unbind()
         Table.transitionDuration = "1ms"
-        InsertRowAnimation.halt = true
-        RemoveRowAnimation.halt = true
+        Animator.halt = true
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
@@ -74,7 +73,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(1)
 
                     // WHEN we animate
-                    animation.animate()
+                    animation.animationFrame(1)
 
                     expect(maskY()).to.equal(insertHeight)
                     expect(splitBodyY()).to.equal(insertHeight)
@@ -131,7 +130,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
 
                     // WHEN we animate
-                    animation.animate()
+                    animation.animationFrame(1)
 
                     expect(maskY()).to.equal(insertHeight - 1)
                     expect(splitBodyY()).to.equal(insertHeight - 1)
@@ -143,7 +142,7 @@ describe("table", function () {
                     expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
                     expect(table.body.children).to.have.lengthOf(8)
                 })
-                it.only("two rows at middle", async function () {
+                it("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(1, 32),
@@ -159,7 +158,6 @@ describe("table", function () {
                         new MeasureRow(2, 48),
                         new MeasureRow(3, 72)
                     ])
-                    return
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -189,7 +187,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(64 + 2)
 
                     // WHEN we animate
-                    animation.animate()
+                    animation.animationFrame(1)
 
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
@@ -245,7 +243,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(1)
 
                     // WHEN we animate
-                    animation.animate()
+                    animation.animationFrame(1)
 
                     expect(maskY()).to.equal(98 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(98 + insertHeight - 1)
@@ -318,7 +316,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(splitH0)
 
                     // WHEN we animate
-                    animation.animate()
+                    animation.animationFrame(1)
 
                     expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
                     expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
@@ -396,7 +394,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(splitH0)
 
                     // WHEN we animate
-                    animation.animate()
+                    animation.animationFrame(1)
 
                     expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
                     expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
@@ -407,9 +405,6 @@ describe("table", function () {
                     expect(table.body.children).to.have.lengthOf(4)
                 })
                 it("two rows at middle", async function () {
-                    // Table.transitionDuration = "5000ms"
-                    // InsertRowAnimation.halt = false
-
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(1, 32),
@@ -475,8 +470,7 @@ describe("table", function () {
                     expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
 
                     // WHEN we animate
-                    // RemoveRowAnimation.halt = false
-                    animation.animate()
+                    animation.animationFrame(1)
 
                     expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
                     expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
@@ -550,7 +544,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(splitH0)
 
                     // WHEN we animate
-                    animation.animate()
+                    animation.animationFrame(1)
                     expect(splitBodyY(), "splitBodyY after animation").to.equal(splitY0 - removeHeight - 1)
                     expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight - 1)
 

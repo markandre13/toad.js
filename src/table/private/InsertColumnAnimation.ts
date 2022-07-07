@@ -41,7 +41,7 @@ export class InsertColumnAnimation extends TableAnimation {
     animationFrame(value: number): void {}
     lastFrame(): void {}
 
-    run() {
+    override run() {
         this.prepareCells()
         setTimeout(() => {
             // FIXME: if stop is called before this is executed (unlikely), stop will fail
@@ -58,7 +58,7 @@ export class InsertColumnAnimation extends TableAnimation {
         })
     }
 
-    stop() {
+    override stop() {
         this.joinVertical()
         this.clearAnimation()
     }
