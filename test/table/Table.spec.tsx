@@ -74,7 +74,7 @@ describe("table", function () {
         unbind()
         TableAdapter.unbind()
         Table.transitionDuration = "1ms"
-        InsertRowAnimation.halt = false
+        // InsertRowAnimation.halt = false
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
@@ -693,7 +693,7 @@ describe("table", function () {
 
         it.only("insert row animation (middle)", async function () {
             // Table.transitionDuration = "5000ms"
-            InsertRowAnimation.halt = true
+            // InsertRowAnimation.halt = true
 
             const model = createTreeModelFromTree()
             document.body.replaceChildren(

@@ -24,9 +24,10 @@ describe("table", function () {
     })
 
     // TODO
+    // [ ] expand column during row insert
     // [ ] headers
     //   [ ] with row headers
-    //   [ ] with column headers
+    //   [ ] with column headers (only ColAnimation.spec.tsx)
     //   [ ] with row and column headers
     // [ ] table body has been scrolled (mask, etc. need to be place properly)
     // [ ] fast forward animation (aka. stop())

@@ -22,14 +22,12 @@ import { TableAnimation } from "./TableAnimation"
 import { span } from '@toad/util/lsx'
 
 export class RemoveRowAnimation extends TableAnimation {
-    static halt = false
     static current?: RemoveRowAnimation
     event: TableEvent
     initialHeight: number
     animationHeight!: number
     removeAll: boolean
     overlap: number
-    done = false;
     mask!: HTMLSpanElement
     topSplitBody!: number
     topMask!: number
@@ -105,11 +103,6 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     joinHorizontal() {
-        if (this.done) {
-            return
-        }
-        this.done = true
-
         this.staging.removeChild(this.mask)
         this.body.removeChild(this.splitBody)
         this.staging.replaceChildren()
