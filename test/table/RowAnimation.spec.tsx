@@ -2,9 +2,8 @@ import { expect } from '@esm-bundle/chai'
 import { Animator, Reference, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
-import { ArrayModel } from "@toad/table/model/ArrayModel"
 import { ArrayTableModel } from "@toad/table/model/ArrayTableModel"
-import { TableAdapter } from '@toad/table/adapter/TableAdapter'
+import { TableAdapter, TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
 import { ArrayAdapter } from '@toad/table/adapter/ArrayAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
@@ -24,13 +23,15 @@ describe("table", function () {
     })
 
     // TODO
-    // [ ] expand column during row insert
-    // [ ] headers
-    //   [ ] with row headers
-    //   [ ] with column headers (only ColAnimation.spec.tsx)
-    //   [ ] with row and column headers
+    // [ ] seamless
+    //   [X] insert
+    //   [ ] remove
     // [ ] table body has been scrolled (mask, etc. need to be place properly)
-    // [ ] fast forward animation (aka. stop())
+    //   [ ] insert
+    //   [ ] remove
+    // [ ] expand column during row insert
+    // [ ] with row headers
+    // [ ] with column headers (only ColAnimation.spec.tsx)
     // ...
     describe("row", function () {
         describe("insert", function () {
@@ -254,6 +255,64 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
                     expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
                     expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
+                    expect(table.body.children).to.have.lengthOf(8)
+                })
+            })
+            describe("seamless", function () {
+                it("two rows at middle", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(4, 64)
+                    ], true)
+                    const table = getTable()
+
+                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                    expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`) // 32 instead of 33
+
+                    // ...at the head insert two rows
+                    model.insertRow(1, [
+                        new MeasureRow(2, 48),
+                        new MeasureRow(3, 72)
+                    ])
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertRowAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two cells have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewRowsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowInfo(0)).to.equal(`#2:0,32,80,48`)
+                    expect(stagingRowInfo(1)).to.equal(`#3:0,80,80,72`) // 80 instead of 82
+                    // ...and are hidden by a mask
+                    const insertHeight = 48 + 72 // + 4 - 1
+                    expect(maskY()).to.equal(32) // 32 instead of 33
+                    expect(maskH()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+                    // THEN splitbody
+                    expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
+                    expect(splitBodyY()).to.equal(32) // 32 instead of 33
+                    expect(splitBodyH()).to.equal(64) // 64 instead of 64 + 2
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(maskY()).to.equal(33 + insertHeight - 1)
+                    expect(splitBodyY()).to.equal(33 + insertHeight - 1)
+
+                    animation.joinHorizontal()
+                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                    expect(bodyRowInfo(1)).to.equal(`#2:0,32,80,48`) // 32 instead of 33
+                    expect(bodyRowInfo(2)).to.equal(`#3:0,80,80,72`)
+                    expect(bodyRowInfo(3)).to.equal(`#4:0,152,80,64`)
                     expect(table.body.children).to.have.lengthOf(8)
                 })
             })
@@ -569,7 +628,18 @@ class MeasureRow {
     }
 }
 
-class MeasureAdapter extends ArrayAdapter<ArrayTableModel<MeasureRow>> {
+class MeasureModel extends ArrayTableModel<MeasureRow> {
+    config = new TableAdapterConfig()
+    get colCount(): number {
+        throw new Error('Method not implemented.')
+    }
+}
+
+class MeasureAdapter extends ArrayAdapter<MeasureModel> {
+    constructor(model: MeasureModel) {
+        super(model)
+        this.config = model.config
+    }
     getColumnHeads() {
         // return ["id", "height"]
         return undefined
@@ -594,9 +664,12 @@ class MeasureAdapter extends ArrayAdapter<ArrayTableModel<MeasureRow>> {
     }
 }
 
-async function prepare(data: MeasureRow[]) {
-    TableAdapter.register(MeasureAdapter, ArrayModel, MeasureRow)
-    const model = new ArrayModel<MeasureRow>(data, MeasureRow)
+async function prepare(data: MeasureRow[], seamless: boolean = false) {
+    TableAdapter.register(MeasureAdapter, MeasureModel, MeasureRow) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
+    const model = new MeasureModel(data, MeasureRow)
+    if (seamless) {
+        model.config.seamless = seamless
+    }
     document.body.replaceChildren(<Table style={{ width: '100%', height: '350px' }} model={model} />)
     await sleep()
     return model

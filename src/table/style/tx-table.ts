@@ -104,7 +104,8 @@ style.textContent = css`
 .seamless > .body > .splitBody > span,
 .seamless > .cols > span,
 .seamless > .rows > span,
-.seamless > .measure > span {
+.seamless > .measure > span,
+.seamless > .staging > span {
     border: none 0px;
 }
 

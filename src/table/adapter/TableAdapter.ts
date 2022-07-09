@@ -40,7 +40,7 @@ type AdapterConstructor = new (model: TableModel) => TableAdapter<any>
 type TypeConstructor = (new (...args: any[]) => any)
 type TypeToAdapter = Map<TypeConstructor | null, AdapterConstructor>
 
-class TableAdapterConfig {
+export class TableAdapterConfig {
     editMode = EditMode.EDIT_ON_FOCUS
     seamless = false
     expandColumn = false

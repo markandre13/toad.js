@@ -101,11 +101,15 @@ export class InsertRowAnimation extends TableAnimation {
             this.totalHeight += rowHeight[row] - overlap
         }
         this.totalHeight += overlap
+        if (this.adapter.config.seamless) {
+            this.totalHeight -= 2 * this.event.size
+        }
 
         // place row
         let y = top
         for (let row = 0; row < this.event.size; ++row) {
             let x = 0
+            console.log(`row ${row} at y = ${y}`)
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[0] as HTMLElement
                 cell.style.left = `${x}px`
@@ -116,6 +120,9 @@ export class InsertRowAnimation extends TableAnimation {
                 x += colWidth[col] - overlap
             }
             y += rowHeight[row] - overlap
+            if (this.adapter.config.seamless) {
+                y -= 2
+            }
         }
 
         this.mask = span()
