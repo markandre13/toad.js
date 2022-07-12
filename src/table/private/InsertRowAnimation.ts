@@ -109,7 +109,7 @@ export class InsertRowAnimation extends TableAnimation {
         let y = top
         for (let row = 0; row < this.event.size; ++row) {
             let x = 0
-            console.log(`row ${row} at y = ${y}`)
+            // console.log(`row ${row} at y = ${y}`)
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[0] as HTMLElement
                 cell.style.left = `${x}px`
