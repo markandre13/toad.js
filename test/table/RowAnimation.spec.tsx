@@ -25,7 +25,7 @@ describe("table", function () {
     // TODO
     // [ ] seamless
     //   [X] insert
-    //   [ ] remove
+    //   [X] remove
     // [ ] table body has been scrolled (mask, etc. need to be place properly)
     //   [ ] insert
     //   [ ] remove
@@ -257,36 +257,34 @@ describe("table", function () {
                     expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
                     expect(table.body.children).to.have.lengthOf(8)
                 })
-            })
-            describe("seamless", function () {
-                it("two rows at middle", async function () {
+                it("seamless (two rows at middle)", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(1, 32),
                         new MeasureRow(4, 64)
-                    ], true)
+                    ], { seamless: true })
                     const table = getTable()
-
+    
                     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
                     expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`) // 32 instead of 33
-
+    
                     // ...at the head insert two rows
                     model.insertRow(1, [
                         new MeasureRow(2, 48),
                         new MeasureRow(3, 72)
                     ])
-
+    
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
                     animation.prepareCellsToBeMeasured()
                     await sleep()
-
+    
                     // THEN then two cells have been measured.
                     expect(table.measure.children.length).to.equal(4)
-
+    
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
-
+    
                     // THEN they have been placed in staging
                     expect(stagingRowInfo(0)).to.equal(`#2:0,32,80,48`)
                     expect(stagingRowInfo(1)).to.equal(`#3:0,80,80,72`) // 80 instead of 82
@@ -294,20 +292,20 @@ describe("table", function () {
                     const insertHeight = 48 + 72 // + 4 - 1
                     expect(maskY()).to.equal(32) // 32 instead of 33
                     expect(maskH()).to.equal(insertHeight)
-
+    
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
                     // THEN splitbody
                     expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
                     expect(splitBodyY()).to.equal(32) // 32 instead of 33
                     expect(splitBodyH()).to.equal(64) // 64 instead of 64 + 2
-
+    
                     // WHEN we animate
                     animation.animationFrame(1)
-
+    
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
-
+    
                     animation.joinHorizontal()
                     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
                     expect(bodyRowInfo(1)).to.equal(`#2:0,32,80,48`) // 32 instead of 33
@@ -319,7 +317,7 @@ describe("table", function () {
         })
         describe("remove", function () {
             describe("no headers", function () {
-                it("all rows", async function() {
+                it("all rows", async function () {
                     // WHEN we have a table without headings
                     const model = await prepare([
                         new MeasureRow(1, 32),
@@ -613,17 +611,15 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
                     expect(table.body.children).to.have.lengthOf(4)
                 })
-            })
-            describe("seamless", function() {
                 // REFACTOR: this is copy'n pasted, with only two changes. use this as a template to refactor the other seamless test
-                it("two rows at middle", async function () {
+                it("seamless (two rows at middle)", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(1, 32),
                         new MeasureRow(2, 48),
                         new MeasureRow(3, 72),
                         new MeasureRow(4, 64)
-                    ], true)
+                    ], { seamless: true })
                     const table = getTable()
 
                     //   initial
@@ -744,12 +740,14 @@ class MeasureAdapter extends ArrayAdapter<MeasureModel> {
     }
 }
 
-async function prepare(data: MeasureRow[], seamless: boolean = false) {
+interface PrepareProps {
+    seamless: boolean
+}
+
+async function prepare(data: MeasureRow[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, MeasureRow) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
     const model = new MeasureModel(data, MeasureRow)
-    if (seamless) {
-        model.config.seamless = seamless
-    }
+    model.config.seamless = (props?.seamless) === true
     document.body.replaceChildren(<Table style={{ width: '100%', height: '350px' }} model={model} />)
     await sleep()
     return model
