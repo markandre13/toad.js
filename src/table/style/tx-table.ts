@@ -25,8 +25,8 @@ style.textContent = css`
     height: fill-available;
     */
 
-    min-height: 100px;
-    min-width: 100px;
+    min-height: 50px;
+    min-width: 50px;
 }
 
 .staging, .body, .splitBody, .cols, .rows {

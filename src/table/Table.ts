@@ -156,6 +156,8 @@ export class Table extends View {
 
         this.body.onresize = this.setHeadingFillerSizeToScrollbarSize
         this.body.onscroll = () => {
+            this.staging.style.top = `${-this.body.scrollTop}px`
+            this.staging.style.left = `${-this.body.scrollLeft}px`
             this.setHeadingFillerSizeToScrollbarSize()
             if (this.colHeads) {
                 this.colHeads.scrollLeft = this.body.scrollLeft

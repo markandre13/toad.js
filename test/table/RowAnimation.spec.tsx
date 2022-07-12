@@ -23,16 +23,8 @@ describe("table", function () {
     })
 
     // TODO
-    // [ ] seamless
-    //   [X] insert
-    //   [X] remove
-    // [ ] table body has been scrolled (mask, etc. need to be place properly)
-    //   [ ] insert
-    //   [ ] remove
     // [ ] expand column during row insert
     // [ ] with row headers
-    // [ ] with column headers (only ColAnimation.spec.tsx)
-    // ...
     describe("row", function () {
         describe("insert", function () {
             describe("no headers", function () {
@@ -691,6 +683,23 @@ describe("table", function () {
                 })
             })
         })
+        describe("other", function() {
+            it("staging follows scrolled body", async function () {
+                // WHEN we have an empty table without headings
+                const model = await prepare([
+                    new MeasureRow(1, 32),
+                    new MeasureRow(4, 64)
+                ], {height: 32, width: 32})
+                const table = getTable()
+
+                table.body.scrollTop = 16
+                table.body.scrollLeft = 24
+                table.body.onscroll!(undefined as any)
+
+                expect(table.staging.style.top).to.equal(`-16px`)
+                expect(table.staging.style.left).to.equal(`-24px`)
+            })
+        })
     })
 })
 
@@ -741,14 +750,19 @@ class MeasureAdapter extends ArrayAdapter<MeasureModel> {
 }
 
 interface PrepareProps {
-    seamless: boolean
+    seamless?: boolean
+    width?: number
+    height?: number
 }
 
 async function prepare(data: MeasureRow[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, MeasureRow) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
     const model = new MeasureModel(data, MeasureRow)
     model.config.seamless = (props?.seamless) === true
-    document.body.replaceChildren(<Table style={{ width: '100%', height: '350px' }} model={model} />)
+    document.body.replaceChildren(<Table style={{
+        width: `${props?.width ?? 720}`,
+        height: `${props?.height ?? 350}px`
+    }} model={model} />)
     await sleep()
     return model
 }
