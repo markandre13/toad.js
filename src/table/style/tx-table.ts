@@ -85,7 +85,12 @@ style.textContent = css`
     background: var(--tx-gray-500);
 }
 
-.staging > span, .body > span, .splitBody > span, .cols > span, .rows > span, .measure > span {
+.body > span,
+.splitBody > span,
+.cols > span,
+.rows > span,
+.measure > span,
+.staging > span {
     position: absolute;
     box-sizing: content-box;
     white-space: nowrap;

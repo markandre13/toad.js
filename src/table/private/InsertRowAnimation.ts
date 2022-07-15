@@ -75,27 +75,41 @@ export class InsertRowAnimation extends TableAnimation {
         const splitRow = this.event.index
         let idx = splitRow * this.adapter!.colCount
         let top = 0
-        if (this.body.children.length === 0) {} else
-        if (idx < this.body.children.length) {
-            let cell = this.body.children[idx] as HTMLSpanElement
-            top = px2float(cell.style.top)
-        } else {
-            let cell = this.body.children[this.body.children.length-1] as HTMLSpanElement
-            let b = cell.getBoundingClientRect()
-            top = px2float(cell.style.top) + b.height - overlap
-        }
+        if (this.body.children.length === 0) { } else
+            if (idx < this.body.children.length) {
+                let cell = this.body.children[idx] as HTMLSpanElement
+                top = px2float(cell.style.top)
+            } else {
+                let cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+                let b = cell.getBoundingClientRect()
+                top = px2float(cell.style.top) + b.height - overlap
+            }
 
         // measure row
         this.totalHeight = 0
         let colWidth = new Array<number>(this.adapter.colCount)
+        if (this.body.children.length !== 0) {
+            for (let col = 0; col < this.adapter.colCount; ++col) {
+                const cell = this.body.children[col] as HTMLSpanElement
+                const bounds = cell.getBoundingClientRect()
+                colWidth[col] = bounds.width
+                // console.log(`  existing colWidth[${col}]: bounds.width=${bounds.width}, cell.style.width=${cell.style.width}`)
+                if (this.adapter.config.seamless) {
+                    colWidth[col] += 2
+                }
+            }
+        }
         let rowHeight = new Array<number>(this.event.size)
         rowHeight.fill(this.table.minCellHeight)
         idx = 0
         for (let row = 0; row < this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
-                const cell = this.measure.children[idx++]
+                const cell = this.measure.children[idx++] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
-                colWidth[col] = Math.ceil(bounds.width)
+                if (row === 0 && this.body.children.length === 0) {
+                    colWidth[col] = Math.ceil(bounds.width)
+                }
+                // console.log(`  measured colWidth[${col}]: bounds.width=${bounds.width}, cell.style.width=${cell.style.width}`)
                 rowHeight[row] = Math.max(rowHeight[row], bounds.height)
             }
             this.totalHeight += rowHeight[row] - overlap
@@ -118,6 +132,10 @@ export class InsertRowAnimation extends TableAnimation {
                 cell.style.height = `${rowHeight[row] - this.table.HEIGHT_ADJUST}px`
                 this.staging.appendChild(cell)
                 x += colWidth[col] - overlap
+                if (this.adapter.config.seamless) {
+                    x -= 2
+                }
+   
             }
             y += rowHeight[row] - overlap
             if (this.adapter.config.seamless) {
