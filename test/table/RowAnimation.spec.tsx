@@ -12,7 +12,6 @@ import { sleep, px2float } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { TableFriend } from '@toad/table/private/TableFriend'
-import { placePopupHorizontal } from '@toad/menu/PopupMenu'
 
 describe("table", function () {
     beforeEach(async function () {
@@ -24,9 +23,10 @@ describe("table", function () {
     })
 
     // TODO
-    // [ ] columns are not aligned in makehuman.js: Gender > Breast|Genitals
-    // [ ] expand column during row insert
-    // [ ] with row headers
+    // [ ] colors for mask and staging
+    // [ ] alignment in makehuman.js
+    // [ ] table colors
+    // [ ] with headers
     describe("row", function () {
         describe("insert", function () {
             describe("no headers", function () {
@@ -283,7 +283,63 @@ describe("table", function () {
                         // THEN they have been placed in staging
                         expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
                     })
-                    it("extend")
+                    it("extend", async function () {
+                        // WHEN we have an empty table without headings
+                        const model = await prepare([
+                            new MeasureRow(1, 32),
+                            new MeasureRow(3, 64)
+                        ], { expandColumn: true })
+                        // Animator.halt = false
+                        const table = getTable()
+
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#3:0,33,80,64`)
+
+                        // ...at the head insert two rows
+                        model.insertRow(1, [
+                            new MeasureRow(2, 48, 128)
+                        ])
+
+                        // ...and ask for the new cells to be measured
+                        const animation = InsertRowAnimation.current!
+                        animation.prepareCellsToBeMeasured()
+                        await sleep()
+
+                        // THEN then two cells have been measured.
+                        expect(table.measure.children.length).to.equal(2)
+
+                        // WHEN ask for the new rows to be placed
+                        animation.arrangeNewRowsInStaging()
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#3:0,33,128,64`)
+
+                        // THEN they have been placed in staging
+                        expect(stagingRowInfo(0)).to.equal(`#2:0,33,128,48`)
+
+                        // ...and are hidden by a mask
+                        const insertHeight = 48 + 2 
+                        expect(maskY()).to.equal(33)
+                        expect(maskH()).to.equal(insertHeight)
+
+                        // WHEN we split the table for the animation
+                        animation.splitHorizontal()
+                        // THEN splitbody
+                        expect(splitRowInfo(0)).to.equal(`#3:0,0,128,64`)
+                        expect(splitBodyY()).to.equal(33)
+                        expect(splitBodyH()).to.equal(64 + 2)
+
+                        // WHEN we animate
+                        animation.animationFrame(1)
+
+                        // expect(maskY()).to.equal(33 + insertHeight - 1)
+                        // expect(splitBodyY()).to.equal(33 + insertHeight - 1)
+
+                        animation.joinHorizontal()
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#2:0,33,128,48`)
+                        expect(bodyRowInfo(2)).to.equal(`#3:0,82,128,64`)
+                        expect(table.body.children).to.have.lengthOf(6)
+                    })
                     it("shrink")
                 })
                 it("seamless (two rows at middle)", async function () {
@@ -797,6 +853,7 @@ class MeasureAdapter extends ArrayAdapter<MeasureModel> {
 
 interface PrepareProps {
     seamless?: boolean
+    expandColumn?: boolean
     width?: number
     height?: number
 }
@@ -805,6 +862,7 @@ async function prepare(data: MeasureRow[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, MeasureRow) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
     const model = new MeasureModel(data, MeasureRow)
     model.config.seamless = (props?.seamless) === true
+    model.config.expandColumn = (props?.expandColumn) === true
     document.body.replaceChildren(<Table style={{
         width: `${props?.width ?? 720}px`,
         height: `${props?.height ?? 350}px`

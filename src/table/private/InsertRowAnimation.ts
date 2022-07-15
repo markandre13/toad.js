@@ -98,6 +98,8 @@ export class InsertRowAnimation extends TableAnimation {
                     colWidth[col] += 2
                 }
             }
+        } else {
+            colWidth.fill(this.table.minCellWidth)
         }
         let rowHeight = new Array<number>(this.event.size)
         rowHeight.fill(this.table.minCellHeight)
@@ -106,14 +108,40 @@ export class InsertRowAnimation extends TableAnimation {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
-                if (row === 0 && this.body.children.length === 0) {
-                    colWidth[col] = Math.ceil(bounds.width)
+                if (this.adapter.config.expandColumn) {
+                    colWidth[col] = Math.ceil(Math.max(colWidth[col], bounds.width))
+                } else {
+                    if (row === 0 && this.body.children.length === 0) {
+                        colWidth[col] = Math.ceil(bounds.width)
+                    }
                 }
                 // console.log(`  measured colWidth[${col}]: bounds.width=${bounds.width}, cell.style.width=${cell.style.width}`)
                 rowHeight[row] = Math.max(rowHeight[row], bounds.height)
             }
             this.totalHeight += rowHeight[row] - overlap
         }
+        if (this.adapter.config.expandColumn) {
+            idx = 0
+            let x = 0
+            let col = 0
+            while (idx < this.body.children.length) {
+                const cell = this.body.children[idx] as HTMLSpanElement
+                cell.style.left = `${x}px`
+                cell.style.width = `${colWidth[col] - this.table.WIDTH_ADJUST}px`
+                x += colWidth[col] - overlap
+                if (this.adapter.config.seamless) {
+                    x -= 2
+                }
+                // console.log(`cell[${idx}] to ${colWidth[col] - this.table.WIDTH_ADJUST}`)
+                ++col
+                ++idx
+                if (col >= this.adapter.colCount) {
+                    x = 0
+                    col = 0
+                }
+            }
+        }
+
         this.totalHeight += overlap
         if (this.adapter.config.seamless) {
             this.totalHeight -= 2 * this.event.size
@@ -135,7 +163,7 @@ export class InsertRowAnimation extends TableAnimation {
                 if (this.adapter.config.seamless) {
                     x -= 2
                 }
-   
+
             }
             y += rowHeight[row] - overlap
             if (this.adapter.config.seamless) {
