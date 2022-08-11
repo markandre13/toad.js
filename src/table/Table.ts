@@ -65,6 +65,10 @@ interface TableProps extends HTMLElementProps {
 }
 
 export class Table extends View {
+
+    static maskColor = `#1e1e1e` // `rgba(0,0,128,0.3)`
+    static splitColor = `#1e1e1e` // `rgba(255,128,0,0.5)`
+
     // we can not calculate the layout when the table is not visible, hence we track the
     // visibility
 
@@ -1084,7 +1088,7 @@ export class Table extends View {
         this.splitBody.className = "splitBody"
         this.splitBody.style.left = `0`
         this.splitBody.style.right = `0`
-        this.splitBody.style.backgroundColor = 'rgba(255,128,0,0.5)'
+        this.splitBody.style.backgroundColor = Table.splitColor
         const idx = splitRow * this.adapter!.colCount
         if (this.body.children.length === 0) {
             this.splitBody.style.top = `0px`

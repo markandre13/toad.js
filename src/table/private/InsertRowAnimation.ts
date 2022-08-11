@@ -181,7 +181,7 @@ export class InsertRowAnimation extends TableAnimation {
         this.mask.style.transitionProperty = "transform"
         this.mask.style.transitionDuration = Table.transitionDuration
         this.mask.style.height = `${this.totalHeight}px`
-        this.mask.style.backgroundColor = `rgba(0,0,128,0.3)`
+        this.mask.style.backgroundColor = Table.maskColor
         this.staging.appendChild(this.mask)
     }
 
