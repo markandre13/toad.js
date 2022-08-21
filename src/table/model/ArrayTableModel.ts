@@ -49,7 +49,7 @@ export abstract class ArrayTableModel<T>
         if (rowData === undefined)
             rowData = this.createRow()
         let rowArray
-        if (rowData instanceof Array)
+        if (rowData instanceof Array) // FIXME: what if T is also an array?
             rowArray = rowData
         else
             rowArray = [rowData]

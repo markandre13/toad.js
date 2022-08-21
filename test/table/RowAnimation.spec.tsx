@@ -80,7 +80,7 @@ describe("table", function () {
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
-                it("two rows at head", async function () {
+                it.only("two rows at head", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(3, 32),
@@ -839,7 +839,7 @@ class MeasureAdapter extends ArrayAdapter<MeasureModel> {
         if (pos.col === 1) {
             cell.style.height = `${row.height}px`
         }
-        if (pos.col === 0) {
+        if (pos.col === 0) { 
             if (row.width === undefined) {
                 cell.style.width = `${80 * (pos.col + 1)}px`
             } else {

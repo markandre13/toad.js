@@ -96,8 +96,8 @@ export class Table extends View {
 
     // this will be set to lineheight
     minCellHeight = 0
-    minCellWidth = 80
-
+    minCellWidth = 32
+    
     protected editing?: TablePos
 
     // TODO: friend tabletool, ... should make these getters'n setters
