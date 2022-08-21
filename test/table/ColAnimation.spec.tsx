@@ -197,22 +197,51 @@ describe("table", function () {
                 //     ]))
                 // })
                 it("two rows into empty")
-                it("two rows at head", async function () {
+                it.only("two cols at head", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new Measure(3, 32),
                         new Measure(4, 64)
                     ])
+
+                    // test the model!!!
+
                     const table = getTable()
 
                     // expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
                     // expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
 
+                    // into
+                    // 3,0  4,0
+                    // 3,1  4,1
+
+                    // insert
+                    // 1,0     3,0 4,0    0
+                    //         3,1 4,1
+
+                    // 1,0     3,0 4,0    3
+                    // 1,1     3,1 4,1
+
+                    // 1,0 2,0 3,0 4,0    1
+                    // 1,1     4,1 4,1
+
+                    // 1,0 2,0 3,0 4,0    5
+                    // 1,1 2,1 4,1 4,1
+
+                    // idxOut: 0 
+
+                    // 1,0  2,0  3,0  4,0
+                    // 1,1  2,1  3,0  4,0
+
+                    const ins = flatMapColumns([
+                        new Measure(1, 48).toCells(),
+                        new Measure(2, 72).toCells()
+                    ])
+                    console.log(ins)
+              
                     // // ...at the head insert two rows
-                    // model.insertRow(0, [
-                    //     new MeasureRow(1, 48),
-                    //     new MeasureRow(2, 72)
-                    // ])
+                    model.insertColumn(0, ins)
+                    console.log(model)
 
                     // // ...and ask for the new cells to be measured
                     // const animation = InsertRowAnimation.current!

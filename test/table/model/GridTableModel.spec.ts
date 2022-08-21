@@ -60,10 +60,12 @@ describe("gridtablemodel", function () {
             ], 3)
             expect(model.colCount).to.equal(3)
             expect(model.rowCount).to.equal(4)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(2, 1)).to.equal(6)
-            expect(model.getCell(0, 2)).to.equal(7)
-            expect(model.getCell(2, 3)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 2, 3,
+                4, 5, 6,
+                7, 8, 9,
+                10, 11, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.INSERT_ROW)
@@ -85,10 +87,12 @@ describe("gridtablemodel", function () {
             ], 3)
             expect(model.colCount).to.equal(3)
             expect(model.rowCount).to.equal(4)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(2, 1)).to.equal(6)
-            expect(model.getCell(0, 2)).to.equal(7)
-            expect(model.getCell(2, 3)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 2, 3,
+                4, 5, 6,
+                7, 8, 9,
+                10, 11, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.INSERT_ROW)
@@ -110,10 +114,12 @@ describe("gridtablemodel", function () {
             ], 3)
             expect(model.colCount).to.equal(3)
             expect(model.rowCount).to.equal(4)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(2, 1)).to.equal(6)
-            expect(model.getCell(0, 2)).to.equal(7)
-            expect(model.getCell(2, 3)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 2, 3,
+                4, 5, 6,
+                7, 8, 9,
+                10, 11, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.INSERT_ROW)
@@ -161,18 +167,18 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(4)
             expect(model.rowCount).to.equal(3)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(1, 0)).to.equal(4)
-            expect(model.getCell(1, 2)).to.equal(6)
-            expect(model.getCell(2, 0)).to.equal(7)
-            expect(model.getCell(3, 0)).to.equal(10)
-            expect(model.getCell(3, 2)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 4, 7, 10,
+                2, 5, 8, 11,
+                3, 6, 9, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.INSERT_COL)
             expect(event!!.index).to.equal(0)
             expect(event!!.size).to.equal(2)
         })
+
         it("at middle", function () {
             const model = new NumberGrid(Number, 2, 3, [
                 1, 10,
@@ -191,12 +197,11 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(4)
             expect(model.rowCount).to.equal(3)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(1, 0)).to.equal(4)
-            expect(model.getCell(1, 2)).to.equal(6)
-            expect(model.getCell(2, 0)).to.equal(7)
-            expect(model.getCell(3, 0)).to.equal(10)
-            expect(model.getCell(3, 2)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 4, 7, 10,
+                2, 5, 8, 11,
+                3, 6, 9, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.INSERT_COL)
@@ -221,12 +226,11 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(4)
             expect(model.rowCount).to.equal(3)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(1, 0)).to.equal(4)
-            expect(model.getCell(1, 2)).to.equal(6)
-            expect(model.getCell(2, 0)).to.equal(7)
-            expect(model.getCell(3, 0)).to.equal(10)
-            expect(model.getCell(3, 2)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 4, 7, 10,
+                2, 5, 8, 11,
+                3, 6, 9, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.INSERT_COL)
@@ -251,8 +255,10 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(3)
             expect(model.rowCount).to.equal(2)
-            expect(model.getCell(0, 0)).to.equal(7)
-            expect(model.getCell(2, 1)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                7, 8, 9,
+                10, 11, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.REMOVE_ROW)
@@ -274,8 +280,10 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(3)
             expect(model.rowCount).to.equal(2)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(2, 1)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 2, 3,
+                10, 11, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.REMOVE_ROW)
@@ -297,8 +305,10 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(3)
             expect(model.rowCount).to.equal(2)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(2, 1)).to.equal(6)
+            expect(model.asArray()).to.deep.equal([
+                1, 2, 3,
+                4, 5, 6
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.REMOVE_ROW)
@@ -309,21 +319,6 @@ describe("gridtablemodel", function () {
     describe("remove column", function () {
         it("remove all")
         it("at head", function() {
-
-            // backwards: 8 4 0
-            //  B  B        B  B       B  B
-            //  1  2  3  4  5  6  7  8  9 10 11 12
-            //        3  4  5  6  7  8  9 10 11 12   0  +(cols-1)
-            //        3  4  5        8  9 10 11 12   3  
-            //        3  4  5        8  9       12   5
-           
-            //  backwards: 9 5 1
-            //  1  2  3  4  5  6  7  8  9 10 11 12
-            //  1        4  5  6  7  8  9 10 11 12   1 
-            //  1        4  5        8  9 10 11 12   3
-            //  1        4  5        8  9       12   5
-
-
             const model = new NumberGrid(Number, 4, 3, [
                 1, 2, 3, 4,
                 5, 6, 7, 8,
@@ -337,8 +332,11 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(2)
             expect(model.rowCount).to.equal(3)
-            expect(model.getCell(0, 0)).to.equal(3)
-            expect(model.getCell(1, 2)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                3, 4,
+                7, 8,
+                11, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.REMOVE_COL)
@@ -359,8 +357,11 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(2)
             expect(model.rowCount).to.equal(3)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(1, 2)).to.equal(12)
+            expect(model.asArray()).to.deep.equal([
+                1, 4,
+                5, 8,
+                9, 12
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.REMOVE_COL)
@@ -381,8 +382,11 @@ describe("gridtablemodel", function () {
 
             expect(model.colCount).to.equal(2)
             expect(model.rowCount).to.equal(3)
-            expect(model.getCell(0, 0)).to.equal(1)
-            expect(model.getCell(1, 2)).to.equal(10)
+            expect(model.asArray()).to.deep.equal([
+                1, 2,
+                5, 6,
+                9, 10,
+            ])
 
             expect(event).to.be.not.undefined
             expect(event!!.type).to.equal(TableEventType.REMOVE_COL)
