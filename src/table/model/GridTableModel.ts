@@ -28,14 +28,18 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
     protected _cols: number
     protected _rows: number
     protected _data: Array<T>
-    constructor(nodeClass: new () => T, cols: number, rows: number, data?: Array<T>) {
+    constructor(nodeClass: new () => T, cols: number=0, rows: number=0, data?: Array<T>) {
         super(nodeClass)
         this._cols = cols
         this._rows = rows
         const size = cols * rows
-        this._data = data === undefined ? new Array(size) : data
-        for (let idx = 0; idx < size; ++idx) {
-            this._data[idx] = new this.nodeClass()
+        if (data) {
+            this._data = data
+        } else {
+            this._data = data === undefined ? new Array(size) : data
+            for (let idx = 0; idx < size; ++idx) {
+                this._data[idx] = new this.nodeClass()
+            }
         }
     }
     override get colCount(): number {
@@ -50,18 +54,22 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
     setCell(col: number, row: number, data: T) {
         this._data[col + row * this._cols] = data
     }
+    insertRow(row: number, rowData?: Array<T>, rowLength: number = this._rows): number {
+        if (this._data.length === 0) {
+            this._cols = rowLength
+        }
 
-    insertRow(row: number, rowData?: Array<T>): number {
         if (rowData === undefined) {
             rowData = new Array<T>(this._cols)
             for (let col = 0; col < this._cols; ++col) {
                 rowData[col] = new this.nodeClass()
             }
         }
+        const count = rowData.length / this._cols
         this._data.splice(row * this._cols, 0, ...rowData)
-        ++this._rows
+        this._rows += count
         this.modified.trigger(new TableEvent(
-            TableEventType.INSERT_ROW, row, 1
+            TableEventType.INSERT_ROW, row, count
         ))
         return row
     }
@@ -73,28 +81,42 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         ))
         return row
     }
-    insertColumn(col: number, colData?: Array<T>): number {
+    insertColumn(col: number, colData?: Array<T>, columnLength: number = this._cols): number {
+        if (this._data.length === 0) {
+            this._rows = columnLength
+        }
         if (colData === undefined) {
             colData = new Array<T>(this._rows)
             for (let row = 0; row < this._rows; ++row) {
                 colData[row] = new this.nodeClass()
             }
         }
-        ++this._cols
-        for (let row = 0; row < this._rows; ++row) {
-            this._data.splice(col + row * this._cols, 0, colData[row])
+        const newColumnCount = colData.length / this._rows
+        this._cols += newColumnCount
+        let stepOut = this._rows
+        for(let i=0; i<newColumnCount; ++i) {
+            let idxIn = i
+            let idxOut = col + i
+            for (let row = 0; row < this._rows; ++row) {
+                this._data.splice(idxOut, 0, colData[idxIn])
+                idxIn += newColumnCount
+                idxOut += stepOut
+            }
+            ++stepOut
         }
         this.modified.trigger(new TableEvent(
-            TableEventType.INSERT_COL, col, 1
+            TableEventType.INSERT_COL, col, newColumnCount
         ))
 
         return col
     }
     removeColumn(col: number, count: number = 1): number {
-        --this._cols
+        let idx = col + this._cols * (this._rows - 1)
         for (let row = 0; row < this._rows; ++row) {
-            this._data.splice(col + row * this._cols, count)
+            this._data.splice(idx, count)
+            idx -= this._cols
         }
+        this._cols -= count
         this.modified.trigger(new TableEvent(
             TableEventType.REMOVE_COL, col, count
         ))
