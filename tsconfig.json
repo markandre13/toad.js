@@ -31,13 +31,13 @@
         "jsx": "react-jsx",
         "jsxImportSource": "toad.jsx/lib",
         "plugins": [
+            // {
+            //     "transform": "m13-ts-transform-paths",
+            //     "afterDeclarations": true,
+            //     "after": true,
+            // },
             {
-                "transform": "@zerollup/ts-transform-paths",
-                "afterDeclarations": true,
-                "after": true,
-            },
-            {
-                "transform": "@zoltu/typescript-transformer-append-js-extension/output/index.js",
+                "transform": "./m13-es-transformer.ts",
                 "after": true,
             }
         ],
