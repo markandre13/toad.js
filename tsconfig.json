@@ -38,6 +38,7 @@
             // },
             {
                 "transform": "./m13-es-transformer.ts",
+                "afterDeclarations": true,
                 "after": true,
             }
         ],
