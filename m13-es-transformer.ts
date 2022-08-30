@@ -25,19 +25,19 @@ const transformer = (program: typescript.Program) => (transformationContext: typ
                 // * if multiple patterns match, match with the longest prefix is choosen
                 // * the * in PATTERN is to be replaced with the * in SUBSTITUTION
 
-                const parent = node.parent as any
-                if (parent === undefined) {
-                    console.log(`FAILED TO FIND PARENT IN NODE FOR ${moduleName}`)
-                    // console.log(node)
+                // precedende: package or file?
+                const packageName = moduleName.split("/")[0]
+                if (existsSync(`node_modules/${packageName}`)) {
+                    console.log(`${moduleName} IS A PACKAGE`)
                     return
                 }
 
-                if (!('fileName' in parent)) {
-                    console.log(`FAILED TO FIND FILENAME IN PARENT FOR ${moduleName}`)
-                    // console.log(parent)
+                let filename = ((node as any)?.parent?.fileName) ?? (node as any)?.original?.parent?.fileName
+
+                if (filename === undefined) {
+                    console.log(`FAILED TO FIND FILENAME FOR IMPORT/EXPORT OF ${moduleName}`)
                     return
                 }
-                const filename = parent.fileName as string
 
                 if (filename.startsWith(compilerOptions.baseUrl)) {
                     const fromFile = filename.substring(compilerOptions.baseUrl.length + 1).split("/")
@@ -83,7 +83,7 @@ const transformer = (program: typescript.Program) => (transformationContext: typ
                         // console.log(`relativeModuleName: ${relativeModuleName}`)
 
                         const newModuleSpecifier = typescript.factory.createStringLiteral(`${relativeModuleName}.js`)
-                        // console.log("-------------------------------------------------")
+                        console.log(`CHANGE IMPORT/EXPORT FROM "${moduleName}" TO "${relativeModuleName}.js"`)
                         if (typescript.isImportDeclaration(node)) {
                             return typescript.factory.updateImportDeclaration(node, node.modifiers, node.importClause, newModuleSpecifier, node.assertClause)
                         } else if (typescript.isExportDeclaration(node)) {
