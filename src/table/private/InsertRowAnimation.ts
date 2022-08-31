@@ -69,13 +69,15 @@ export class InsertRowAnimation extends TableAnimation {
         }
     }
 
+    // FIXME: while this works, it reads like a terrible pile of garbage
     public arrangeNewRowsInStaging() {
         const overlap = this.adapter.config.seamless ? 0 : 1
 
+        // calculate top of the 1st cell
         const splitRow = this.event.index
         let idx = splitRow * this.adapter!.colCount
         let top = 0
-        if (this.body.children.length === 0) { } else
+        if (this.body.children.length !== 0) {
             if (idx < this.body.children.length) {
                 let cell = this.body.children[idx] as HTMLSpanElement
                 top = px2float(cell.style.top)
@@ -84,6 +86,7 @@ export class InsertRowAnimation extends TableAnimation {
                 let b = cell.getBoundingClientRect()
                 top = px2float(cell.style.top) + b.height - overlap
             }
+        }
 
         // measure row
         this.totalHeight = 0

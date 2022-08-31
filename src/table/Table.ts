@@ -537,18 +537,10 @@ export class Table extends View {
                 this.animator.run(new RemoveRowAnimation(this, event))
                 break
             case TableEventType.INSERT_COL:
-                if (this.animation) {
-                    this.animation.stop()
-                }
-                this.animation = new InsertColumnAnimation(this, event)
-                this.animation.run()
+                this.animator.run(new InsertColumnAnimation(this, event))
                 break
             case TableEventType.REMOVE_COL:
-                if (this.animation) {
-                    this.animation.stop()
-                }
-                this.animation = new RemoveColumnAnimation(this, event)
-                this.animation.run()
+                this.animator.run(new RemoveColumnAnimation(this, event))
                 break
             default:
                 console.log(`Table.modelChanged(): ${event} is not implemented`)

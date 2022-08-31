@@ -102,7 +102,7 @@ describe("table", function () {
                     animation.prepareCellsToBeMeasured()
                     await sleep()
 
-                    // THEN then two cells have been measured.
+                    // THEN then two rows have been measured.
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed

@@ -31,14 +31,9 @@
         "jsx": "react-jsx",
         "jsxImportSource": "toad.jsx/lib",
         "plugins": [
-            // {
-            //     "transform": "m13-ts-transform-paths",
-            //     "afterDeclarations": true,
-            //     "after": true,
-            // },
             {
                 "transform": "./m13-es-transformer.ts",
-                "afterDeclarations": true,
+                // "afterDeclarations": true,
                 "after": true,
             }
         ],

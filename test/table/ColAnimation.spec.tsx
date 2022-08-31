@@ -9,13 +9,104 @@ import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 import { sleep, px2float } from "../testlib"
-import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
-import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
+import { InsertColumnAnimation } from '@toad/table/private/InsertColumnAnimation'
+import { RemoveColumnAnimation } from '@toad/table/private/RemoveColumnAnimation'
 import { TableFriend } from '@toad/table/private/TableFriend'
 import { GridTableModel } from '@toad/table/model/GridTableModel'
 import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 
-// FIXME: don't use enum in OO code
+
+describe("table", function () {
+    beforeEach(async function () {
+        unbind()
+        TableAdapter.unbind()
+        Table.transitionDuration = "1ms"
+        Animator.halt = true
+        document.head.replaceChildren(txBase, txStatic, txDark)
+    })
+
+    // TODO
+    // [ ] colors for mask and staging
+    // [ ] alignment in makehuman.js
+    // [ ] table colors
+    // [ ] with headers
+    describe("row", function () {
+        describe("insert", function () {
+            describe("no headers", function () {
+                it("two rows into empty")
+                it.only("two cols at head", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByColumns([
+                        new Measure(3, 32),
+                        new Measure(4, 64)
+                    ])
+
+                    const table = getTable()
+                    console.log(bodyColInfo(1))
+
+                    expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:37,0,64,18`)
+              
+                    // ...at the head insert two columns
+                    model.insertColumn(0, flatMapColumns([
+                        new Measure(1, 48).toCells(),
+                        new Measure(2, 72).toCells()
+                    ]))
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertColumnAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two columns have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new columns to be placed
+                    animation.arrangeNewColumnsInStaging()
+
+                    // // THEN they have been placed in staging
+                    console.log(stagingRowInfo(0))
+                    console.log(stagingRowInfo(1))
+
+                    // expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,48`)
+                    // expect(stagingRowInfo(1)).to.equal(`#2:0,49,80,72`)
+
+                    // // ...and are hidden by a mask
+                    // const insertHeight = 48 + 72 + 4 - 1
+                    // expect(maskY()).to.equal(0)
+                    // expect(maskH()).to.equal(insertHeight)
+
+                    // // WHEN we split the table for the animation
+                    // animation.splitHorizontal()
+                    // expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                    // expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                    // // THEN splitbody
+                    // expect(splitBodyY()).to.equal(0)
+                    // expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
+
+                    // // WHEN we animate
+                    // animation.animationFrame(1)
+
+                    // expect(maskY()).to.equal(insertHeight - 1)
+                    // expect(splitBodyY()).to.equal(insertHeight - 1)
+
+                    // animation.joinHorizontal()
+                    // expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
+                    // expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
+                    // expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
+                    // expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+                    // expect(table.body.children).to.have.lengthOf(8)
+                })
+            })
+        })
+    })
+})
+function getTable() {
+    return new TableFriend(
+        document.querySelector("tx-table") as Table
+    )
+}
+
 enum Orientation {
     HORIZONTAL, VERTICAL
 }
@@ -156,7 +247,7 @@ function flatMapRows<T>(data: T[][]): T[] {
     return data.flatMap(it => it)
 }
 
-async function prepare(data: Measure[], props?: PrepareProps) {
+async function prepareByColumns(data: Measure[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
     const model = new MeasureModel(Cell, data.length, 2, flatMapColumns(data.map(it => it.toCells())))
     model.config.seamless = (props?.seamless) === true
@@ -169,127 +260,31 @@ async function prepare(data: Measure[], props?: PrepareProps) {
     return model
 }
 
-describe("table", function () {
-    beforeEach(async function () {
-        unbind()
-        TableAdapter.unbind()
-        Table.transitionDuration = "1ms"
-        Animator.halt = true
-        document.head.replaceChildren(txBase, txStatic, txDark)
-    })
 
-    // TODO
-    // [ ] colors for mask and staging
-    // [ ] alignment in makehuman.js
-    // [ ] table colors
-    // [ ] with headers
-    describe("row", function () {
-        describe("insert", function () {
-            describe("no headers", function () {
-                // it("fun", function() {
-                //     console.log(flatMapColumns([
-                //         [1, 3, 5],
-                //         [2, 4, 6]
-                //     ]))
-                //     console.log(flatMapRows([
-                //         [1, 2, 3],
-                //         [4, 5 ,6]
-                //     ]))
-                // })
-                it("two rows into empty")
-                it.only("two cols at head", async function () {
-                    // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new Measure(3, 32),
-                        new Measure(4, 64)
-                    ])
+function bodyColInfo(col: number) {
+    const table = getTable()
+    return bodyColInfoCore(col, table, table.body)
+}
+function stagingRowInfo(col: number) {
+    const table = getTable()
+    return bodyColInfoCore(col, table, table.staging)
+}
+function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
+    if (col >= table.adapter.colCount) {
+        throw Error(`Row ${col} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
+    }
+    const firstCellOfCol = body.children[col] as HTMLElement
+    const x = px2float(firstCellOfCol.style.left)
+    const y = px2float(firstCellOfCol.style.top)
+    const w = px2float(firstCellOfCol.style.width)
+    const h = px2float(firstCellOfCol.style.height)
 
-                    // test the model!!!
-
-                    const table = getTable()
-
-                    // expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                    // expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
-
-                    // into
-                    // 3,0  4,0
-                    // 3,1  4,1
-
-                    // insert
-                    // 1,0     3,0 4,0    0
-                    //         3,1 4,1
-
-                    // 1,0     3,0 4,0    3
-                    // 1,1     3,1 4,1
-
-                    // 1,0 2,0 3,0 4,0    1
-                    // 1,1     4,1 4,1
-
-                    // 1,0 2,0 3,0 4,0    5
-                    // 1,1 2,1 4,1 4,1
-
-                    // idxOut: 0 
-
-                    // 1,0  2,0  3,0  4,0
-                    // 1,1  2,1  3,0  4,0
-
-                    const ins = flatMapColumns([
-                        new Measure(1, 48).toCells(),
-                        new Measure(2, 72).toCells()
-                    ])
-                    console.log(ins)
-              
-                    // // ...at the head insert two rows
-                    model.insertColumn(0, ins)
-                    console.log(model)
-
-                    // // ...and ask for the new cells to be measured
-                    // const animation = InsertRowAnimation.current!
-                    // animation.prepareCellsToBeMeasured()
-                    // await sleep()
-
-                    // // THEN then two cells have been measured.
-                    // expect(table.measure.children.length).to.equal(4)
-
-                    // // WHEN ask for the new rows to be placed
-                    // animation.arrangeNewRowsInStaging()
-
-                    // // THEN they have been placed in staging
-                    // expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,48`)
-                    // expect(stagingRowInfo(1)).to.equal(`#2:0,49,80,72`)
-
-                    // // ...and are hidden by a mask
-                    // const insertHeight = 48 + 72 + 4 - 1
-                    // expect(maskY()).to.equal(0)
-                    // expect(maskH()).to.equal(insertHeight)
-
-                    // // WHEN we split the table for the animation
-                    // animation.splitHorizontal()
-                    // expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                    // expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
-                    // // THEN splitbody
-                    // expect(splitBodyY()).to.equal(0)
-                    // expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
-
-                    // // WHEN we animate
-                    // animation.animationFrame(1)
-
-                    // expect(maskY()).to.equal(insertHeight - 1)
-                    // expect(splitBodyY()).to.equal(insertHeight - 1)
-
-                    // animation.joinHorizontal()
-                    // expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
-                    // expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
-                    // expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
-                    // expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
-                    // expect(table.body.children).to.have.lengthOf(8)
-                })
-            })
-        })
-    })
-})
-function getTable() {
-    return new TableFriend(
-        document.querySelector("tx-table") as Table
-    )
+    // for (let i = 1; i < table.adapter.colCount; ++i) {
+    //     const otherCellInRow = body.children[indexOf1stCellInCol + i] as HTMLElement
+    //     expect(otherCellInRow.style.top).to.equal(firstCellOfRow.style.top)
+    //     expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
+    // }
+    let id = firstCellOfCol.innerText
+    id = id.substring(0, id.indexOf('C'))
+    return `${id}:${x},${y},${w},${h}`
 }

@@ -22,6 +22,7 @@ import { Table, px2int, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
 
 export class InsertColumnAnimation extends TableAnimation {
+    static current?: InsertColumnAnimation
     event: TableEvent
     totalWidth!: number
     done = false;
@@ -29,55 +30,32 @@ export class InsertColumnAnimation extends TableAnimation {
     rowCount: number
 
     constructor(table: Table, event: TableEvent) {
+        console.log(`InsertColumnAnimation::constructor()`)
         super(table)
         this.event = event
         this.joinVertical = this.joinVertical.bind(this)
         this.colCount = this.adapter.colCount
         this.rowCount = this.adapter.rowCount
+        InsertColumnAnimation.current = this
     }
 
-    prepare(): void {}
-    firstFrame(): void {}
-    animationFrame(value: number): void {}
-    lastFrame(): void {}
-
-    override run() {
-        this.prepareCells()
-        setTimeout(() => {
-            // FIXME: if stop is called before this is executed (unlikely), stop will fail
-            this.arrangeMeasuredColumnsInGrid()
-            // console.log(`split at column index=${this.event.index}, size=${this.event.size}`)
-            this.splitVertical(this.event.index + this.event.size)
-            this.splitBody.style.transitionProperty = "transform"
-            this.splitBody.style.transitionDuration = Table.transitionDuration
-            this.splitBody.ontransitionend = this.joinVertical
-            this.splitBody.ontransitioncancel = this.joinVertical
-            setTimeout(() => {
-                this.splitBody.style.transform = `translateX(${this.totalWidth}px)` // TODO: make this an animation
-            }, Table.renderDelay)
-        })
+    prepare(): void {
+        console.log(`InsertColumnAnimation::prepare()`)
+        this.prepareCellsToBeMeasured()
+    }
+    firstFrame(): void {
+        console.log(`InsertColumnAnimation::firstFrame()`)
+        this.arrangeNewColumnsInStaging()
+        this.splitVertical()
+    }
+    animationFrame(value: number): void {
+        console.log(`InsertColumnAnimation::animationFrame()`)
+    }
+    lastFrame(): void {
+        console.log(`InsertColumnAnimation::lastFrame()`)
     }
 
-    override stop() {
-        this.joinVertical()
-        this.clearAnimation()
-    }
-
-    splitVertical(splitColumn: number, extra: number = 0) {
-        this.table.splitVertical(splitColumn, extra)
-    }
-
-    joinVertical() {
-        if (!this.done) {
-            this.done = true
-            this.table.joinVertical(this.event.index + this.event.size, this.totalWidth, 0, this.colCount, this.rowCount)
-            if (this.table.animationDone) {
-                this.table.animationDone()
-            }
-        }
-    }
-
-    prepareCells() {
+    prepareCellsToBeMeasured() {
         for (let row = 0; row < this.rowCount; ++row) {
             for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
                 const cell = span()
@@ -87,8 +65,7 @@ export class InsertColumnAnimation extends TableAnimation {
         }
     }
 
-    arrangeMeasuredColumnsInGrid() {
-
+    public arrangeNewColumnsInStaging() {
         // x := x position of new column
         let idx = this.event.index
         let x
@@ -122,28 +99,28 @@ export class InsertColumnAnimation extends TableAnimation {
             }
             columnWidth = Math.ceil(columnWidth - 2)
 
-            if (this.colHeads) {
-                const newColHead = span(this.adapter.getColumnHead(col)!)
-                newColHead.className = "head"
-                newColHead.style.left = `${x}px`
-                newColHead.style.top = "0px"
-                newColHead.style.width = `${columnWidth - 5}px`
-                newColHead.style.height = `${px2int(this.colHeads.style.height)-2}px`
-                this.colHeads.insertBefore(newColHead, this.colHeads.children[col])
+            // if (this.colHeads) {
+            //     const newColHead = span(this.adapter.getColumnHead(col)!)
+            //     newColHead.className = "head"
+            //     newColHead.style.left = `${x}px`
+            //     newColHead.style.top = "0px"
+            //     newColHead.style.width = `${columnWidth - 5}px`
+            //     newColHead.style.height = `${px2int(this.colHeads.style.height)-2}px`
+            //     this.colHeads.insertBefore(newColHead, this.colHeads.children[col])
 
-                const newRowHandle = this.table.createHandle(col, x + columnWidth - 3, 0, 5, px2float(this.colHeads.style.height))
-                this.colResizeHandles.insertBefore(newRowHandle, this.colResizeHandles.children[col])
+            //     const newRowHandle = this.table.createHandle(col, x + columnWidth - 3, 0, 5, px2float(this.colHeads.style.height))
+            //     this.colResizeHandles.insertBefore(newRowHandle, this.colResizeHandles.children[col])
 
-                // adjust subsequent row heads and handles
-                for(let subsequentCol=col+1; subsequentCol<this.colCount; ++subsequentCol) {
-                    this.colHeads.children[subsequentCol].replaceChildren(
-                        // span(
-                            this.adapter.getColumnHead(subsequentCol)!
-                        // )
-                    );
-                    (this.colResizeHandles.children[subsequentCol] as HTMLSpanElement).dataset["idx"] = `${subsequentCol}`
-                }
-            }
+            //     // adjust subsequent row heads and handles
+            //     for(let subsequentCol=col+1; subsequentCol<this.colCount; ++subsequentCol) {
+            //         this.colHeads.children[subsequentCol].replaceChildren(
+            //             // span(
+            //                 this.adapter.getColumnHead(subsequentCol)!
+            //             // )
+            //         );
+            //         (this.colResizeHandles.children[subsequentCol] as HTMLSpanElement).dataset["idx"] = `${subsequentCol}`
+            //     }
+            // }
 
             // place all cells in column $col and move them from this.measure to this.body
             for (let row = 0; row < this.rowCount; ++row) {
@@ -153,17 +130,53 @@ export class InsertColumnAnimation extends TableAnimation {
                 child.style.width = `${columnWidth - 5}px`
                 child.style.height = (this.body.children[row * this.colCount] as HTMLSpanElement).style.height // FIXME: hack
                 let beforeChild
-                if (idx < this.body.children.length) {
-                    beforeChild = this.body.children[idx] as HTMLSpanElement
+                if (idx < this.staging.children.length) {
+                    beforeChild = this.staging.children[idx] as HTMLSpanElement
                 } else {
                     beforeChild = null
                 }
-                this.body.insertBefore(child, beforeChild)
+                this.staging.insertBefore(child, beforeChild)
+                // this.staging.appendChild(child)
                 idx += this.colCount
             }
             x += columnWidth
             totalWidth += columnWidth
         }
         this.totalWidth = totalWidth
+    }
+
+    // override run() {
+        // setTimeout(() => {
+        //     // FIXME: if stop is called before this is executed (unlikely), stop will fail
+        //     this.arrangeMeasuredColumnsInGrid()
+        //     // console.log(`split at column index=${this.event.index}, size=${this.event.size}`)
+        //     this.splitVertical(this.event.index + this.event.size)
+        //     this.splitBody.style.transitionProperty = "transform"
+        //     this.splitBody.style.transitionDuration = Table.transitionDuration
+        //     this.splitBody.ontransitionend = this.joinVertical
+        //     this.splitBody.ontransitioncancel = this.joinVertical
+        //     setTimeout(() => {
+        //         this.splitBody.style.transform = `translateX(${this.totalWidth}px)` // TODO: make this an animation
+        //     }, Table.renderDelay)
+        // })
+    // }
+
+    // override stop() {
+    //     // this.joinVertical()
+    //     // this.clearAnimation()
+    // }
+
+    splitVertical() {
+        // this.table.splitVertical(splitColumn, extra)
+    }
+
+    joinVertical() {
+        if (!this.done) {
+            this.done = true
+            this.table.joinVertical(this.event.index + this.event.size, this.totalWidth, 0, this.colCount, this.rowCount)
+            if (this.table.animationDone) {
+                this.table.animationDone()
+            }
+        }
     }
 }
