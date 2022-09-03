@@ -42,41 +42,63 @@ describe("table", function () {
                     ])
 
                     const table = getTable()
-                    console.log(bodyColInfo(1))
 
-                    expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
-                    expect(bodyColInfo(1)).to.equal(`#4:37,0,64,18`)
+                    // expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
+                    // expect(bodyColInfo(1)).to.equal(`#4:37,0,64,18`)
               
-                    // ...at the head insert two columns
+                    // // ...at the head insert two columns
                     model.insertColumn(0, flatMapColumns([
                         new Measure(1, 48).toCells(),
                         new Measure(2, 72).toCells()
                     ]))
+                    model.asArray().forEach( (value, index) => console.log(`model[${index}] = id(col):${value.id}, idx(row)=${value.idx}, size=${value.size}`))
+                    
+                    // CHECKPOINT: MODEL IS CORRECT
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertColumnAnimation.current!
                     animation.prepareCellsToBeMeasured()
                     await sleep()
 
-                    // THEN then two columns have been measured.
+                    // // THEN then two columns have been measured.
                     expect(table.measure.children.length).to.equal(4)
+                    for(let i=0; i<table.measure.children.length; ++i) {
+                        const cell = table.measure.children[i] as HTMLSpanElement
+                        console.log(`measure[${i}] = ${cell.innerHTML}, ${cell.style.width}`)
+                    }
 
-                    // WHEN ask for the new columns to be placed
+                    // the new columns are layed out per column
+                    // 1st column
+                    expect(table.measure.children[0].innerHTML).to.equal("#1R0")
+                    expect(table.measure.children[1].innerHTML).to.equal("#1R1")
+                    // 2nd column
+                    expect(table.measure.children[2].innerHTML).to.equal("#2R0")
+                    expect(table.measure.children[3].innerHTML).to.equal("#2R1")
+
+                    // // WHEN ask for the new columns to be placed
                     animation.arrangeNewColumnsInStaging()
 
-                    // // THEN they have been placed in staging
-                    console.log(stagingRowInfo(0))
-                    console.log(stagingRowInfo(1))
+                    // 1st column
+                    expect(table.staging.children[0].innerHTML).to.equal("#1R0")
+                    expect(table.staging.children[1].innerHTML).to.equal("#1R1")
+                    // 2nd column
+                    expect(table.staging.children[2].innerHTML).to.equal("#2R0")
+                    expect(table.staging.children[3].innerHTML).to.equal("#2R1")
 
-                    // expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,48`)
-                    // expect(stagingRowInfo(1)).to.equal(`#2:0,49,80,72`)
+                    // THEN they have been placed in staging
+
+                    console.log(stagingColInfo(0))
+                    console.log(stagingColInfo(1))
+
+                    expect(stagingColInfo(0)).to.equal(`#1:0,0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#2:52,0,72,18`)
 
                     // // ...and are hidden by a mask
                     // const insertHeight = 48 + 72 + 4 - 1
                     // expect(maskY()).to.equal(0)
                     // expect(maskH()).to.equal(insertHeight)
 
-                    // // WHEN we split the table for the animation
+                    // WHEN we split the table for the animation
                     // animation.splitHorizontal()
                     // expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
                     // expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
@@ -122,7 +144,8 @@ class Cell {
         this.size = size
     }
     valueOf(): string {
-        return `#${this.id}C${this.idx}`
+        // return `#${this.id}C${this.idx}`
+        return `#${this.id}R${this.idx}`
     }
 }
 
@@ -214,11 +237,12 @@ class MeasureAdapter extends GridAdapter<MeasureModel> {
                 } else {
                     this.setCellSize(cell, data.size)
                 }
+                console.log(`MeasureAdapter.showCell(${pos.col}, ${pos.row}) => size ${cell.style.width} x ${cell.style.height}`)
                 break
             case 1:
-                if (data.size !== undefined) {
-                    this.setCellSize(cell, data.size!!)
-                }
+                // if (data.size !== undefined) {
+                //     this.setCellSize(cell, data.size!!)
+                // }
                 break
         }
         return undefined // ??? why do we return something ???
@@ -265,9 +289,9 @@ function bodyColInfo(col: number) {
     const table = getTable()
     return bodyColInfoCore(col, table, table.body)
 }
-function stagingRowInfo(col: number) {
+function stagingColInfo(col: number) {
     const table = getTable()
-    return bodyColInfoCore(col, table, table.staging)
+    return preparationColInfoCore(col, table, table.staging)
 }
 function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
     if (col >= table.adapter.colCount) {
@@ -286,5 +310,33 @@ function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) 
     // }
     let id = firstCellOfCol.innerText
     id = id.substring(0, id.indexOf('C'))
+    return `${id}:${x},${y},${w},${h}`
+}
+
+function preparationColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
+
+    const indexRow0 = col * table.adapter.rowCount
+    const indexRow1 = indexRow0 + 1
+
+    if (indexRow1 >= body.children.length) {
+        throw Error(`Column ${col} does not exist in measure/staging. There are only ${body.children.length / table.adapter.colCount} columns.`)
+    }
+
+
+    const firstCellOfCol = body.children[indexRow0] as HTMLElement
+    const x = px2float(firstCellOfCol.style.left)
+    const y = px2float(firstCellOfCol.style.top)
+    const w = px2float(firstCellOfCol.style.width)
+    const h = px2float(firstCellOfCol.style.height)
+
+    console.log(`preparationColInfoCore(${col}): rowCount=${table.adapter.rowCount}, indexRow0=${indexRow0}, innerText=${firstCellOfCol.innerText}`)
+
+    // for (let i = 1; i < table.adapter.colCount; ++i) {
+    //     const otherCellInRow = body.children[indexOf1stCellInCol + i] as HTMLElement
+    //     expect(otherCellInRow.style.top).to.equal(firstCellOfRow.style.top)
+    //     expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
+    // }
+    let id = firstCellOfCol.innerText
+    id = id.substring(0, id.indexOf('R'))
     return `${id}:${x},${y},${w},${h}`
 }
