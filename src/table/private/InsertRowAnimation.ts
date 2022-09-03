@@ -199,25 +199,26 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     joinHorizontal() {
-        if (!this.done) {
-            this.done = true
+        if (this.done) {
+            return
+        }
+        this.done = true
 
-            this.staging.removeChild(this.mask)
-            this.body.removeChild(this.splitBody)
-            while (this.staging.children.length > 0) {
-                this.body.appendChild(this.staging.children[0])
+        this.staging.removeChild(this.mask)
+        this.body.removeChild(this.splitBody)
+        while (this.staging.children.length > 0) {
+            this.body.appendChild(this.staging.children[0])
+        }
+        if (this.splitBody.children.length > 0) {
+            let top = px2float(this.splitBody.style.top)
+            while (this.splitBody.children.length > 0) {
+                const cell = this.splitBody.children[0] as HTMLSpanElement
+                cell.style.top = `${px2float(cell.style.top) + top}px`
+                this.body.appendChild(cell)
             }
-            if (this.splitBody.children.length > 0) {
-                let top = px2float(this.splitBody.style.top)
-                while (this.splitBody.children.length > 0) {
-                    const cell = this.splitBody.children[0] as HTMLSpanElement
-                    cell.style.top = `${px2float(cell.style.top) + top}px`
-                    this.body.appendChild(cell)
-                }
-            }
-            if (this.table.animationDone) {
-                this.table.animationDone()
-            }
+        }
+        if (this.table.animationDone) {
+            this.table.animationDone()
         }
     }
 }

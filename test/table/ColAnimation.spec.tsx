@@ -43,15 +43,19 @@ describe("table", function () {
 
                     const table = getTable()
 
-                    // expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
-                    // expect(bodyColInfo(1)).to.equal(`#4:37,0,64,18`)
+                    expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:37,0,64,18`)
               
+                    // Table.transitionDuration = "500ms"
+                    // Animator.halt = false
+
                     // // ...at the head insert two columns
                     model.insertColumn(0, flatMapColumns([
                         new Measure(1, 48).toCells(),
                         new Measure(2, 72).toCells()
                     ]))
-                    model.asArray().forEach( (value, index) => console.log(`model[${index}] = id(col):${value.id}, idx(row)=${value.idx}, size=${value.size}`))
+                    // return
+                    // model.asArray().forEach( (value, index) => console.log(`model[${index}] = id(col):${value.id}, idx(row)=${value.idx}, size=${value.size}`))
                     
                     // CHECKPOINT: MODEL IS CORRECT
 
@@ -99,25 +103,32 @@ describe("table", function () {
                     // expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    // animation.splitHorizontal()
-                    // expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                    // expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
-                    // // THEN splitbody
+                    animation.splitVertical()
+                    expect(splitColInfo(0)).to.equal(`#3:0,0,32,18`)
+                    expect(splitColInfo(1)).to.equal(`#4:37,0,64,18`)
+                    // THEN splitbody
+                    // expect(splitBodyX()).to.equal(0)
+                    // expect(splitBodyW()).to.equal(32 + 64 + 4 - 1)
                     // expect(splitBodyY()).to.equal(0)
                     // expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
 
-                    // // WHEN we animate
-                    // animation.animationFrame(1)
+                    // WHEN we animate
+                    animation.animationFrame(1)
 
                     // expect(maskY()).to.equal(insertHeight - 1)
                     // expect(splitBodyY()).to.equal(insertHeight - 1)
 
-                    // animation.joinHorizontal()
-                    // expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
+                    animation.lastFrame()
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:52,0,72,18`)
+                    expect(bodyColInfo(2)).to.equal(`#3:128,0,32,18`)
+                    expect(bodyColInfo(3)).to.equal(`#4:164,0,64,18`)
+
+                    // expect(bodyColInfo(0)).to.equal(`#1:0,0,80,48`)
                     // expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
                     // expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
                     // expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
-                    // expect(table.body.children).to.have.lengthOf(8)
+                    expect(table.body.children).to.have.lengthOf(8)
                 })
             })
         })
@@ -198,6 +209,12 @@ class MeasureAdapter extends GridAdapter<MeasureModel> {
     constructor(model: MeasureModel) {
         super(model)
         this.config = model.config
+    }
+    override getRowHead(row: number): Node | undefined {
+        return undefined
+    }
+    override getColumnHead(col: number): Node | undefined {
+        return undefined
     }
     getColumnHeads() {
         // return ["id", "height"]
@@ -289,13 +306,17 @@ function bodyColInfo(col: number) {
     const table = getTable()
     return bodyColInfoCore(col, table, table.body)
 }
+function splitColInfo(col: number) {
+    const table = getTable()
+    return bodyColInfoCore(col, table, table.splitBody)
+}
 function stagingColInfo(col: number) {
     const table = getTable()
     return preparationColInfoCore(col, table, table.staging)
 }
 function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
-    if (col >= table.adapter.colCount) {
-        throw Error(`Row ${col} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
+    if (col >= table.adapter.model.colCount) {
+        throw Error(`Column ${col} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
     }
     const firstCellOfCol = body.children[col] as HTMLElement
     const x = px2float(firstCellOfCol.style.left)
@@ -309,7 +330,7 @@ function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) 
     //     expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
     // }
     let id = firstCellOfCol.innerText
-    id = id.substring(0, id.indexOf('C'))
+    id = id.substring(0, id.indexOf('R'))
     return `${id}:${x},${y},${w},${h}`
 }
 
@@ -322,14 +343,13 @@ function preparationColInfoCore(col: number, table: TableFriend, body: HTMLDivEl
         throw Error(`Column ${col} does not exist in measure/staging. There are only ${body.children.length / table.adapter.colCount} columns.`)
     }
 
-
     const firstCellOfCol = body.children[indexRow0] as HTMLElement
     const x = px2float(firstCellOfCol.style.left)
     const y = px2float(firstCellOfCol.style.top)
     const w = px2float(firstCellOfCol.style.width)
     const h = px2float(firstCellOfCol.style.height)
 
-    console.log(`preparationColInfoCore(${col}): rowCount=${table.adapter.rowCount}, indexRow0=${indexRow0}, innerText=${firstCellOfCol.innerText}`)
+    // console.log(`preparationColInfoCore(${col}): rowCount=${table.adapter.rowCount}, indexRow0=${indexRow0}, innerText=${firstCellOfCol.innerText}`)
 
     // for (let i = 1; i < table.adapter.colCount; ++i) {
     //     const otherCellInRow = body.children[indexOf1stCellInCol + i] as HTMLElement

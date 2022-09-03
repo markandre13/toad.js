@@ -46,9 +46,18 @@ export class InsertColumnAnimation extends TableAnimation {
         this.arrangeNewColumnsInStaging()
         this.splitVertical()
     }
-    animationFrame(value: number): void {
+    animationFrame(n: number): void {
+        // const y = this.animationTop + n * this.animationHeight
+        const x = n * this.totalWidth // TODO: animationLeft is missing!!!
+        // this.splitBody.style.top = `${y}px`
+        // this.mask.style.top = `${y}px`
+        this.splitBody.style.left = `${x}px`
     }
     lastFrame(): void {
+        // const y = this.animationTop + this.animationHeight
+        // this.splitBody.style.top = `${y}px`
+        // this.mask.style.top = `${y}px`
+        this.joinVertical()
     }
 
     prepareCellsToBeMeasured() {
@@ -165,38 +174,57 @@ export class InsertColumnAnimation extends TableAnimation {
         this.totalWidth = totalWidth
     }
 
-    // override run() {
-    // setTimeout(() => {
-    //     // FIXME: if stop is called before this is executed (unlikely), stop will fail
-    //     this.arrangeMeasuredColumnsInGrid()
-    //     // console.log(`split at column index=${this.event.index}, size=${this.event.size}`)
-    //     this.splitVertical(this.event.index + this.event.size)
-    //     this.splitBody.style.transitionProperty = "transform"
-    //     this.splitBody.style.transitionDuration = Table.transitionDuration
-    //     this.splitBody.ontransitionend = this.joinVertical
-    //     this.splitBody.ontransitioncancel = this.joinVertical
-    //     setTimeout(() => {
-    //         this.splitBody.style.transform = `translateX(${this.totalWidth}px)` // TODO: make this an animation
-    //     }, Table.renderDelay)
-    // })
-    // }
-
-    // override stop() {
-    //     // this.joinVertical()
-    //     // this.clearAnimation()
-    // }
-
     splitVertical() {
-        // this.table.splitVertical(splitColumn, extra)
+        this.table.splitVertical(0, 0)
     }
 
     joinVertical() {
-        if (!this.done) {
-            this.done = true
-            this.table.joinVertical(this.event.index + this.event.size, this.totalWidth, 0, this.colCount, this.rowCount)
-            if (this.table.animationDone) {
-                this.table.animationDone()
+        if (this.done) {
+            return
+        }
+        this.done = true
+
+        // this.staging.removeChild(this.mask)
+        this.body.removeChild(this.splitBody)
+
+        const totalWidth = this.adapter.model.colCount
+        const bodyWidth = this.event.index
+        const stagingWidth = this.event.size
+        const splitWidth = totalWidth - stagingWidth - this.event.index
+
+        // insert staging (cells are per column)
+        for (let col = 0; col < stagingWidth; ++col) {
+            for (let row = 0; row < this.rowCount; ++row) {
+                const cell = this.staging.children[0]
+                const idx = row * (bodyWidth + stagingWidth) + bodyWidth + col
+                this.bodyInsertAt(cell, idx)
             }
         }
+
+        const left = this.totalWidth
+
+        // insert splitBody (whose cells are per row)
+        for (let row = 0; row < this.rowCount; ++row) {
+            for (let col = 0; col < splitWidth; ++col) {
+                const cell = this.splitBody.children[0] as HTMLSpanElement
+                cell.style.left = `${px2float(cell.style.left) + left}px`
+                const idx = row * totalWidth + bodyWidth + stagingWidth + col
+                this.bodyInsertAt(cell, idx)
+            }
+        }
+
+        if (this.table.animationDone) {
+            this.table.animationDone()
+        }
+    }
+
+    bodyInsertAt(node: Element, idx: number) {
+        let beforeChild
+        if (idx < this.body.children.length) {
+            beforeChild = this.body.children[idx] as HTMLSpanElement
+        } else {
+            beforeChild = null
+        }
+        this.body.insertBefore(node, beforeChild)
     }
 }
