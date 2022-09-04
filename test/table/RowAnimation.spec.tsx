@@ -12,12 +12,16 @@ import { sleep, px2float } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { TableFriend } from '@toad/table/private/TableFriend'
+import { AnimationBase } from '@toad/util/animation'
 
 describe("table", function () {
     beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
-        Table.transitionDuration = "1ms"
+        Table.transitionDuration = "1ms" // OBSOLETE
+        Table.maskColor = `rgba(0,0,128,0.3)`
+        Table.splitColor = `rgba(255,128,0,0.5)`
+        AnimationBase.animationFrameCount = 1
         Animator.halt = true
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
@@ -80,7 +84,7 @@ describe("table", function () {
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
-                it.only("two rows at head", async function () {
+                it("two rows at head", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepare([
                         new MeasureRow(3, 32),

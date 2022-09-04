@@ -73,7 +73,7 @@ export class InsertRowAnimation extends TableAnimation {
     public arrangeNewRowsInStaging() {
         const overlap = this.adapter.config.seamless ? 0 : 1
 
-        // calculate top of the 1st cell
+        // calculate top of the 1st cell to be inserted
         const splitRow = this.event.index
         let idx = splitRow * this.adapter!.colCount
         let top = 0
