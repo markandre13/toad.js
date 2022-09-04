@@ -42,9 +42,6 @@ describe("table", function () {
 
                     const table = getTable()
 
-                    // expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
-                    // expect(bodyColInfo(1)).to.equal(`#2:37,0,64,18`)
-
                     // ... and insert two columns in between
 
                     // AnimationBase.animationFrameCount = 6000
@@ -63,7 +60,6 @@ describe("table", function () {
                     const animation = InsertColumnAnimation.current!
                     animation.prepareCellsToBeMeasured()
                     await sleep()
-                    // return
 
                     // THEN then four cells have been measured.
                     expect(table.measure.children.length).to.equal(4)
@@ -72,39 +68,37 @@ describe("table", function () {
                     animation.arrangeNewColumnsInStaging()
 
                     // 1st column
-                    expect(table.staging.children[0].innerHTML).to.equal("#3R0")
-                    expect(table.staging.children[1].innerHTML).to.equal("#3R1")
+                    expect(table.staging.children[0].innerHTML).to.equal("#1R0")
+                    expect(table.staging.children[1].innerHTML).to.equal("#1R1")
                     // 2nd column
-                    expect(table.staging.children[2].innerHTML).to.equal("#4R0")
-                    expect(table.staging.children[3].innerHTML).to.equal("#4R1")
+                    expect(table.staging.children[2].innerHTML).to.equal("#2R0")
+                    expect(table.staging.children[3].innerHTML).to.equal("#2R1")
 
                     // THEN they have been placed in staging
-                    expect(stagingColInfo(0)).to.equal(`#3:${32 + 5 + 64 + 5},0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#4:${32 + 5 + 64 + 5 + 48 + 5 - 1},0,72,18`) // FIXME -1???
+                    expect(stagingColInfo(0)).to.equal(`#1:${0},0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#2:${48 + 5 -1},0,72,18`) // FIXME -1???
 
                     // ...and are hidden by a mask
-                    expect(maskX()).to.equal(32 + 5 + 64 + 5)
+                    expect(maskX()).to.equal(0)
                     expect(maskW()).to.equal(48 + 5 + 72 + 4 - 1)
 
                     // WHEN we split the table for the animation
                     animation.splitVertical()
 
                     // THEN splitbody
-                    expect(splitBodyX()).to.equal(32 + 5 + 64 + 5)
+                    expect(splitBodyX()).to.equal(0)
                     expect(splitBodyW()).to.equal(1)
 
                     // WHEN we animate
                     animation.animationFrame(1)
-                    expect(maskX()).to.equal(32 + 5 + 48 + 5 + 72 + 5 + 64 + 5 - 2) // FIXME -2?
-                    expect(splitBodyX()).to.equal(32 + 5 + 48 + 5 + 72 + 5 + 64 + 5 - 2) // FIXME -2??
+                    expect(maskX()).to.equal(48 + 5 + 72 + 5 - 2) // FIXME -2?
+                    expect(splitBodyX()).to.equal(48 + 5 + 72 + 5 - 2) // FIXME -2??
 
                     animation.lastFrame()
-                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
-                    expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,64,18`)
-                    expect(bodyColInfo(2)).to.equal(`#3:${32 + 5 + 64 + 5},0,48,18`)
-                    expect(bodyColInfo(3)).to.equal(`#4:${32 + 5 + 64 + 5 + 48 + 5 - 1},0,72,18`) // FIXME -1???
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${48 + 5 - 1},0,72,18`) // FIXME -1???
 
-                    expect(table.body.children).to.have.lengthOf(8)
+                    expect(table.body.children).to.have.lengthOf(4)
                 })
                 it("two cols at head", async function () {
                     // WHEN we have a table with two rows 

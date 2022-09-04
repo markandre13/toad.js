@@ -73,10 +73,10 @@ export class InsertRowAnimation extends TableAnimation {
     public arrangeNewRowsInStaging() {
         const overlap = this.adapter.config.seamless ? 0 : 1
 
-        // calculate top of the 1st cell to be inserted
+        // top := y position of the 1st cell to be inserted
+        let top = 0
         const splitRow = this.event.index
         let idx = splitRow * this.adapter!.colCount
-        let top = 0
         if (this.body.children.length !== 0) {
             if (idx < this.body.children.length) {
                 let cell = this.body.children[idx] as HTMLSpanElement
@@ -88,15 +88,13 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
-        // measure row
-        this.totalHeight = 0
+        // colWidth[] := width of existing columns || minCellWidth
         let colWidth = new Array<number>(this.adapter.colCount)
         if (this.body.children.length !== 0) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.body.children[col] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
                 colWidth[col] = bounds.width
-                // console.log(`  existing colWidth[${col}]: bounds.width=${bounds.width}, cell.style.width=${cell.style.width}`)
                 if (this.adapter.config.seamless) {
                     colWidth[col] += 2
                 }
@@ -104,7 +102,10 @@ export class InsertRowAnimation extends TableAnimation {
         } else {
             colWidth.fill(this.table.minCellWidth)
         }
+
+        // rowHeight[] := height of each row to be inserted && totalHeight := height of all rows to be inserted
         let rowHeight = new Array<number>(this.event.size)
+        this.totalHeight = 0
         rowHeight.fill(this.table.minCellHeight)
         idx = 0
         for (let row = 0; row < this.event.size; ++row) {
@@ -123,6 +124,8 @@ export class InsertRowAnimation extends TableAnimation {
             }
             this.totalHeight += rowHeight[row] - overlap
         }
+
+        // adust left & width of all cells
         if (this.adapter.config.expandColumn) {
             idx = 0
             let x = 0
@@ -131,6 +134,7 @@ export class InsertRowAnimation extends TableAnimation {
                 const cell = this.body.children[idx] as HTMLSpanElement
                 cell.style.left = `${x}px`
                 cell.style.width = `${colWidth[col] - this.table.WIDTH_ADJUST}px`
+
                 x += colWidth[col] - overlap
                 if (this.adapter.config.seamless) {
                     x -= 2

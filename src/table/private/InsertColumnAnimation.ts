@@ -72,6 +72,7 @@ export class InsertColumnAnimation extends TableAnimation {
 
     public arrangeNewColumnsInStaging() {
         // console.log(`arrangeNewColumnsInStaging <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
+        const overlap = this.adapter.config.seamless ? 0 : 1
         const previousColCount = this.colCount - this.event.size
         // left := x position of new column
         let idx = this.event.index
@@ -93,6 +94,22 @@ export class InsertColumnAnimation extends TableAnimation {
         }
         // console.log(`LEFT = ${left}`)
         this.animationLeft = left
+
+        // we need the height of all columns
+        // rowHeight[] := width of existing columns || minCellWidth
+        let rowHeight = new Array<number>(this.adapter.rowCount)
+        if (this.body.children.length !== 0) {
+            for (let row = 0; row < this.adapter.rowCount; ++row) {
+                const cell = this.body.children[row * previousColCount] as HTMLSpanElement
+                const bounds = cell.getBoundingClientRect()
+                rowHeight[row] = bounds.height
+                if (this.adapter.config.seamless) {
+                    rowHeight[row] += 2
+                }
+            }
+        } else {
+            rowHeight.fill(this.table.minCellHeight)
+        }
 
         // for (let i = 0; i < this.measure.children.length; ++i) {
         //     const child = this.measure.children[i]
@@ -144,13 +161,18 @@ export class InsertColumnAnimation extends TableAnimation {
             // place all cells in column $col and move them from this.measure to this.staging
             
             for (let row = 0; row < this.rowCount; ++row) {
+                let y = 0
                 // console.log(`    pos=${col} x ${row}, measure.length=${this.measure.children.length}, body.length=${this.body.children.length}, staging.length=${this.staging.children.length}`)
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
-                child.style.top = (this.body.children[row * previousColCount] as HTMLSpanElement).style.top // FIXME: hack
-                child.style.width = `${columnWidth - 4}px`
-                child.style.height = (this.body.children[row * previousColCount] as HTMLSpanElement).style.height // FIXME: hack
+                child.style.top = `${y}px`
+                child.style.width = `${columnWidth - 4}px` // TODO this.table.WIDTH_ADJUST
+                child.style.height = `${rowHeight[row] - this.table.HEIGHT_ADJUST}px`
                 this.staging.appendChild(child)
+                y += rowHeight[row] - overlap
+                if (this.adapter.config.seamless) {
+                    y -= 2
+                }
             }
             x += columnWidth
             totalWidth += columnWidth
