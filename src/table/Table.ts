@@ -66,8 +66,8 @@ interface TableProps extends HTMLElementProps {
 
 export class Table extends View {
 
-    static maskColor = `#1e1e1e` // `rgba(0,0,128,0.3)`
-    static splitColor = `#1e1e1e` // `rgba(255,128,0,0.5)`
+    static maskColor = `#1e1e1e`
+    static splitColor = `#1e1e1e`
 
     // we can not calculate the layout when the table is not visible, hence we track the
     // visibility
@@ -969,6 +969,90 @@ export class Table extends View {
         this.handle = undefined
     }
 
+    // move all rows in body into splitBody, starting with row splitRow
+    // splitRow refers to the actual display, not to the model
+    splitVerticalNew(splitCol: number) {
+        // console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
+        const overlap = this.adapter!.config.seamless ? 0 : 1
+        this.splitBody = div()
+        this.splitBody.className = "splitBody"
+        this.splitBody.style.top = `0`
+        this.splitBody.style.bottom = `0`
+        this.splitBody.style.backgroundColor = Table.splitColor
+        if (this.body.children.length === 0) {
+            this.splitBody.style.left = `0px`
+            this.splitBody.style.width = `1px` // with 1px the split body will affect the scrollbars, with 0px it won't
+        } else {
+            console.log("THE REWORK IS ACTIVE")
+
+            // THE OLD SPLIT VERTICAL CODE
+            const bodyWidth = splitCol
+            const splitBodyColumns = this.adapter!.colCount - splitCol
+    
+            // if (this.splitHead !== undefined) {
+            //     for (let i = 0; i < splitBodyColumns; ++i) {
+            //         this.splitHead.appendChild(this.colHeads!.children[splitColumn])
+            //     }
+            //     // clone the filler
+            //     this.splitHead.appendChild(this.colHeads!.children[this.colHeads!.children.length - 1].cloneNode())
+            // }
+    
+            // move cells into splitBody and align them to the left
+            let idx = splitCol
+            let cell = this.body.children[idx] as HTMLSpanElement
+            const left = px2float(cell.style.left)
+            let width = 0
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
+                for (let col = 0; col < splitBodyColumns; ++col) {
+                    cell = this.body.children[idx] as HTMLSpanElement
+                    if (row === 0) {
+                        const b = cell.getBoundingClientRect()
+                        width += b.width - overlap
+                    }
+                    cell.style.left = `${px2float(cell.style.left) - left}px`
+                    this.splitBody.appendChild(cell)
+                }
+                idx += bodyWidth
+            }
+            this.splitBody.style.left = `${left}px`
+            this.splitBody.style.width = `${width}px`
+
+            // THE NEW SPLIT HORIZONTAL CODE
+            // const oldColumnCount = 2
+            // if (splitCol < oldColumnCount) {
+            //     const idx = splitCol
+            //     // console.log(`  split at existing column`)
+            //     let cell = this.body.children[idx] as HTMLSpanElement
+            //     let col = this.adapter!.colCount
+            //     let height = 0
+            //     const left = px2float(cell.style.left)
+                
+            //     while (idx < this.body.children.length) {
+            //         cell = this.body.children[idx] as HTMLSpanElement
+            //         --col
+            //         if (col === 0) {
+            //             const b = cell.getBoundingClientRect()
+            //             height += b.height - overlap
+            //             col = this.adapter!.colCount
+            //         }
+            //         cell.style.left = `${px2float(cell.style.left) - left}px`
+            //         this.splitBody.appendChild(cell)
+            //     }
+            //     height += overlap
+            //     this.splitBody.style.top = `${left}px`
+            //     this.splitBody.style.height = `${height}px`
+            // } else {
+            //     // split after last column
+            //     let cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+            //     let b = cell.getBoundingClientRect()
+            //     let top = px2float(cell.style.top) + b.height - overlap
+            //     this.splitBody.style.top = `${top}px`
+            //     this.splitBody.style.height = `1px`
+            // }
+        }
+        this.body.appendChild(this.splitBody)
+    }
+
     // create 'splitBody' and move the right half of 'body' into it to begin animation
     // TODO: split/join only the visible area
     splitVertical(splitColumn: number, extra: number = 0) {
@@ -1075,8 +1159,8 @@ export class Table extends View {
         // console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()
-        this.splitBody.style.transitionProperty = "transform"
-        this.splitBody.style.transitionDuration = Table.transitionDuration
+        this.splitBody.style.transitionProperty = "transform" // OBSOLETE
+        this.splitBody.style.transitionDuration = Table.transitionDuration // OBSOLETE
         this.splitBody.className = "splitBody"
         this.splitBody.style.left = `0`
         this.splitBody.style.right = `0`

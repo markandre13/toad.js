@@ -26,9 +26,11 @@ export class InsertColumnAnimation extends TableAnimation {
     static current?: InsertColumnAnimation
     event: TableEvent
     totalWidth!: number
+    animationLeft!: number
     done = false;
     colCount: number
     rowCount: number
+    mask!: HTMLSpanElement
 
     constructor(table: Table, event: TableEvent) {
         super(table)
@@ -47,16 +49,14 @@ export class InsertColumnAnimation extends TableAnimation {
         this.splitVertical()
     }
     animationFrame(n: number): void {
-        // const y = this.animationTop + n * this.animationHeight
-        const x = n * this.totalWidth // TODO: animationLeft is missing!!!
-        // this.splitBody.style.top = `${y}px`
-        // this.mask.style.top = `${y}px`
+        const x = this.animationLeft + n * this.totalWidth
+        this.mask.style.left = `${x}px`
         this.splitBody.style.left = `${x}px`
     }
     lastFrame(): void {
-        // const y = this.animationTop + this.animationHeight
-        // this.splitBody.style.top = `${y}px`
-        // this.mask.style.top = `${y}px`
+        const x = this.animationLeft + this.totalWidth
+        this.mask.style.left = `${x}px`
+        this.splitBody.style.left = `${x}px`
         this.joinVertical()
     }
 
@@ -112,6 +112,7 @@ export class InsertColumnAnimation extends TableAnimation {
                 // console.log(`COLUMN IS RIGHT: place new column at x = ${x}`)
             }
         }
+        let left = this.animationLeft = x
 
         for (let i = 0; i < this.measure.children.length; ++i) {
             const child = this.measure.children[i]
@@ -172,10 +173,22 @@ export class InsertColumnAnimation extends TableAnimation {
             totalWidth += columnWidth
         }
         this.totalWidth = totalWidth
+
+        this.mask = span()
+        this.mask.style.boxSizing = `content-box`
+        this.mask.style.left = `${left}px`
+        this.mask.style.width = `${this.totalWidth}px`
+        this.mask.style.top = `0`
+        this.mask.style.bottom = `0`
+        this.mask.style.border = 'none'
+        this.mask.style.transitionProperty = "transform"
+        this.mask.style.transitionDuration = Table.transitionDuration
+        this.mask.style.backgroundColor = Table.maskColor
+        this.staging.appendChild(this.mask)
     }
 
     splitVertical() {
-        this.table.splitVertical(0, 0)
+        this.table.splitVerticalNew(this.event.index)
     }
 
     joinVertical() {
@@ -184,7 +197,7 @@ export class InsertColumnAnimation extends TableAnimation {
         }
         this.done = true
 
-        // this.staging.removeChild(this.mask)
+        this.staging.removeChild(this.mask)
         this.body.removeChild(this.splitBody)
 
         const totalWidth = this.adapter.model.colCount
@@ -201,7 +214,7 @@ export class InsertColumnAnimation extends TableAnimation {
             }
         }
 
-        const left = this.totalWidth
+        const left = this.totalWidth + this.animationLeft
 
         // insert splitBody (whose cells are per row)
         for (let row = 0; row < this.rowCount; ++row) {

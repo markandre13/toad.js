@@ -14,13 +14,16 @@ import { RemoveColumnAnimation } from '@toad/table/private/RemoveColumnAnimation
 import { TableFriend } from '@toad/table/private/TableFriend'
 import { GridTableModel } from '@toad/table/model/GridTableModel'
 import { GridAdapter } from '@toad/table/adapter/GridAdapter'
-
+import { AnimationBase } from '@toad/util/animation'
 
 describe("table", function () {
     beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
-        Table.transitionDuration = "1ms"
+        Table.transitionDuration = "1ms" // OBSOLETE
+        Table.maskColor = `rgba(0,0,128,0.3)`
+        Table.splitColor = `rgba(255,128,0,0.5)`
+        AnimationBase.animationFrameCount = 1
         Animator.halt = true
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
@@ -45,18 +48,18 @@ describe("table", function () {
 
                     expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
                     expect(bodyColInfo(1)).to.equal(`#4:37,0,64,18`)
-              
-                    // Table.transitionDuration = "500ms"
+
+                    // AnimationBase.animationFrameCount = 6000
                     // Animator.halt = false
 
-                    // // ...at the head insert two columns
+                    // ...at the head insert two columns
                     model.insertColumn(0, flatMapColumns([
                         new Measure(1, 48).toCells(),
                         new Measure(2, 72).toCells()
                     ]))
                     // return
                     // model.asArray().forEach( (value, index) => console.log(`model[${index}] = id(col):${value.id}, idx(row)=${value.idx}, size=${value.size}`))
-                    
+
                     // CHECKPOINT: MODEL IS CORRECT
 
                     // ...and ask for the new cells to be measured
@@ -66,10 +69,10 @@ describe("table", function () {
 
                     // // THEN then two columns have been measured.
                     expect(table.measure.children.length).to.equal(4)
-                    for(let i=0; i<table.measure.children.length; ++i) {
-                        const cell = table.measure.children[i] as HTMLSpanElement
-                        console.log(`measure[${i}] = ${cell.innerHTML}, ${cell.style.width}`)
-                    }
+                    // for (let i = 0; i < table.measure.children.length; ++i) {
+                    //     const cell = table.measure.children[i] as HTMLSpanElement
+                    //     console.log(`measure[${i}] = ${cell.innerHTML}, ${cell.style.width}`)
+                    // }
 
                     // the new columns are layed out per column
                     // 1st column
@@ -79,7 +82,7 @@ describe("table", function () {
                     expect(table.measure.children[2].innerHTML).to.equal("#2R0")
                     expect(table.measure.children[3].innerHTML).to.equal("#2R1")
 
-                    // // WHEN ask for the new columns to be placed
+                    // WHEN ask for the new columns to be placed
                     animation.arrangeNewColumnsInStaging()
 
                     // 1st column
@@ -90,27 +93,20 @@ describe("table", function () {
                     expect(table.staging.children[3].innerHTML).to.equal("#2R1")
 
                     // THEN they have been placed in staging
-
-                    console.log(stagingColInfo(0))
-                    console.log(stagingColInfo(1))
-
                     expect(stagingColInfo(0)).to.equal(`#1:0,0,48,18`)
                     expect(stagingColInfo(1)).to.equal(`#2:52,0,72,18`)
 
-                    // // ...and are hidden by a mask
-                    // const insertHeight = 48 + 72 + 4 - 1
-                    // expect(maskY()).to.equal(0)
-                    // expect(maskH()).to.equal(insertHeight)
+                    // ...and are hidden by a mask
+                    expect(maskX()).to.equal(0)
+                    expect(maskW()).to.equal(48 + 5 + 72 + 4 - 1)
 
                     // WHEN we split the table for the animation
                     animation.splitVertical()
                     expect(splitColInfo(0)).to.equal(`#3:0,0,32,18`)
                     expect(splitColInfo(1)).to.equal(`#4:37,0,64,18`)
                     // THEN splitbody
-                    // expect(splitBodyX()).to.equal(0)
-                    // expect(splitBodyW()).to.equal(32 + 64 + 4 - 1)
-                    // expect(splitBodyY()).to.equal(0)
-                    // expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
+                    expect(splitBodyX()).to.equal(0)
+                    expect(splitBodyW()).to.equal(32 + 5 + 64 + 5)
 
                     // WHEN we animate
                     animation.animationFrame(1)
@@ -120,14 +116,81 @@ describe("table", function () {
 
                     animation.lastFrame()
                     expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
-                    expect(bodyColInfo(1)).to.equal(`#2:52,0,72,18`)
-                    expect(bodyColInfo(2)).to.equal(`#3:128,0,32,18`)
-                    expect(bodyColInfo(3)).to.equal(`#4:164,0,64,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${48 + 4},0,72,18`)
+                    expect(bodyColInfo(2)).to.equal(`#3:${48 + 72 + 2*4},0,32,18`)
+                    expect(bodyColInfo(3)).to.equal(`#4:${48 + 72 + 32 + 3*4 + 1},0,64,18`)
 
-                    // expect(bodyColInfo(0)).to.equal(`#1:0,0,80,48`)
-                    // expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
-                    // expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
-                    // expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+                    expect(table.body.children).to.have.lengthOf(8)
+                })
+                it("two rows at middle", async function () {
+                    // WHEN we have an empty table with two columns
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
+                    ])
+
+                    const table = getTable()
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:37,0,64,18`)
+
+                    // ... and insert two columns in between
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
+                    model.insertColumn(1, flatMapColumns([
+                        new Measure(2, 48).toCells(),
+                        new Measure(3, 72).toCells()
+                    ]))
+
+                    // return
+
+                    // ...and ask for the new columns to be measured
+                    const animation = InsertColumnAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then four cells have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new columns to be placed
+                    animation.arrangeNewColumnsInStaging()
+
+                    // 1st column
+                    expect(table.staging.children[0].innerHTML).to.equal("#2R0")
+                    expect(table.staging.children[1].innerHTML).to.equal("#2R1")
+                    // 2nd column
+                    expect(table.staging.children[2].innerHTML).to.equal("#3R0")
+                    expect(table.staging.children[3].innerHTML).to.equal("#3R1")
+
+                    // THEN they have been placed in staging
+                    expect(stagingColInfo(0)).to.equal(`#2:37,0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#3:${37 + 52},0,72,18`)
+
+                    // ...and are hidden by a mask
+                    expect(maskX()).to.equal(32 + 5)
+                    expect(maskW()).to.equal(48 + 5 + 72 + 4 - 1)
+
+                    // WHEN we split the table for the animation
+                    animation.splitVertical()
+
+                    // THEN splitbody
+                    expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
+                    expect(splitBodyX()).to.equal(32 + 5)
+                    expect(splitBodyW()).to.equal(64 + 5)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+                    expect(maskX()).to.equal(32 + 5 + 48 + 5 + 72 + 5 - 2) // FIXME -2?
+                    expect(splitBodyX()).to.equal(32 + 5 + 48 + 5 + 72 + 5 - 2) // FIXME -2??
+
+                    animation.lastFrame()
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,48,18`)
+                    expect(bodyColInfo(2)).to.equal(`#3:${32 + 5 + 48 + 5 - 1},0,72,18`) // FIXME -1??
+                    expect(bodyColInfo(3)).to.equal(`#4:${32 + 5 + 48 + 5 + 72 + 5 - 2},0,64,18`) // FIXME -2??
+
                     expect(table.body.children).to.have.lengthOf(8)
                 })
             })
@@ -300,8 +363,24 @@ async function prepareByColumns(data: Measure[], props?: PrepareProps) {
     await sleep()
     return model
 }
-
-
+function splitBodyX() {
+    const table = getTable()
+    return px2float(table.splitBody.style.left)
+}
+function splitBodyW() {
+    const table = getTable()
+    return px2float(table.splitBody.style.width)
+}
+function maskX() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.left)
+}
+function maskW() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.width)
+}
 function bodyColInfo(col: number) {
     const table = getTable()
     return bodyColInfoCore(col, table, table.body)
