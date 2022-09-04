@@ -327,7 +327,25 @@ describe("table", function () {
 
                     expect(table.body.children).to.have.lengthOf(8)
                 })
+                describe("column width", function () {
+                    it("keep initial")
+                    it("extend")
+                    it("shrink")
+                })
+                it("seamless (two rows at middle)")
             })
+            describe("remove", function () {
+                describe("no headers", function () {
+                    it("all rows")
+                    it("two rows at head")
+                    it("two rows at middle")
+                    it("two rows at end")
+                    it("seamless (two rows at middle)")
+                })
+            })
+        })
+        describe("other", function () {
+            it("staging follows scrolled body")
         })
     })
 })
