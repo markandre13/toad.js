@@ -972,7 +972,7 @@ export class Table extends View {
     // move all rows in body into splitBody, starting with row splitRow
     // splitRow refers to the actual display, not to the model
     splitVerticalNew(splitCol: number) {
-        // console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
+        // console.log(`Table.splitVerticalNew(splitCol=${splitCol})`)
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()
         this.splitBody.className = "splitBody"
@@ -983,11 +983,7 @@ export class Table extends View {
             this.splitBody.style.left = `0px`
             this.splitBody.style.width = `1px` // with 1px the split body will affect the scrollbars, with 0px it won't
         } else {
-            // console.log("THE REWORK IS ACTIVE")
-
-            // THE OLD SPLIT VERTICAL CODE
-            const bodyWidth = splitCol
-            const splitBodyColumns = this.adapter!.colCount - splitCol
+            const previousColCount = this.body.children.length / this.adapter!.rowCount
 
             // if (this.splitHead !== undefined) {
             //     for (let i = 0; i < splitBodyColumns; ++i) {
@@ -998,16 +994,16 @@ export class Table extends View {
             // }
 
             // move cells into splitBody and align them to the left
+            if (splitCol < previousColCount) {
 
-            // console.log(`splitVerticalNew(): splitCol=${splitCol}, splitBodyColumns=${splitBodyColumns}`)
-
-            if (splitBodyColumns > 0) {
-                let idx = splitCol
-                let cell = this.body.children[idx] as HTMLSpanElement
+                let cell = this.body.children[splitCol] as HTMLSpanElement
                 const left = px2float(cell.style.left)
                 let width = 0
+                const colsInBody = this.body.children.length / this.adapter!.rowCount
+                const colsToSplit = colsInBody - splitCol
+                let idx = splitCol
                 for (let row = 0; row < this.adapter!.rowCount; ++row) {
-                    for (let col = 0; col < splitBodyColumns; ++col) {
+                    for (let col = 0; col < colsToSplit; ++col) {
                         cell = this.body.children[idx] as HTMLSpanElement
                         if (row === 0) {
                             const b = cell.getBoundingClientRect()
@@ -1016,7 +1012,7 @@ export class Table extends View {
                         cell.style.left = `${px2float(cell.style.left) - left}px`
                         this.splitBody.appendChild(cell)
                     }
-                    idx += bodyWidth
+                    idx += splitCol
                 }
                 this.splitBody.style.left = `${left}px`
                 this.splitBody.style.width = `${width}px`

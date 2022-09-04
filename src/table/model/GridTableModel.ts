@@ -52,7 +52,11 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         return this._rows
     }
     getCell(col: number, row: number): T {
-        return this._data[col + row * this._cols]
+        const idx = col + row * this._cols
+        if (idx >= this._data.length) {
+            throw Error(`GridTableModel.getCell(${col}, ${row}) is out of range in grid of size ${this.colCount} x ${this.rowCount}`)
+        }
+        return this._data[idx]
     }
     setCell(col: number, row: number, data: T) {
         this._data[col + row * this._cols] = data
@@ -84,7 +88,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         ))
         return row
     }
-    insertColumn(col: number, colData?: Array<T>, columnLength: number = this._cols): number {
+    insertColumn(col: number, colData?: Array<T>, columnLength: number = this._rows): number {
         if (this._data.length === 0) {
             this._rows = columnLength
         }

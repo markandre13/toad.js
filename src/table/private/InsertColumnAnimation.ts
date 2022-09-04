@@ -72,26 +72,27 @@ export class InsertColumnAnimation extends TableAnimation {
 
     public arrangeNewColumnsInStaging() {
         // console.log(`arrangeNewColumnsInStaging <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
-
-        // x := x position of new column
+        const previousColCount = this.colCount - this.event.size
+        // left := x position of new column
         let idx = this.event.index
-        let x
+        let left
         // console.log(`idx=${idx}, colCount=${this.colCount}`)
-        if (idx < this.colCount) {
+        if (idx < previousColCount) {
             let cell = this.body.children[idx] as HTMLSpanElement
-            x = px2int(cell.style.left)
-            // console.log(`COLUMN IS LEFT: place new column at x = ${x}`)
+            left = px2int(cell.style.left)
+            // console.log(`COLUMN IS LEFT: place new column at left = ${left}`)
         } else {
             if (this.body.children.length === 0) {
-                x = 0
-                // console.log(`COLUMN IS FIRST: place new column at x = ${x}`)
+                left = 0
+                // console.log(`COLUMN IS FIRST: place new column at left = ${left}`)
             } else {
-                const cell = this.body.children[this.colCount - 1] as HTMLSpanElement
-                x = px2int(cell.style.left) + px2int(cell.style.width) + 6 - 1
-                // console.log(`COLUMN ${idx} IS RIGHT: place new column at x = ${x}`)
+                const cell = this.body.children[previousColCount - 1] as HTMLSpanElement
+                left = px2int(cell.style.left) + px2int(cell.style.width) + 6 - 1
+                // console.log(`COLUMN ${idx} IS RIGHT: place new column at left = ${left}`)
             }
         }
-        let left = this.animationLeft = x
+        // console.log(`LEFT = ${left}`)
+        this.animationLeft = left
 
         // for (let i = 0; i < this.measure.children.length; ++i) {
         //     const child = this.measure.children[i]
@@ -99,9 +100,12 @@ export class InsertColumnAnimation extends TableAnimation {
         //     console.log(`            measure[${i}] ${child.innerHTML} -> ${bounds.width}`)
         // }
 
+        // console.log(`arrangeNewColumnsInStaging: index=${this.event.index}, size=${this.event.size}, adapter=${this.adapter.colCount} x ${this.adapter.rowCount}, model=${this.adapter.model.colCount} x ${this.adapter.model.rowCount}`)
+
         // totalWidth := width of all columns to be inserted
         // place cells
         let totalWidth = 0
+        let x = left
         for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
             // columnWidth := width of this column
             let columnWidth = this.table.minCellWidth
@@ -138,12 +142,14 @@ export class InsertColumnAnimation extends TableAnimation {
             // }
 
             // place all cells in column $col and move them from this.measure to this.staging
+            
             for (let row = 0; row < this.rowCount; ++row) {
+                // console.log(`    pos=${col} x ${row}, measure.length=${this.measure.children.length}, body.length=${this.body.children.length}, staging.length=${this.staging.children.length}`)
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
-                child.style.top = (this.body.children[row * this.colCount] as HTMLSpanElement).style.top // FIXME: hack
+                child.style.top = (this.body.children[row * previousColCount] as HTMLSpanElement).style.top // FIXME: hack
                 child.style.width = `${columnWidth - 4}px`
-                child.style.height = (this.body.children[row * this.colCount] as HTMLSpanElement).style.height // FIXME: hack
+                child.style.height = (this.body.children[row * previousColCount] as HTMLSpanElement).style.height // FIXME: hack
                 this.staging.appendChild(child)
             }
             x += columnWidth
