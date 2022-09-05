@@ -174,7 +174,7 @@ export class InsertColumnAnimation extends TableAnimation {
                     y -= 2
                 }
             }
-            x += columnWidth
+            x += columnWidth + 2 - overlap
             totalWidth += columnWidth
         }
         this.totalWidth = totalWidth
@@ -225,7 +225,7 @@ export class InsertColumnAnimation extends TableAnimation {
         for (let row = 0; row < this.rowCount; ++row) {
             for (let col = 0; col < splitWidth; ++col) {
                 const cell = this.splitBody.children[0] as HTMLSpanElement
-                cell.style.left = `${px2float(cell.style.left) + left}px`
+                cell.style.left = `${px2float(cell.style.left) + left + 2}px`
                 const idx = row * totalWidth + bodyWidth + stagingWidth + col
                 this.bodyInsertAt(cell, idx)
             }

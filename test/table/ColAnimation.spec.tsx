@@ -28,6 +28,64 @@ describe("table", function () {
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
+    describe("expected table layout at end of insert", function () {
+        it("48, 72", async function () {
+            const model = await prepareByColumns([
+                new Measure(1, 48),
+                new Measure(2, 72)
+            ])
+            check48_12()
+        })
+        it("48, 72, 32, 64", async function () {
+            const model = await prepareByColumns([
+                new Measure(1, 48),
+                new Measure(2, 72),
+                new Measure(3, 32),
+                new Measure(4, 64)
+            ])
+            check48_72_32_64()
+        })
+        it("32, 48, 72, 64", async function () {
+            const model = await prepareByColumns([
+                new Measure(1, 32),
+                new Measure(2, 48),
+                new Measure(3, 72),
+                new Measure(4, 64)
+            ])
+            check32_48_72_64()
+        })
+        it("32, 64, 48, 72", async function () {
+            const model = await prepareByColumns([
+                new Measure(1, 32),
+                new Measure(2, 64),
+                new Measure(3, 48),
+                new Measure(4, 72)
+            ])
+            check32_64_48_72()
+        })
+    })
+    function check48_12() {
+        expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
+        expect(bodyColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
+    }
+    function check48_72_32_64() {
+        expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
+        expect(bodyColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
+        expect(bodyColInfo(2)).to.equal(`#3:${48 + 72 + 2 * 5},0,32,18`)
+        expect(bodyColInfo(3)).to.equal(`#4:${48 + 72 + 32 + 3 * 5},0,64,18`)
+    }
+    function check32_48_72_64() {
+        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+        expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,48,18`)
+        expect(bodyColInfo(2)).to.equal(`#3:${32 + 48 + 2 * 5},0,72,18`)
+        expect(bodyColInfo(3)).to.equal(`#4:${32 + 48 + 72 + 3 * 5},0,64,18`)
+    }
+    function check32_64_48_72() {
+        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+        expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,64,18`)
+        expect(bodyColInfo(2)).to.equal(`#3:${32 + 64 + 2 * 5},0,48,18`)
+        expect(bodyColInfo(3)).to.equal(`#4:${32 + 64 + 48 + 3 * 5},0,72,18`)
+    }
     // TODO
     // [ ] colors for mask and staging
     // [ ] alignment in makehuman.js
@@ -76,7 +134,7 @@ describe("table", function () {
 
                     // THEN they have been placed in staging
                     expect(stagingColInfo(0)).to.equal(`#1:${0},0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#2:${48 + 5 -1},0,72,18`) // FIXME -1???
+                    expect(stagingColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(0)
@@ -95,8 +153,7 @@ describe("table", function () {
                     expect(splitBodyX()).to.equal(48 + 5 + 72 + 5 - 2) // FIXME -2??
 
                     animation.lastFrame()
-                    expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
-                    expect(bodyColInfo(1)).to.equal(`#2:${48 + 5 - 1},0,72,18`) // FIXME -1???
+                    check48_12()
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
@@ -157,7 +214,7 @@ describe("table", function () {
 
                     // THEN they have been placed in staging
                     expect(stagingColInfo(0)).to.equal(`#1:0,0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#2:52,0,72,18`)
+                    expect(stagingColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(0)
@@ -174,14 +231,11 @@ describe("table", function () {
                     // WHEN we animate
                     animation.animationFrame(1)
 
-                    // expect(maskY()).to.equal(insertHeight - 1)
-                    // expect(splitBodyY()).to.equal(insertHeight - 1)
+                    expect(maskX()).to.equal(128)
+                    expect(splitBodyX()).to.equal(128)
 
                     animation.lastFrame()
-                    expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
-                    expect(bodyColInfo(1)).to.equal(`#2:${48 + 4},0,72,18`)
-                    expect(bodyColInfo(2)).to.equal(`#3:${48 + 72 + 2 * 4},0,32,18`)
-                    expect(bodyColInfo(3)).to.equal(`#4:${48 + 72 + 32 + 3 * 4 + 1},0,64,18`)
+                    check48_72_32_64()
 
                     expect(table.body.children).to.have.lengthOf(8)
                 })
@@ -229,7 +283,7 @@ describe("table", function () {
 
                     // THEN they have been placed in staging
                     expect(stagingColInfo(0)).to.equal(`#2:37,0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#3:${37 + 52},0,72,18`)
+                    expect(stagingColInfo(1)).to.equal(`#3:${37 + 48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(32 + 5)
@@ -250,10 +304,7 @@ describe("table", function () {
                     expect(splitBodyX()).to.equal(32 + 5 + 48 + 5 + 72 + 5 - 2) // FIXME -2??
 
                     animation.lastFrame()
-                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
-                    expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,48,18`)
-                    expect(bodyColInfo(2)).to.equal(`#3:${32 + 5 + 48 + 5 - 1},0,72,18`) // FIXME -1??
-                    expect(bodyColInfo(3)).to.equal(`#4:${32 + 5 + 48 + 5 + 72 + 5 - 2},0,64,18`) // FIXME -2??
+                    check32_48_72_64()
 
                     expect(table.body.children).to.have.lengthOf(8)
                 })
@@ -301,7 +352,7 @@ describe("table", function () {
 
                     // THEN they have been placed in staging
                     expect(stagingColInfo(0)).to.equal(`#3:${32 + 5 + 64 + 5},0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#4:${32 + 5 + 64 + 5 + 48 + 5 - 1},0,72,18`) // FIXME -1???
+                    expect(stagingColInfo(1)).to.equal(`#4:${32 + 5 + 64 + 5 + 48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(32 + 5 + 64 + 5)
@@ -320,10 +371,7 @@ describe("table", function () {
                     expect(splitBodyX()).to.equal(32 + 5 + 48 + 5 + 72 + 5 + 64 + 5 - 2) // FIXME -2??
 
                     animation.lastFrame()
-                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
-                    expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,64,18`)
-                    expect(bodyColInfo(2)).to.equal(`#3:${32 + 5 + 64 + 5},0,48,18`)
-                    expect(bodyColInfo(3)).to.equal(`#4:${32 + 5 + 64 + 5 + 48 + 5 - 1},0,72,18`) // FIXME -1???
+                    check32_64_48_72()
 
                     expect(table.body.children).to.have.lengthOf(8)
                 })
