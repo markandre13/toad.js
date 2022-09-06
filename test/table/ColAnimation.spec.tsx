@@ -385,8 +385,174 @@ describe("table", function () {
             describe("remove", function () {
                 describe("no headers", function () {
                     it("all rows")
-                    it("two rows at head")
-                    it("two rows at middle")
+                    xit("two rows at head", async function () {
+                        // WHEN we have a table without headings
+                        const model = await prepareByColumns([
+                            new Measure(1, 48),
+                            new Measure(2, 72),
+                            new Measure(3, 32),
+                            new Measure(4, 64)
+                        ])
+
+                        const table = getTable()
+
+                        // ------- CONTINUE HERE ------------------------
+
+                        //   initial       initialHeight
+                        // y0 ┏━━━ 1 ━━━┓ ┐ ┐
+                        //    ┃    48   ┃ │ │
+                        // y1 ┣━━━ 1 ━━━┫ │ │ removeHeight 
+                        //    ┃    72   ┃ │ ┘
+                        // y2 ┣━━━ 1 ━━━┫ │ ┐
+                        //    ┃    32   ┃ │ │
+                        // y3 ┣━━━ 1 ━━━┫ │ │ splitBody
+                        //    ┃    64   ┃ │ │ 
+                        //    ┗━━━ 1 ━━━┛ ┘ ┘
+                        const border = 1
+                        const y0 = 0
+                        const y1 = border + 48
+                        const y2 = y1 + border + 72
+                        const y3 = y2 + border + 32
+                        const initialHeight = y3 + border + 64 + border
+                        const removeHeight = border + 48 + border + 72
+                        // the split body has a border on top and bottom
+                        const splitY0 = y2
+                        const splitH0 = border + 32 + border + 64 + border
+                        // the mask will hide the rows to be removed, hence it is placed directly below them
+                        const maskY0 = y2
+                        const maskH0 = removeHeight
+
+                        // expect(bodyColInfo(0)).to.equal(`#1:0,${y0},80,48`)
+                        // expect(bodyColInfo(1)).to.equal(`#2:0,${y1},80,72`)
+                        // expect(bodyColInfo(2)).to.equal(`#3:0,${y2},80,32`)
+                        // expect(bodyColInfo(3)).to.equal(`#4:0,${y3},80,64`)
+                        // expect(table.body.children).to.have.lengthOf(8)
+
+                        // ...at the head remove two rows
+                        model.removeRow(0, 2)
+
+                        const animation = RemoveColumnAnimation.current!
+                        // expect(animation.initialWidth, "initialHeight").to.equal(initialHeight)
+
+                        // WHEN ask for the new rows to be placed
+                        animation.arrangeColumnsInStaging()
+
+                        // THEN they have been placed in staging
+                        // expect(stagingColInfo(0)).to.equal(`#1:0,0,80,48`)
+                        // expect(stagingColInfo(1)).to.equal(`#2:0,49,80,72`)
+
+                        // expect(bodyColInfo(0)).to.equal(`#3:0,122,80,32`)
+                        // expect(bodyColInfo(1)).to.equal(`#4:0,155,80,64`)
+
+                        // // ...and there is a mask at the end of staging?
+                        // expect(maskX(), "maskY before animation").to.equal(maskY0)
+                        // expect(maskW(), "maskH before animation").to.equal(maskH0)
+
+                        // WHEN we split the table for the animation
+                        // animation.splitVertical()
+                        expect(splitColInfo(0)).to.equal(`#3:0,0,80,32`)
+                        expect(splitColInfo(1)).to.equal(`#4:0,33,80,64`)
+
+                        // THEN splitbody
+                        expect(splitBodyX()).to.equal(splitY0)
+                        expect(splitBodyW()).to.equal(splitH0)
+
+                        // WHEN we animate
+                        animation.animationFrame(1)
+
+                        expect(splitBodyX(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
+                        expect(maskX(), "maskY after animation").to.equal(maskY0 - removeHeight)
+
+                        animation.joinVertical()
+                        expect(bodyColInfo(0)).to.equal(`#3:0,0,80,32`)
+                        expect(bodyColInfo(1)).to.equal(`#4:0,33,80,64`)
+                        expect(table.body.children).to.have.lengthOf(4)
+                    })
+                    it.only("two rows at middle", async function () {
+                        // WHEN we have a table without headings
+                        const model = await prepareByColumns([
+                            new Measure(1, 32),
+                            new Measure(2, 48),
+                            new Measure(3, 72),
+                            new Measure(4, 64)
+                        ])
+                        const table = getTable()
+
+                        //   initial
+                        // y0 ┏━━━ 1 ━━━┓ ┐
+                        //    ┃    32   ┃ │ initialHeight
+                        // y1 ┣━━━ 1 ━━━┫ │ ┐ removeHeight 
+                        //    ┃    48   ┃ │ │
+                        // y2 ┣━━━ 1 ━━━┫ │ │
+                        //    ┃    72   ┃ │ ┘
+                        // y3 ┣━━━ 1 ━━━┫ │ ┐
+                        //    ┃    64   ┃ │ │ splitBody
+                        //    ┗━━━ 1 ━━━┛ ┘ ┘
+                        const border = 1
+                        const y0 = 0
+                        const y1 = border + 32
+                        const y2 = y1 + border + 48
+                        const y3 = y2 + border + 72
+                        const initialHeight = y3 + border + 64 + border
+                        const removeHeight = border + 48 + border + 72
+                        // the split body has a border on top and bottom
+                        const splitY0 = y3
+                        const splitH0 = border + 64 + border
+                        // the mask will hide the rows to be removed, hence it is placed directly below them
+                        const maskY0 = y3
+                        const maskH0 = removeHeight
+
+                        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                        expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,48,18`)
+                        expect(bodyColInfo(2)).to.equal(`#3:${32 + 48 + 2 * 5},0,72,18`)
+                        expect(bodyColInfo(3)).to.equal(`#4:${32 + 48 + 72 + 3 * 5},0,64,18`)
+
+                        expect(table.body.children).to.have.lengthOf(8)
+
+                        // ...at the head insert two rows
+
+                        // AnimationBase.animationFrameCount = 6000
+                        // Animator.halt = false
+
+                        model.removeColumn(1, 2)
+
+                        // return
+
+                        const animation = RemoveColumnAnimation.current!
+
+                        // expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
+
+                        // WHEN ask for the new rows to be placed
+                        animation.arrangeColumnsInStaging()
+
+                        // THEN they have been placed in staging
+                        expect(stagingColXInfo(0)).to.equal(`#2:${32 + 5},0,48,18`)
+                        expect(stagingColXInfo(1)).to.equal(`#3:${32 + 48 + 2 * 5},0,72,18`)
+
+                        // ...and are hidden by a mask
+                        expect(maskX(), "maskY before animation").to.equal(32 + 48 + 72 + 3 * 5)
+                        expect(maskW(), "maskH before animation").to.equal(48 + 72 + 2 * 5)
+
+                        // WHEN we split the table for the animation
+                        animation.splitVertical()
+
+                        // THEN splitbody
+                        expect(splitBodyX()).to.equal(32 + 48 + 72 + 3 * 5)
+                        expect(splitBodyW()).to.equal(64 + 5)
+                        expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
+
+                        // WHEN we animate
+                        animation.animationFrame(1)
+
+                        expect(splitBodyX(), "splitBodyY after animation").to.equal(32 + 5)
+                        expect(maskX(), "maskY after animation").to.equal(32 + 5)
+
+                        animation.joinVertical()
+
+                        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                        expect(bodyColInfo(1)).to.equal(`#4:${32+5},0,64,18`)
+                        expect(table.body.children).to.have.lengthOf(4)
+                    })
                     it("two rows at end")
                     it("seamless (two rows at middle)")
                 })
@@ -595,6 +761,10 @@ function bodyColInfo(col: number) {
 function splitColInfo(col: number) {
     const table = getTable()
     return bodyColInfoCore(col, table, table.splitBody)
+}
+function stagingColXInfo(col: number) {
+    const table = getTable()
+    return bodyColInfoCore(col, table, table.staging)
 }
 function stagingColInfo(col: number) {
     const table = getTable()
