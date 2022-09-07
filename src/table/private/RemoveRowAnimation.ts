@@ -95,7 +95,7 @@ export class RemoveRowAnimation extends TableAnimation {
 
     splitHorizontal() {
         this.table.splitHorizontalNew(this.event.index)
-
+        // fix the stuff split horizontal row hadn't enough information to do
         const top = px2float(this.splitBody.style.top)
         this.splitBody.style.height = `${this.initialHeight - top}px`
         this.topSplitBody = top

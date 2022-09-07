@@ -23,6 +23,7 @@ import { TableAnimation } from "./TableAnimation"
 
 export class RemoveColumnAnimation extends TableAnimation {
     event: TableEvent
+    initialWidth: number
     totalWidth!: number
     done = false;
     colCount: number
@@ -34,14 +35,6 @@ export class RemoveColumnAnimation extends TableAnimation {
 
     static current: RemoveColumnAnimation
 
-    // constructor(table: Table, event: TableEvent) {
-    //     super(table)
-    //     this.event = event
-    //     this.joinVertical = this.joinVertical.bind(this)
-
-    //     RemoveColumnAnimation.current = this
-    // }
-
     constructor(table: Table, event: TableEvent) {
         super(table)
 
@@ -52,12 +45,12 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.joinVertical = this.joinVertical.bind(this)
 
         if (this.body.children.length === 0) {
-            // this.initialWidth = 0
+            this.initialWidth = 0
         } else {
             const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-            const top = px2float(cell.style.top)
+            const left = px2float(cell.style.left)
             const bounds = cell.getBoundingClientRect()
-            // this.initialWidth = top + bounds.height
+            this.initialWidth = left + bounds.width
         }
         // this.overlap = this.adapter.config.seamless ? 0 : 1
         // this.removeAll = this.event.index >= this.adapter.rowCount
@@ -107,7 +100,7 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
 
     arrangeColumnsInStaging() {
-        console.log(`RemoveColumnAnimation.arrangeColumnsInStaging(): size = ${this.adapter.colCount} x ${this.adapter.rowCount}`)
+        // console.log(`RemoveColumnAnimation.arrangeColumnsInStaging(): size = ${this.adapter.colCount} x ${this.adapter.rowCount}`)
         // move all the columns which are to be removed into staging
         let idx = this.event.index
         for (let row = 0; row < this.adapter.rowCount; ++row) {
@@ -138,11 +131,10 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
 
     splitVertical() {
-        // this.table.splitVertical(splitColumn, extra)
         this.table.splitVerticalNew(this.event.index)
-
+        // set the things split vertical hadn't enough information to do
         const left = px2float(this.splitBody.style.left)
-        // this.splitBody.style.width = `${this.initialWidth - left}px`
+        this.splitBody.style.width = `${this.initialWidth - left -1}px` // FIXME: this might be overlap
         this.leftSplitBody = left
         this.leftMask = px2float(this.mask.style.left)
     }

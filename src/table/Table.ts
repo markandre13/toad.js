@@ -524,7 +524,7 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        console.log(`Table.modelChanged(${event})`)
+        // console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
@@ -1019,8 +1019,8 @@ export class Table extends View {
             } else {
                 // split after last column
                 let cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-                let b = cell.getBoundingClientRect()
-                let left = px2float(cell.style.left) + b.width - overlap
+                let boundary = cell.getBoundingClientRect()
+                let left = px2float(cell.style.left) + boundary.width - overlap
                 this.splitBody.style.left = `${left}px`
                 this.splitBody.style.width = `1px`
             }
@@ -1177,7 +1177,7 @@ export class Table extends View {
         if (this.body.children.length === 0) {
             this.splitBody.style.top = `0px`
             this.splitBody.style.height = `1px`
-        } else
+        } else {
             if (idx < this.body.children.length) {
                 // console.log(`  split at existing row`)
                 let cell = this.body.children[idx] as HTMLSpanElement
@@ -1206,6 +1206,7 @@ export class Table extends View {
                 this.splitBody.style.top = `${top}px`
                 this.splitBody.style.height = `1px`
             }
+        }
         this.body.appendChild(this.splitBody)
     }
 
