@@ -28,40 +28,51 @@ describe("table", function () {
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
-    describe("expected table layout at end of insert", function () {
-        it("48, 72", async function () {
-            const model = await prepareByColumns([
-                new Measure(1, 48),
-                new Measure(2, 72)
-            ])
-            check48_12()
+    describe("test support for expected final table layouts", function () {
+        describe("insert", function () {
+            it("48, 72", async function () {
+                const model = await prepareByColumns([
+                    new Measure(1, 48),
+                    new Measure(2, 72)
+                ])
+                check48_12()
+            })
+            it("48, 72, 32, 64", async function () {
+                const model = await prepareByColumns([
+                    new Measure(1, 48),
+                    new Measure(2, 72),
+                    new Measure(3, 32),
+                    new Measure(4, 64)
+                ])
+                check48_72_32_64()
+            })
+            it("32, 48, 72, 64", async function () {
+                const model = await prepareByColumns([
+                    new Measure(1, 32),
+                    new Measure(2, 48),
+                    new Measure(3, 72),
+                    new Measure(4, 64)
+                ])
+                check32_48_72_64()
+            })
+            it("32, 64, 48, 72", async function () {
+                const model = await prepareByColumns([
+                    new Measure(1, 32),
+                    new Measure(2, 64),
+                    new Measure(3, 48),
+                    new Measure(4, 72)
+                ])
+                check32_64_48_72()
+            })
         })
-        it("48, 72, 32, 64", async function () {
-            const model = await prepareByColumns([
-                new Measure(1, 48),
-                new Measure(2, 72),
-                new Measure(3, 32),
-                new Measure(4, 64)
-            ])
-            check48_72_32_64()
-        })
-        it("32, 48, 72, 64", async function () {
-            const model = await prepareByColumns([
-                new Measure(1, 32),
-                new Measure(2, 48),
-                new Measure(3, 72),
-                new Measure(4, 64)
-            ])
-            check32_48_72_64()
-        })
-        it("32, 64, 48, 72", async function () {
-            const model = await prepareByColumns([
-                new Measure(1, 32),
-                new Measure(2, 64),
-                new Measure(3, 48),
-                new Measure(4, 72)
-            ])
-            check32_64_48_72()
+        describe("remove", function () {
+            it("32, 64", async function () {
+                const model = await prepareByColumns([
+                    new Measure(1, 32),
+                    new Measure(2, 64)
+                ])
+                check32_64()
+            })
         })
     })
     function check48_12() {
@@ -86,6 +97,10 @@ describe("table", function () {
         expect(bodyColInfo(2)).to.equal(`#3:${32 + 64 + 2 * 5},0,48,18`)
         expect(bodyColInfo(3)).to.equal(`#4:${32 + 64 + 48 + 3 * 5},0,72,18`)
     }
+    function check32_64() {
+
+    }
+
     // TODO
     // [ ] colors for mask and staging
     // [ ] alignment in makehuman.js
@@ -133,8 +148,8 @@ describe("table", function () {
                     expect(table.staging.children[3].innerHTML).to.equal("#2R1")
 
                     // THEN they have been placed in staging
-                    expect(stagingColInfo(0)).to.equal(`#1:${0},0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
+                    expect(stagingInsertColInfo(0)).to.equal(`#1:${0},0,48,18`)
+                    expect(stagingInsertColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(0)
@@ -213,8 +228,8 @@ describe("table", function () {
                     expect(table.staging.children[3].innerHTML).to.equal("#2R1")
 
                     // THEN they have been placed in staging
-                    expect(stagingColInfo(0)).to.equal(`#1:0,0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
+                    expect(stagingInsertColInfo(0)).to.equal(`#1:0,0,48,18`)
+                    expect(stagingInsertColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(0)
@@ -282,8 +297,8 @@ describe("table", function () {
                     expect(table.staging.children[3].innerHTML).to.equal("#3R1")
 
                     // THEN they have been placed in staging
-                    expect(stagingColInfo(0)).to.equal(`#2:37,0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#3:${37 + 48 + 5},0,72,18`)
+                    expect(stagingInsertColInfo(0)).to.equal(`#2:37,0,48,18`)
+                    expect(stagingInsertColInfo(1)).to.equal(`#3:${37 + 48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(32 + 5)
@@ -351,8 +366,8 @@ describe("table", function () {
                     expect(table.staging.children[3].innerHTML).to.equal("#4R1")
 
                     // THEN they have been placed in staging
-                    expect(stagingColInfo(0)).to.equal(`#3:${32 + 5 + 64 + 5},0,48,18`)
-                    expect(stagingColInfo(1)).to.equal(`#4:${32 + 5 + 64 + 5 + 48 + 5},0,72,18`)
+                    expect(stagingInsertColInfo(0)).to.equal(`#3:${32 + 5 + 64 + 5},0,48,18`)
+                    expect(stagingInsertColInfo(1)).to.equal(`#4:${32 + 5 + 64 + 5 + 48 + 5},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(32 + 5 + 64 + 5)
@@ -385,7 +400,7 @@ describe("table", function () {
             describe("remove", function () {
                 describe("no headers", function () {
                     it("all rows")
-                    xit("two rows at head", async function () {
+                    it("two rows at head", async function () {
                         // WHEN we have a table without headings
                         const model = await prepareByColumns([
                             new Measure(1, 48),
@@ -396,40 +411,14 @@ describe("table", function () {
 
                         const table = getTable()
 
-                        // ------- CONTINUE HERE ------------------------
-
-                        //   initial       initialHeight
-                        // y0 ┏━━━ 1 ━━━┓ ┐ ┐
-                        //    ┃    48   ┃ │ │
-                        // y1 ┣━━━ 1 ━━━┫ │ │ removeHeight 
-                        //    ┃    72   ┃ │ ┘
-                        // y2 ┣━━━ 1 ━━━┫ │ ┐
-                        //    ┃    32   ┃ │ │
-                        // y3 ┣━━━ 1 ━━━┫ │ │ splitBody
-                        //    ┃    64   ┃ │ │ 
-                        //    ┗━━━ 1 ━━━┛ ┘ ┘
-                        const border = 1
-                        const y0 = 0
-                        const y1 = border + 48
-                        const y2 = y1 + border + 72
-                        const y3 = y2 + border + 32
-                        const initialHeight = y3 + border + 64 + border
-                        const removeHeight = border + 48 + border + 72
-                        // the split body has a border on top and bottom
-                        const splitY0 = y2
-                        const splitH0 = border + 32 + border + 64 + border
-                        // the mask will hide the rows to be removed, hence it is placed directly below them
-                        const maskY0 = y2
-                        const maskH0 = removeHeight
-
-                        // expect(bodyColInfo(0)).to.equal(`#1:0,${y0},80,48`)
-                        // expect(bodyColInfo(1)).to.equal(`#2:0,${y1},80,72`)
-                        // expect(bodyColInfo(2)).to.equal(`#3:0,${y2},80,32`)
-                        // expect(bodyColInfo(3)).to.equal(`#4:0,${y3},80,64`)
-                        // expect(table.body.children).to.have.lengthOf(8)
+                        expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
+                        expect(bodyColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
+                        expect(bodyColInfo(2)).to.equal(`#3:${48 + 72 + 2 * 5},0,32,18`)
+                        expect(bodyColInfo(3)).to.equal(`#4:${48 + 72 + 32 + 3 * 5},0,64,18`)
+                        expect(table.body.children).to.have.lengthOf(8)
 
                         // ...at the head remove two rows
-                        model.removeRow(0, 2)
+                        model.removeColumn(0, 2)
 
                         const animation = RemoveColumnAnimation.current!
                         // expect(animation.initialWidth, "initialHeight").to.equal(initialHeight)
@@ -438,37 +427,39 @@ describe("table", function () {
                         animation.arrangeColumnsInStaging()
 
                         // THEN they have been placed in staging
-                        // expect(stagingColInfo(0)).to.equal(`#1:0,0,80,48`)
-                        // expect(stagingColInfo(1)).to.equal(`#2:0,49,80,72`)
+                        expect(stagingColInfo(0)).to.equal(`#1:0,0,48,18`)
+                        expect(stagingColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
 
-                        // expect(bodyColInfo(0)).to.equal(`#3:0,122,80,32`)
-                        // expect(bodyColInfo(1)).to.equal(`#4:0,155,80,64`)
+                        expect(bodyColInfo(0)).to.equal(`#3:${48 + 72 + 2 * 5},0,32,18`)
+                        expect(bodyColInfo(1)).to.equal(`#4:${48 + 72 + 32 + 3 * 5},0,64,18`)
 
-                        // // ...and there is a mask at the end of staging?
-                        // expect(maskX(), "maskY before animation").to.equal(maskY0)
-                        // expect(maskW(), "maskH before animation").to.equal(maskH0)
+                        // ...and there is a mask at the end of staging?
+                        expect(maskX(), "maskX before animation").to.equal(48 + 72 + 2 * 5)
+                        expect(maskW(), "maskW before animation").to.equal(48 + 72 + 2 * 5)
 
                         // WHEN we split the table for the animation
-                        // animation.splitVertical()
-                        expect(splitColInfo(0)).to.equal(`#3:0,0,80,32`)
-                        expect(splitColInfo(1)).to.equal(`#4:0,33,80,64`)
+                        animation.splitVertical()
+                        expect(splitColInfo(0)).to.equal(`#3:0,0,32,18`)
+                        expect(splitColInfo(1)).to.equal(`#4:${32+5},0,64,18`)
 
                         // THEN splitbody
-                        expect(splitBodyX()).to.equal(splitY0)
-                        expect(splitBodyW()).to.equal(splitH0)
+                        expect(splitBodyX()).to.equal(48 + 72 + 2 * 5)
+                        expect(splitBodyW()).to.equal(32 + 64 + 2 * 5)
 
                         // WHEN we animate
                         animation.animationFrame(1)
 
-                        expect(splitBodyX(), "splitBodyY after animation").to.equal(splitY0 - removeHeight)
-                        expect(maskX(), "maskY after animation").to.equal(maskY0 - removeHeight)
+                        expect(splitBodyX(), "splitBodyY after animation").to.equal(0)
+                        expect(maskX(), "maskY after animation").to.equal(0)
 
                         animation.joinVertical()
-                        expect(bodyColInfo(0)).to.equal(`#3:0,0,80,32`)
-                        expect(bodyColInfo(1)).to.equal(`#4:0,33,80,64`)
+                        expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
+                        expect(bodyColInfo(1)).to.equal(`#4:${32+5},0,64,18`)
                         expect(table.body.children).to.have.lengthOf(4)
+
+                        check32_64()
                     })
-                    it.only("two rows at middle", async function () {
+                    it("two rows at middle", async function () {
                         // WHEN we have a table without headings
                         const model = await prepareByColumns([
                             new Measure(1, 32),
@@ -477,30 +468,6 @@ describe("table", function () {
                             new Measure(4, 64)
                         ])
                         const table = getTable()
-
-                        //   initial
-                        // y0 ┏━━━ 1 ━━━┓ ┐
-                        //    ┃    32   ┃ │ initialHeight
-                        // y1 ┣━━━ 1 ━━━┫ │ ┐ removeHeight 
-                        //    ┃    48   ┃ │ │
-                        // y2 ┣━━━ 1 ━━━┫ │ │
-                        //    ┃    72   ┃ │ ┘
-                        // y3 ┣━━━ 1 ━━━┫ │ ┐
-                        //    ┃    64   ┃ │ │ splitBody
-                        //    ┗━━━ 1 ━━━┛ ┘ ┘
-                        const border = 1
-                        const y0 = 0
-                        const y1 = border + 32
-                        const y2 = y1 + border + 48
-                        const y3 = y2 + border + 72
-                        const initialHeight = y3 + border + 64 + border
-                        const removeHeight = border + 48 + border + 72
-                        // the split body has a border on top and bottom
-                        const splitY0 = y3
-                        const splitH0 = border + 64 + border
-                        // the mask will hide the rows to be removed, hence it is placed directly below them
-                        const maskY0 = y3
-                        const maskH0 = removeHeight
 
                         expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
                         expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,48,18`)
@@ -526,8 +493,8 @@ describe("table", function () {
                         animation.arrangeColumnsInStaging()
 
                         // THEN they have been placed in staging
-                        expect(stagingColXInfo(0)).to.equal(`#2:${32 + 5},0,48,18`)
-                        expect(stagingColXInfo(1)).to.equal(`#3:${32 + 48 + 2 * 5},0,72,18`)
+                        expect(stagingColInfo(0)).to.equal(`#2:${32 + 5},0,48,18`)
+                        expect(stagingColInfo(1)).to.equal(`#3:${32 + 48 + 2 * 5},0,72,18`)
 
                         // ...and are hidden by a mask
                         expect(maskX(), "maskY before animation").to.equal(32 + 48 + 72 + 3 * 5)
@@ -549,9 +516,7 @@ describe("table", function () {
 
                         animation.joinVertical()
 
-                        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
-                        expect(bodyColInfo(1)).to.equal(`#4:${32+5},0,64,18`)
-                        expect(table.body.children).to.have.lengthOf(4)
+                        check32_64()
                     })
                     it("two rows at end")
                     it("seamless (two rows at middle)")
@@ -762,13 +727,13 @@ function splitColInfo(col: number) {
     const table = getTable()
     return bodyColInfoCore(col, table, table.splitBody)
 }
-function stagingColXInfo(col: number) {
+function stagingColInfo(col: number) {
     const table = getTable()
     return bodyColInfoCore(col, table, table.staging)
 }
-function stagingColInfo(col: number) {
+function stagingInsertColInfo(col: number) {
     const table = getTable()
-    return preparationColInfoCore(col, table, table.staging)
+    return insertColInfoCore(col, table, table.staging)
 }
 function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
     if (col >= table.adapter.model.colCount) {
@@ -790,7 +755,7 @@ function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) 
     return `${id}:${x},${y},${w},${h}`
 }
 
-function preparationColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
+function insertColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
 
     const indexRow0 = col * table.adapter.rowCount
     const indexRow1 = indexRow0 + 1

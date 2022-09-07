@@ -159,8 +159,9 @@ export class RemoveColumnAnimation extends TableAnimation {
         // insert splitBody (whose cells are per row)
         const left = px2float(this.splitBody.style.left)
 
+        // move split body into body
         for (let row = 0; row < this.rowCount; ++row) {
-            for (let col = 0; col < this.event.index; ++col) {
+            for (let col = 0; col < this.colCount - this.event.index; ++col) {
                 const cell = this.splitBody.children[0] as HTMLSpanElement
                 cell.style.left = `${px2float(cell.style.left) + left}px`
                 const idx = row * this.adapter.colCount + this.event.index + col
