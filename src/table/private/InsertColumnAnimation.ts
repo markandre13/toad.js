@@ -159,10 +159,11 @@ export class InsertColumnAnimation extends TableAnimation {
             // }
 
             // place all cells in column $col and move them from this.measure to this.staging
-            
+
+            let y = 0
             for (let row = 0; row < this.rowCount; ++row) {
-                let y = 0
                 // console.log(`    pos=${col} x ${row}, measure.length=${this.measure.children.length}, body.length=${this.body.children.length}, staging.length=${this.staging.children.length}`)
+                console.log(`    cell=${col}, ${row}; pos=${x}, ${y}`)
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`

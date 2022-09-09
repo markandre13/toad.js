@@ -2,9 +2,7 @@ import { expect } from '@esm-bundle/chai'
 import { Animator, Reference, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
-import { ArrayTableModel } from "@toad/table/model/ArrayTableModel"
 import { TableAdapter, TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
-import { ArrayAdapter } from '@toad/table/adapter/ArrayAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
@@ -856,28 +854,51 @@ function stagingInsertColInfo(col: number) {
     const table = getTable()
     return insertColInfoCore(col, table, table.staging)
 }
+//  1 2 3 4
+//  5 6 7 8
 function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
-    const previousColCount = (body.children.length - 1) / table.adapter.model.rowCount
-    // console.log(`bodyColInfoCore(${col}): body.length=${body.children.length}, previousColCount=${previousColCount}, size=${table.adapter.colCount} x ${table.adapter.rowCount}`)
-    if (col >= previousColCount) {
+    // if (table.staging && body.children[body.children.length-1] === table.staging)
+    
+    let extraNodesInBody = 0
+    for(let child of body.children) {
+        if (child === table.staging || (child as HTMLElement).style.backgroundColor === 'rgba(0, 0, 128, 0.3)') { // last is mask
+            ++extraNodesInBody
+            break
+        }
+    }
+    const actualBodyColCount = (body.children.length - extraNodesInBody) / table.adapter.model.rowCount
+
+    // console.log(`bodyColInfoCore(${col}): body.length=${body.children.length}, extra=${extraNodesInBody}, previousColCount=${actualBodyColCount}, size=${table.adapter.colCount} x ${table.adapter.rowCount}`)
+    // for(let c of body.children) {
+    //     console.log(c)
+    // }
+    if (col >= actualBodyColCount) {
         throw Error(`Column ${col} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
     }
+
+    const indexRow0 = col
+    const indexRow1 = indexRow0 + 1
+
     const firstCellOfCol = body.children[col] as HTMLElement
     const x = px2float(firstCellOfCol.style.left)
     const y = px2float(firstCellOfCol.style.top)
     const w = px2float(firstCellOfCol.style.width)
     const h = px2float(firstCellOfCol.style.height)
 
-    // for (let i = 1; i < table.adapter.colCount; ++i) {
-    //     const otherCellInRow = body.children[indexOf1stCellInCol + i] as HTMLElement
-    //     expect(otherCellInRow.style.top).to.equal(firstCellOfRow.style.top)
-    //     expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
-    // }
+    // console.log(`XXX ${table.adapter.rowCount}`)
+    for (let row = 1; row < table.adapter.rowCount; ++row) {
+        // console.log(`  check ${col}, ${row} in ${table.adapter.colCount} (${actualBodyColCount}) x ${table.adapter.rowCount}`)
+        const otherCellInRow = body.children[col + row * actualBodyColCount] as HTMLElement
+        const what = `${firstCellOfCol.innerText} vs ${otherCellInRow.innerText} (size=${table.adapter.colCount} x ${table.adapter.rowCount})`
+        expect(otherCellInRow.style.left, `left of ${what}`).to.equal(firstCellOfCol.style.left)
+        expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
+    }
     let id = firstCellOfCol.innerText
     id = id.substring(0, id.indexOf('R'))
     return `${id}:${x},${y},${w},${h}`
 }
-
+// 1 3 5 7
+// 2 4 6 8
 function insertColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
 
     const indexRow0 = col * table.adapter.rowCount
@@ -893,13 +914,19 @@ function insertColInfoCore(col: number, table: TableFriend, body: HTMLDivElement
     const w = px2float(firstCellOfCol.style.width)
     const h = px2float(firstCellOfCol.style.height)
 
-    // console.log(`preparationColInfoCore(${col}): rowCount=${table.adapter.rowCount}, indexRow0=${indexRow0}, innerText=${firstCellOfCol.innerText}`)
+    // console.log(`XXX ${table.adapter.rowCount}`)
+    for (let i = 1; i < table.adapter.rowCount; ++i) {
+        const otherCellInRow = body.children[indexRow0 + i] as HTMLElement
+        const what = `${firstCellOfCol.innerText} vs ${otherCellInRow.innerText}`
+        // console.log(firstCellOfCol.innerText)
+        // console.log(firstCellOfCol.style.top)
 
-    // for (let i = 1; i < table.adapter.colCount; ++i) {
-    //     const otherCellInRow = body.children[indexOf1stCellInCol + i] as HTMLElement
-    //     expect(otherCellInRow.style.top).to.equal(firstCellOfRow.style.top)
-    //     expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
-    // }
+        // console.log(otherCellInRow.innerText)
+        // console.log(otherCellInRow.style.top)
+
+        expect(otherCellInRow.style.left, `left of ${what}`).to.equal(firstCellOfCol.style.left)
+        expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
+    }
     let id = firstCellOfCol.innerText
     id = id.substring(0, id.indexOf('R'))
     return `${id}:${x},${y},${w},${h}`
