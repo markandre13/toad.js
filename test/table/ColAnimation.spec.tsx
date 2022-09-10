@@ -33,7 +33,7 @@ describe("table", function () {
                     new Measure(1, 48),
                     new Measure(2, 72)
                 ])
-                check48_12()
+                check48_72()
             })
             it("48, 72, 32, 64", async function () {
                 const model = await prepareByColumns([
@@ -43,6 +43,17 @@ describe("table", function () {
                     new Measure(4, 64)
                 ])
                 check48_72_32_64()
+            })
+            it("32, 48, 72, 64 (seamless)", async function () {
+                const model = await prepareByColumns([
+                    new Measure(1, 32),
+                    new Measure(2, 48),
+                    new Measure(3, 72),
+                    new Measure(4, 64)
+                ], {
+                    seamless: true
+                })
+                check32_48_72_64_seamless()
             })
             it("32, 48, 72, 64", async function () {
                 const model = await prepareByColumns([
@@ -73,7 +84,7 @@ describe("table", function () {
             })
         })
     })
-    function check48_12() {
+    function check48_72() {
         expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
         expect(bodyColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
     }
@@ -89,6 +100,12 @@ describe("table", function () {
         expect(bodyColInfo(2)).to.equal(`#3:${32 + 48 + 2 * 5},0,72,18`)
         expect(bodyColInfo(3)).to.equal(`#4:${32 + 48 + 72 + 3 * 5},0,64,18`)
     }
+    function check32_48_72_64_seamless() {
+        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+        expect(bodyColInfo(1)).to.equal(`#2:${32 + 4},0,48,18`)
+        expect(bodyColInfo(2)).to.equal(`#3:${32 + 48 + 2 * 4},0,72,18`)
+        expect(bodyColInfo(3)).to.equal(`#4:${32 + 48 + 72 + 3 * 4},0,64,18`)
+    }
     function check32_64_48_72() {
         expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
         expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,64,18`)
@@ -96,7 +113,16 @@ describe("table", function () {
         expect(bodyColInfo(3)).to.equal(`#4:${32 + 64 + 48 + 3 * 5},0,72,18`)
     }
     function check32_64() {
-
+        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+        expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,64,18`)
+    }
+    function check32_64_remove_head() {
+        expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
+        expect(bodyColInfo(1)).to.equal(`#4:${32 + 5},0,64,18`)
+    }
+    function check32_64_remove_middle() {
+        expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+        expect(bodyColInfo(1)).to.equal(`#4:${32 + 5},0,64,18`)
     }
 
     // TODO
@@ -104,7 +130,7 @@ describe("table", function () {
     // [ ] alignment in makehuman.js
     // [ ] table colors
     // [ ] with headers
-    describe("row", function () {
+    describe("column", function () {
         describe("insert", function () {
             describe("no headers", function () {
                 it("two columns into empty", async function () {
@@ -168,7 +194,7 @@ describe("table", function () {
                     expect(splitBodyX()).to.equal(48 + 72 + 2 * spacing - 2) // FIXME -2??
 
                     animation.lastFrame()
-                    check48_12()
+                    check48_72()
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
@@ -180,8 +206,7 @@ describe("table", function () {
                     ])
 
                     const table = getTable()
-                    const overlap = 1
-                    const spacing = table.table.WIDTH_ADJUST - overlap
+                    const spacing = table.table.WIDTH_ADJUST - 1
 
                     expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
                     expect(bodyColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
@@ -240,7 +265,7 @@ describe("table", function () {
                     // WHEN we split the table for the animation
                     animation.splitVertical()
                     expect(splitColInfo(0)).to.equal(`#3:0,0,32,18`)
-                    expect(splitColInfo(1)).to.equal(`#4:${32+spacing},0,64,18`)
+                    expect(splitColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
                     // THEN splitbody
                     expect(splitBodyX()).to.equal(0)
                     expect(splitBodyW()).to.equal(32 + 64 + 2 * spacing)
@@ -339,7 +364,7 @@ describe("table", function () {
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
                     expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
-                    expect(bodyColInfo(1)).to.equal(`#2:${32+spacing},0,64,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${32 + spacing},0,64,18`)
 
                     // ... and insert two columns in between
 
@@ -373,7 +398,7 @@ describe("table", function () {
 
                     // THEN they have been placed in staging
                     expect(stagingInsertColInfo(0)).to.equal(`#3:${32 + 64 + 2 * spacing},0,48,18`)
-                    expect(stagingInsertColInfo(1)).to.equal(`#4:${32 + 64 + 48 + 3*spacing},0,72,18`)
+                    expect(stagingInsertColInfo(1)).to.equal(`#4:${32 + 64 + 48 + 3 * spacing},0,72,18`)
 
                     // ...and are hidden by a mask
                     expect(maskX()).to.equal(32 + 64 + 2 * spacing)
@@ -401,7 +426,72 @@ describe("table", function () {
                     it("extend")
                     it("shrink")
                 })
-                it("seamless (two columns at middle)")
+                it("seamless (two columns at middle)", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
+                    ], { seamless: true })
+                    const table = getTable()
+
+                    const spacing = table.table.WIDTH_ADJUST - 2
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
+                    // ...at the head insert two rows
+                    model.insertColumn(1, flatMapColumns([
+                        new Measure(2, 48).toCells(),
+                        new Measure(3, 72).toCells()
+                    ]))
+
+                    // return
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertColumnAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two cells have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewColumnsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingInsertColInfo(0)).to.equal(`#2:${32+spacing},0,48,18`)
+                    expect(stagingInsertColInfo(1)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
+
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(stagingInsertColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
+                    expect(stagingInsertColInfo(1)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
+
+                    // ...and are hidden by a mask
+                    // const insertHeight = 48 + 72 // + 4 - 1
+                    // expect(maskX()).to.equal(32) // 32 instead of 33
+                    // expect(maskW()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitVertical()
+                    // THEN splitbody
+                    expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
+                    // expect(splitBodyX()).to.equal(32) // 32 instead of 33
+                    // expect(splitBodyW()).to.equal(64) // 64 instead of 64 + 2
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    // expect(maskX()).to.equal(33 + insertHeight - 1)
+                    // expect(splitBodyX()).to.equal(33 + insertHeight - 1)
+
+                    animation.joinVertical()
+                    check32_48_72_64_seamless()
+                })
             })
 
         })
@@ -517,7 +607,7 @@ describe("table", function () {
                     expect(bodyColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
                     expect(table.body.children).to.have.lengthOf(4)
 
-                    check32_64()
+                    check32_64_remove_head()
                 })
                 it("two columns at middle", async function () {
                     // WHEN we have a table without headings
@@ -579,7 +669,7 @@ describe("table", function () {
 
                     animation.joinVertical()
 
-                    check32_64()
+                    check32_64_remove_middle()
                 })
                 it("two columns at end", async function () {
                     // WHEN we have an empty table without headings
@@ -858,9 +948,9 @@ function stagingInsertColInfo(col: number) {
 //  5 6 7 8
 function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
     // if (table.staging && body.children[body.children.length-1] === table.staging)
-    
+
     let extraNodesInBody = 0
-    for(let child of body.children) {
+    for (let child of body.children) {
         if (child === table.staging || (child as HTMLElement).style.backgroundColor === 'rgba(0, 0, 128, 0.3)') { // last is mask
             ++extraNodesInBody
             break

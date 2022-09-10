@@ -70,7 +70,7 @@ export class InsertColumnAnimation extends TableAnimation {
         }
     }
 
-    public arrangeNewColumnsInStaging() {
+    public arrangeNewColumnsInStaging() {      
         // console.log(`arrangeNewColumnsInStaging <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`)
         const overlap = this.adapter.config.seamless ? 0 : 1
         const previousColCount = this.colCount - this.event.size
@@ -88,7 +88,7 @@ export class InsertColumnAnimation extends TableAnimation {
                 // console.log(`COLUMN IS FIRST: place new column at left = ${left}`)
             } else {
                 const cell = this.body.children[previousColCount - 1] as HTMLSpanElement
-                left = px2int(cell.style.left) + px2int(cell.style.width) + 6 - 1
+                left = px2int(cell.style.left) + px2int(cell.style.width) + this.table.WIDTH_ADJUST - overlap
                 // console.log(`COLUMN ${idx} IS RIGHT: place new column at left = ${left}`)
             }
         }
@@ -163,7 +163,7 @@ export class InsertColumnAnimation extends TableAnimation {
             let y = 0
             for (let row = 0; row < this.rowCount; ++row) {
                 // console.log(`    pos=${col} x ${row}, measure.length=${this.measure.children.length}, body.length=${this.body.children.length}, staging.length=${this.staging.children.length}`)
-                console.log(`    cell=${col}, ${row}; pos=${x}, ${y}`)
+                // console.log(`    cell=${col}, ${row}; pos=${x}, ${y}`)
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`
@@ -175,7 +175,10 @@ export class InsertColumnAnimation extends TableAnimation {
                     y -= 2
                 }
             }
-            x += columnWidth + 2 - overlap
+            x += columnWidth - overlap
+            if (!this.adapter.config.seamless) {
+                x += 2
+            }
             totalWidth += columnWidth
         }
         this.totalWidth = totalWidth
@@ -220,13 +223,16 @@ export class InsertColumnAnimation extends TableAnimation {
             }
         }
 
-        const left = this.totalWidth + this.animationLeft
+        let left = this.totalWidth + this.animationLeft
+        if (!this.adapter.config.seamless) {
+            left += 2
+        }
 
         // insert splitBody (whose cells are per row)
         for (let row = 0; row < this.rowCount; ++row) {
             for (let col = 0; col < splitWidth; ++col) {
                 const cell = this.splitBody.children[0] as HTMLSpanElement
-                cell.style.left = `${px2float(cell.style.left) + left + 2}px`
+                cell.style.left = `${px2float(cell.style.left) + left}px`
                 const idx = row * totalWidth + bodyWidth + stagingWidth + col
                 this.bodyInsertAt(cell, idx)
             }
