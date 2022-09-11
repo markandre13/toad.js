@@ -2,18 +2,16 @@ import { expect } from '@esm-bundle/chai'
 import { Animator, Reference, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
-import { TableAdapter, TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
+import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { sleep, px2float } from "../testlib"
+import { sleep } from "../testlib"
 import { InsertColumnAnimation } from '@toad/table/private/InsertColumnAnimation'
 import { RemoveColumnAnimation } from '@toad/table/private/RemoveColumnAnimation'
-import { TableFriend } from '@toad/table/private/TableFriend'
-import { GridTableModel } from '@toad/table/model/GridTableModel'
 import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 import { AnimationBase } from '@toad/util/animation'
-import { Orientation, Measure, MeasureModel, Cell } from "./util"
+import { Orientation, Measure, MeasureModel, Cell, PrepareProps, flatMapColumns, getTable, bodyColInfo, splitColInfo, stagingColInfo, stagingInsertColInfo, splitBodyX, splitBodyW, maskX, maskW } from "./util"
 
 describe("table", function () {
     beforeEach(async function () {
@@ -812,11 +810,6 @@ describe("table", function () {
         })
     })
 })
-function getTable() {
-    return new TableFriend(
-        document.querySelector("tx-table") as Table
-    )
-}
 
 class MeasureAdapter extends GridAdapter<MeasureModel> {
     constructor(model: MeasureModel) {
@@ -886,25 +879,6 @@ class MeasureAdapter extends GridAdapter<MeasureModel> {
     }
 }
 
-interface PrepareProps {
-    seamless?: boolean
-    expandColumn?: boolean
-    width?: number
-    height?: number
-}
-
-function flatMapColumns(dataIn: Measure[]) {
-    const data = dataIn.map(it=>it.toCells(Orientation.VERTICAL))
-    let result: Cell[] = []
-    if (data.length === 0)
-        return result
-    const rows = data[0].length
-    for (let i = 0; i < rows; ++i) {
-        result = result.concat(data.flatMap(it => it[i]))
-    }
-    return result
-}
-
 async function prepareByColumns(data: Measure[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
     const model = new MeasureModel(Orientation.VERTICAL, Cell, data.length, 2, flatMapColumns(data))
@@ -916,115 +890,4 @@ async function prepareByColumns(data: Measure[], props?: PrepareProps) {
     }} model={model} />)
     await sleep()
     return model
-}
-function splitBodyX() {
-    const table = getTable()
-    return px2float(table.splitBody.style.left)
-}
-function splitBodyW() {
-    const table = getTable()
-    return px2float(table.splitBody.style.width)
-}
-function maskX() {
-    const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.left)
-}
-function maskW() {
-    const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.width)
-}
-function bodyColInfo(col: number) {
-    const table = getTable()
-    return bodyColInfoCore(col, table, table.body)
-}
-function splitColInfo(col: number) {
-    const table = getTable()
-    return bodyColInfoCore(col, table, table.splitBody)
-}
-function stagingColInfo(col: number) {
-    const table = getTable()
-    return bodyColInfoCore(col, table, table.staging)
-}
-function stagingInsertColInfo(col: number) {
-    const table = getTable()
-    return insertColInfoCore(col, table, table.staging)
-}
-//  1 2 3 4
-//  5 6 7 8
-function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
-    // if (table.staging && body.children[body.children.length-1] === table.staging)
-
-    let extraNodesInBody = 0
-    for (let child of body.children) {
-        if (child === table.staging || (child as HTMLElement).style.backgroundColor === 'rgba(0, 0, 128, 0.3)') { // last is mask
-            ++extraNodesInBody
-            break
-        }
-    }
-    const actualBodyColCount = (body.children.length - extraNodesInBody) / table.adapter.model.rowCount
-
-    // console.log(`bodyColInfoCore(${col}): body.length=${body.children.length}, extra=${extraNodesInBody}, previousColCount=${actualBodyColCount}, size=${table.adapter.colCount} x ${table.adapter.rowCount}`)
-    // for(let c of body.children) {
-    //     console.log(c)
-    // }
-    if (col >= actualBodyColCount) {
-        throw Error(`Column ${col} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
-    }
-
-    const indexRow0 = col
-    const indexRow1 = indexRow0 + 1
-
-    const firstCellOfCol = body.children[col] as HTMLElement
-    const x = px2float(firstCellOfCol.style.left)
-    const y = px2float(firstCellOfCol.style.top)
-    const w = px2float(firstCellOfCol.style.width)
-    const h = px2float(firstCellOfCol.style.height)
-
-    // console.log(`XXX ${table.adapter.rowCount}`)
-    for (let row = 1; row < table.adapter.rowCount; ++row) {
-        // console.log(`  check ${col}, ${row} in ${table.adapter.colCount} (${actualBodyColCount}) x ${table.adapter.rowCount}`)
-        const otherCellInRow = body.children[col + row * actualBodyColCount] as HTMLElement
-        const what = `${firstCellOfCol.innerText} vs ${otherCellInRow.innerText} (size=${table.adapter.colCount} x ${table.adapter.rowCount})`
-        expect(otherCellInRow.style.left, `left of ${what}`).to.equal(firstCellOfCol.style.left)
-        expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
-    }
-    let id = firstCellOfCol.innerText
-    id = id.substring(0, id.indexOf('R'))
-    return `${id}:${x},${y},${w},${h}`
-}
-// 1 3 5 7
-// 2 4 6 8
-function insertColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
-
-    const indexRow0 = col * table.adapter.rowCount
-    const indexRow1 = indexRow0 + 1
-
-    if (indexRow1 >= body.children.length) {
-        throw Error(`Column ${col} does not exist in measure/staging. There are only ${body.children.length / table.adapter.colCount} columns.`)
-    }
-
-    const firstCellOfCol = body.children[indexRow0] as HTMLElement
-    const x = px2float(firstCellOfCol.style.left)
-    const y = px2float(firstCellOfCol.style.top)
-    const w = px2float(firstCellOfCol.style.width)
-    const h = px2float(firstCellOfCol.style.height)
-
-    // console.log(`XXX ${table.adapter.rowCount}`)
-    for (let i = 1; i < table.adapter.rowCount; ++i) {
-        const otherCellInRow = body.children[indexRow0 + i] as HTMLElement
-        const what = `${firstCellOfCol.innerText} vs ${otherCellInRow.innerText}`
-        // console.log(firstCellOfCol.innerText)
-        // console.log(firstCellOfCol.style.top)
-
-        // console.log(otherCellInRow.innerText)
-        // console.log(otherCellInRow.style.top)
-
-        expect(otherCellInRow.style.left, `left of ${what}`).to.equal(firstCellOfCol.style.left)
-        expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
-    }
-    let id = firstCellOfCol.innerText
-    id = id.substring(0, id.indexOf('R'))
-    return `${id}:${x},${y},${w},${h}`
 }

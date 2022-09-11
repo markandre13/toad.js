@@ -3,7 +3,7 @@ import { expect } from '@esm-bundle/chai'
 import { EditMode } from '@toad/table/adapter/TableAdapter'
 import { TableModel } from "@toad/table/model/TableModel"
 import { Table } from "@toad/table/Table"
-import { TableAdapter, TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
+import { TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
 import { TableFriend } from "@toad/table/private/TableFriend"
 
 import { px2int, px2float } from "../testlib"
@@ -78,6 +78,18 @@ export function flatMapRows(data: Measure[]) {
     return data.flatMap(it => it.toCells(Orientation.HORIZONTAL))
 }
 
+export function flatMapColumns(dataIn: Measure[]) {
+    const data = dataIn.map(it=>it.toCells(Orientation.VERTICAL))
+    let result: Cell[] = []
+    if (data.length === 0)
+        return result
+    const rows = data[0].length
+    for (let i = 0; i < rows; ++i) {
+        result = result.concat(data.flatMap(it => it[i]))
+    }
+    return result
+}
+
 export function getTable() {
     return new TableFriend(
         document.querySelector("tx-table") as Table
@@ -131,6 +143,111 @@ export function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivEl
     }
     let id = firstCellOfRow.innerText
     id = id.substring(0, id.indexOf('C'))
+    return `${id}:${x},${y},${w},${h}`
+}
+
+export function splitBodyX() {
+    const table = getTable()
+    return px2float(table.splitBody.style.left)
+}
+export function splitBodyW() {
+    const table = getTable()
+    return px2float(table.splitBody.style.width)
+}
+export function maskX() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.left)
+}
+export function maskW() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.width)
+}
+export function bodyColInfo(col: number) {
+    const table = getTable()
+    return bodyColInfoCore(col, table, table.body)
+}
+export function splitColInfo(col: number) {
+    const table = getTable()
+    return bodyColInfoCore(col, table, table.splitBody)
+}
+export function stagingColInfo(col: number) {
+    const table = getTable()
+    return bodyColInfoCore(col, table, table.staging)
+}
+export function stagingInsertColInfo(col: number) {
+    const table = getTable()
+    return insertColInfoCore(col, table, table.staging)
+}
+//  1 2 3 4
+//  5 6 7 8
+export function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
+    // if (table.staging && body.children[body.children.length-1] === table.staging)
+
+    let extraNodesInBody = 0
+    for (let child of body.children) {
+        if (child === table.staging || (child as HTMLElement).style.backgroundColor === 'rgba(0, 0, 128, 0.3)') { // last is mask
+            ++extraNodesInBody
+            break
+        }
+    }
+    const actualBodyColCount = (body.children.length - extraNodesInBody) / table.adapter.model.rowCount
+
+    if (col >= actualBodyColCount) {
+        throw Error(`Column ${col} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
+    }
+
+    const firstCellOfCol = body.children[col] as HTMLElement
+    const x = px2float(firstCellOfCol.style.left)
+    const y = px2float(firstCellOfCol.style.top)
+    const w = px2float(firstCellOfCol.style.width)
+    const h = px2float(firstCellOfCol.style.height)
+
+    // console.log(`XXX ${table.adapter.rowCount}`)
+    for (let row = 1; row < table.adapter.rowCount; ++row) {
+        // console.log(`  check ${col}, ${row} in ${table.adapter.colCount} (${actualBodyColCount}) x ${table.adapter.rowCount}`)
+        const otherCellInRow = body.children[col + row * actualBodyColCount] as HTMLElement
+        const what = `${firstCellOfCol.innerText} vs ${otherCellInRow.innerText} (size=${table.adapter.colCount} x ${table.adapter.rowCount})`
+        expect(otherCellInRow.style.left, `left of ${what}`).to.equal(firstCellOfCol.style.left)
+        expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
+    }
+    let id = firstCellOfCol.innerText
+    id = id.substring(0, id.indexOf('R'))
+    return `${id}:${x},${y},${w},${h}`
+}
+// 1 3 5 7
+// 2 4 6 8
+export function insertColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
+
+    const indexRow0 = col * table.adapter.rowCount
+    const indexRow1 = indexRow0 + 1
+
+    if (indexRow1 >= body.children.length) {
+        throw Error(`Column ${col} does not exist in measure/staging. There are only ${body.children.length / table.adapter.colCount} columns.`)
+    }
+
+    const firstCellOfCol = body.children[indexRow0] as HTMLElement
+    const x = px2float(firstCellOfCol.style.left)
+    const y = px2float(firstCellOfCol.style.top)
+    const w = px2float(firstCellOfCol.style.width)
+    const h = px2float(firstCellOfCol.style.height)
+
+    // console.log(`XXX ${table.adapter.rowCount}`)
+    for (let i = 1; i < table.adapter.rowCount; ++i) {
+        const otherCellInRow = body.children[indexRow0 + i] as HTMLElement
+        const what = `${firstCellOfCol.innerText} vs ${otherCellInRow.innerText}`
+        // console.log(firstCellOfCol.innerText)
+        // console.log(firstCellOfCol.style.top)
+
+        // console.log(otherCellInRow.innerText)
+        // console.log(otherCellInRow.style.top)
+
+        expect(otherCellInRow.style.left, `left of ${what}`).to.equal(firstCellOfCol.style.left)
+        expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
+    }
+    let id = firstCellOfCol.innerText
+    id = id.substring(0, id.indexOf('R'))
     return `${id}:${x},${y},${w},${h}`
 }
 

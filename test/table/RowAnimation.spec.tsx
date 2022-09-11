@@ -12,7 +12,7 @@ import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 import { AnimationBase } from '@toad/util/animation'
 
-import { Orientation, Measure, MeasureModel, Cell, PrepareProps, flatMapRows, getTable, bodyRowInfo, splitRowInfo, stagingRowInfo, splitBodyY, splitBodyH, maskY, maskH, bodyRowInfoCore } from "./util"
+import { Orientation, Measure, MeasureModel, Cell, PrepareProps, flatMapRows, getTable, bodyRowInfo, splitRowInfo, stagingRowInfo, splitBodyY, splitBodyH, maskY, maskH } from "./util"
 
 describe("table", function () {
     beforeEach(async function () {
