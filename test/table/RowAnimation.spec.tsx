@@ -26,6 +26,24 @@ describe("table", function () {
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
+    describe("other", function () {
+        it("staging follows scrolled body", async function () {
+            // WHEN we have an empty table without headings
+            await prepare([
+                new MeasureRow(1, 32),
+                new MeasureRow(4, 64)
+            ], { height: 32, width: 32 })
+            const table = getTable()
+
+            table.body.scrollTop = 16
+            table.body.scrollLeft = 24
+            table.body.onscroll!(undefined as any)
+
+            expect(table.staging.style.top).to.equal(`-16px`)
+            expect(table.staging.style.left).to.equal(`-24px`)
+        })
+    })
+
     // TODO
     // [ ] colors for mask and staging
     // [ ] alignment in makehuman.js
@@ -795,23 +813,6 @@ describe("table", function () {
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
-            })
-        })
-        describe("other", function () {
-            it("staging follows scrolled body", async function () {
-                // WHEN we have an empty table without headings
-                await prepare([
-                    new MeasureRow(1, 32),
-                    new MeasureRow(4, 64)
-                ], { height: 32, width: 32 })
-                const table = getTable()
-
-                table.body.scrollTop = 16
-                table.body.scrollLeft = 24
-                table.body.onscroll!(undefined as any)
-
-                expect(table.staging.style.top).to.equal(`-16px`)
-                expect(table.staging.style.left).to.equal(`-24px`)
             })
         })
         describe("test support for expected final table layouts", function () {

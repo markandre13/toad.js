@@ -742,9 +742,6 @@ describe("table", function () {
                 })
             })
         })
-        describe("other", function () {
-            it("staging follows scrolled body")
-        })
         describe("test support for expected final table layouts", function () {
             describe("insert", function () {
                 it("48, 72", async function () {
