@@ -26,73 +26,6 @@ describe("table", function () {
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
-    describe("test support for expected final table layouts", function () {
-        describe("insert", function () {
-            it("48, 72", async function () {
-                const model = await prepareByColumns([
-                    new Measure(1, 48),
-                    new Measure(2, 72)
-                ])
-                check48_72()
-            })
-            it("48, 72, 32, 64", async function () {
-                const model = await prepareByColumns([
-                    new Measure(1, 48),
-                    new Measure(2, 72),
-                    new Measure(3, 32),
-                    new Measure(4, 64)
-                ])
-                check48_72_32_64()
-            })
-            it("32, 48, 72, 64 (seamless)", async function () {
-                const model = await prepareByColumns([
-                    new Measure(1, 32),
-                    new Measure(2, 48),
-                    new Measure(3, 72),
-                    new Measure(4, 64)
-                ], {
-                    seamless: true
-                })
-                check32_48_72_64_seamless()
-            })
-            it("32, 48, 72, 64", async function () {
-                const model = await prepareByColumns([
-                    new Measure(1, 32),
-                    new Measure(2, 48),
-                    new Measure(3, 72),
-                    new Measure(4, 64)
-                ])
-                check32_48_72_64()
-            })
-            it("32, 64, 48, 72", async function () {
-                const model = await prepareByColumns([
-                    new Measure(1, 32),
-                    new Measure(2, 64),
-                    new Measure(3, 48),
-                    new Measure(4, 72)
-                ])
-                check32_64_48_72()
-            })
-        })
-        describe("remove", function () {
-            it("32, 64", async function () {
-                const model = await prepareByColumns([
-                    new Measure(1, 32),
-                    new Measure(2, 64)
-                ])
-                check32_64()
-            })
-            it("32, 64 (seamless)", async function () {
-                const model = await prepareByColumns([
-                    new Measure(1, 32),
-                    new Measure(4, 64)
-                ], {
-                    seamless: true
-                })
-                check32_64_remove_seamless()
-            })
-        })
-    })
     function check48_72() {
         expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
         expect(bodyColInfo(1)).to.equal(`#2:${48 + 5},0,72,18`)
@@ -478,7 +411,6 @@ describe("table", function () {
                     expect(stagingInsertColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
                     expect(stagingInsertColInfo(1)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
 
-
                     expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
                     expect(stagingInsertColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
                     expect(stagingInsertColInfo(1)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
@@ -812,6 +744,73 @@ describe("table", function () {
         })
         describe("other", function () {
             it("staging follows scrolled body")
+        })
+        describe("test support for expected final table layouts", function () {
+            describe("insert", function () {
+                it("48, 72", async function () {
+                    const model = await prepareByColumns([
+                        new Measure(1, 48),
+                        new Measure(2, 72)
+                    ])
+                    check48_72()
+                })
+                it("48, 72, 32, 64", async function () {
+                    const model = await prepareByColumns([
+                        new Measure(1, 48),
+                        new Measure(2, 72),
+                        new Measure(3, 32),
+                        new Measure(4, 64)
+                    ])
+                    check48_72_32_64()
+                })
+                it("32, 48, 72, 64 (seamless)", async function () {
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
+                    ], {
+                        seamless: true
+                    })
+                    check32_48_72_64_seamless()
+                })
+                it("32, 48, 72, 64", async function () {
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
+                    ])
+                    check32_48_72_64()
+                })
+                it("32, 64, 48, 72", async function () {
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 64),
+                        new Measure(3, 48),
+                        new Measure(4, 72)
+                    ])
+                    check32_64_48_72()
+                })
+            })
+            describe("remove", function () {
+                it("32, 64", async function () {
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
+                    ])
+                    check32_64()
+                })
+                it("32, 64 (seamless)", async function () {
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
+                    ], {
+                        seamless: true
+                    })
+                    check32_64_remove_seamless()
+                })
+            })
         })
     })
 })

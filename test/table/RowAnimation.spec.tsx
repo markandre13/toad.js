@@ -32,6 +32,46 @@ describe("table", function () {
     // [ ] table colors
     // [ ] with headers
     describe("row", function () {
+        function check32_64() {
+            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+            expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+        }
+        function check48_72_32_64() {
+            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
+            expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
+            expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
+            expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+        }
+        function check32_48_72_64() {
+            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+            expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,48`)
+            expect(bodyRowInfo(2)).to.equal(`#3:0,82,80,72`)
+            expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+        }
+        function check32_48_72_64_seamless() {
+            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+            expect(bodyRowInfo(1)).to.equal(`#2:0,32,80,48`)
+            expect(bodyRowInfo(2)).to.equal(`#3:0,${32 + 48},80,72`)
+            expect(bodyRowInfo(3)).to.equal(`#4:0,${32 + 48 + 72},80,64`)
+        }
+        function check32_64_48_72() {
+            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+            expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+            expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
+            expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
+        }
+        function check32_64_remove_head() {
+            expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
+            expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+        }
+        function check32_64_remove_middle() {
+            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+            expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+        }
+        function check32_64_remove_seamless() {
+            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+            expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`)
+        }
         describe("insert", function () {
             describe("no headers", function () {
                 it("two rows into empty", async function () {
@@ -79,8 +119,7 @@ describe("table", function () {
                     expect(splitBodyY()).to.equal(insertHeight)
 
                     animation.joinHorizontal()
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+                    check32_64()
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
@@ -136,11 +175,7 @@ describe("table", function () {
                     expect(splitBodyY()).to.equal(insertHeight - 1)
 
                     animation.joinHorizontal()
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
-                    expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
-                    expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
-                    expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
-                    expect(table.body.children).to.have.lengthOf(8)
+                    check48_72_32_64()
                 })
                 it("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
@@ -193,11 +228,7 @@ describe("table", function () {
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
                     animation.joinHorizontal()
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,48`)
-                    expect(bodyRowInfo(2)).to.equal(`#3:0,82,80,72`)
-                    expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
-                    expect(table.body.children).to.have.lengthOf(8)
+                    check32_48_72_64()
                 })
                 it("two rows at end", async function () {
                     // WHEN we have an empty table without headings
@@ -249,11 +280,8 @@ describe("table", function () {
                     expect(splitBodyY()).to.equal(98 + insertHeight - 1)
 
                     animation.joinHorizontal()
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-                    expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
-                    expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
-                    expect(table.body.children).to.have.lengthOf(8)
+
+                    check32_64_48_72()
                 })
                 describe("column width", function () {
                     it("keep initial", async function () {
@@ -321,7 +349,7 @@ describe("table", function () {
                         expect(stagingRowInfo(0)).to.equal(`#2:0,33,128,48`)
 
                         // ...and are hidden by a mask
-                        const insertHeight = 48 + 2 
+                        const insertHeight = 48 + 2
                         expect(maskY()).to.equal(33)
                         expect(maskH()).to.equal(insertHeight)
 
@@ -396,11 +424,7 @@ describe("table", function () {
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
                     animation.joinHorizontal()
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#2:0,32,80,48`) // 32 instead of 33
-                    expect(bodyRowInfo(2)).to.equal(`#3:0,80,80,72`)
-                    expect(bodyRowInfo(3)).to.equal(`#4:0,152,80,64`)
-                    expect(table.body.children).to.have.lengthOf(8)
+                    check32_48_72_64_seamless()
                 })
             })
         })
@@ -547,9 +571,7 @@ describe("table", function () {
                     expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
 
                     animation.joinHorizontal()
-                    expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
-                    expect(table.body.children).to.have.lengthOf(4)
+                    check32_64_remove_head()
                 })
                 it("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
@@ -624,9 +646,7 @@ describe("table", function () {
 
                     animation.joinHorizontal()
 
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
-                    expect(table.body.children).to.have.lengthOf(4)
+                    check32_64_remove_middle()
                 })
                 it("two rows at end", async function () {
                     // WHEN we have an empty table without headings
@@ -696,9 +716,7 @@ describe("table", function () {
                     expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight - 1)
 
                     animation.joinHorizontal()
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-                    expect(table.body.children).to.have.lengthOf(4)
+                    check32_64()
                 })
                 // REFACTOR: this is copy'n pasted, with only two changes. use this as a template to refactor the other seamless test
                 it("seamless (two rows at middle)", async function () {
@@ -773,9 +791,8 @@ describe("table", function () {
                     expect(maskY(), "maskY after animation").to.equal(maskY0 - removeHeight)
 
                     animation.joinHorizontal()
+                    check32_64_remove_seamless()
 
-                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`) // 32 previously 32
                     expect(table.body.children).to.have.lengthOf(4)
                 })
             })
@@ -783,7 +800,7 @@ describe("table", function () {
         describe("other", function () {
             it("staging follows scrolled body", async function () {
                 // WHEN we have an empty table without headings
-                const model = await prepare([
+                await prepare([
                     new MeasureRow(1, 32),
                     new MeasureRow(4, 64)
                 ], { height: 32, width: 32 })
@@ -795,6 +812,76 @@ describe("table", function () {
 
                 expect(table.staging.style.top).to.equal(`-16px`)
                 expect(table.staging.style.left).to.equal(`-24px`)
+            })
+        })
+        describe("test support for expected final table layouts", function () {
+            describe("insert", function () {
+                it("32, 64", async function () {
+                    await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(2, 64)
+                    ])
+                    check32_64()
+                })
+                it("48, 72, 32, 64", async function () {
+                    await prepare([
+                        new MeasureRow(1, 48),
+                        new MeasureRow(2, 72),
+                        new MeasureRow(3, 32),
+                        new MeasureRow(4, 64)
+                    ])
+                    check48_72_32_64()
+                })
+                it("32, 48, 72, 64", async function () {
+                    await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(2, 48),
+                        new MeasureRow(3, 72),
+                        new MeasureRow(4, 64)
+                    ])
+                    check32_48_72_64()
+                })
+                it("32, 48, 72, 64 (seamless)", async function () {
+                    await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(2, 48),
+                        new MeasureRow(3, 72),
+                        new MeasureRow(4, 64)
+                    ], { seamless: true })
+                    check32_48_72_64_seamless()
+                })
+                it("32, 64, 48, 72", async function () {
+                    await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(2, 64),
+                        new MeasureRow(3, 48),
+                        new MeasureRow(4, 72)
+                    ])
+                    check32_64_48_72()
+                })
+            })
+            describe("remove", function () {
+                it("32, 64 at head", async function () {
+                    await prepare([
+                        new MeasureRow(3, 32),
+                        new MeasureRow(4, 64)
+                    ])
+                    check32_64_remove_head()
+                })
+                it("32, 64 at middle", async function () {
+                    await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(4, 64)
+                    ])
+                    check32_64_remove_middle()
+                })
+                it("32, 64 at middle (seamless)", async function () {
+                    await prepare([
+                        new MeasureRow(1, 32),
+                        new MeasureRow(4, 64)
+                    ], { seamless: true })
+                    check32_64_remove_seamless()
+                })
             })
         })
     })
@@ -843,11 +930,10 @@ class MeasureAdapter extends ArrayAdapter<MeasureModel> {
         if (pos.col === 1) {
             cell.style.height = `${row.height}px`
         }
-        if (pos.col === 0) { 
+        if (pos.col === 0) {
             if (row.width === undefined) {
                 cell.style.width = `${80 * (pos.col + 1)}px`
             } else {
-                console.log(`cell[${pos.col},${pos.row}] with customer width ${row.width}`)
                 cell.style.width = `${row.width}px`
             }
         }
