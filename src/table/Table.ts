@@ -216,10 +216,10 @@ export class Table extends View {
 
     hostKeyDown(ev: KeyboardEvent) {
         // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
-        // // console.log(ev)
+        // console.log(ev)
         if (!this.selection)
             return
-        // // FIXME: based on the selection model we could plug in a behaviour class
+        // FIXME: based on the selection model we could plug in a behaviour class
         switch (this.selection.mode) {
             //     case TableEditMode.SELECT_ROW: {
             //         let row = this.selection.value.row

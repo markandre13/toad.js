@@ -74,11 +74,6 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.joinVertical()
     }
 
-    override stop() {
-        this.joinVertical()
-        this.clearAnimation()
-    }
-
     arrangeColumnsInStaging() {
         // console.log(`RemoveColumnAnimation.arrangeColumnsInStaging(): size = ${this.adapter.colCount} x ${this.adapter.rowCount}`)
         // move all the columns which are to be removed into staging
