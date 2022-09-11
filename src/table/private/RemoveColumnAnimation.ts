@@ -63,7 +63,11 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
     firstFrame(): void { }
     animationFrame(n: number): void {
-        this.splitBody.style.left = `${this.leftSplitBody - n * this.animationWidth}px`
+        let a = 0
+        if (this.adapter.config.seamless) {
+            a = 1
+        }
+        this.splitBody.style.left = `${this.leftSplitBody - n * this.animationWidth + a}px`
         this.mask.style.left = `${this.leftMask - n * this.animationWidth}px`
     }
     lastFrame(): void {
@@ -134,7 +138,7 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.table.splitVerticalNew(this.event.index)
         // set the things split vertical hadn't enough information to do
         const left = px2float(this.splitBody.style.left)
-        this.splitBody.style.width = `${this.initialWidth - left -1}px` // FIXME: this might be overlap
+        this.splitBody.style.width = `${this.initialWidth - left - 1}px` // FIXME: this might be overlap
         this.leftSplitBody = left
         this.leftMask = px2float(this.mask.style.left)
     }
@@ -149,7 +153,10 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.body.removeChild(this.splitBody)
 
         // insert splitBody (whose cells are per row)
-        const left = px2float(this.splitBody.style.left)
+        let left = px2float(this.splitBody.style.left)
+        // if (this.adapter.config.seamless) {
+        //     left += 1
+        // }
 
         // move split body into body
         for (let row = 0; row < this.rowCount; ++row) {
