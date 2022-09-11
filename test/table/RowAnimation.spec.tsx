@@ -1,7 +1,6 @@
 import { expect } from '@esm-bundle/chai'
 import { Animator, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
-import { TablePos } from "@toad/table/TablePos"
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
@@ -9,10 +8,9 @@ import { style as txDark } from "@toad/style/tx-dark"
 import { sleep } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
-import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 import { AnimationBase } from '@toad/util/animation'
 
-import { Orientation, Measure, MeasureModel, Cell, PrepareProps, flatMapRows, getTable, bodyRowInfo, splitRowInfo, stagingRowInfo, splitBodyY, splitBodyH, maskY, maskH } from "./util"
+import { Measure, prepareByRows, flatMapRows, getTable, bodyRowInfo, splitRowInfo, stagingRowInfo, splitBodyY, splitBodyH, maskY, maskH } from "./util"
 
 describe("table", function () {
     beforeEach(async function () {
@@ -1218,78 +1216,6 @@ describe("table", function () {
         })
     })
 })
-
-class MeasureAdapter extends GridAdapter<MeasureModel> {
-    constructor(model: MeasureModel) {
-        super(model)
-        this.config = model.config
-    }
-    override getRowHead(row: number): Node | undefined {
-        if (this.model?.rowHeaders !== true)
-            return undefined
-        return document.createTextNode(`R${row}`)
-    }
-    override getColumnHead(col: number): Node | undefined {
-        if (this.model?.columnHeaders !== true)
-            return undefined
-        return document.createTextNode(`C${col}`)
-    }
-
-    setCellSize(cell: HTMLElement, size: number) {
-        switch (this.model!!.orientation) {
-            case Orientation.HORIZONTAL:
-                cell.style.width = `80px` // `${80 * (pos.col + 1)}px`
-                cell.style.height = `${size}px`
-                break
-            case Orientation.VERTICAL:
-                cell.style.width = `${size}px`
-                break
-        }
-    }
-
-    override showCell(pos: TablePos, cell: HTMLSpanElement) {
-        // const row = this.model!.data[pos.row]
-        // console.log(`MeasureAdapter.showCell(${pos})`)
-        const data = this.model!!.getCell(pos.col, pos.row)
-        // console.log(this.model!!.asArray())
-        // console.log(data)
-
-        cell.replaceChildren(
-            // document.createTextNode(`C${pos.col}R${pos.row}`)
-            document.createTextNode(data.valueOf())
-            // document.createTextNode(`#${row.id}C${pos.col}`)
-        )
-        switch (data.idx) {
-            case 0:
-                if (data.size === undefined) {
-                    this.setCellSize(cell, 80 * (data.idx + 1))
-                } else {
-                    this.setCellSize(cell, data.size)
-                }
-                // console.log(`MeasureAdapter.showCell(${pos.col}, ${pos.row}) => size ${cell.style.width} x ${cell.style.height}`)
-                break
-            case 1:
-                // if (data.size !== undefined) {
-                //     this.setCellSize(cell, data.size!!)
-                // }
-                break
-        }
-        return undefined // ??? why do we return something ???
-    }
-}
-
-async function prepareByRows(data: Measure[], props?: PrepareProps) {
-    TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
-    const model = new MeasureModel(Orientation.HORIZONTAL, Cell, 2, data.length, flatMapRows(data))
-    model.config.seamless = (props?.seamless) === true
-    model.config.expandColumn = (props?.expandColumn) === true
-    document.body.replaceChildren(<Table style={{
-        width: `${props?.width ?? 720}px`,
-        height: `${props?.height ?? 350}px`
-    }} model={model} />)
-    await sleep()
-    return model
-}
 
 function check32_64() {
     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
