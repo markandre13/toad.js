@@ -5,7 +5,6 @@ import { bindModel, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
 
-import { ArrayTableModel } from "@toad/table/model/ArrayTableModel"
 import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeModel } from "@toad/table/model/TreeModel"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
@@ -14,7 +13,6 @@ import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 
 import { TableAdapter, EditMode } from '@toad/table/adapter/TableAdapter'
-import { ArrayAdapter } from '@toad/table/adapter/ArrayAdapter'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { TableFriend } from '@toad/table/private/TableFriend'
@@ -30,7 +28,6 @@ import { style as txDark } from "@toad/style/tx-dark"
 
 import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
 import { validateRender, TestModel, getTable } from "./util"
-import { TableAnimation } from '@toad/table/private/TableAnimation'
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 
 // TODO:
@@ -73,8 +70,6 @@ describe("table", function () {
     beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
-        Table.transitionDuration = "1ms"
-        // InsertRowAnimation.halt = false
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
@@ -151,7 +146,7 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
-            const table = getTable(model)
+            const table = getTable()
 
             const c0r0 = getByText("C0R0") as HTMLSpanElement
             const c1r0 = getByText("C1R0") as HTMLSpanElement
@@ -197,7 +192,7 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
-            const table = getTable(model)
+            const table = getTable()
 
             for (let row = 0; row < 2; ++row) {
                 for (let col = 0; col < 2; ++col) {
@@ -219,7 +214,7 @@ describe("table", function () {
 
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
 
@@ -233,7 +228,7 @@ describe("table", function () {
 
             const cell = getByText("C1R1")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 1, row: 1 })
         })
 
@@ -247,7 +242,7 @@ describe("table", function () {
 
             const cell = getByText("C1R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
         })
         it("tab to previous cell", async function () {
@@ -259,7 +254,7 @@ describe("table", function () {
             tabBackward()
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         it("tab forward out of table", async function () {
@@ -294,7 +289,7 @@ describe("table", function () {
 
             const cell = getByText("C1R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
         })
         xit("cursor right to next row", async function () {
@@ -320,7 +315,7 @@ describe("table", function () {
 
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         xit("cursor left to previous row", async function () {
@@ -346,7 +341,7 @@ describe("table", function () {
 
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         it("cursor down", async function () {
@@ -360,7 +355,7 @@ describe("table", function () {
 
             const cell = getByText("C0R1")
             expect(activeElement()).to.equal(cell)
-            const table = getTable(model)
+            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 1 })
         })
 
@@ -376,7 +371,7 @@ describe("table", function () {
                 bindModel("model", model)
                 document.body.innerHTML = `<tx-table model="model"></tx-table>`
                 await sleep()
-                const table = getTable(model)
+                const table = getTable()
                 const c0r0 = table.body.children[0]
 
                 click(c0r0)
@@ -393,7 +388,7 @@ describe("table", function () {
                 const model = createModel(2, 2)
                 document.body.innerHTML = `<tx-table model="model"></tx-table>`
                 await sleep()
-                const table = getTable(model)
+                const table = getTable()
 
                 const c0r0 = getByText("C0R0") as HTMLSpanElement
                 const c1r0 = getByText("C1R0") as HTMLSpanElement
@@ -479,165 +474,6 @@ describe("table", function () {
         })
     })
 
-    describe("edit columns/rows", function () {
-
-        it(`with headers: insertRow with data`, async function () {
-            const model = createModel(4, 4)
-            model.showColumnHeaders = true
-            model.showRowHeaders = true
-
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            const table = getTable(model)
-
-            await sleep()
-            // also test wrong row size, and multiple rows
-            model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation()
-
-            validateRender(model)
-        })
-
-        it(`with headers: insertColumn with data`, async function () {
-            const model = createModel(4, 4)
-            model.showColumnHeaders = true
-            model.showRowHeaders = true
-
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            const table = getTable(model)
-
-            await sleep()
-            // also test wrong row size, and multiple rows
-            model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation()
-
-            validateRender(model)
-        })
-
-        it(`with headers: removeRow`, async function () {
-            const model = createModel(4, 4)
-            model.showColumnHeaders = true
-            model.showRowHeaders = true
-
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            const table = getTable(model)
-
-            await sleep()
-            // also test wrong row size, and multiple rows
-            model.removeRow(2)
-            expect(model.rowCount).to.equal(3)
-            await table.animation()
-
-            validateRender(model)
-        })
-
-        it(`with headers: removeColumn`, async function () {
-            const model = createModel(4, 4)
-            model.showColumnHeaders = true
-            model.showRowHeaders = true
-
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            const table = getTable(model)
-
-            await sleep()
-            // also test wrong row size, and multiple rows
-            model.removeColumn(2)
-            expect(model.colCount).to.equal(3)
-            await table.animation()
-
-            validateRender(model)
-        })
-
-        it(`insertRow with data`, async function () {
-            const model = createModel(4, 4)
-
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            const table = getTable(model)
-
-            await sleep()
-            // also test wrong row size, and multiple rows
-            model.insertRow(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation()
-
-            validateRender(model)
-        })
-
-        it(`insertColumn with data`, async function () {
-            const model = createModel(4, 4)
-
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            const table = getTable(model)
-
-            await sleep()
-            // also test wrong row size, and multiple rows
-            model.insertColumn(2, str2cell(["N1", "N2", "N3", "N4"]))
-            await table.animation()
-
-            validateRender(model)
-        });
-
-        [0, 2, 4].forEach(row =>
-            it(`insertRow ${row + 1} out of 4`, async function () {
-                const model = createModel(4, 4)
-
-                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-                const table = getTable(model)
-
-                await sleep()
-                model.insertRow(row)
-                await table.animation()
-
-                validateRender(model)
-            })
-        );
-
-        [0, 2, 4].forEach(row =>
-            it(`insertColumn ${row + 1} out of 4`, async function () {
-                const model = createModel(4, 4)
-
-                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-                const table = getTable(model)
-
-                await sleep()
-                model.insertColumn(row)
-                await table.animation()
-
-                validateRender(model)
-            })
-        );
-
-        [0, 2, 3].forEach(row =>
-            it(`removeRow ${row + 1} out of 4`, async function () {
-                const model = createModel(4, 4)
-
-                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-                const table = getTable(model)
-
-                await sleep()
-                // also test wrong row size, and multiple rows
-                model.removeRow(row, 1)
-                await table.animation()
-
-                validateRender(model)
-            })
-        );
-
-        [0, 2, 3].forEach(column =>
-            it(`removeColumn ${column + 1} out of 4`, async function () {
-                const model = createModel(4, 4)
-
-                document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-                const table = getTable(model)
-
-                await sleep()
-                // also test wrong row size, and multiple rows
-                model.removeColumn(column, 1)
-                await table.animation()
-
-                validateRender(model)
-            })
-        )
-    })
-
     describe("jsx", function () {
         it("table accepts 'model' and 'style' attributes", async function () {
             const model = createModel(4, 4)
@@ -650,7 +486,7 @@ describe("table", function () {
 
             validateRender(model)
 
-            const table = getTable(model)!
+            const table = getTable()!
             expect(table.style.width).to.equal("42%")
         })
     })
@@ -675,7 +511,7 @@ describe("table", function () {
                 }} />
             )
             await sleep()
-            const table = getTable(model).table
+            const table = getTable().table
             const bounds = table.getBoundingClientRect()
             expect(bounds.width).to.equal(window.innerWidth)
             expect(bounds.height).to.equal(window.innerHeight)
@@ -700,7 +536,7 @@ describe("table", function () {
                 <Table model={model} style={{ position: 'absolute', inset: 0 }} />
             )
             await sleep()
-            const table = getTable(model)
+            const table = getTable()
 
             expect(rowCount(table)).to.equal(2)
             expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
@@ -743,61 +579,6 @@ describe("table", function () {
             expect(rowPosAndLabelTop(table, 3)).to.equal("0,118: #3")
         })
 
-        // INCLUDING THE ANIMATION, BUT SPLIT THAT OFF
-        // ALSO FOR HEAD,MIDDLE,TAIL
-        // ALSO TRY TO SET A BACKGROUND FOR SPLIT BODY AND GET RID OF THE FILLER
-        it("opening and closing a tree renders properly", async function () {
-            Table.transitionDuration = "5000ms"
-
-            // GIVEN an initial tree view
-            const model = createTreeModelFromTree()
-            document.body.replaceChildren(
-                <Table model={model} style={{ position: 'absolute', inset: 0 }} />
-            )
-            return
-            await sleep()
-            const table = getTable(model)
-
-            // THEN it renders correctly
-            expect(rowLabel(table, 0)).to.equal("#0")
-            expect(rowLabel(table, 1)).to.equal("#3")
-            expect(rowCount(table)).to.equal(2)
-            validateRender(model)
-
-            // WHEN opening the 1st node
-            click(getByText("#0")!.previousElementSibling!)
-
-            await table.animation()
-
-            // return
-
-            // THEN it renders correctly
-            expect(rowLabel(table, 0)).to.equal("#0")
-            expect(rowLabel(table, 1)).to.equal("#1")
-            expect(rowLabel(table, 2)).to.equal("#2")
-            expect(rowLabel(table, 3)).to.equal("#3")
-            expect(rowCount(table)).to.equal(4)
-            validateRender(model)
-
-            // WHEN opening the 2dn node
-            click(getByText("#3")!.previousElementSibling!)
-            await table.animation()
-
-            // for(let row=0; row<6; ++row) {
-            //     console.log((table.body.children[row*2].children[0].nextElementSibling as HTMLElement).innerText)
-            // }
-
-            // THEN it renders correctly
-            expect(rowLabel(table, 0)).to.equal("#0")
-            expect(rowLabel(table, 1)).to.equal("#1")
-            expect(rowLabel(table, 2)).to.equal("#2")
-            expect(rowLabel(table, 3)).to.equal("#3")
-            expect(rowLabel(table, 4)).to.equal("#4")
-            expect(rowLabel(table, 5)).to.equal("#5")
-            expect(rowCount(table)).to.equal(6)
-            validateRender(model)
-        })
-
         it("center tree control vertically in row (?)")
 
         it("expand columns during insert row", async function () {
@@ -809,7 +590,7 @@ describe("table", function () {
                 <Table model={model} style={{ position: 'absolute', inset: 0 }} />
             )
             await sleep()
-            const table = getTable(model)
+            const table = getTable()
             table.adapter.config.expandColumn = true
 
             // THEN it renders correctly
@@ -824,59 +605,6 @@ describe("table", function () {
             // await table.animation()
         })
 
-        it("rows are placed correctly after closing and opening subtree", async function () {
-            // Table.transitionDuration = "1000ms"
-            const model = createTree()
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="tree"></tx-table>`
-            await sleep()
-
-            // validateRender(model)
-
-            const table = getTable(model)
-
-            let expectH = 19
-            let expectY = 0
-            for (let row = 0; row < model.rowCount; ++row) {
-                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
-                const y = px2float(cell.style.top)
-                const h = px2float(cell.style.height)
-                // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
-                expect(y).to.equal(expectY)
-                expect(h).to.equal(expectH)
-                expectY += h
-            }
-
-
-            click(table.body.children[0].children[0])
-            await table.animation()
-            await sleep(100)
-
-            expectY = 0
-            for (let row = 0; row < model.rowCount; ++row) {
-                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
-                const y = px2float(cell.style.top)
-                const h = px2float(cell.style.height)
-                // console.log(`expectRow[${row}] = {y: ${y}, h: ${h}}`)
-                expect(y).to.equal(expectY)
-                expect(h).to.equal(expectH)
-                expectY += h
-            }
-
-            click(table.body.children[0].children[0])
-            await table.animation()
-            await sleep(100)
-
-            expectY = 0
-            for (let row = 0; row < model.rowCount; ++row) {
-                const cell = table.body.children[row * model.colCount] as HTMLSpanElement
-                const y = px2float(cell.style.top)
-                const h = px2float(cell.style.height)
-                // console.log(`expectRow[${row}] = {y: ${y} (${expectY}), h: ${h}}`)
-                expect(y).to.equal(expectY)
-                expect(h).to.equal(expectH)
-                expectY += h
-            }
-        })
     })
 })
 

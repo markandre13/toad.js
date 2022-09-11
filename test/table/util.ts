@@ -65,20 +65,76 @@ export class MeasureModel extends GridTableModel<Cell> {
     }
 }
 
-// ========= OLD AND DEPRECATED CODE =========
-
-export class TableWrapper extends TableFriend {
-    constructor(table: Table) {
-        super(table)
-    }
-    animation(): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            this.table.animationDone = () => {
-                resolve()
-            }
-        })
-    }
+export interface PrepareProps {
+    columnHeaders?: boolean
+    rowHeaders?: boolean
+    seamless?: boolean
+    expandColumn?: boolean
+    width?: number
+    height?: number
 }
+
+export function flatMapRows(data: Measure[]) {
+    return data.flatMap(it => it.toCells(Orientation.HORIZONTAL))
+}
+
+export function getTable() {
+    return new TableFriend(
+        document.querySelector("tx-table") as Table
+    )
+}
+export function bodyRowInfo(row: number) {
+    const table = getTable()
+    return bodyRowInfoCore(row, table, table.body)
+}
+export function splitRowInfo(row: number) {
+    const table = getTable()
+    return bodyRowInfoCore(row, table, table.splitBody)
+}
+export function stagingRowInfo(row: number) {
+    const table = getTable()
+    return bodyRowInfoCore(row, table, table.staging)
+}
+export function splitBodyY() {
+    const table = getTable()
+    return px2float(table.splitBody.style.top)
+}
+export function splitBodyH() {
+    const table = getTable()
+    return px2float(table.splitBody.style.height)
+}
+export function maskY() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.top)
+}
+export function maskH() {
+    const table = getTable()
+    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.height)
+}
+export function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) {
+    const indexOf1stCellInRow = row * table.adapter.colCount
+    if (indexOf1stCellInRow >= body.children.length) {
+        throw Error(`Row ${row} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
+    }
+    const firstCellOfRow = body.children[indexOf1stCellInRow] as HTMLElement
+    const x = px2float(firstCellOfRow.style.left)
+    const y = px2float(firstCellOfRow.style.top)
+    const w = px2float(firstCellOfRow.style.width)
+    const h = px2float(firstCellOfRow.style.height)
+
+    for (let i = 1; i < table.adapter.colCount; ++i) {
+        const otherCellInRow = body.children[indexOf1stCellInRow + i] as HTMLElement
+        expect(otherCellInRow.style.top).to.equal(firstCellOfRow.style.top)
+        expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
+    }
+    let id = firstCellOfRow.innerText
+    id = id.substring(0, id.indexOf('C'))
+    return `${id}:${x},${y},${w},${h}`
+}
+
+// ========= OLD AND DEPRECATED CODE =========
 
 export interface TestModel extends TableModel {
     showColumnHeaders: boolean
@@ -90,24 +146,13 @@ export interface TestModel extends TableModel {
     getCellValueOf(table: TableFriend, col: number, row: number): string
 }
 
-export function getTable(model: TableModel) {
-    const table = document.querySelector("tx-table") as Table
-    if (table === undefined) {
-        throw Error("No <tx-table> found.")
-    }
-    if (table.getModel() !== model) {
-        throw Error("<tx-model> has wrong model")
-    }
-    return new TableWrapper(table)
-}
-
 // this method checks if the layout of the table cells fits the expectations,
 // especially after various insert/remove row/column operations
 export function validateRender(model: TestModel, print: boolean = false) {
 
     // console.log(`validateRender: size ${adapter.colCount} x ${adapter.rowCount} = ${adapter.colCount * adapter.rowCount}`)
 
-    const table = getTable(model)
+    const table = getTable()
     const adapter = table.adapter
     const body = table.body
     // console.log(`  body has length ${body.children.length}`)

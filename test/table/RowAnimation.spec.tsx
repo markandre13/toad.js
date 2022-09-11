@@ -1,20 +1,18 @@
 import { expect } from '@esm-bundle/chai'
-import { Animator, Reference, unbind } from "@toad"
+import { Animator, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
-import { TableAdapter, TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
+import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { sleep, px2float } from "../testlib"
+import { sleep } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
-import { TableFriend } from '@toad/table/private/TableFriend'
-import { GridTableModel } from '@toad/table/model/GridTableModel'
 import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 import { AnimationBase } from '@toad/util/animation'
 
-import { Orientation, Measure, MeasureModel, Cell } from "./util"
+import { Orientation, Measure, MeasureModel, Cell, PrepareProps, flatMapRows, getTable, bodyRowInfo, splitRowInfo, stagingRowInfo, splitBodyY, splitBodyH, maskY, maskH, bodyRowInfoCore } from "./util"
 
 describe("table", function () {
     beforeEach(async function () {
@@ -1221,7 +1219,6 @@ describe("table", function () {
     })
 })
 
-
 class MeasureAdapter extends GridAdapter<MeasureModel> {
     constructor(model: MeasureModel) {
         super(model)
@@ -1281,23 +1278,6 @@ class MeasureAdapter extends GridAdapter<MeasureModel> {
     }
 }
 
-interface PrepareProps {
-    columnHeaders?: boolean
-    rowHeaders?: boolean
-    seamless?: boolean
-    expandColumn?: boolean
-    width?: number
-    height?: number
-}
-
-function flatMapRows(data: Measure[]) {
-    return data.flatMap(it => it.toCells(Orientation.HORIZONTAL))
-}
-
-// function flatMapRows<T>(data: T[][]): T[] {
-//     return data.flatMap(it => it)
-// }
-
 async function prepareByRows(data: Measure[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
     const model = new MeasureModel(Orientation.HORIZONTAL, Cell, 2, data.length, flatMapRows(data))
@@ -1309,62 +1289,6 @@ async function prepareByRows(data: Measure[], props?: PrepareProps) {
     }} model={model} />)
     await sleep()
     return model
-}
-
-function getTable() {
-    return new TableFriend(
-        document.querySelector("tx-table") as Table
-    )
-}
-function bodyRowInfo(row: number) {
-    const table = getTable()
-    return bodyRowInfoCore(row, table, table.body)
-}
-function splitRowInfo(row: number) {
-    const table = getTable()
-    return bodyRowInfoCore(row, table, table.splitBody)
-}
-function stagingRowInfo(row: number) {
-    const table = getTable()
-    return bodyRowInfoCore(row, table, table.staging)
-}
-function splitBodyY() {
-    const table = getTable()
-    return px2float(table.splitBody.style.top)
-}
-function splitBodyH() {
-    const table = getTable()
-    return px2float(table.splitBody.style.height)
-}
-function maskY() {
-    const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.top)
-}
-function maskH() {
-    const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.height)
-}
-function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) {
-    const indexOf1stCellInRow = row * table.adapter.colCount
-    if (indexOf1stCellInRow >= body.children.length) {
-        throw Error(`Row ${row} does not exist. There are only ${body.children.length / table.adapter.colCount}.`)
-    }
-    const firstCellOfRow = body.children[indexOf1stCellInRow] as HTMLElement
-    const x = px2float(firstCellOfRow.style.left)
-    const y = px2float(firstCellOfRow.style.top)
-    const w = px2float(firstCellOfRow.style.width)
-    const h = px2float(firstCellOfRow.style.height)
-
-    for (let i = 1; i < table.adapter.colCount; ++i) {
-        const otherCellInRow = body.children[indexOf1stCellInRow + i] as HTMLElement
-        expect(otherCellInRow.style.top).to.equal(firstCellOfRow.style.top)
-        expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
-    }
-    let id = firstCellOfRow.innerText
-    id = id.substring(0, id.indexOf('C'))
-    return `${id}:${x},${y},${w},${h}`
 }
 
 function check32_64() {
