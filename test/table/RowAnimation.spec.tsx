@@ -14,6 +14,8 @@ import { GridTableModel } from '@toad/table/model/GridTableModel'
 import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 import { AnimationBase } from '@toad/util/animation'
 
+import { Orientation, Measure, MeasureModel, Cell } from "./util"
+
 describe("table", function () {
     beforeEach(async function () {
         unbind()
@@ -62,8 +64,8 @@ describe("table", function () {
 
                     // ...insert the 1st two rows
                     model.insertRow(0, flatMapRows([
-                        new Measure(1, 32).toCells(),
-                        new Measure(2, 64).toCells()
+                        new Measure(1, 32),
+                        new Measure(2, 64)
                     ]))
                     expect(model.colCount).to.equal(2)
                     expect(model.rowCount).to.equal(2)
@@ -119,8 +121,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertRow(0, flatMapRows([
-                        new Measure(1, 48).toCells(),
-                        new Measure(2, 72).toCells()
+                        new Measure(1, 48),
+                        new Measure(2, 72)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -173,8 +175,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertRow(1, flatMapRows([
-                        new Measure(2, 48).toCells(),
-                        new Measure(3, 72).toCells()
+                        new Measure(2, 48),
+                        new Measure(3, 72)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -226,8 +228,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertRow(2, flatMapRows([
-                        new Measure(3, 48).toCells(),
-                        new Measure(4, 72).toCells()
+                        new Measure(3, 48),
+                        new Measure(4, 72)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -370,8 +372,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertRow(1, flatMapRows([
-                        new Measure(2, 48).toCells(),
-                        new Measure(3, 72).toCells()
+                        new Measure(2, 48),
+                        new Measure(3, 72)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -421,8 +423,8 @@ describe("table", function () {
 
                     // ...insert the 1st two rows
                     model.insertRow(0, flatMapRows([
-                        new Measure(1, 32).toCells(),
-                        new Measure(2, 64).toCells()
+                        new Measure(1, 32),
+                        new Measure(2, 64)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -476,8 +478,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertRow(0, flatMapRows([
-                        new Measure(1, 48).toCells(),
-                        new Measure(2, 72).toCells()
+                        new Measure(1, 48),
+                        new Measure(2, 72)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -592,8 +594,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertRow(2, flatMapRows([
-                        new Measure(3, 48).toCells(),
-                        new Measure(4, 72).toCells()
+                        new Measure(3, 48),
+                        new Measure(4, 72)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -736,8 +738,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertRow(1, flatMapRows([
-                        new Measure(2, 48).toCells(),
-                        new Measure(3, 72).toCells()
+                        new Measure(2, 48),
+                        new Measure(3, 72)
                     ]))
 
                     // ...and ask for the new cells to be measured
@@ -1219,51 +1221,6 @@ describe("table", function () {
     })
 })
 
-enum Orientation {
-    HORIZONTAL, VERTICAL
-}
-
-class Cell {
-    id: number
-    idx: number
-    size?: number
-
-    constructor(id?: number, idx?: number, size?: number) {
-        this.id = id ?? 0
-        this.idx = idx ?? 0
-        this.size = size
-    }
-    valueOf(): string {
-        return `#${this.id}C${this.idx}`
-        // return `#${this.id}R${this.idx}`
-    }
-}
-
-class Measure {
-    id: number
-    size: number
-    constructor(id?: number, size?: number) {
-        this.id = id !== undefined ? id : 0
-        this.size = size !== undefined ? size : 0
-    }
-    toCells() {
-        return [
-            new Cell(this.id, 0, this.size),
-            new Cell(this.id, 1, undefined)
-        ]
-    }
-}
-
-class MeasureModel extends GridTableModel<Cell> {
-    orientation = Orientation.HORIZONTAL
-    columnHeaders = false
-    rowHeaders = false
-    config = new TableAdapterConfig()
-    constructor(nodeClass: new () => Cell, cols: number, rows: number, data?: Cell[]) {
-        // console.log(`MeaasureModel(): cols=${cols}, rows=${rows}`)
-        super(nodeClass, cols, rows, data)
-    }
-}
 
 class MeasureAdapter extends GridAdapter<MeasureModel> {
     constructor(model: MeasureModel) {
@@ -1333,14 +1290,17 @@ interface PrepareProps {
     height?: number
 }
 
-function flatMapRows<T>(data: T[][]): T[] {
-    return data.flatMap(it => it)
+function flatMapRows(data: Measure[]) {
+    return data.flatMap(it => it.toCells(Orientation.HORIZONTAL))
 }
+
+// function flatMapRows<T>(data: T[][]): T[] {
+//     return data.flatMap(it => it)
+// }
 
 async function prepareByRows(data: Measure[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
-    const model = new MeasureModel(Cell, 2, data.length, flatMapRows(data.map(it => it.toCells())))
-    model.orientation = Orientation.HORIZONTAL
+    const model = new MeasureModel(Orientation.HORIZONTAL, Cell, 2, data.length, flatMapRows(data))
     model.config.seamless = (props?.seamless) === true
     model.config.expandColumn = (props?.expandColumn) === true
     document.body.replaceChildren(<Table style={{

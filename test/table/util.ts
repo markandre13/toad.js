@@ -3,11 +3,69 @@ import { expect } from '@esm-bundle/chai'
 import { EditMode } from '@toad/table/adapter/TableAdapter'
 import { TableModel } from "@toad/table/model/TableModel"
 import { Table } from "@toad/table/Table"
+import { TableAdapter, TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
 import { TableFriend } from "@toad/table/private/TableFriend"
 
 import { px2int, px2float } from "../testlib"
 import { GridTableModel } from '@toad/table/model/GridTableModel'
 
+export enum Orientation {
+    HORIZONTAL, VERTICAL
+}
+
+export class Cell {
+    orientation?: Orientation
+    id: number
+    idx: number
+    size?: number
+
+    constructor(orientation?: Orientation, id?: number, idx?: number, size?: number) {
+        this.orientation = orientation
+        this.id = id ?? 0
+        this.idx = idx ?? 0
+        this.size = size
+    }
+    valueOf(): string {
+        if (this.orientation === undefined) {
+            throw Error(`Cell has no orienttion`)
+        }
+        switch(this.orientation) {
+            case Orientation.HORIZONTAL:
+                return `#${this.id}C${this.idx}`
+            case Orientation.VERTICAL:
+                return `#${this.id}R${this.idx}`
+        }
+    }
+}
+
+export class Measure {
+    id: number
+    size: number
+    constructor(id?: number, size?: number) {
+        this.id = id !== undefined ? id : 0
+        this.size = size !== undefined ? size : 0
+    }
+    toCells(orientation: Orientation) {
+        return [
+            new Cell(orientation, this.id, 0, this.size),
+            new Cell(orientation, this.id, 1, undefined)
+        ]
+    }
+}
+
+export class MeasureModel extends GridTableModel<Cell> {
+    orientation: Orientation
+    columnHeaders = false
+    rowHeaders = false
+    config = new TableAdapterConfig()
+    constructor(orientation: Orientation, nodeClass: new () => Cell, cols: number, rows: number, data?: Cell[]) {
+        // console.log(`MeaasureModel(): cols=${cols}, rows=${rows}`)
+        super(nodeClass, cols, rows, data)
+        this.orientation = orientation
+    }
+}
+
+// ========= OLD AND DEPRECATED CODE =========
 
 export class TableWrapper extends TableFriend {
     constructor(table: Table) {

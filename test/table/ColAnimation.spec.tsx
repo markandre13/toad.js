@@ -13,6 +13,7 @@ import { TableFriend } from '@toad/table/private/TableFriend'
 import { GridTableModel } from '@toad/table/model/GridTableModel'
 import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 import { AnimationBase } from '@toad/util/animation'
+import { Orientation, Measure, MeasureModel, Cell } from "./util"
 
 describe("table", function () {
     beforeEach(async function () {
@@ -93,8 +94,8 @@ describe("table", function () {
                     // Animator.halt = false
 
                     model.insertColumn(0, flatMapColumns([
-                        new Measure(1, 48).toCells(),
-                        new Measure(2, 72).toCells()
+                        new Measure(1, 48),
+                        new Measure(2, 72)
                     ]))
 
                     expect(model.asArray().length).to.equal(4)
@@ -162,8 +163,8 @@ describe("table", function () {
 
                     // ...at the head insert two columns
                     model.insertColumn(0, flatMapColumns([
-                        new Measure(1, 48).toCells(),
-                        new Measure(2, 72).toCells()
+                        new Measure(1, 48),
+                        new Measure(2, 72)
                     ]))
                     // return
                     // model.asArray().forEach( (value, index) => console.log(`model[${index}] = id(col):${value.id}, idx(row)=${value.idx}, size=${value.size}`))
@@ -247,8 +248,8 @@ describe("table", function () {
                     // Animator.halt = false
 
                     model.insertColumn(1, flatMapColumns([
-                        new Measure(2, 48).toCells(),
-                        new Measure(3, 72).toCells()
+                        new Measure(2, 48),
+                        new Measure(3, 72)
                     ]))
 
                     // return
@@ -318,8 +319,8 @@ describe("table", function () {
                     // Animator.halt = false
 
                     model.insertColumn(2, flatMapColumns([
-                        new Measure(3, 48).toCells(),
-                        new Measure(4, 72).toCells()
+                        new Measure(3, 48),
+                        new Measure(4, 72)
                     ]))
 
                     // return
@@ -390,8 +391,8 @@ describe("table", function () {
 
                     // ...at the head insert two rows
                     model.insertColumn(1, flatMapColumns([
-                        new Measure(2, 48).toCells(),
-                        new Measure(3, 72).toCells()
+                        new Measure(2, 48),
+                        new Measure(3, 72)
                     ]))
 
                     // return
@@ -817,49 +818,6 @@ function getTable() {
     )
 }
 
-enum Orientation {
-    HORIZONTAL, VERTICAL
-}
-
-class Cell {
-    id: number
-    idx: number
-    size?: number
-
-    constructor(id?: number, idx?: number, size?: number) {
-        this.id = id ?? 0
-        this.idx = idx ?? 0
-        this.size = size
-    }
-    valueOf(): string {
-        // return `#${this.id}C${this.idx}`
-        return `#${this.id}R${this.idx}`
-    }
-}
-
-class Measure {
-    id: number
-    size: number
-    constructor(id?: number, size?: number) {
-        this.id = id !== undefined ? id : 0
-        this.size = size !== undefined ? size : 0
-    }
-    toCells() {
-        return [
-            new Cell(this.id, 0, this.size),
-            new Cell(this.id, 1, undefined)
-        ]
-    }
-}
-
-class MeasureModel extends GridTableModel<Cell> {
-    orientation = Orientation.VERTICAL
-    config = new TableAdapterConfig()
-    constructor(nodeClass: new () => Cell, cols: number, rows: number, data?: Cell[]) {
-        super(nodeClass, cols, rows, data)
-    }
-}
-
 class MeasureAdapter extends GridAdapter<MeasureModel> {
     constructor(model: MeasureModel) {
         super(model)
@@ -899,7 +857,7 @@ class MeasureAdapter extends GridAdapter<MeasureModel> {
 
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
         // const row = this.model!.data[pos.row]
-        // console.log(`MeasureAdapter.showCell(${pos})`)
+        // console.log(`MeasureAdapter.showCell(${pos}), orientation = ${Orientation[this.model!!.orientation]}`)
         const data = this.model!!.getCell(pos.col, pos.row)
         // console.log(this.model!!.asArray())
         // console.log(data)
@@ -935,8 +893,9 @@ interface PrepareProps {
     height?: number
 }
 
-function flatMapColumns<T>(data: T[][]): T[] {
-    let result: T[] = []
+function flatMapColumns(dataIn: Measure[]) {
+    const data = dataIn.map(it=>it.toCells(Orientation.VERTICAL))
+    let result: Cell[] = []
     if (data.length === 0)
         return result
     const rows = data[0].length
@@ -948,7 +907,7 @@ function flatMapColumns<T>(data: T[][]): T[] {
 
 async function prepareByColumns(data: Measure[], props?: PrepareProps) {
     TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
-    const model = new MeasureModel(Cell, data.length, 2, flatMapColumns(data.map(it => it.toCells())))
+    const model = new MeasureModel(Orientation.VERTICAL, Cell, data.length, 2, flatMapColumns(data))
     model.config.seamless = (props?.seamless) === true
     model.config.expandColumn = (props?.expandColumn) === true
     document.body.replaceChildren(<Table style={{

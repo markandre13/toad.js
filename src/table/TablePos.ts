@@ -24,6 +24,6 @@ export class TablePos {
         this.row = row
     }
     toString() {
-        return `TablePos { col:${this.col}, row:${this.row}}`
+        return `TablePos { col:${this.col}, row:${this.row} }`
     }
 }
