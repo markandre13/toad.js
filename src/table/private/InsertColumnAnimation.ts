@@ -190,8 +190,6 @@ export class InsertColumnAnimation extends TableAnimation {
         this.mask.style.top = `0`
         this.mask.style.bottom = `0`
         this.mask.style.border = 'none'
-        this.mask.style.transitionProperty = "transform"
-        this.mask.style.transitionDuration = Table.transitionDuration
         this.mask.style.backgroundColor = Table.maskColor
         this.staging.appendChild(this.mask)
     }

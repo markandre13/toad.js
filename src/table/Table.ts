@@ -88,7 +88,6 @@ export class Table extends View {
     visible = false
 
     // test api
-    static transitionDuration = "500ms"
     animationDone?: () => void
 
     // delay before we can successfully start a transition after adding elements to the dom
@@ -1167,8 +1166,6 @@ export class Table extends View {
         // console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()
-        this.splitBody.style.transitionProperty = "transform" // OBSOLETE
-        this.splitBody.style.transitionDuration = Table.transitionDuration // OBSOLETE
         this.splitBody.className = "splitBody"
         this.splitBody.style.left = `0`
         this.splitBody.style.right = `0`

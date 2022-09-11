@@ -15,7 +15,6 @@ describe("table", function () {
     beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
-        Table.transitionDuration = "1ms" // OBSOLETE
         Table.maskColor = `rgba(0,0,128,0.3)`
         Table.splitColor = `rgba(255,128,0,0.5)`
         AnimationBase.animationFrameCount = 1

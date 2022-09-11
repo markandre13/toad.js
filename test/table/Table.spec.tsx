@@ -28,7 +28,9 @@ import { style as txDark } from "@toad/style/tx-dark"
 
 import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
 import { validateRender, TestModel, getTable } from "./util"
+
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
+import { AnimationBase } from '@toad/util/animation'
 
 // TODO:
 // [X] send modified-events
@@ -70,6 +72,8 @@ describe("table", function () {
     beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
+        AnimationBase.animationFrameCount = 1
+        // InsertRowAnimation.halt = false
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
@@ -493,7 +497,7 @@ describe("table", function () {
 
     describe("layout", function () {
         it("expand", async function () {
-            Table.transitionDuration = "500ms"
+            // Table.transitionDuration = "500ms"
             const model = createWidgetTree();
             // TODO
             // * while when a TreeNodeModel is initialized from a populated tree,
@@ -582,7 +586,7 @@ describe("table", function () {
         it("center tree control vertically in row (?)")
 
         it("expand columns during insert row", async function () {
-            Table.transitionDuration = "500ms"
+            // Table.transitionDuration = "500ms"
 
             // GIVEN an initial tree view
             const model = createTreeModelFromTree()

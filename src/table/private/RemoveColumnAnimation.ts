@@ -74,30 +74,6 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.joinVertical()
     }
 
-    // override run() {
-    //     let totalWidth = 0
-    //     for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
-    //         const cell = this.body.children[col] as HTMLSpanElement
-    //         totalWidth += Math.ceil(px2float(cell.style.width) + 5)
-    //     }
-    //     this.totalWidth = totalWidth
-
-    //     let allSelected = this.body.querySelectorAll(".selected")
-    //     for (let selected of allSelected) {
-    //         selected.classList.remove("selected")
-    //     }
-
-    //     this.splitVertical(this.event.index + this.event.size, this.event.size)
-
-    //     this.splitBody.style.transitionProperty = "transform"
-    //     this.splitBody.style.transitionDuration = Table.transitionDuration
-    //     this.splitBody.ontransitionend = this.joinVertical
-    //     this.splitBody.ontransitioncancel = this.joinVertical
-    //     setTimeout(() => {
-    //         this.splitBody.style.transform = `translateX(${-this.totalWidth}px)` // TODO: make this an animation
-    //     }, Table.renderDelay) // at around > 10ms we'll get an animated transition on google chrome
-    // }
-
     override stop() {
         this.joinVertical()
         this.clearAnimation()
