@@ -61,7 +61,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
     setCell(col: number, row: number, data: T) {
         this._data[col + row * this._cols] = data
     }
-    insertRow(row: number, rowData?: Array<T>, rowLength: number = this._rows): number {
+    insertRow(row: number, rowData?: Array<T>, rowLength: number = this._cols): number {
         if (this._data.length === 0) {
             this._cols = rowLength
         }

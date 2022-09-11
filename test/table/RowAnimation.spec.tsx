@@ -2,9 +2,7 @@ import { expect } from '@esm-bundle/chai'
 import { Animator, Reference, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
-import { ArrayTableModel } from "@toad/table/model/ArrayTableModel"
 import { TableAdapter, TableAdapterConfig } from '@toad/table/adapter/TableAdapter'
-import { ArrayAdapter } from '@toad/table/adapter/ArrayAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
@@ -12,6 +10,8 @@ import { sleep, px2float } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { TableFriend } from '@toad/table/private/TableFriend'
+import { GridTableModel } from '@toad/table/model/GridTableModel'
+import { GridAdapter } from '@toad/table/adapter/GridAdapter'
 import { AnimationBase } from '@toad/util/animation'
 
 describe("table", function () {
@@ -29,9 +29,9 @@ describe("table", function () {
     describe("other", function () {
         it("staging follows scrolled body", async function () {
             // WHEN we have an empty table without headings
-            await prepare([
-                new MeasureRow(1, 32),
-                new MeasureRow(4, 64)
+            await prepareByRows([
+                new Measure(1, 32),
+                new Measure(4, 64)
             ], { height: 32, width: 32 })
             const table = getTable()
 
@@ -49,59 +49,24 @@ describe("table", function () {
     // [ ] alignment in makehuman.js
     // [ ] table colors
     // [ ] with headers
+
     describe("row", function () {
-        function check32_64() {
-            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-            expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-        }
-        function check48_72_32_64() {
-            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
-            expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
-            expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
-            expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
-        }
-        function check32_48_72_64() {
-            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-            expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,48`)
-            expect(bodyRowInfo(2)).to.equal(`#3:0,82,80,72`)
-            expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
-        }
-        function check32_48_72_64_seamless() {
-            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-            expect(bodyRowInfo(1)).to.equal(`#2:0,32,80,48`)
-            expect(bodyRowInfo(2)).to.equal(`#3:0,${32 + 48},80,72`)
-            expect(bodyRowInfo(3)).to.equal(`#4:0,${32 + 48 + 72},80,64`)
-        }
-        function check32_64_48_72() {
-            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-            expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-            expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
-            expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
-        }
-        function check32_64_remove_head() {
-            expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
-            expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
-        }
-        function check32_64_remove_middle() {
-            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-            expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
-        }
-        function check32_64_remove_seamless() {
-            expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-            expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`)
-        }
         describe("insert", function () {
-            describe("no headers", function () {
+            describe("body (no headers)", function () {
                 it("two rows into empty", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([])
+                    const model = await prepareByRows([])
+                    expect(model.colCount).to.equal(2)
+                    expect(model.rowCount).to.equal(0)
                     const table = getTable()
 
                     // ...insert the 1st two rows
-                    model.insertRow(0, [
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 64)
-                    ])
+                    model.insertRow(0, flatMapRows([
+                        new Measure(1, 32).toCells(),
+                        new Measure(2, 64).toCells()
+                    ]))
+                    expect(model.colCount).to.equal(2)
+                    expect(model.rowCount).to.equal(2)
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -143,9 +108,9 @@ describe("table", function () {
                 })
                 it("two rows at head", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new MeasureRow(3, 32),
-                        new MeasureRow(4, 64)
+                    const model = await prepareByRows([
+                        new Measure(3, 32),
+                        new Measure(4, 64)
                     ])
                     const table = getTable()
 
@@ -153,10 +118,10 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
 
                     // ...at the head insert two rows
-                    model.insertRow(0, [
-                        new MeasureRow(1, 48),
-                        new MeasureRow(2, 72)
-                    ])
+                    model.insertRow(0, flatMapRows([
+                        new Measure(1, 48).toCells(),
+                        new Measure(2, 72).toCells()
+                    ]))
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -197,9 +162,9 @@ describe("table", function () {
                 })
                 it("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(4, 64)
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
                     ])
                     const table = getTable()
 
@@ -207,10 +172,10 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
 
                     // ...at the head insert two rows
-                    model.insertRow(1, [
-                        new MeasureRow(2, 48),
-                        new MeasureRow(3, 72)
-                    ])
+                    model.insertRow(1, flatMapRows([
+                        new Measure(2, 48).toCells(),
+                        new Measure(3, 72).toCells()
+                    ]))
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -250,9 +215,9 @@ describe("table", function () {
                 })
                 it("two rows at end", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 64)
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
                     ])
                     const table = getTable()
 
@@ -260,10 +225,10 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
 
                     // ...at the head insert two rows
-                    model.insertRow(2, [
-                        new MeasureRow(3, 48),
-                        new MeasureRow(4, 72)
-                    ])
+                    model.insertRow(2, flatMapRows([
+                        new Measure(3, 48).toCells(),
+                        new Measure(4, 72).toCells()
+                    ]))
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -304,9 +269,9 @@ describe("table", function () {
                 describe("column width", function () {
                     it("keep initial", async function () {
                         // WHEN we have an empty table without headings
-                        const model = await prepare([
-                            new MeasureRow(1, 32),
-                            new MeasureRow(3, 64)
+                        const model = await prepareByRows([
+                            new Measure(1, 32),
+                            new Measure(3, 64)
                         ])
                         // Animator.halt = false
                         const table = getTable()
@@ -315,9 +280,9 @@ describe("table", function () {
                         expect(bodyRowInfo(1)).to.equal(`#3:0,33,80,64`)
 
                         // ...at the head insert two rows
-                        model.insertRow(1, [
-                            new MeasureRow(2, 48, 200)
-                        ])
+                        // model.insertRow(1, flatMapRows([
+                        //     new Measure(2, 48, 200).toCells()
+                        // ]))
 
                         // ...and ask for the new cells to be measured
                         const animation = InsertRowAnimation.current!
@@ -335,9 +300,9 @@ describe("table", function () {
                     })
                     it("extend", async function () {
                         // WHEN we have an empty table without headings
-                        const model = await prepare([
-                            new MeasureRow(1, 32),
-                            new MeasureRow(3, 64)
+                        const model = await prepareByRows([
+                            new Measure(1, 32),
+                            new Measure(3, 64)
                         ], { expandColumn: true })
                         // Animator.halt = false
                         const table = getTable()
@@ -346,9 +311,9 @@ describe("table", function () {
                         expect(bodyRowInfo(1)).to.equal(`#3:0,33,80,64`)
 
                         // ...at the head insert two rows
-                        model.insertRow(1, [
-                            new MeasureRow(2, 48, 128)
-                        ])
+                        // model.insertRow(1, flatMapRows([
+                        //     new Measure(2, 48, 128)
+                        // ]))
 
                         // ...and ask for the new cells to be measured
                         const animation = InsertRowAnimation.current!
@@ -394,9 +359,9 @@ describe("table", function () {
                 })
                 it("seamless (two rows at middle)", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(4, 64)
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
                     ], { seamless: true })
                     const table = getTable()
 
@@ -404,10 +369,376 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`) // 32 instead of 33
 
                     // ...at the head insert two rows
-                    model.insertRow(1, [
-                        new MeasureRow(2, 48),
-                        new MeasureRow(3, 72)
+                    model.insertRow(1, flatMapRows([
+                        new Measure(2, 48).toCells(),
+                        new Measure(3, 72).toCells()
+                    ]))
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertRowAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two cells have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewRowsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowInfo(0)).to.equal(`#2:0,32,80,48`)
+                    expect(stagingRowInfo(1)).to.equal(`#3:0,80,80,72`) // 80 instead of 82
+                    // ...and are hidden by a mask
+                    const insertHeight = 48 + 72 // + 4 - 1
+                    expect(maskY()).to.equal(32) // 32 instead of 33
+                    expect(maskH()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+                    // THEN splitbody
+                    expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
+                    expect(splitBodyY()).to.equal(32) // 32 instead of 33
+                    expect(splitBodyH()).to.equal(64) // 64 instead of 64 + 2
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(maskY()).to.equal(33 + insertHeight - 1)
+                    expect(splitBodyY()).to.equal(33 + insertHeight - 1)
+
+                    animation.joinHorizontal()
+                    check32_48_72_64_seamless()
+                })
+            })
+            describe("header", function () {
+                // NOTE: row headers will be tested for animation; column headers, ... let's see...
+
+
+                xit("two rows into empty", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByRows([])
+                    const table = getTable()
+
+                    // ...insert the 1st two rows
+                    model.insertRow(0, flatMapRows([
+                        new Measure(1, 32).toCells(),
+                        new Measure(2, 64).toCells()
+                    ]))
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertRowAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two cells have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewRowsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                    expect(stagingRowInfo(1)).to.equal(`#2:0,33,80,64`)
+
+                    // ...and are hidden by a mask
+                    const insertHeight = 32 + 64 + 4 - 1
+                    expect(maskY()).to.equal(0)
+                    expect(maskH()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+
+                    // THEN splitbody
+                    expect(splitBodyY()).to.equal(0)
+                    expect(splitBodyH()).to.equal(1)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(maskY()).to.equal(insertHeight)
+                    expect(splitBodyY()).to.equal(insertHeight)
+
+                    animation.joinHorizontal()
+                    check32_64()
+
+                    expect(table.body.children).to.have.lengthOf(4)
+                })
+                xit("two rows at head", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByRows([
+                        new Measure(3, 32),
+                        new Measure(4, 64)
                     ])
+                    const table = getTable()
+
+                    expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+
+                    // ...at the head insert two rows
+                    model.insertRow(0, flatMapRows([
+                        new Measure(1, 48).toCells(),
+                        new Measure(2, 72).toCells()
+                    ]))
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertRowAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two rows have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewRowsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,48`)
+                    expect(stagingRowInfo(1)).to.equal(`#2:0,49,80,72`)
+
+                    // ...and are hidden by a mask
+                    const insertHeight = 48 + 72 + 4 - 1
+                    expect(maskY()).to.equal(0)
+                    expect(maskH()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+                    expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                    expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                    // THEN splitbody
+                    expect(splitBodyY()).to.equal(0)
+                    expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(maskY()).to.equal(insertHeight - 1)
+                    expect(splitBodyY()).to.equal(insertHeight - 1)
+
+                    animation.joinHorizontal()
+                    check48_72_32_64()
+                })
+                xit("two rows at middle", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
+                    ], { 
+                        rowHeaders: true,
+                        columnHeaders: true
+                    })
+                    const table = getTable()
+
+                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+
+                    // ...at the head insert two rows
+
+                    AnimationBase.animationFrameCount = 6000
+                    Animator.halt = false
+
+                    // model.insertRow(1, [
+                    //     new MeasureRow(2, 48),
+                    //     new MeasureRow(3, 72)
+                    // ])
+
+                    // return
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertRowAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two cells have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewRowsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
+                    expect(stagingRowInfo(1)).to.equal(`#3:0,82,80,72`)
+
+                    // ...and are hidden by a mask
+                    const insertHeight = 48 + 72 + 4 - 1
+                    expect(maskY()).to.equal(33)
+                    expect(maskH()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+                    // THEN splitbody
+                    expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
+                    expect(splitBodyY()).to.equal(33)
+                    expect(splitBodyH()).to.equal(64 + 2)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(maskY()).to.equal(33 + insertHeight - 1)
+                    expect(splitBodyY()).to.equal(33 + insertHeight - 1)
+
+                    animation.joinHorizontal()
+                    check32_48_72_64()
+                })
+                xit("two rows at end", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
+                    ])
+                    const table = getTable()
+
+                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+
+                    // ...at the head insert two rows
+                    model.insertRow(2, flatMapRows([
+                        new Measure(3, 48).toCells(),
+                        new Measure(4, 72).toCells()
+                    ]))
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertRowAnimation.current!
+                    animation.prepareCellsToBeMeasured()
+                    await sleep()
+
+                    // THEN then two cells have been measured.
+                    expect(table.measure.children.length).to.equal(4)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewRowsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowInfo(0)).to.equal(`#3:0,98,80,48`)
+                    expect(stagingRowInfo(1)).to.equal(`#4:0,147,80,72`)
+
+                    // ...and are hidden by a mask
+                    const insertHeight = 48 + 72 + 4 - 1
+                    expect(maskY()).to.equal(98)
+                    expect(maskH()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+                    // THEN splitbody
+                    expect(splitBodyY()).to.equal(98)
+                    expect(splitBodyH()).to.equal(1)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(maskY()).to.equal(98 + insertHeight - 1)
+                    expect(splitBodyY()).to.equal(98 + insertHeight - 1)
+
+                    animation.joinHorizontal()
+
+                    check32_64_48_72()
+                })
+                describe("column width", function () {
+                    xit("keep initial", async function () {
+                        // WHEN we have an empty table without headings
+                        const model = await prepareByRows([
+                            new Measure(1, 32),
+                            new Measure(3, 64)
+                        ])
+                        // Animator.halt = false
+                        const table = getTable()
+
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#3:0,33,80,64`)
+
+                        // ...at the head insert two rows
+                        // model.insertRow(1, flatMapRows([
+                        //     new Measure(2, 48, 200).toCells()
+                        // ]))
+
+                        // ...and ask for the new cells to be measured
+                        const animation = InsertRowAnimation.current!
+                        animation.prepareCellsToBeMeasured()
+                        await sleep()
+
+                        // THEN then two cells have been measured.
+                        expect(table.measure.children.length).to.equal(2)
+
+                        // WHEN ask for the new rows to be placed
+                        animation.arrangeNewRowsInStaging()
+
+                        // THEN they have been placed in staging
+                        expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
+                    })
+                    xit("extend", async function () {
+                        // WHEN we have an empty table without headings
+                        const model = await prepareByRows([
+                            new Measure(1, 32),
+                            new Measure(3, 64)
+                        ], { expandColumn: true })
+                        // Animator.halt = false
+                        const table = getTable()
+
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#3:0,33,80,64`)
+
+                        // ...at the head insert two rows
+                        // model.insertRow(1, flatMapRows([
+                        //     new Measure(2, 48, 128).toCells()
+                        // ]))
+
+                        // ...and ask for the new cells to be measured
+                        const animation = InsertRowAnimation.current!
+                        animation.prepareCellsToBeMeasured()
+                        await sleep()
+
+                        // THEN then two cells have been measured.
+                        expect(table.measure.children.length).to.equal(2)
+
+                        // WHEN ask for the new rows to be placed
+                        animation.arrangeNewRowsInStaging()
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#3:0,33,128,64`)
+
+                        // THEN they have been placed in staging
+                        expect(stagingRowInfo(0)).to.equal(`#2:0,33,128,48`)
+
+                        // ...and are hidden by a mask
+                        const insertHeight = 48 + 2
+                        expect(maskY()).to.equal(33)
+                        expect(maskH()).to.equal(insertHeight)
+
+                        // WHEN we split the table for the animation
+                        animation.splitHorizontal()
+                        // THEN splitbody
+                        expect(splitRowInfo(0)).to.equal(`#3:0,0,128,64`)
+                        expect(splitBodyY()).to.equal(33)
+                        expect(splitBodyH()).to.equal(64 + 2)
+
+                        // WHEN we animate
+                        animation.animationFrame(1)
+
+                        // expect(maskY()).to.equal(33 + insertHeight - 1)
+                        // expect(splitBodyY()).to.equal(33 + insertHeight - 1)
+
+                        animation.joinHorizontal()
+                        expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
+                        expect(bodyRowInfo(1)).to.equal(`#2:0,33,128,48`)
+                        expect(bodyRowInfo(2)).to.equal(`#3:0,82,128,64`)
+                        expect(table.body.children).to.have.lengthOf(6)
+                    })
+                    xit("shrink")
+                })
+                xit("seamless (two rows at middle)", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
+                    ], { seamless: true })
+                    const table = getTable()
+
+                    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                    expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`) // 32 instead of 33
+
+                    // ...at the head insert two rows
+                    model.insertRow(1, flatMapRows([
+                        new Measure(2, 48).toCells(),
+                        new Measure(3, 72).toCells()
+                    ]))
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -450,9 +781,9 @@ describe("table", function () {
             describe("no headers", function () {
                 it("all rows", async function () {
                     // WHEN we have a table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 64)
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
                     ])
                     const table = getTable()
 
@@ -515,11 +846,11 @@ describe("table", function () {
                 })
                 it("two rows at head", async function () {
                     // WHEN we have a table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 48),
-                        new MeasureRow(2, 72),
-                        new MeasureRow(3, 32),
-                        new MeasureRow(4, 64)
+                    const model = await prepareByRows([
+                        new Measure(1, 48),
+                        new Measure(2, 72),
+                        new Measure(3, 32),
+                        new Measure(4, 64)
                     ])
                     const table = getTable()
 
@@ -593,11 +924,11 @@ describe("table", function () {
                 })
                 it("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 48),
-                        new MeasureRow(3, 72),
-                        new MeasureRow(4, 64)
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
                     ])
                     const table = getTable()
 
@@ -668,11 +999,11 @@ describe("table", function () {
                 })
                 it("two rows at end", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 64),
-                        new MeasureRow(3, 48),
-                        new MeasureRow(4, 72)
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64),
+                        new Measure(3, 48),
+                        new Measure(4, 72)
                     ])
                     const table = getTable()
 
@@ -739,11 +1070,11 @@ describe("table", function () {
                 // REFACTOR: this is copy'n pasted, with only two changes. use this as a template to refactor the other seamless test
                 it("seamless (two rows at middle)", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 48),
-                        new MeasureRow(3, 72),
-                        new MeasureRow(4, 64)
+                    const model = await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
                     ], { seamless: true })
                     const table = getTable()
 
@@ -818,68 +1149,68 @@ describe("table", function () {
         describe("test support for expected final table layouts", function () {
             describe("insert", function () {
                 it("32, 64", async function () {
-                    await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 64)
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
                     ])
                     check32_64()
                 })
                 it("48, 72, 32, 64", async function () {
-                    await prepare([
-                        new MeasureRow(1, 48),
-                        new MeasureRow(2, 72),
-                        new MeasureRow(3, 32),
-                        new MeasureRow(4, 64)
+                    await prepareByRows([
+                        new Measure(1, 48),
+                        new Measure(2, 72),
+                        new Measure(3, 32),
+                        new Measure(4, 64)
                     ])
                     check48_72_32_64()
                 })
                 it("32, 48, 72, 64", async function () {
-                    await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 48),
-                        new MeasureRow(3, 72),
-                        new MeasureRow(4, 64)
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
                     ])
                     check32_48_72_64()
                 })
                 it("32, 48, 72, 64 (seamless)", async function () {
-                    await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 48),
-                        new MeasureRow(3, 72),
-                        new MeasureRow(4, 64)
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
                     ], { seamless: true })
                     check32_48_72_64_seamless()
                 })
                 it("32, 64, 48, 72", async function () {
-                    await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(2, 64),
-                        new MeasureRow(3, 48),
-                        new MeasureRow(4, 72)
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64),
+                        new Measure(3, 48),
+                        new Measure(4, 72)
                     ])
                     check32_64_48_72()
                 })
             })
             describe("remove", function () {
                 it("32, 64 at head", async function () {
-                    await prepare([
-                        new MeasureRow(3, 32),
-                        new MeasureRow(4, 64)
+                    await prepareByRows([
+                        new Measure(3, 32),
+                        new Measure(4, 64)
                     ])
                     check32_64_remove_head()
                 })
                 it("32, 64 at middle", async function () {
-                    await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(4, 64)
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
                     ])
                     check32_64_remove_middle()
                 })
                 it("32, 64 at middle (seamless)", async function () {
-                    await prepare([
-                        new MeasureRow(1, 32),
-                        new MeasureRow(4, 64)
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(4, 64)
                     ], { seamless: true })
                     check32_64_remove_seamless()
                 })
@@ -888,70 +1219,128 @@ describe("table", function () {
     })
 })
 
-// each row has an id to identify it and a variable height, to check that heights are calculated correctly
-class MeasureRow {
+enum Orientation {
+    HORIZONTAL, VERTICAL
+}
+
+class Cell {
     id: number
-    height: number
-    width?: number
-    constructor(id?: number, height?: number, width?: number) {
+    idx: number
+    size?: number
+
+    constructor(id?: number, idx?: number, size?: number) {
+        this.id = id ?? 0
+        this.idx = idx ?? 0
+        this.size = size
+    }
+    valueOf(): string {
+        return `#${this.id}C${this.idx}`
+        // return `#${this.id}R${this.idx}`
+    }
+}
+
+class Measure {
+    id: number
+    size: number
+    constructor(id?: number, size?: number) {
         this.id = id !== undefined ? id : 0
-        this.height = height !== undefined ? height : 0
-        this.width = width
+        this.size = size !== undefined ? size : 0
+    }
+    toCells() {
+        return [
+            new Cell(this.id, 0, this.size),
+            new Cell(this.id, 1, undefined)
+        ]
     }
 }
 
-class MeasureModel extends ArrayTableModel<MeasureRow> {
+class MeasureModel extends GridTableModel<Cell> {
+    orientation = Orientation.HORIZONTAL
+    columnHeaders = false
+    rowHeaders = false
     config = new TableAdapterConfig()
-    get colCount(): number {
-        throw new Error('Method not implemented.')
+    constructor(nodeClass: new () => Cell, cols: number, rows: number, data?: Cell[]) {
+        // console.log(`MeaasureModel(): cols=${cols}, rows=${rows}`)
+        super(nodeClass, cols, rows, data)
     }
 }
 
-class MeasureAdapter extends ArrayAdapter<MeasureModel> {
+class MeasureAdapter extends GridAdapter<MeasureModel> {
     constructor(model: MeasureModel) {
         super(model)
         this.config = model.config
     }
-    getColumnHeads() {
-        // return ["id", "height"]
-        return undefined
+    override getRowHead(row: number): Node | undefined {
+        if (this.model?.rowHeaders !== true)
+            return undefined
+        return document.createTextNode(`R${row}`)
     }
-    getRow(row: MeasureRow): Reference<MeasureRow>[] {
-        throw Error("yikes")
-        // return refs(row, "id", "height")
+    override getColumnHead(col: number): Node | undefined {
+        if (this.model?.columnHeaders !== true)
+            return undefined
+        return document.createTextNode(`C${col}`)
     }
-    override get colCount(): number {
-        return 2
-    }
-    override showCell(pos: TablePos, cell: HTMLSpanElement) {
-        const row = this.model!.data[pos.row]
-        cell.replaceChildren(
-            document.createTextNode(`#${row.id}C${pos.col}`)
-        )
-        if (pos.col === 1) {
-            cell.style.height = `${row.height}px`
+
+    setCellSize(cell: HTMLElement, size: number) {
+        switch (this.model!!.orientation) {
+            case Orientation.HORIZONTAL:
+                cell.style.width = `80px` // `${80 * (pos.col + 1)}px`
+                cell.style.height = `${size}px`
+                break
+            case Orientation.VERTICAL:
+                cell.style.width = `${size}px`
+                break
         }
-        if (pos.col === 0) {
-            if (row.width === undefined) {
-                cell.style.width = `${80 * (pos.col + 1)}px`
-            } else {
-                cell.style.width = `${row.width}px`
-            }
+    }
+
+    override showCell(pos: TablePos, cell: HTMLSpanElement) {
+        // const row = this.model!.data[pos.row]
+        // console.log(`MeasureAdapter.showCell(${pos})`)
+        const data = this.model!!.getCell(pos.col, pos.row)
+        // console.log(this.model!!.asArray())
+        // console.log(data)
+
+        cell.replaceChildren(
+            // document.createTextNode(`C${pos.col}R${pos.row}`)
+            document.createTextNode(data.valueOf())
+            // document.createTextNode(`#${row.id}C${pos.col}`)
+        )
+        switch (data.idx) {
+            case 0:
+                if (data.size === undefined) {
+                    this.setCellSize(cell, 80 * (data.idx + 1))
+                } else {
+                    this.setCellSize(cell, data.size)
+                }
+                // console.log(`MeasureAdapter.showCell(${pos.col}, ${pos.row}) => size ${cell.style.width} x ${cell.style.height}`)
+                break
+            case 1:
+                // if (data.size !== undefined) {
+                //     this.setCellSize(cell, data.size!!)
+                // }
+                break
         }
         return undefined // ??? why do we return something ???
     }
 }
 
 interface PrepareProps {
+    columnHeaders?: boolean
+    rowHeaders?: boolean
     seamless?: boolean
     expandColumn?: boolean
     width?: number
     height?: number
 }
 
-async function prepare(data: MeasureRow[], props?: PrepareProps) {
-    TableAdapter.register(MeasureAdapter, MeasureModel, MeasureRow) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
-    const model = new MeasureModel(data, MeasureRow)
+function flatMapRows<T>(data: T[][]): T[] {
+    return data.flatMap(it => it)
+}
+
+async function prepareByRows(data: Measure[], props?: PrepareProps) {
+    TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
+    const model = new MeasureModel(Cell, 2, data.length, flatMapRows(data.map(it => it.toCells())))
+    model.orientation = Orientation.HORIZONTAL
     model.config.seamless = (props?.seamless) === true
     model.config.expandColumn = (props?.expandColumn) === true
     document.body.replaceChildren(<Table style={{
@@ -961,6 +1350,7 @@ async function prepare(data: MeasureRow[], props?: PrepareProps) {
     await sleep()
     return model
 }
+
 function getTable() {
     return new TableFriend(
         document.querySelector("tx-table") as Table
@@ -1017,3 +1407,43 @@ function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) 
     return `${id}:${x},${y},${w},${h}`
 }
 
+function check32_64() {
+    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+}
+function check48_72_32_64() {
+    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
+    expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
+    expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
+    expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+}
+function check32_48_72_64() {
+    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,48`)
+    expect(bodyRowInfo(2)).to.equal(`#3:0,82,80,72`)
+    expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+}
+function check32_48_72_64_seamless() {
+    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+    expect(bodyRowInfo(1)).to.equal(`#2:0,32,80,48`)
+    expect(bodyRowInfo(2)).to.equal(`#3:0,${32 + 48},80,72`)
+    expect(bodyRowInfo(3)).to.equal(`#4:0,${32 + 48 + 72},80,64`)
+}
+function check32_64_48_72() {
+    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+    expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
+    expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
+}
+function check32_64_remove_head() {
+    expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
+    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+}
+function check32_64_remove_middle() {
+    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+}
+function check32_64_remove_seamless() {
+    expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
+    expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`)
+}

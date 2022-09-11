@@ -38,13 +38,13 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
         }
         return document.createTextNode(headers[col])
     }
+
+    override getRowHead(row: number): Node | undefined {
+        return undefined
+    }
     
     override get colCount(): number {
         return this.getRow(this.model?.data[0]).length
-    }
-
-    override getRowHead(row: number) {
-        return undefined
     }
 
     override showCell(pos: TablePos, cell: HTMLSpanElement) {

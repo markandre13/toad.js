@@ -857,28 +857,6 @@ class MeasureModel extends GridTableModel<Cell> {
     config = new TableAdapterConfig()
     constructor(nodeClass: new () => Cell, cols: number, rows: number, data?: Cell[]) {
         super(nodeClass, cols, rows, data)
-        // console.log(data)
-        // const size = cols * rows
-        // for (let idx = 0; idx < size; ++idx) {
-        //     this._data[idx].text = `IDX${idx}`
-        // }
-    }
-    // get colCount(): number {
-    //     throw new Error('Method not implemented.')
-    // }
-    insertMeasure(row: number, rowData: Array<Measure>): number {
-        // switch (this.orientation) {
-        //     case MeasureOrientation.HORIZONTAL:
-        //         break
-        //     case MeasureOrientation.VERTICAL: {
-        //         this.insertColumn(
-        //             row,
-        //             rowData.map((measure, index) => new Cell(`#${measure.id}C${index})`, measure.width, measure.height))
-        //         )
-        //     } break
-
-        // }
-        return 0
     }
 }
 
@@ -966,10 +944,6 @@ function flatMapColumns<T>(data: T[][]): T[] {
         result = result.concat(data.flatMap(it => it[i]))
     }
     return result
-}
-
-function flatMapRows<T>(data: T[][]): T[] {
-    return data.flatMap(it => it)
 }
 
 async function prepareByColumns(data: Measure[], props?: PrepareProps) {

@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { TablePos } from '../TablePos'
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
@@ -60,10 +61,11 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     public prepareCellsToBeMeasured() {
+        // console.log(`InsertRowAnimation.prepareCellsToBeMeasured(): model=${this.adapter.model.colCount}x${this.adapter.model.rowCount}, adapter=${this.adapter.colCount}x${this.adapter.rowCount}, index=${this.event.index}, size=${this.event.size}`)
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.table.createCell()
-                this.adapter.showCell({ col, row }, cell)
+                this.adapter.showCell(new TablePos(col, row), cell)
                 this.measure.appendChild(cell)
             }
         }
