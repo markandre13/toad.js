@@ -642,123 +642,13 @@ export class Table extends View {
         this.setMinCellHeight()
         this.measure.removeChild(this.measure.children[0])
 
-        let {colWidths, colHeadHeight} = this.calculateColumnWidths()
-        let {rowHeights, rowHeadWidth} = this.calculateRowHeights()
+        let { colWidths, colHeadHeight } = this.calculateColumnWidths()
+        let { rowHeights, rowHeadWidth } = this.calculateRowHeights()
 
-        // move and place column heads
-        let x, y
-        if (this.colHeads) {
-            x = 0
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
-                const child = this.measure.children[0] as HTMLSpanElement
-                child.style.left = `${x}px`
-                child.style.top = `0px`
-                child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
-                child.style.height = `${colHeadHeight - this.HEIGHT_ADJUST}px`
-                this.colHeads.appendChild(child)
-                x += colWidths[col] - 1 - 1 + seam
-            }
-
-            let filler = span()
-            filler.className = "head"
-            filler.style.left = `${x}px`
-            filler.style.top = `0`
-            filler.style.width = `256px`
-            filler.style.height = `${colHeadHeight}px`
-            this.colHeads.appendChild(filler)
-
-            this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1)}px`
-            this.colHeads.style.height = `${colHeadHeight}px`
-
-            // if resizeableColumns
-            this.colResizeHandles!.style.left = `${rowHeadWidth}px`
-            this.colResizeHandles!.style.height = `${colHeadHeight}px`
-            x = -this.HANDLE_SKEW
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
-                x += colWidths[col] - 1
-                const handle = this.createHandle(col, x, 0, this.HANDLE_SIZE, colHeadHeight)
-                this.colResizeHandles!.appendChild(handle)
-            }
-
-            x += this.HANDLE_SIZE // handle width
-            filler = span()
-            filler.className = "head"
-            filler.style.left = `${x}px`
-            filler.style.top = `0`
-            filler.style.width = `256px`
-            filler.style.height = `${colHeadHeight}px`
-            this.colResizeHandles!.appendChild(filler)
-        }
-
-        // place row heads
-        if (this.rowHeads) {
-            y = 0
-            for (let row = 0; row < this.adapter!.rowCount; ++row) {
-                const child = this.measure.children[0] as HTMLSpanElement
-                child.style.left = `0px`
-                child.style.top = `${y}px`
-                child.style.width = `${rowHeadWidth - this.WIDTH_ADJUST}px`
-                child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
-                this.rowHeads.appendChild(child)
-                y += rowHeights[row] - 1 - 1 + seam
-            }
-
-            let filler = span()
-            filler.className = "head"
-            filler.style.left = `0`
-            filler.style.top = `${y}px`
-            filler.style.width = `${rowHeadWidth}px`
-            filler.style.height = `256px`
-            this.rowHeads.appendChild(filler)
-
-            // this.rowHeads.style.left = `0px`
-            this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1)}px`
-            this.rowHeads.style.width = `${rowHeadWidth}px`
-            // this.rowHeads.style.bottom = `0`
-
-            // if resizeableRows
-            this.rowResizeHandles!.style.top = `${colHeadHeight}px`
-            this.rowResizeHandles!.style.width = `${rowHeadWidth}px`
-            y = -this.HANDLE_SKEW
-            for (let row = 0; row < this.adapter!.rowCount; ++row) {
-                y += rowHeights[row] - 1
-                const rowHandle = this.createHandle(row, 0, y, rowHeadWidth, this.HANDLE_SIZE)
-                this.rowResizeHandles!.appendChild(rowHandle)
-            }
-
-            y += this.HANDLE_SIZE // handle width
-            filler = span()
-            filler.className = "head"
-            filler.style.left = `0`
-            filler.style.top = `${y}0px`
-            filler.style.width = `${rowHeadWidth}px`
-            filler.style.height = `256px`
-            this.rowResizeHandles!.appendChild(filler)
-        }
-
-        // place body cells
-        y = 0
-        for (let row = 0; row < this.adapter!.rowCount; ++row) {
-            x = 0
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
-                const child = this.measure.children[0] as HTMLSpanElement
-                child.style.left = `${x}px`
-                child.style.top = `${y}px`
-                child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
-                child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
-                this.body.appendChild(child)
-                x += colWidths[col] - 2 + seam
-            }
-            y += rowHeights[row] - 2 + seam
-        }
-        if (rowHeadWidth > 0) {
-            --rowHeadWidth
-        }
-        if (colHeadHeight > 0) {
-            --colHeadHeight
-        }
-        this.body.style.left = `${rowHeadWidth}px`
-        this.body.style.top = `${colHeadHeight}px`
+        this.placeColumnHeads(colWidths, colHeadHeight, rowHeadWidth)
+        this.placeRowHeads(rowHeights, colHeadHeight, rowHeadWidth)
+        this.placeBody(rowHeadWidth, colHeadHeight)
+        this.placeBodyCells(colWidths, rowHeights, colHeadHeight, rowHeadWidth)
 
         this.setHeadingFillerSizeToScrollbarSize()
     }
@@ -818,7 +708,7 @@ export class Table extends View {
         }
 
         rowHeadWidth = Math.ceil(rowHeadWidth)
-        return {rowHeights, rowHeadWidth}
+        return { rowHeights, rowHeadWidth }
     }
 
     calculateColumnWidths(withinBody = false) {
@@ -860,7 +750,135 @@ export class Table extends View {
             }
             colWidths[col] = Math.ceil(cw)
         }
-        return {colWidths, colHeadHeight}
+        return { colWidths, colHeadHeight }
+    }
+
+    placeColumnHeads(colWidths: number[], colHeadHeight: number, rowHeadWidth: number) {
+        // move and place column heads
+        if (this.colHeads == null) {
+            return
+        }
+        const seam = this.adapter!.config.seamless ? 0 : 1
+        let x = 0
+        for (let col = 0; col < this.adapter!.colCount; ++col) {
+            const child = this.measure.children[0] as HTMLSpanElement
+            child.style.left = `${x}px`
+            child.style.top = `0px`
+            child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
+            child.style.height = `${colHeadHeight - this.HEIGHT_ADJUST}px`
+            this.colHeads.appendChild(child)
+            x += colWidths[col] - 1 - 1 + seam
+        }
+
+        let filler = span()
+        filler.className = "head"
+        filler.style.left = `${x}px`
+        filler.style.top = `0`
+        filler.style.width = `256px`
+        filler.style.height = `${colHeadHeight}px`
+        this.colHeads.appendChild(filler)
+
+        this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1)}px`
+        this.colHeads.style.height = `${colHeadHeight}px`
+
+        // if resizeableColumns
+        this.colResizeHandles!.style.left = `${rowHeadWidth}px`
+        this.colResizeHandles!.style.height = `${colHeadHeight}px`
+        x = -this.HANDLE_SKEW
+        for (let col = 0; col < this.adapter!.colCount; ++col) {
+            x += colWidths[col] - 1
+            const handle = this.createHandle(col, x, 0, this.HANDLE_SIZE, colHeadHeight)
+            this.colResizeHandles!.appendChild(handle)
+        }
+
+        x += this.HANDLE_SIZE // handle width
+        filler = span()
+        filler.className = "head"
+        filler.style.left = `${x}px`
+        filler.style.top = `0`
+        filler.style.width = `256px`
+        filler.style.height = `${colHeadHeight}px`
+        this.colResizeHandles!.appendChild(filler)
+    }
+
+    placeRowHeads(rowHeights: number[], colHeadHeight: number, rowHeadWidth: number) {
+        if (this.rowHeads == null) {
+            return
+        }
+        const seam = this.adapter!.config.seamless ? 0 : 1
+        let y = 0
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
+            const child = this.measure.children[0] as HTMLSpanElement
+            child.style.left = `0px`
+            child.style.top = `${y}px`
+            child.style.width = `${rowHeadWidth - this.WIDTH_ADJUST}px`
+            child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
+            this.rowHeads.appendChild(child)
+            y += rowHeights[row] - 1 - 1 + seam
+        }
+
+        let filler = span()
+        filler.className = "head"
+        filler.style.left = `0`
+        filler.style.top = `${y}px`
+        filler.style.width = `${rowHeadWidth}px`
+        filler.style.height = `256px`
+        this.rowHeads.appendChild(filler)
+
+        // this.rowHeads.style.left = `0px`
+        this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1)}px`
+        this.rowHeads.style.width = `${rowHeadWidth}px`
+        // this.rowHeads.style.bottom = `0`
+
+        // if resizeableRows
+        this.rowResizeHandles!.style.top = `${colHeadHeight}px`
+        this.rowResizeHandles!.style.width = `${rowHeadWidth}px`
+        y = -this.HANDLE_SKEW
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
+            y += rowHeights[row] - 1
+            const rowHandle = this.createHandle(row, 0, y, rowHeadWidth, this.HANDLE_SIZE)
+            this.rowResizeHandles!.appendChild(rowHandle)
+        }
+
+        y += this.HANDLE_SIZE // handle width
+        filler = span()
+        filler.className = "head"
+        filler.style.left = `0`
+        filler.style.top = `${y}0px`
+        filler.style.width = `${rowHeadWidth}px`
+        filler.style.height = `256px`
+        this.rowResizeHandles!.appendChild(filler)
+    }
+
+    private placeBody(rowHeadWidth: number, colHeadHeight: number) {
+        if (rowHeadWidth > 0) {
+            --rowHeadWidth
+        }
+        if (colHeadHeight > 0) {
+            --colHeadHeight
+        }
+        this.body.style.left = `${rowHeadWidth}px`
+        this.body.style.top = `${colHeadHeight}px`
+        return { rowHeadWidth, colHeadHeight }
+    }
+
+    placeBodyCells(colWidths: number[], rowHeights: number[], colHeadHeight: number, rowHeadWidth: number) {
+        const seam = this.adapter!.config.seamless ? 0 : 1
+
+        let y = 0
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
+            let x = 0
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
+                const child = this.measure.children[0] as HTMLSpanElement
+                child.style.left = `${x}px`
+                child.style.top = `${y}px`
+                child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
+                child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
+                this.body.appendChild(child)
+                x += colWidths[col] - 2 + seam
+            }
+            y += rowHeights[row] - 2 + seam
+        }
     }
 
     createHandle(idx: number, x: number, y: number, w: number, h: number) {

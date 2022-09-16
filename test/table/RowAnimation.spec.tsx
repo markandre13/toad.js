@@ -64,7 +64,7 @@ describe("table", function () {
                 expect(table.colHeads.style.left).equals("0px")
             })
 
-            it.only("column and row headers", async function () {
+            it("column and row headers", async function () {
                 // WHEN we have an empty table without headings
                 const model = await prepareByRows([
                     new Measure(1, 32),
@@ -80,8 +80,6 @@ describe("table", function () {
                 expect(table.colHeads.style.top).equals("")
                 expect(px2float(table.colHeads.style.left)).equals(px2float(table.rowHeads.style.width) - 1)
             })
-
-
         })
 
         // TODO
