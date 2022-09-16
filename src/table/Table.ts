@@ -707,7 +707,7 @@ export class Table extends View {
             filler.style.height = `${colHeadHeight}px`
             this.colHeads.appendChild(filler)
 
-            this.colHeads.style.left = `${rowHeadWidth - 1}px`
+            this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1)}px`
             this.colHeads.style.height = `${colHeadHeight}px`
 
             // if resizeableColumns
@@ -752,7 +752,7 @@ export class Table extends View {
             this.rowHeads.appendChild(filler)
 
             // this.rowHeads.style.left = `0px`
-            this.rowHeads.style.top = `${colHeadHeight - 1}px`
+            this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1)}px`
             this.rowHeads.style.width = `${rowHeadWidth}px`
             // this.rowHeads.style.bottom = `0`
 
