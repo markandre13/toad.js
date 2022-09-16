@@ -39,7 +39,7 @@ describe("table", function () {
             expect(table.staging.style.top).to.equal(`-16px`)
             expect(table.staging.style.left).to.equal(`-24px`)
         })
-        describe.only("placement of header and body containers", function () {
+        describe("placement of header and body containers", function () {
             it("just row headers", async function () {
                 // WHEN we have an empty table without headings
                 const model = await prepareByRows([
@@ -64,7 +64,7 @@ describe("table", function () {
                 expect(table.colHeads.style.left).equals("0px")
             })
 
-            it("column and row headers", async function () {
+            it.only("column and row headers", async function () {
                 // WHEN we have an empty table without headings
                 const model = await prepareByRows([
                     new Measure(1, 32),

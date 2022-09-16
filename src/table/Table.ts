@@ -78,6 +78,8 @@ export class Table extends View {
     // constants come in:
     public WIDTH_ADJUST = 6 // border left & right + padding top
     public HEIGHT_ADJUST = 2 // border left + padding top & bottom
+    public HANDLE_SIZE = 5
+    public HANDLE_SKEW = 3
 
     // FIXME: this can be improved:
     // * only add tables which are not visible
@@ -633,57 +635,15 @@ export class Table extends View {
     }
 
     // this method is called once during the initial setup
-    // TODO: refactor so that it can also be used for insert operations
     arrangeAllMeasuredInGrid() {
         const seam = this.adapter!.config.seamless ? 0 : 1
 
-        // use line height as minimal row height        
-        const measureLineHeight = this.measure.children[0] as HTMLElement
-        const b = measureLineHeight.getBoundingClientRect()
-        this.minCellHeight = Math.ceil(b.height)
+        // use line height as minimal row height
+        this.setMinCellHeight()
         this.measure.removeChild(this.measure.children[0])
 
-        const colWidth = this.calculateColumnWidths()
-
-        let colHeadHeight = 0
-        if (this.colHeads) {
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
-                const child = this.measure.children[col]
-                const bounds = child.getBoundingClientRect()
-                colHeadHeight = Math.max(colHeadHeight, bounds.height)
-            }
-        }
-        colHeadHeight = Math.ceil(colHeadHeight)
-
-        // calculate row widths and row header width
-
-        let idx = this.colHeads ? this.adapter!.colCount : 0
-        let rowHeadWidth = 0
-        const rowHeight = Array<number>(this.adapter!.rowCount)
-        if (this.rowHeads) {
-            for (let row = 0; row < this.adapter!.rowCount; ++row) {
-                const child = this.measure.children[idx++]
-                const bounds = child.getBoundingClientRect()
-                rowHeight[row] = Math.max(bounds.height, this.minCellHeight)
-                rowHeadWidth = Math.max(rowHeadWidth, bounds.width)
-            }
-        } else {
-            rowHeight.fill(this.minCellHeight)
-        }
-        rowHeadWidth = Math.ceil(rowHeadWidth)
-
-        // calculate body row heights
-        idx = (this.colHeads ? this.adapter!.colCount : 0) + (this.rowHeads ? this.adapter!.rowCount : 0)
-        for (let row = 0; row < this.adapter!.rowCount; ++row) {
-            let rh = rowHeight[row]
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
-                const child = this.measure.children[idx + col + row * this.adapter!.colCount] as HTMLSpanElement
-                const bounds = child.getBoundingClientRect()
-                rh = Math.max(rh, bounds.height)
-                // console.log(`[${col},${row}] -> ${bounds.width}, ${bounds.height}`)
-            }
-            rowHeight[row] = Math.ceil(rh)
-        }
+        let {colWidths, colHeadHeight} = this.calculateColumnWidths()
+        let {rowHeights, rowHeadWidth} = this.calculateRowHeights()
 
         // move and place column heads
         let x, y
@@ -693,10 +653,10 @@ export class Table extends View {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `0px`
-                child.style.width = `${colWidth[col] - this.WIDTH_ADJUST}px`
+                child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
                 child.style.height = `${colHeadHeight - this.HEIGHT_ADJUST}px`
                 this.colHeads.appendChild(child)
-                x += colWidth[col] - 1 - 1 + seam
+                x += colWidths[col] - 1 - 1 + seam
             }
 
             let filler = span()
@@ -713,14 +673,14 @@ export class Table extends View {
             // if resizeableColumns
             this.colResizeHandles!.style.left = `${rowHeadWidth}px`
             this.colResizeHandles!.style.height = `${colHeadHeight}px`
-            x = -3
+            x = -this.HANDLE_SKEW
             for (let col = 0; col < this.adapter!.colCount; ++col) {
-                x += colWidth[col] - 1
-                const handle = this.createHandle(col, x, 0, 5, colHeadHeight)
+                x += colWidths[col] - 1
+                const handle = this.createHandle(col, x, 0, this.HANDLE_SIZE, colHeadHeight)
                 this.colResizeHandles!.appendChild(handle)
             }
 
-            x += 5 // handle width
+            x += this.HANDLE_SIZE // handle width
             filler = span()
             filler.className = "head"
             filler.style.left = `${x}px`
@@ -738,9 +698,9 @@ export class Table extends View {
                 child.style.left = `0px`
                 child.style.top = `${y}px`
                 child.style.width = `${rowHeadWidth - this.WIDTH_ADJUST}px`
-                child.style.height = `${rowHeight[row] - this.HEIGHT_ADJUST}px`
+                child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
                 this.rowHeads.appendChild(child)
-                y += rowHeight[row] - 1 - 1 + seam
+                y += rowHeights[row] - 1 - 1 + seam
             }
 
             let filler = span()
@@ -759,14 +719,14 @@ export class Table extends View {
             // if resizeableRows
             this.rowResizeHandles!.style.top = `${colHeadHeight}px`
             this.rowResizeHandles!.style.width = `${rowHeadWidth}px`
-            y = -3
+            y = -this.HANDLE_SKEW
             for (let row = 0; row < this.adapter!.rowCount; ++row) {
-                y += rowHeight[row] - 1
-                const rowHandle = this.createHandle(row, 0, y, rowHeadWidth, 5)
+                y += rowHeights[row] - 1
+                const rowHandle = this.createHandle(row, 0, y, rowHeadWidth, this.HANDLE_SIZE)
                 this.rowResizeHandles!.appendChild(rowHandle)
             }
 
-            y += 5 // handle width
+            y += this.HANDLE_SIZE // handle width
             filler = span()
             filler.className = "head"
             filler.style.left = `0`
@@ -784,12 +744,12 @@ export class Table extends View {
                 const child = this.measure.children[0] as HTMLSpanElement
                 child.style.left = `${x}px`
                 child.style.top = `${y}px`
-                child.style.width = `${colWidth[col] - this.WIDTH_ADJUST}px`
-                child.style.height = `${rowHeight[row] - this.HEIGHT_ADJUST}px`
+                child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
+                child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
                 this.body.appendChild(child)
-                x += colWidth[col] - 2 + seam
+                x += colWidths[col] - 2 + seam
             }
-            y += rowHeight[row] - 2 + seam
+            y += rowHeights[row] - 2 + seam
         }
         if (rowHeadWidth > 0) {
             --rowHeadWidth
@@ -823,19 +783,60 @@ export class Table extends View {
         }
     }
 
-    calculateColumnWidths(withinBody = false): number[] {
+    setMinCellHeight() {
+        const measureLineHeight = this.measure.children[0] as HTMLElement
+        const b = measureLineHeight.getBoundingClientRect()
+        this.minCellHeight = Math.ceil(b.height)
+    }
+
+    calculateRowHeights() {
+        let idx = this.colHeads ? this.adapter!.colCount : 0
+        let rowHeadWidth = 0
+        const rowHeights = Array<number>(this.adapter!.rowCount)
+        if (this.rowHeads) {
+            for (let row = 0; row < this.adapter!.rowCount; ++row) {
+                const child = this.measure.children[idx++]
+                const bounds = child.getBoundingClientRect()
+                rowHeights[row] = Math.max(bounds.height, this.minCellHeight)
+                rowHeadWidth = Math.max(rowHeadWidth, bounds.width)
+            }
+        } else {
+            rowHeights.fill(this.minCellHeight)
+        }
+
+        // calculate body row heights
+        idx = (this.colHeads ? this.adapter!.colCount : 0) + (this.rowHeads ? this.adapter!.rowCount : 0)
+        for (let row = 0; row < this.adapter!.rowCount; ++row) {
+            let rh = rowHeights[row]
+            for (let col = 0; col < this.adapter!.colCount; ++col) {
+                const child = this.measure.children[idx + col + row * this.adapter!.colCount] as HTMLSpanElement
+                const bounds = child.getBoundingClientRect()
+                rh = Math.max(rh, bounds.height)
+                // console.log(`[${col},${row}] -> ${bounds.width}, ${bounds.height}`)
+            }
+            rowHeights[row] = Math.ceil(rh)
+        }
+
+        rowHeadWidth = Math.ceil(rowHeadWidth)
+        return {rowHeights, rowHeadWidth}
+    }
+
+    calculateColumnWidths(withinBody = false) {
         // console.log(`calculateColumnWidths(withinBody = ${withinBody})`)
         // header
-        const colWidth = Array<number>(this.adapter!.colCount)
+        let colHeadHeight = 0
+        const colWidths = Array<number>(this.adapter!.colCount)
         if (this.colHeads) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const child = this.measure.children[col]
                 const bounds = child.getBoundingClientRect()
-                colWidth[col] = Math.max(bounds.width, this.minCellWidth)
+                colWidths[col] = Math.max(bounds.width, this.minCellWidth)
+                colHeadHeight = Math.max(colHeadHeight, bounds.height)
             }
         } else {
-            colWidth.fill(this.minCellWidth)
+            colWidths.fill(this.minCellWidth)
         }
+        colHeadHeight = Math.ceil(colHeadHeight)
 
         // body
         let idxStart
@@ -845,7 +846,7 @@ export class Table extends View {
             idxStart = (this.colHeads ? this.adapter!.colCount : 0) + (this.rowHeads ? this.adapter!.rowCount : 0)
         }
         for (let col = 0; col < this.adapter!.colCount; ++col) {
-            let cw = colWidth[col]
+            let cw = colWidths[col]
             for (let row = 0; row < this.adapter!.rowCount; ++row) {
                 let child
                 let idx = idxStart + col + row * this.adapter!.colCount
@@ -857,9 +858,9 @@ export class Table extends View {
                 const bounds = child.getBoundingClientRect()
                 cw = Math.max(cw, bounds.width)
             }
-            colWidth[col] = Math.ceil(cw)
+            colWidths[col] = Math.ceil(cw)
         }
-        return colWidth
+        return {colWidths, colHeadHeight}
     }
 
     createHandle(idx: number, x: number, y: number, w: number, h: number) {
