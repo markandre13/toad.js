@@ -557,21 +557,50 @@ export class Table extends View {
             return
         }
 
-        // console.log(`Table.prepareCells()`)
-        // console.log(`  rows=${this.adapter!.rowCount}`)
-
         if (this.adapter!.config.seamless) {
             this.root.classList.add("seamless")
         }
 
+        this.prepareMinCellHeight()
+        this.prepareColumnHeads()
+        this.prepareRowHeads()
+        this.prepareBody()
+
+        setTimeout(this.arrangeAllMeasuredInGrid, 0)
+    }
+
+    // this method is called once during the initial setup
+    arrangeAllMeasuredInGrid() {
+        this.calculateMinCellHeight()
+        this.measure.removeChild(this.measure.children[0])
+
+        let { colWidths, colHeadHeight } = this.calculateColumnWidths()
+        let { rowHeights, rowHeadWidth } = this.calculateRowHeights()
+
+        this.placeColumnHeads(colWidths, colHeadHeight, rowHeadWidth)
+        this.placeRowHeads(rowHeights, colHeadHeight, rowHeadWidth)
+        this.placeBody(rowHeadWidth, colHeadHeight)
+        this.placeBodyCells(colWidths, rowHeights, colHeadHeight, rowHeadWidth)
+
+        this.setHeadingFillerSizeToScrollbarSize()
+    }
+
+    prepareMinCellHeight() {
         const measureLineHeight = span(text("Tg")) // let the adapter provide this
         this.measure.appendChild(measureLineHeight)
+    }
 
-        // column headers
-        let columnHeaders = new Array(this.adapter!.colCount)
+    calculateMinCellHeight() {
+        const measureLineHeight = this.measure.children[0] as HTMLElement
+        const b = measureLineHeight.getBoundingClientRect()
+        this.minCellHeight = Math.ceil(b.height)
+    }
+
+    prepareColumnHeads() {
+        const columnHeaders = new Array(this.adapter!.colCount)
         for (let col = 0; col < this.adapter!.colCount; ++col) {
             const content = this.adapter!.getColumnHead(col)
-            if (this.colHeads === undefined && content !== undefined) {
+            if (this.colHeads === undefined && content !== undefined) { // FIXME: move out of loop
                 this.colHeads = div()
                 this.colHeads.className = "cols"
                 this.root.appendChild(this.colHeads)
@@ -581,15 +610,16 @@ export class Table extends View {
             }
             columnHeaders[col] = content
         }
-        if (this.colHeads) {
+        if (this.colHeads !== undefined) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = span(columnHeaders[col])
                 cell.className = "head"
                 this.measure.appendChild(cell)
             }
         }
+    }
 
-        // row headers
+    prepareRowHeads() {
         let rowHeaders = new Array(this.adapter!.rowCount)
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             const content = this.adapter!.getRowHead(row)
@@ -610,8 +640,9 @@ export class Table extends View {
                 this.measure.appendChild(cell)
             }
         }
+    }
 
-        // body
+    prepareBody() {
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = this.createCell()
@@ -619,44 +650,6 @@ export class Table extends View {
                 this.measure.appendChild(cell)
             }
         }
-
-        setTimeout(this.arrangeAllMeasuredInGrid, 0)
-    }
-
-    createCell() {
-        const cell = span()
-        cell.onfocus = this.cellFocus
-        cell.onkeydown = this.cellKeyDown
-        cell.tabIndex = 0
-        if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
-            cell.setAttribute("contenteditable", "")
-        }
-        return cell
-    }
-
-    // this method is called once during the initial setup
-    arrangeAllMeasuredInGrid() {
-        const seam = this.adapter!.config.seamless ? 0 : 1
-
-        // use line height as minimal row height
-        this.setMinCellHeight()
-        this.measure.removeChild(this.measure.children[0])
-
-        let { colWidths, colHeadHeight } = this.calculateColumnWidths()
-        let { rowHeights, rowHeadWidth } = this.calculateRowHeights()
-
-        this.placeColumnHeads(colWidths, colHeadHeight, rowHeadWidth)
-        this.placeRowHeads(rowHeights, colHeadHeight, rowHeadWidth)
-        this.placeBody(rowHeadWidth, colHeadHeight)
-        this.placeBodyCells(colWidths, rowHeights, colHeadHeight, rowHeadWidth)
-
-        this.setHeadingFillerSizeToScrollbarSize()
-    }
-
-    setMinCellHeight() {
-        const measureLineHeight = this.measure.children[0] as HTMLElement
-        const b = measureLineHeight.getBoundingClientRect()
-        this.minCellHeight = Math.ceil(b.height)
     }
 
     calculateRowHeights() {
@@ -735,14 +728,14 @@ export class Table extends View {
 
     placeColumnHeads(colWidths: number[], colHeadHeight: number, rowHeadWidth: number) {
         // move and place column heads
-        if (this.colHeads == null) {
+        if (this.colHeads === undefined) {
             return
         }
         const seam = this.adapter!.config.seamless ? 0 : 1
         let x = 0
         for (let col = 0; col < this.adapter!.colCount; ++col) {
             const child = this.measure.children[0] as HTMLSpanElement
-            this.setSpanSize(child, x, 0, colWidths[col], colHeadHeight)
+            this.setCellSize(child, x, 0, colWidths[col], colHeadHeight)
             this.colHeads.appendChild(child)
             x += colWidths[col] - 1 - 1 + seam
         }
@@ -779,14 +772,14 @@ export class Table extends View {
     }
 
     placeRowHeads(rowHeights: number[], colHeadHeight: number, rowHeadWidth: number) {
-        if (this.rowHeads == null) {
+        if (this.rowHeads === undefined) {
             return
         }
         const seam = this.adapter!.config.seamless ? 0 : 1
         let y = 0
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             const child = this.measure.children[0] as HTMLSpanElement
-            this.setSpanSize(child, 0, y, rowHeadWidth, rowHeights[row])
+            this.setCellSize(child, 0, y, rowHeadWidth, rowHeights[row])
             this.rowHeads.appendChild(child)
             y += rowHeights[row] - 1 - 1 + seam
         }
@@ -844,7 +837,7 @@ export class Table extends View {
             let x = 0
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const child = this.measure.children[0] as HTMLSpanElement
-                this.setSpanSize(child, x, y, colWidths[col], rowHeights[row])
+                this.setCellSize(child, x, y, colWidths[col], rowHeights[row])
                 this.body.appendChild(child)
                 x += colWidths[col] - 2 + seam
             }
@@ -852,7 +845,18 @@ export class Table extends View {
         }
     }
 
-    setSpanSize(span: HTMLSpanElement, x: number, y: number, w: number, h: number) {
+    createCell() {
+        const cell = span()
+        cell.onfocus = this.cellFocus
+        cell.onkeydown = this.cellKeyDown
+        cell.tabIndex = 0
+        if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
+            cell.setAttribute("contenteditable", "")
+        }
+        return cell
+    }
+
+    setCellSize(span: HTMLSpanElement, x: number, y: number, w: number, h: number) {
         span.style.left = `${x}px`
         span.style.top = `${y}px`
         span.style.width = `${w - this.WIDTH_ADJUST}px`
@@ -900,6 +904,7 @@ export class Table extends View {
             this.splitHorizontal(this.handleIndex!)
         }
     }
+
     protected handleMove(ev: PointerEvent) {
         if (this.handle === undefined) {
             return
@@ -941,6 +946,7 @@ export class Table extends View {
             }
         }
     }
+    
     protected handleUp(ev: PointerEvent) {
         if (this.handle === undefined) {
             return
