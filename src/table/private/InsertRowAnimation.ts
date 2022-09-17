@@ -20,7 +20,7 @@ import { TablePos } from '../TablePos'
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
-import { span } from '@toad/util/lsx'
+import { span, div } from '@toad/util/lsx'
 
 export class InsertRowAnimation extends TableAnimation {
     static current?: InsertRowAnimation
@@ -62,6 +62,28 @@ export class InsertRowAnimation extends TableAnimation {
 
     public prepareCellsToBeMeasured() {
         // console.log(`InsertRowAnimation.prepareCellsToBeMeasured(): model=${this.adapter.model.colCount}x${this.adapter.model.rowCount}, adapter=${this.adapter.colCount}x${this.adapter.rowCount}, index=${this.event.index}, size=${this.event.size}`)
+
+        let rowHeaders = new Array(this.event.size)
+        for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
+            const content = this.adapter!.getRowHead(row)
+            if (this.rowHeads === undefined && content !== undefined) {
+                this.rowHeads = div()
+                this.rowHeads.className = "rows"
+                this.root.appendChild(this.rowHeads)
+                this.rowResizeHandles = div()
+                this.rowResizeHandles.className = "rows"
+                this.root.appendChild(this.rowResizeHandles)
+            }
+            rowHeaders[row - this.event.index] = content
+        }
+        if (this.rowHeads !== undefined) {
+            for (let row = 0; row < this.event.size; ++row) {
+                const cell = span(rowHeaders[row])
+                cell.className = "head"
+                this.measure.appendChild(cell)
+            }
+        }
+
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.table.createCell()
@@ -110,6 +132,13 @@ export class InsertRowAnimation extends TableAnimation {
         this.totalHeight = 0
         rowHeight.fill(this.table.minCellHeight)
         idx = 0
+        if (this.rowHeads !== undefined) {
+            for (let row = 0; row < this.event.size; ++row) {
+                const cell = this.measure.children[idx++] as HTMLSpanElement
+                const bounds = cell.getBoundingClientRect()
+                rowHeight[row] = Math.max(rowHeight[row], bounds.height)
+            }
+        }
         for (let row = 0; row < this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
@@ -156,17 +185,38 @@ export class InsertRowAnimation extends TableAnimation {
             this.totalHeight -= 2 * this.event.size
         }
 
-        // place row
+        // place rows
         let y = top
+
+        if (this.rowHeads !== undefined) {
+
+            // TODO: we could use staging to be behind body _and_ headers,
+            // but what if the body and header frames impose different styles on their children?
+            // it would also avoid tweaks in the calculation to have two different stagings
+            // why is staging part of Table anyway?
+            //
+
+            const headStaging = div() 
+            for (let row = 0; row < this.event.size; ++row) {
+                const cell = this.measure.children[0] as HTMLSpanElement
+                console.log(cell)
+                this.setCellSize(cell, 0, y, 20, rowHeight[row])
+                headStaging.appendChild(cell)
+
+                y += rowHeight[row] - overlap
+                if (this.adapter.config.seamless) {
+                    y -= 2
+                }
+            }
+        }
+
+        y = top
         for (let row = 0; row < this.event.size; ++row) {
             let x = 0
             // console.log(`row ${row} at y = ${y}`)
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[0] as HTMLElement
-                cell.style.left = `${x}px`
-                cell.style.top = `${y}px`
-                cell.style.width = `${colWidth[col] - this.table.WIDTH_ADJUST}px`
-                cell.style.height = `${rowHeight[row] - this.table.HEIGHT_ADJUST}px`
+                this.setCellSize(cell, x, y, colWidth[col], rowHeight[row])
                 this.staging.appendChild(cell)
                 x += colWidth[col] - overlap
                 if (this.adapter.config.seamless) {

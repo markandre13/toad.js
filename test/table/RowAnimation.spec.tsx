@@ -449,7 +449,7 @@ describe("table", function () {
                     check32_48_72_64_seamless()
                 })
             })
-            describe("header", function () {
+            describe("row headers", function () {
                 // NOTE: row headers will be tested for animation; column headers, ... let's see...
 
                 xit("two rows into empty", async function () {
@@ -555,7 +555,7 @@ describe("table", function () {
                     animation.joinHorizontal()
                     check48_72_32_64()
                 })
-                xit("two rows at middle", async function () {
+                it.only("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([
                         new Measure(1, 32),
@@ -571,23 +571,23 @@ describe("table", function () {
 
                     // ...at the head insert two rows
 
-                    AnimationBase.animationFrameCount = 6000
-                    Animator.halt = false
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
 
-                    // model.insertRow(1, [
-                    //     new MeasureRow(2, 48),
-                    //     new MeasureRow(3, 72)
-                    // ])
+                    model.insertRow(1, flatMapRows([
+                        new Measure(2, 48),
+                        new Measure(3, 72)
+                    ]))
 
                     // return
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
                     animation.prepareCellsToBeMeasured()
-                    await sleep()
 
-                    // THEN then two cells have been measured.
-                    expect(table.measure.children.length).to.equal(4)
+                    // THEN then 4 body and 2 header cells will be measured
+                    expect(table.measure.children.length).to.equal(6)
+                    await sleep()
 
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
