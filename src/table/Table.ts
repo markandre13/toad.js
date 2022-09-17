@@ -653,26 +653,6 @@ export class Table extends View {
         this.setHeadingFillerSizeToScrollbarSize()
     }
 
-    setColumnWidths(withinBody = false, colWidth: number[]) {
-        const overlap = this.adapter!.config.seamless ? 1 : 0
-        let idx = 0
-        for (let row = 0; row < this.adapter!.rowCount; ++row) {
-            let x = 0
-            for (let col = 0; col < this.adapter!.colCount; ++col) {
-                let child
-                if (withinBody) {
-                    child = this.body.children[idx++] as HTMLSpanElement
-                } else {
-                    child = this.measure.children[0] as HTMLSpanElement
-                    this.body.appendChild(child)
-                }
-                child.style.left = `${x}px`
-                child.style.width = `${colWidth[col] - this.WIDTH_ADJUST}px`
-                x += colWidth[col] - 4 - overlap
-            }
-        }
-    }
-
     setMinCellHeight() {
         const measureLineHeight = this.measure.children[0] as HTMLElement
         const b = measureLineHeight.getBoundingClientRect()
@@ -762,10 +742,7 @@ export class Table extends View {
         let x = 0
         for (let col = 0; col < this.adapter!.colCount; ++col) {
             const child = this.measure.children[0] as HTMLSpanElement
-            child.style.left = `${x}px`
-            child.style.top = `0px`
-            child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
-            child.style.height = `${colHeadHeight - this.HEIGHT_ADJUST}px`
+            this.setSpanSize(child, x, 0, colWidths[col], colHeadHeight)
             this.colHeads.appendChild(child)
             x += colWidths[col] - 1 - 1 + seam
         }
@@ -809,10 +786,7 @@ export class Table extends View {
         let y = 0
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             const child = this.measure.children[0] as HTMLSpanElement
-            child.style.left = `0px`
-            child.style.top = `${y}px`
-            child.style.width = `${rowHeadWidth - this.WIDTH_ADJUST}px`
-            child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
+            this.setSpanSize(child, 0, y, rowHeadWidth, rowHeights[row])
             this.rowHeads.appendChild(child)
             y += rowHeights[row] - 1 - 1 + seam
         }
@@ -870,15 +844,19 @@ export class Table extends View {
             let x = 0
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const child = this.measure.children[0] as HTMLSpanElement
-                child.style.left = `${x}px`
-                child.style.top = `${y}px`
-                child.style.width = `${colWidths[col] - this.WIDTH_ADJUST}px`
-                child.style.height = `${rowHeights[row] - this.HEIGHT_ADJUST}px`
+                this.setSpanSize(child, x, y, colWidths[col], rowHeights[row])
                 this.body.appendChild(child)
                 x += colWidths[col] - 2 + seam
             }
             y += rowHeights[row] - 2 + seam
         }
+    }
+
+    setSpanSize(span: HTMLSpanElement, x: number, y: number, w: number, h: number) {
+        span.style.left = `${x}px`
+        span.style.top = `${y}px`
+        span.style.width = `${w - this.WIDTH_ADJUST}px`
+        span.style.height = `${h - this.HEIGHT_ADJUST}px`
     }
 
     createHandle(idx: number, x: number, y: number, w: number, h: number) {

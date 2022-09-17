@@ -47,10 +47,4 @@ export class TableFriend {
     clearAnimation() {
         (this.table as any).animation = undefined
     }
-    // calculateColumnWidths(withinBody = false): number[] {
-    //     return this.table.calculateColumnWidths(withinBody)
-    // }
-    setColumnWidths(withinBody = false, columnWidths: number[]): void {
-        this.table.setColumnWidths(withinBody, columnWidths)
-    }
 }
