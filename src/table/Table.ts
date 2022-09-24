@@ -107,7 +107,6 @@ export class Table extends View {
     protected adapter?: TableAdapter<any>
 
     protected root: HTMLDivElement // div containing everything else (why not host?)
-    protected staging: HTMLDivElement
     protected body: HTMLDivElement
     protected colHeads?: HTMLDivElement
     protected colResizeHandles?: HTMLDivElement
@@ -126,7 +125,6 @@ export class Table extends View {
     protected splitBody?: HTMLDivElement
 
     private animator = new Animator()
-    animation?: TableAnimation
 
     constructor(props?: TableProps) {
         super()
@@ -146,11 +144,9 @@ export class Table extends View {
         this.modelChanged = this.modelChanged.bind(this)
 
         this.root = div(
-            this.staging = div(),
             this.body = div()
         )
         this.root.className = "root"
-        this.staging.className = "staging"
         this.body.className = "body"
         this.measure = div()
         this.measure.classList.add("measure")
@@ -161,8 +157,9 @@ export class Table extends View {
 
         this.body.onresize = this.setHeadingFillerSizeToScrollbarSize
         this.body.onscroll = () => {
-            this.staging.style.top = `${-this.body.scrollTop}px`
-            this.staging.style.left = `${-this.body.scrollLeft}px`
+            if (this.animator.current && this.animator.current instanceof TableAnimation) {
+                this.animator.current.onscroll()
+            }
             this.setHeadingFillerSizeToScrollbarSize()
             if (this.colHeads) {
                 this.colHeads.scrollLeft = this.body.scrollLeft
@@ -214,6 +211,24 @@ export class Table extends View {
 
     override disconnectedCallback(): void {
         Table.allTables.delete(this)
+    }
+
+    addStaging(...elements: HTMLElement[]) {
+        for(const element of elements) {
+            if (element === undefined) {
+                continue
+            }
+            this.root.insertBefore(element, this.root.children[0])
+        }
+    }
+
+    removeStaging(...elements: HTMLElement[]) {
+        for(const element of elements) {
+            if (element === undefined) {
+                continue
+            }
+            this.root.removeChild(element)
+        }
     }
 
     hostKeyDown(ev: KeyboardEvent) {

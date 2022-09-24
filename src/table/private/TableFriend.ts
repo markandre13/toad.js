@@ -1,5 +1,7 @@
+import { Animator } from '@toad/util/animation'
 import { TableAdapter } from '../adapter/TableAdapter'
 import { Table } from '../Table'
+import { TableAnimation } from './TableAnimation'
 
 // workaround for missing 'friend' declarator in typescript
 
@@ -11,14 +13,18 @@ export class TableFriend {
     get adapter() {
         return (this.table as any).adapter as TableAdapter<any>
     }
-    get root() {
+    get root(): HTMLDivElement {
         return (this.table as any).root as HTMLDivElement
     }
     get measure() {
         return (this.table as any).measure as HTMLDivElement
     }
-    get staging() {
-        return (this.table as any).staging as HTMLDivElement
+    getStaging() {
+        const animator = (this.table as any).animator as Animator
+        if (animator.current === undefined)
+            return undefined
+        const animation = animator.current as TableAnimation
+        return animation.staging
     }
     get body() {
         return (this.table as any).body as HTMLDivElement

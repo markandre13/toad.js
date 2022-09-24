@@ -51,6 +51,7 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     prepare(): void {
+        this.prepareStaging()
         this.arrangeRowsInStaging()
         this.splitHorizontal()
     }
@@ -61,6 +62,7 @@ export class RemoveRowAnimation extends TableAnimation {
     }
     lastFrame(): void {
         this.joinHorizontal()
+        this.disposeStaging()
     }
 
     arrangeRowsInStaging() {

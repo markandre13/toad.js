@@ -42,6 +42,7 @@ export class InsertColumnAnimation extends TableAnimation {
     }
 
     prepare(): void {
+        this.prepareStaging()
         this.prepareCellsToBeMeasured()
     }
     firstFrame(): void {
@@ -58,6 +59,7 @@ export class InsertColumnAnimation extends TableAnimation {
         this.mask.style.left = `${x}px`
         this.splitBody.style.left = `${x}px`
         this.joinVertical()
+        this.disposeStaging()
     }
 
     prepareCellsToBeMeasured() {

@@ -193,7 +193,7 @@ export function splitRowInfo(row: number) {
 }
 export function stagingRowInfo(row: number) {
     const table = getTable()
-    return bodyRowInfoCore(row, table, table.staging)
+    return bodyRowInfoCore(row, table, table.getStaging()!)
 }
 export function splitBodyY() {
     const table = getTable()
@@ -205,12 +205,12 @@ export function splitBodyH() {
 }
 export function maskY() {
     const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
     return px2float(mask.style.top)
 }
 export function maskH() {
     const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
     return px2float(mask.style.height)
 }
 export function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) {
@@ -244,12 +244,12 @@ export function splitBodyW() {
 }
 export function maskX() {
     const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
     return px2float(mask.style.left)
 }
 export function maskW() {
     const table = getTable()
-    const mask = table.staging.children[table.staging.children.length - 1] as HTMLSpanElement
+    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
     return px2float(mask.style.width)
 }
 export function bodyColInfo(col: number) {
@@ -262,11 +262,11 @@ export function splitColInfo(col: number) {
 }
 export function stagingColInfo(col: number) {
     const table = getTable()
-    return bodyColInfoCore(col, table, table.staging)
+    return bodyColInfoCore(col, table, table.getStaging()!)
 }
 export function stagingInsertColInfo(col: number) {
     const table = getTable()
-    return insertColInfoCore(col, table, table.staging)
+    return insertColInfoCore(col, table, table.getStaging()!)
 }
 //  1 2 3 4
 //  5 6 7 8
@@ -275,7 +275,7 @@ export function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivEl
 
     let extraNodesInBody = 0
     for (let child of body.children) {
-        if (child === table.staging || (child as HTMLElement).style.backgroundColor === 'rgba(0, 0, 128, 0.3)') { // last is mask
+        if (child === table.getStaging() || (child as HTMLElement).style.backgroundColor === 'rgba(0, 0, 128, 0.3)') { // last is mask
             ++extraNodesInBody
             break
         }

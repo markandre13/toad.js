@@ -58,6 +58,7 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
 
     prepare(): void {
+        this.prepareStaging()
         this.arrangeColumnsInStaging()
         this.splitVertical()
     }
@@ -72,6 +73,7 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
     lastFrame(): void {
         this.joinVertical()
+        this.disposeStaging()
     }
 
     arrangeColumnsInStaging() {

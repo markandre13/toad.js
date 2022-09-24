@@ -34,8 +34,9 @@ export class AnimationBase {
 
     stop() {
         this._stop = true
-        if (this.animator?.current === this)
-            this.animator.current = undefined
+        if (this.animator?.current === this) {
+            this.animator.clearCurrent()
+        }
     }
 
     replace(animation: AnimationBase) {
@@ -90,7 +91,7 @@ export class AnimationBase {
         } else {
             this.lastFrame()
             if (this.animator?.current === this)
-                this.animator.current = undefined
+                this.animator.clearCurrent()
         }
     }
 
@@ -132,7 +133,19 @@ class AnimationWrapper extends AnimationBase {
 // FIXME: no tests
 export class Animator {
     static halt = false
-    current?: AnimationBase
+    protected _current?: AnimationBase
+    get current(): Animation | undefined {
+        if (this._current === undefined) {
+            return undefined
+        }
+        if (this._current instanceof AnimationWrapper) {
+            return this._current.animation
+        }
+        return this._current
+    }
+    clearCurrent() {
+        this._current = undefined
+    }
     run(animation: AnimationBase | Animation) {
         let animationBase: AnimationBase
         if (!(animation instanceof AnimationBase)) {
@@ -140,8 +153,8 @@ export class Animator {
         } else {
             animationBase = animation
         }
-        const current = this.current
-        this.current = animationBase
+        const current = this._current
+        this._current = animationBase
         animationBase.animator = this
         if (current) {
             current.animator = undefined

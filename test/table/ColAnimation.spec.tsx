@@ -99,7 +99,7 @@ describe("table", function () {
 
                     // ...and ask for the new columns to be measured
                     const animation = InsertColumnAnimation.current!
-                    animation.prepareCellsToBeMeasured()
+                    animation.prepare()
                     await sleep()
 
                     // THEN then four cells have been measured.
@@ -109,11 +109,11 @@ describe("table", function () {
                     animation.arrangeNewColumnsInStaging()
 
                     // 1st column
-                    expect(table.staging.children[0].innerHTML).to.equal("#1R0")
-                    expect(table.staging.children[1].innerHTML).to.equal("#1R1")
+                    expect(table.getStaging()!.children[0].innerHTML).to.equal("#1R0")
+                    expect(table.getStaging()!.children[1].innerHTML).to.equal("#1R1")
                     // 2nd column
-                    expect(table.staging.children[2].innerHTML).to.equal("#2R0")
-                    expect(table.staging.children[3].innerHTML).to.equal("#2R1")
+                    expect(table.getStaging()!.children[2].innerHTML).to.equal("#2R0")
+                    expect(table.getStaging()!.children[3].innerHTML).to.equal("#2R1")
 
                     // THEN they have been placed in staging
                     expect(stagingInsertColInfo(0)).to.equal(`#1:${0},0,48,18`)
@@ -168,7 +168,7 @@ describe("table", function () {
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertColumnAnimation.current!
-                    animation.prepareCellsToBeMeasured()
+                    animation.prepare()
                     await sleep()
 
                     // // THEN then two columns have been measured.
@@ -190,11 +190,11 @@ describe("table", function () {
                     animation.arrangeNewColumnsInStaging()
 
                     // 1st column
-                    expect(table.staging.children[0].innerHTML).to.equal("#1R0")
-                    expect(table.staging.children[1].innerHTML).to.equal("#1R1")
+                    expect(table.getStaging()!.children[0].innerHTML).to.equal("#1R0")
+                    expect(table.getStaging()!.children[1].innerHTML).to.equal("#1R1")
                     // 2nd column
-                    expect(table.staging.children[2].innerHTML).to.equal("#2R0")
-                    expect(table.staging.children[3].innerHTML).to.equal("#2R1")
+                    expect(table.getStaging()!.children[2].innerHTML).to.equal("#2R0")
+                    expect(table.getStaging()!.children[3].innerHTML).to.equal("#2R1")
 
                     // THEN they have been placed in staging
                     expect(stagingInsertColInfo(0)).to.equal(`#1:0,0,48,18`)
@@ -251,7 +251,7 @@ describe("table", function () {
 
                     // ...and ask for the new columns to be measured
                     const animation = InsertColumnAnimation.current!
-                    animation.prepareCellsToBeMeasured()
+                    animation.prepare()
                     await sleep()
 
                     // THEN then four cells have been measured.
@@ -261,11 +261,11 @@ describe("table", function () {
                     animation.arrangeNewColumnsInStaging()
 
                     // 1st column
-                    expect(table.staging.children[0].innerHTML).to.equal("#2R0")
-                    expect(table.staging.children[1].innerHTML).to.equal("#2R1")
+                    expect(table.getStaging()!.children[0].innerHTML).to.equal("#2R0")
+                    expect(table.getStaging()!.children[1].innerHTML).to.equal("#2R1")
                     // 2nd column
-                    expect(table.staging.children[2].innerHTML).to.equal("#3R0")
-                    expect(table.staging.children[3].innerHTML).to.equal("#3R1")
+                    expect(table.getStaging()!.children[2].innerHTML).to.equal("#3R0")
+                    expect(table.getStaging()!.children[3].innerHTML).to.equal("#3R1")
 
                     // THEN they have been placed in staging
                     expect(stagingInsertColInfo(0)).to.equal(`#2:37,0,48,18`)
@@ -322,7 +322,7 @@ describe("table", function () {
 
                     // ...and ask for the new columns to be measured
                     const animation = InsertColumnAnimation.current!
-                    animation.prepareCellsToBeMeasured()
+                    animation.prepare()
                     await sleep()
 
                     // THEN then four cells have been measured.
@@ -332,11 +332,11 @@ describe("table", function () {
                     animation.arrangeNewColumnsInStaging()
 
                     // 1st column
-                    expect(table.staging.children[0].innerHTML).to.equal("#3R0")
-                    expect(table.staging.children[1].innerHTML).to.equal("#3R1")
+                    expect(table.getStaging()!.children[0].innerHTML).to.equal("#3R0")
+                    expect(table.getStaging()!.children[1].innerHTML).to.equal("#3R1")
                     // 2nd column
-                    expect(table.staging.children[2].innerHTML).to.equal("#4R0")
-                    expect(table.staging.children[3].innerHTML).to.equal("#4R1")
+                    expect(table.getStaging()!.children[2].innerHTML).to.equal("#4R0")
+                    expect(table.getStaging()!.children[3].innerHTML).to.equal("#4R1")
 
                     // THEN they have been placed in staging
                     expect(stagingInsertColInfo(0)).to.equal(`#3:${32 + 64 + 2 * spacing},0,48,18`)
@@ -394,7 +394,7 @@ describe("table", function () {
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertColumnAnimation.current!
-                    animation.prepareCellsToBeMeasured()
+                    animation.prepare()
                     await sleep()
 
                     // THEN then two cells have been measured.
@@ -459,6 +459,7 @@ describe("table", function () {
                     // expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
+                    animation.prepareStaging()
                     animation.arrangeColumnsInStaging()
 
                     // THEN they have been placed in staging
@@ -514,6 +515,7 @@ describe("table", function () {
                     // expect(animation.initialWidth, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
+                    animation.prepareStaging()
                     animation.arrangeColumnsInStaging()
 
                     // THEN they have been placed in staging
@@ -583,6 +585,7 @@ describe("table", function () {
                     // expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
+                    animation.prepareStaging()
                     animation.arrangeColumnsInStaging()
 
                     // THEN they have been placed in staging
@@ -642,6 +645,7 @@ describe("table", function () {
                     const animation = RemoveColumnAnimation.current!
 
                     // WHEN ask for the new rows to be placed
+                    animation.prepareStaging()
                     animation.arrangeColumnsInStaging()
 
                     // THEN they have been placed in staging
@@ -700,6 +704,7 @@ describe("table", function () {
                     // expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
+                    animation.prepareStaging()
                     animation.arrangeColumnsInStaging()
 
                     // THEN they have been placed in staging

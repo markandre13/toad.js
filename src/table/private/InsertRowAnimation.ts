@@ -42,6 +42,7 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     prepare(): void {
+        this.prepareStaging()
         this.prepareCellsToBeMeasured()
     }
     firstFrame(): void {
@@ -58,6 +59,7 @@ export class InsertRowAnimation extends TableAnimation {
         this.splitBody.style.top = `${y}px`
         this.mask.style.top = `${y}px`
         this.joinHorizontal()
+        this.disposeStaging()
     }
 
     public prepareCellsToBeMeasured() {
@@ -194,14 +196,15 @@ export class InsertRowAnimation extends TableAnimation {
             // but what if the body and header frames impose different styles on their children?
             // it would also avoid tweaks in the calculation to have two different stagings
             // why is staging part of Table anyway?
-            //
 
-            const headStaging = div() 
+            // this.headStaging = div()
+            // this.headStaging.classList.add("staging")
+            // this.root.insertBefore(this.headStaging, this.root.children[0])
+
             for (let row = 0; row < this.event.size; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement
-                console.log(cell)
                 this.setCellSize(cell, 0, y, 20, rowHeight[row])
-                headStaging.appendChild(cell)
+                this.headStaging.appendChild(cell)
 
                 y += rowHeight[row] - overlap
                 if (this.adapter.config.seamless) {
