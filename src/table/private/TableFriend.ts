@@ -26,6 +26,13 @@ export class TableFriend {
         const animation = animator.current as TableAnimation
         return animation.staging
     }
+    getHeadStaging() {
+        const animator = (this.table as any).animator as Animator
+        if (animator.current === undefined)
+            return undefined
+        const animation = animator.current as TableAnimation
+        return animation.headStaging
+    }
     get body() {
         return (this.table as any).body as HTMLDivElement
     }

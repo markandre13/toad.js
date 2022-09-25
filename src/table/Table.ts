@@ -158,7 +158,7 @@ export class Table extends View {
         this.body.onresize = this.setHeadingFillerSizeToScrollbarSize
         this.body.onscroll = () => {
             if (this.animator.current && this.animator.current instanceof TableAnimation) {
-                this.animator.current.onscroll()
+                this.animator.current.scrollStaging()
             }
             this.setHeadingFillerSizeToScrollbarSize()
             if (this.colHeads) {

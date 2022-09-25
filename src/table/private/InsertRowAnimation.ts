@@ -29,6 +29,7 @@ export class InsertRowAnimation extends TableAnimation {
     done = false;
     initialRowCount: number
     mask!: HTMLSpanElement
+    headMask!: HTMLSpanElement
 
     animationTop!: number
     animationHeight!: number
@@ -191,19 +192,9 @@ export class InsertRowAnimation extends TableAnimation {
         let y = top
 
         if (this.rowHeads !== undefined) {
-
-            // TODO: we could use staging to be behind body _and_ headers,
-            // but what if the body and header frames impose different styles on their children?
-            // it would also avoid tweaks in the calculation to have two different stagings
-            // why is staging part of Table anyway?
-
-            // this.headStaging = div()
-            // this.headStaging.classList.add("staging")
-            // this.root.insertBefore(this.headStaging, this.root.children[0])
-
             for (let row = 0; row < this.event.size; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement
-                this.setCellSize(cell, 0, y, 20, rowHeight[row])
+                this.setCellSize(cell, 0, y, 22, rowHeight[row]) // FIXME: fixed row head width
                 this.headStaging.appendChild(cell)
 
                 y += rowHeight[row] - overlap
@@ -243,6 +234,18 @@ export class InsertRowAnimation extends TableAnimation {
         this.mask.style.height = `${this.totalHeight}px`
         this.mask.style.backgroundColor = Table.maskColor
         this.staging.appendChild(this.mask)
+
+        if (this.rowHeads !== undefined) {
+            this.headMask = span()
+            this.headMask.style.boxSizing = `content-box`
+            this.headMask.style.left = `0`
+            this.headMask.style.right = `0`
+            this.headMask.style.top = `${top}px`
+            this.headMask.style.border = 'none'
+            this.headMask.style.height = `${this.totalHeight}px`
+            this.headMask.style.backgroundColor = Table.maskColor
+            this.headStaging.appendChild(this.headMask)
+        }
     }
 
     splitHorizontal() {

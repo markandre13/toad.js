@@ -10,7 +10,10 @@ import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { AnimationBase } from '@toad/util/animation'
 
-import { Measure, prepareByRows, flatMapRows, getTable, bodyRowInfo, splitRowInfo, stagingRowInfo, splitBodyY, splitBodyH, maskY, maskH } from "./util"
+import { Measure, prepareByRows, flatMapRows, getTable,
+    bodyRowInfo, stagingRowInfo, maskY, maskH, splitRowInfo, splitBodyY, splitBodyH,
+    headRowInfo, stagingRowHeadInfo,  headMaskY, headMaskH,
+} from "./util"
 
 describe("table", function () {
     beforeEach(async function () {
@@ -559,7 +562,7 @@ describe("table", function () {
                     animation.joinHorizontal()
                     check48_72_32_64()
                 })
-                it("two rows at middle", async function () {
+                it.only("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([
                         new Measure(1, 32),
@@ -585,6 +588,9 @@ describe("table", function () {
 
                     // return
 
+                    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+                    expect(headRowInfo(1)).to.equal(`#4:0,${32+1},16,64`)
+
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
                     animation.prepare()
@@ -596,16 +602,23 @@ describe("table", function () {
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
 
-                    return
-
                     // THEN they have been placed in staging
+                    expect(stagingRowHeadInfo(0)).to.equal(`#2:0,${32+1},16,48`)
+                    expect(stagingRowHeadInfo(1)).to.equal(`#3:0,${32+48+2},16,72`)
+
                     expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
                     expect(stagingRowInfo(1)).to.equal(`#3:0,82,80,72`)
 
                     // ...and are hidden by a mask
+
                     const insertHeight = 48 + 72 + 4 - 1
+                    expect(headMaskY()).to.equal(33)
+                    expect(headMaskH()).to.equal(insertHeight)
+
                     expect(maskY()).to.equal(33)
                     expect(maskH()).to.equal(insertHeight)
+
+                    return
 
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
