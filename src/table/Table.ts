@@ -1181,6 +1181,54 @@ export class Table extends View {
     // move all rows in body into splitBody, starting with row splitRow
     // splitRow refers to the actual display, not to the model
     splitHorizontalNew(splitRow: number) {
+        this.splitHeadHorizontal(splitRow)
+        this.splitBodyHorizontal(splitRow)
+    }
+
+    splitHeadHorizontal(splitRow: number) {
+        console.log(`splitHeadHorizontal(${splitRow})`)
+        if (this.rowHeads === undefined) {
+            return
+        }
+        const overlap = this.adapter!.config.seamless ? 0 : 1
+        this.splitHead = div()
+        this.splitHead.className = "splitBody" // FIXME: splitHead?
+        this.splitHead.style.left = `0`
+        this.splitHead.style.right = `0`
+        this.splitHead.style.backgroundColor = Table.splitColor
+        const idx = splitRow
+        if (this.body.children.length === 0) {
+            this.splitHead.style.top = `0px`
+            this.splitHead.style.height = `1px`
+        } else {
+            if (idx < this.rowHeads.children.length) {
+                // console.log(`  split at existing row`)
+                let cell = this.rowHeads.children[idx] as HTMLSpanElement
+                let height = 0
+                const top = px2float(cell.style.top)
+                while (idx < this.rowHeads.children.length) {
+                    cell = this.rowHeads.children[idx] as HTMLSpanElement
+                    const b = cell.getBoundingClientRect()
+                    height += b.height - overlap
+                    let y = px2float(cell.style.top)
+                    cell.style.top = `${y - top}px`
+                    this.splitHead.appendChild(cell)
+                }
+                height += overlap - 1 // FIXME: the -1 is a hack because there is an extra element in the headers...
+                this.splitHead.style.top = `${top}px`
+                this.splitHead.style.height = `${height}px`
+            } else {
+                let cell = this.rowHeads.children[this.body.children.length - 1] as HTMLSpanElement
+                let b = cell.getBoundingClientRect()
+                let top = px2float(cell.style.top) + b.height - overlap
+                this.splitHead.style.top = `${top}px`
+                this.splitHead.style.height = `1px`
+            }
+        }
+        this.rowHeads.appendChild(this.splitHead)
+    }
+
+    splitBodyHorizontal(splitRow: number) {
         // console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()

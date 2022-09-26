@@ -219,6 +219,30 @@ export function stagingRowHeadInfo(row: number) {
     id = id.substring(1)
     return `#${id}:${x},${y},${w},${h}`
 }
+export function splitRowHeadInfo(row: number) {
+    const table = getTable()
+
+    const firstCellOfRow = table.rowHeads.lastElementChild!.children[row] as HTMLElement
+
+    // const firstCellOfRow = table.getHeadStaging()!.children[row] as HTMLElement
+    const x = px2float(firstCellOfRow.style.left)
+    const y = px2float(firstCellOfRow.style.top)
+    const w = px2float(firstCellOfRow.style.width)
+    const h = px2float(firstCellOfRow.style.height)
+    let id = firstCellOfRow.innerText
+    id = id.substring(1)
+    return `#${id}:${x},${y},${w},${h}`
+}
+export function splitRowHeadY() {
+    const table = getTable()
+    const split = table.rowHeads.lastElementChild as HTMLElement
+    return px2float(split.style.top)
+}
+export function splitRowHeadH() {
+    const table = getTable()
+    const split = table.rowHeads.lastElementChild as HTMLElement
+    return px2float(split.style.height)
+}
 export function splitBodyY() {
     const table = getTable()
     return px2float(table.splitBody.style.top)

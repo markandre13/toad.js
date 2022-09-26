@@ -29,6 +29,7 @@ export class InsertRowAnimation extends TableAnimation {
     done = false;
     initialRowCount: number
     mask!: HTMLSpanElement
+    splitHead!: HTMLDivElement
     headMask!: HTMLSpanElement
 
     animationTop!: number
@@ -54,11 +55,20 @@ export class InsertRowAnimation extends TableAnimation {
         const y = this.animationTop + n * this.animationHeight
         this.splitBody.style.top = `${y}px`
         this.mask.style.top = `${y}px`
+        if (this.rowHeads !== undefined) {
+            this.splitHead.style.top = `${y}px`
+            this.headMask.style.top = `${y}px`
+        }
     }
     lastFrame(): void {
         const y = this.animationTop + this.animationHeight
         this.splitBody.style.top = `${y}px`
         this.mask.style.top = `${y}px`
+        if (this.rowHeads !== undefined) {
+            this.splitHead.style.top = `${y}px`
+            this.headMask.style.top = `${y}px`
+        }
+
         this.joinHorizontal()
         this.disposeStaging()
     }
@@ -250,6 +260,11 @@ export class InsertRowAnimation extends TableAnimation {
 
     splitHorizontal() {
         this.table.splitHorizontalNew(this.event.index)
+
+        if (this.rowHeads !== undefined) { // FIXME: Hack
+            this.splitHead = this.rowHeads.lastElementChild as HTMLDivElement
+        }
+
         this.animationHeight = this.totalHeight
         if (this.initialRowCount !== 0) {
             const overlap = this.adapter.config.seamless ? 0 : 1

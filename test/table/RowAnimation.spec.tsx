@@ -12,7 +12,7 @@ import { AnimationBase } from '@toad/util/animation'
 
 import { Measure, prepareByRows, flatMapRows, getTable,
     bodyRowInfo, stagingRowInfo, maskY, maskH, splitRowInfo, splitBodyY, splitBodyH,
-    headRowInfo, stagingRowHeadInfo,  headMaskY, headMaskH,
+    headRowInfo, stagingRowHeadInfo,  headMaskY, headMaskH, splitRowHeadInfo, splitRowHeadY, splitRowHeadH
 } from "./util"
 
 describe("table", function () {
@@ -618,11 +618,14 @@ describe("table", function () {
                     expect(maskY()).to.equal(33)
                     expect(maskH()).to.equal(insertHeight)
 
-                    return
-
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
                     // THEN splitbody
+
+                    expect(splitRowHeadInfo(0)).to.equal(`#4:0,0,16,64`)
+                    expect(splitRowHeadY()).to.equal(33)
+                    expect(splitRowHeadH()).to.equal(64 + 2)
+
                     expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
                     expect(splitBodyY()).to.equal(33)
                     expect(splitBodyH()).to.equal(64 + 2)
@@ -630,8 +633,13 @@ describe("table", function () {
                     // WHEN we animate
                     animation.animationFrame(1)
 
+                    expect(headMaskY()).to.equal(33 + insertHeight - 1)
+                    expect(splitRowHeadY()).to.equal(33 + insertHeight - 1)
+
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
+
+                    return
 
                     animation.joinHorizontal()
                     check32_48_72_64()
