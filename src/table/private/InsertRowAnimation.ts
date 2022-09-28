@@ -278,7 +278,21 @@ export class InsertRowAnimation extends TableAnimation {
             return
         }
         this.done = true
-
+        if (this.rowHeads) {
+            this.headStaging.removeChild(this.headMask)
+            this.rowHeads.removeChild(this.splitHead)
+            while(this.headStaging.children.length > 0) {
+                this.rowHeads.appendChild(this.headStaging.children[0])
+            }
+            if (this.splitHead.children.length > 0) {
+                let top = px2float(this.splitHead.style.top)
+                while (this.splitHead.children.length > 0) {
+                    const cell = this.splitHead.children[0] as HTMLSpanElement
+                    cell.style.top = `${px2float(cell.style.top) + top}px`
+                    this.rowHeads.appendChild(cell)
+                }
+            }
+        }
         this.staging.removeChild(this.mask)
         this.body.removeChild(this.splitBody)
         while (this.staging.children.length > 0) {

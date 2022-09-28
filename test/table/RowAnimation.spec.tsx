@@ -639,10 +639,11 @@ describe("table", function () {
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
-                    return
+                    // return
 
-                    animation.joinHorizontal()
+                    animation.lastFrame()
                     check32_48_72_64()
+                    checkRowHead32_48_72_64()
                 })
                 xit("two rows at end", async function () {
                     // WHEN we have an empty table without headings
@@ -1243,6 +1244,18 @@ describe("table", function () {
                     ])
                     check32_48_72_64()
                 })
+                it("32, 48, 72, 64 with row head", async function () {
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
+                    ], {
+                        rowHeaders: true,
+                        columnHeaders: true
+                    })
+                    checkRowHead32_48_72_64()
+                })
                 it("32, 48, 72, 64 (seamless)", async function () {
                     await prepareByRows([
                         new Measure(1, 32),
@@ -1304,6 +1317,12 @@ function check32_48_72_64() {
     expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,48`)
     expect(bodyRowInfo(2)).to.equal(`#3:0,82,80,72`)
     expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+}
+function checkRowHead32_48_72_64() {
+    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+    expect(headRowInfo(1)).to.equal(`#2:0,33,16,48`)
+    expect(headRowInfo(2)).to.equal(`#3:0,82,16,72`)
+    expect(headRowInfo(3)).to.equal(`#4:0,155,16,64`)
 }
 function check32_48_72_64_seamless() {
     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
