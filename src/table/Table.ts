@@ -37,6 +37,19 @@ import { span, div, text } from '../util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
 import { style as txTable } from './style/tx-table'
 
+// TABLE ANIMATION
+//
+// during animation, the table is split into three separate parts
+// * the original head/body containing the left/top part of the table
+// * a staging area with the rows/columns to be added/removed, which is
+//   outside the head/body so that it does not influence the scrollbars
+//   and which is benath the head/body so that it can be covered during
+//   the animation
+// * a split area within the head/body containing the right/bottom part
+//   of the table, which will be animatated and influence the scrollbars
+//   during animation (to influence the scrollbars we can not use CSS
+//   animation, which would've runn on the GPU)
+
 // --spectrum-table-row-background-color-selected
 // --spectrum-alias-highlight-selected
 // --spectrum-alias-highlight-selected: rgba(20,115,230,0.1); // --tx-global-blue-500 with alias 0.1
@@ -756,7 +769,8 @@ export class Table extends View {
         }
 
         let filler = span()
-        filler.className = "head"
+        filler.classList.add("head")
+        filler.classList.add("fill")
         filler.style.left = `${x}px`
         filler.style.top = `0`
         filler.style.width = `256px`
@@ -778,7 +792,8 @@ export class Table extends View {
 
         x += this.HANDLE_SIZE // handle width
         filler = span()
-        filler.className = "head"
+        filler.classList.add("head")
+        filler.classList.add("fill")
         filler.style.left = `${x}px`
         filler.style.top = `0`
         filler.style.width = `256px`
@@ -800,7 +815,8 @@ export class Table extends View {
         }
 
         let filler = span()
-        filler.className = "head"
+        filler.classList.add("head")
+        filler.classList.add("fill")
         filler.style.left = `0`
         filler.style.top = `${y}px`
         filler.style.width = `${rowHeadWidth}px`
@@ -824,7 +840,8 @@ export class Table extends View {
 
         y += this.HANDLE_SIZE // handle width
         filler = span()
-        filler.className = "head"
+        filler.classList.add("head")
+        filler.classList.add("fill")
         filler.style.left = `0`
         filler.style.top = `${y}0px`
         filler.style.width = `${rowHeadWidth}px`
@@ -1186,11 +1203,12 @@ export class Table extends View {
     }
 
     splitHeadHorizontal(splitRow: number) {
-        console.log(`splitHeadHorizontal(${splitRow})`)
+        // console.log(`splitHeadHorizontal(${splitRow})`)
         if (this.rowHeads === undefined) {
             return
         }
         const overlap = this.adapter!.config.seamless ? 0 : 1
+        console.log(`splitHeadHorizontal(): seamless=${this.adapter!.config.seamless}, overlap=${overlap}`)
         this.splitHead = div()
         this.splitHead.className = "splitBody" // FIXME: splitHead?
         this.splitHead.style.left = `0`
@@ -1208,13 +1226,18 @@ export class Table extends View {
                 const top = px2float(cell.style.top)
                 while (idx < this.rowHeads.children.length) {
                     cell = this.rowHeads.children[idx] as HTMLSpanElement
+                    // if (!cell.classList.contains("head")) {
+                    //     continue
+                    // }
                     const b = cell.getBoundingClientRect()
                     height += b.height - overlap
                     let y = px2float(cell.style.top)
                     cell.style.top = `${y - top}px`
                     this.splitHead.appendChild(cell)
                 }
-                height += overlap - 1 // FIXME: the -1 is a hack because there is an extra element in the headers...
+                if (this.adapter!.config.seamless) { // FIXME: Why do I do this???
+                    height += overlap
+                }
                 this.splitHead.style.top = `${top}px`
                 this.splitHead.style.height = `${height}px`
             } else {

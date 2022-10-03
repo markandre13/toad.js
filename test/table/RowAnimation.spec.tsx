@@ -10,9 +10,10 @@ import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { AnimationBase } from '@toad/util/animation'
 
-import { Measure, prepareByRows, flatMapRows, getTable,
+import {
+    Measure, prepareByRows, flatMapRows, getTable,
     bodyRowInfo, stagingRowInfo, maskY, maskH, splitRowInfo, splitBodyY, splitBodyH,
-    headRowInfo, stagingRowHeadInfo,  headMaskY, headMaskH, splitRowHeadInfo, splitRowHeadY, splitRowHeadH
+    headRowInfo, stagingRowHeadInfo, headMaskY, headMaskH, splitRowHeadInfo, splitRowHeadY, splitRowHeadH
 } from "./util"
 
 describe("table", function () {
@@ -299,6 +300,7 @@ describe("table", function () {
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
                     // THEN splitbody
+                    // FIXME: this should contain data
                     expect(splitBodyY()).to.equal(98)
                     expect(splitBodyH()).to.equal(1)
 
@@ -459,34 +461,47 @@ describe("table", function () {
             describe("row headers", function () {
                 // NOTE: row headers will be tested for animation; column headers, ... let's see...
 
-                xit("two rows into empty", async function () {
+                it("two rows into empty", async function () {
                     // WHEN we have an empty table without headings
-                    const model = await prepareByRows([])
+                    const model = await prepareByRows([], { rowHeaders: true })
                     const table = getTable()
 
                     // ...insert the 1st two rows
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
                     model.insertRow(0, flatMapRows([
                         new Measure(1, 32),
                         new Measure(2, 64)
                     ]))
 
+                    // return
+
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
-                    animation.prepareCellsToBeMeasured()
+                    animation.prepare()
+                    expect(table.rowHeads).to.not.be.undefined
+                    expect(animation.staging).to.not.be.undefined
+                    expect(animation.headStaging).to.not.be.undefined
                     await sleep()
 
                     // THEN then two cells have been measured.
-                    expect(table.measure.children.length).to.equal(4)
+                    expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
 
                     // THEN they have been placed in staging
+                    expect(stagingRowHeadInfo(0)).to.equal(`#1:0,0,16,32`)
+                    expect(stagingRowHeadInfo(1)).to.equal(`#2:0,${32 + 1},16,64`)
                     expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(stagingRowInfo(1)).to.equal(`#2:0,33,80,64`)
+                    expect(stagingRowInfo(1)).to.equal(`#2:0,${32 + 1},80,64`)
 
                     // ...and are hidden by a mask
                     const insertHeight = 32 + 64 + 4 - 1
+                    expect(headMaskY()).to.equal(0)
+                    expect(headMaskH()).to.equal(insertHeight)
                     expect(maskY()).to.equal(0)
                     expect(maskH()).to.equal(insertHeight)
 
@@ -494,30 +509,40 @@ describe("table", function () {
                     animation.splitHorizontal()
 
                     // THEN splitbody
+                    expect(splitRowHeadY()).to.equal(0)
+                    expect(splitRowHeadH()).to.equal(1)
                     expect(splitBodyY()).to.equal(0)
                     expect(splitBodyH()).to.equal(1)
 
                     // WHEN we animate
                     animation.animationFrame(1)
 
+                    expect(headMaskY()).to.equal(insertHeight)
+                    expect(splitRowHeadY()).to.equal(insertHeight)
                     expect(maskY()).to.equal(insertHeight)
                     expect(splitBodyY()).to.equal(insertHeight)
 
                     animation.joinHorizontal()
                     check32_64()
+                    checkRowHead32_64()
 
                     expect(table.body.children).to.have.lengthOf(4)
                 })
-                xit("two rows at head", async function () {
+                it("two rows at head", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([
                         new Measure(3, 32),
                         new Measure(4, 64)
-                    ])
+                    ], { rowHeaders: true })
                     const table = getTable()
 
+                    expect(headRowInfo(0)).to.equal(`#3:0,0,16,32`)
+                    expect(headRowInfo(1)).to.equal(`#4:0,${32 + 1},16,64`)
                     expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                    expect(bodyRowInfo(1)).to.equal(`#4:0,${32 + 1},80,64`)
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
 
                     // ...at the head insert two rows
                     model.insertRow(0, flatMapRows([
@@ -525,56 +550,72 @@ describe("table", function () {
                         new Measure(2, 72)
                     ]))
 
+                    // return
+
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
-                    animation.prepareCellsToBeMeasured()
+                    animation.prepare()
                     await sleep()
 
                     // THEN then two rows have been measured.
-                    expect(table.measure.children.length).to.equal(4)
+                    expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
 
                     // THEN they have been placed in staging
+                    expect(stagingRowHeadInfo(0)).to.equal(`#1:0,0,16,48`)
+                    expect(stagingRowHeadInfo(1)).to.equal(`#2:0,${48 + 1},16,72`)
                     expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,48`)
-                    expect(stagingRowInfo(1)).to.equal(`#2:0,49,80,72`)
+                    expect(stagingRowInfo(1)).to.equal(`#2:0,${48 + 1},80,72`)
 
                     // ...and are hidden by a mask
                     const insertHeight = 48 + 72 + 4 - 1
+                    expect(headMaskY()).to.equal(0)
+                    expect(headMaskH()).to.equal(insertHeight)
                     expect(maskY()).to.equal(0)
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
-                    expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
-                    expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
+
                     // THEN splitbody
+
+                    expect(splitRowHeadInfo(0)).to.equal(`#3:0,0,16,32`)
+                    expect(splitRowHeadInfo(1)).to.equal(`#4:0,${32 + 1},16,64`)
+                    expect(splitRowHeadY()).to.equal(0)
+                    expect(splitRowHeadH()).to.equal(32 + 64 + 4 - 1)
+
+                    expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
+                    expect(splitRowInfo(1)).to.equal(`#4:0,${32 + 1},80,64`)
                     expect(splitBodyY()).to.equal(0)
                     expect(splitBodyH()).to.equal(32 + 64 + 4 - 1)
 
                     // WHEN we animate
                     animation.animationFrame(1)
 
+                    expect(headMaskY()).to.equal(insertHeight - 1)
+                    expect(splitRowHeadY()).to.equal(insertHeight - 1)
+
                     expect(maskY()).to.equal(insertHeight - 1)
                     expect(splitBodyY()).to.equal(insertHeight - 1)
 
                     animation.joinHorizontal()
                     check48_72_32_64()
+                    checkRowHead48_72_32_64()
                 })
-                it.only("two rows at middle", async function () {
+                it("two rows at middle", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([
                         new Measure(1, 32),
                         new Measure(4, 64)
-                    ], {
-                        rowHeaders: true,
-                        columnHeaders: true
-                    })
+                    ], { rowHeaders: true })
                     const table = getTable()
 
+                    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+                    expect(headRowInfo(1)).to.equal(`#4:0,${32 + 1},16,64`)
                     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#4:0,33,80,64`)
+                    expect(bodyRowInfo(1)).to.equal(`#4:0,${32 + 1},80,64`)
 
                     // ...at the head insert two rows
 
@@ -588,9 +629,6 @@ describe("table", function () {
 
                     // return
 
-                    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
-                    expect(headRowInfo(1)).to.equal(`#4:0,${32+1},16,64`)
-
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
                     animation.prepare()
@@ -603,25 +641,22 @@ describe("table", function () {
                     animation.arrangeNewRowsInStaging()
 
                     // THEN they have been placed in staging
-                    expect(stagingRowHeadInfo(0)).to.equal(`#2:0,${32+1},16,48`)
-                    expect(stagingRowHeadInfo(1)).to.equal(`#3:0,${32+48+2},16,72`)
-
-                    expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
-                    expect(stagingRowInfo(1)).to.equal(`#3:0,82,80,72`)
+                    expect(stagingRowHeadInfo(0)).to.equal(`#2:0,${32 + 1},16,48`)
+                    expect(stagingRowHeadInfo(1)).to.equal(`#3:0,${32 + 48 + 2},16,72`)
+                    expect(stagingRowInfo(0)).to.equal(`#2:0,${32 + 1},80,48`)
+                    expect(stagingRowInfo(1)).to.equal(`#3:0,${32 + 48 + 2},80,72`)
 
                     // ...and are hidden by a mask
-
                     const insertHeight = 48 + 72 + 4 - 1
-                    expect(headMaskY()).to.equal(33)
+                    expect(headMaskY()).to.equal(32 + 1)
                     expect(headMaskH()).to.equal(insertHeight)
-
-                    expect(maskY()).to.equal(33)
+                    expect(maskY()).to.equal(32 + 1)
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
-                    // THEN splitbody
 
+                    // THEN splitbody
                     expect(splitRowHeadInfo(0)).to.equal(`#4:0,0,16,64`)
                     expect(splitRowHeadY()).to.equal(33)
                     expect(splitRowHeadH()).to.equal(64 + 2)
@@ -635,32 +670,37 @@ describe("table", function () {
 
                     expect(headMaskY()).to.equal(33 + insertHeight - 1)
                     expect(splitRowHeadY()).to.equal(33 + insertHeight - 1)
-
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
-
-                    // return
 
                     animation.lastFrame()
                     check32_48_72_64()
                     checkRowHead32_48_72_64()
                 })
-                xit("two rows at end", async function () {
+                it("two rows at end", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 64)
-                    ])
+                    ], { rowHeaders: true })
                     const table = getTable()
 
+                    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+                    expect(headRowInfo(1)).to.equal(`#2:0,${32 + 1},16,64`)
                     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-                    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
+                    expect(bodyRowInfo(1)).to.equal(`#2:0,${32 + 1},80,64`)
 
                     // ...at the head insert two rows
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
                     model.insertRow(2, flatMapRows([
                         new Measure(3, 48),
                         new Measure(4, 72)
                     ]))
+
+                    // return
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -668,35 +708,45 @@ describe("table", function () {
                     await sleep()
 
                     // THEN then two cells have been measured.
-                    expect(table.measure.children.length).to.equal(4)
+                    expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
 
                     // THEN they have been placed in staging
-                    expect(stagingRowInfo(0)).to.equal(`#3:0,98,80,48`)
-                    expect(stagingRowInfo(1)).to.equal(`#4:0,147,80,72`)
+                    expect(stagingRowHeadInfo(0)).to.equal(`#3:0,${32 + 64 + 2},16,48`)
+                    expect(stagingRowHeadInfo(1)).to.equal(`#4:0,${32 + 64 + 48 + 3},16,72`)
+                    expect(stagingRowInfo(0)).to.equal(`#3:0,${32 + 64 + 2},80,48`)
+                    expect(stagingRowInfo(1)).to.equal(`#4:0,${32 + 64 + 48 + 3},80,72`)
 
                     // ...and are hidden by a mask
                     const insertHeight = 48 + 72 + 4 - 1
+                    expect(headMaskY()).to.equal(98)
+                    expect(headMaskH()).to.equal(insertHeight)
                     expect(maskY()).to.equal(98)
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
+
                     // THEN splitbody
-                    expect(splitBodyY()).to.equal(98)
+                    expect(splitRowHeadY()).to.equal(32 + 64 + 2)
+                    expect(splitRowHeadH()).to.equal(1)
+                    expect(splitBodyY()).to.equal(32 + 64 + 2)
                     expect(splitBodyH()).to.equal(1)
 
                     // WHEN we animate
                     animation.animationFrame(1)
 
-                    expect(maskY()).to.equal(98 + insertHeight - 1)
-                    expect(splitBodyY()).to.equal(98 + insertHeight - 1)
+                    expect(headMaskY()).to.equal(32 + 64 + 2 + insertHeight - 1)
+                    expect(splitRowHeadY()).to.equal(32 + 64 + 2 + insertHeight - 1)
+                    expect(maskY()).to.equal(32 + 64 + 2 + insertHeight - 1)
+                    expect(splitBodyY()).to.equal(32 + 64 + 2 + insertHeight - 1)
 
                     animation.joinHorizontal()
 
                     check32_64_48_72()
+                    checkRowHead32_64_48_72()
                 })
                 describe("column width", function () {
                     xit("keep initial", async function () {
@@ -789,22 +839,30 @@ describe("table", function () {
                     })
                     xit("shrink")
                 })
-                xit("seamless (two rows at middle)", async function () {
+                it("seamless (two rows at middle)", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([
                         new Measure(1, 32),
                         new Measure(4, 64)
-                    ], { seamless: true })
+                    ], { seamless: true, rowHeaders: true })
                     const table = getTable()
 
+                    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+                    expect(headRowInfo(1)).to.equal(`#4:0,32,16,64`) // 32 instead of 33
                     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
                     expect(bodyRowInfo(1)).to.equal(`#4:0,32,80,64`) // 32 instead of 33
 
                     // ...at the head insert two rows
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
                     model.insertRow(1, flatMapRows([
                         new Measure(2, 48),
                         new Measure(3, 72)
                     ]))
+
+                    // return
 
                     // ...and ask for the new cells to be measured
                     const animation = InsertRowAnimation.current!
@@ -812,22 +870,32 @@ describe("table", function () {
                     await sleep()
 
                     // THEN then two cells have been measured.
-                    expect(table.measure.children.length).to.equal(4)
+                    expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
 
                     // THEN they have been placed in staging
+                    expect(stagingRowHeadInfo(0)).to.equal(`#2:0,32,16,48`)
+                    expect(stagingRowHeadInfo(1)).to.equal(`#3:0,${32+48},16,72`) // 80 instead of 82
                     expect(stagingRowInfo(0)).to.equal(`#2:0,32,80,48`)
-                    expect(stagingRowInfo(1)).to.equal(`#3:0,80,80,72`) // 80 instead of 82
+                    expect(stagingRowInfo(1)).to.equal(`#3:0,${32+48},80,72`) // 80 instead of 82
                     // ...and are hidden by a mask
                     const insertHeight = 48 + 72 // + 4 - 1
+                    expect(headMaskY()).to.equal(32) // 32 instead of 33
+                    expect(headMaskH()).to.equal(insertHeight)
                     expect(maskY()).to.equal(32) // 32 instead of 33
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
                     animation.splitHorizontal()
+
                     // THEN splitbody
+
+                    expect(splitRowHeadInfo(0)).to.equal(`#4:0,0,16,64`)
+                    expect(splitRowHeadY()).to.equal(32) // 32 instead of 33
+                    expect(splitRowHeadH()).to.equal(64) // 64 instead of 64 + 2
+
                     expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
                     expect(splitBodyY()).to.equal(32) // 32 instead of 33
                     expect(splitBodyH()).to.equal(64) // 64 instead of 64 + 2
@@ -835,11 +903,14 @@ describe("table", function () {
                     // WHEN we animate
                     animation.animationFrame(1)
 
+                    expect(headMaskY()).to.equal(33 + insertHeight - 1)
+                    expect(splitRowHeadY()).to.equal(33 + insertHeight - 1)
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
-                    animation.joinHorizontal()
+                    animation.lastFrame()
                     check32_48_72_64_seamless()
+                    checkRowHead32_48_72_64_seamless()
                 })
             })
         })
@@ -1219,14 +1290,24 @@ describe("table", function () {
         })
         describe("test support for expected final table layouts", function () {
             describe("insert", function () {
-                it("32, 64", async function () {
+                it("row head 32, 64", async function () {
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
+                    ], {
+                        rowHeaders: true,
+                        columnHeaders: true
+                    })
+                    checkRowHead32_64()
+                })
+                it("body 32, 64", async function () {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 64)
                     ])
                     check32_64()
                 })
-                it("48, 72, 32, 64", async function () {
+                it("body 48, 72, 32, 64", async function () {
                     await prepareByRows([
                         new Measure(1, 48),
                         new Measure(2, 72),
@@ -1235,7 +1316,19 @@ describe("table", function () {
                     ])
                     check48_72_32_64()
                 })
-                it("32, 48, 72, 64", async function () {
+                it("row head 48, 72, 32, 64", async function () {
+                    await prepareByRows([
+                        new Measure(1, 48),
+                        new Measure(2, 72),
+                        new Measure(3, 32),
+                        new Measure(4, 64)
+                    ], {
+                        rowHeaders: true,
+                        columnHeaders: true
+                    })
+                    checkRowHead48_72_32_64()
+                })
+                it("body 32, 48, 72, 64", async function () {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 48),
@@ -1244,7 +1337,7 @@ describe("table", function () {
                     ])
                     check32_48_72_64()
                 })
-                it("32, 48, 72, 64 with row head", async function () {
+                it("row head 32, 48, 72, 64", async function () {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 48),
@@ -1256,7 +1349,7 @@ describe("table", function () {
                     })
                     checkRowHead32_48_72_64()
                 })
-                it("32, 48, 72, 64 (seamless)", async function () {
+                it("body 32, 48, 72, 64 (seamless)", async function () {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 48),
@@ -1265,7 +1358,18 @@ describe("table", function () {
                     ], { seamless: true })
                     check32_48_72_64_seamless()
                 })
-                it("32, 64, 48, 72", async function () {
+                it("row head 32, 48, 72, 64 (seamless)", async function () {
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
+                    ], { seamless: true,
+                        rowHeaders: true,
+                        columnHeaders: true })
+                    checkRowHead32_48_72_64_seamless()
+                })
+                it("body 32, 64, 48, 72", async function () {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 64),
@@ -1274,6 +1378,19 @@ describe("table", function () {
                     ])
                     check32_64_48_72()
                 })
+                it("row head 32, 64, 48, 72", async function () {
+                    await prepareByRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64),
+                        new Measure(3, 48),
+                        new Measure(4, 72)
+                    ], {
+                        rowHeaders: true,
+                        columnHeaders: true
+                    })
+                    checkRowHead32_64_48_72()
+                })
+
             })
             describe("remove", function () {
                 it("32, 64 at head", async function () {
@@ -1306,11 +1423,21 @@ function check32_64() {
     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
     expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
 }
+function checkRowHead32_64() {
+    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+    expect(headRowInfo(1)).to.equal(`#2:0,33,16,64`)
+}
 function check48_72_32_64() {
     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,48`)
     expect(bodyRowInfo(1)).to.equal(`#2:0,49,80,72`)
     expect(bodyRowInfo(2)).to.equal(`#3:0,122,80,32`)
     expect(bodyRowInfo(3)).to.equal(`#4:0,155,80,64`)
+}
+function checkRowHead48_72_32_64() {
+    expect(headRowInfo(0)).to.equal(`#1:0,0,16,48`)
+    expect(headRowInfo(1)).to.equal(`#2:0,49,16,72`)
+    expect(headRowInfo(2)).to.equal(`#3:0,122,16,32`)
+    expect(headRowInfo(3)).to.equal(`#4:0,155,16,64`)
 }
 function check32_48_72_64() {
     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
@@ -1330,11 +1457,23 @@ function check32_48_72_64_seamless() {
     expect(bodyRowInfo(2)).to.equal(`#3:0,${32 + 48},80,72`)
     expect(bodyRowInfo(3)).to.equal(`#4:0,${32 + 48 + 72},80,64`)
 }
+function checkRowHead32_48_72_64_seamless() {
+    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+    expect(headRowInfo(1)).to.equal(`#2:0,32,16,48`)
+    expect(headRowInfo(2)).to.equal(`#3:0,${32 + 48},16,72`)
+    expect(headRowInfo(3)).to.equal(`#4:0,${32 + 48 + 72},16,64`)
+}
 function check32_64_48_72() {
     expect(bodyRowInfo(0)).to.equal(`#1:0,0,80,32`)
-    expect(bodyRowInfo(1)).to.equal(`#2:0,33,80,64`)
-    expect(bodyRowInfo(2)).to.equal(`#3:0,98,80,48`)
-    expect(bodyRowInfo(3)).to.equal(`#4:0,147,80,72`)
+    expect(bodyRowInfo(1)).to.equal(`#2:0,${32 + 1},80,64`)
+    expect(bodyRowInfo(2)).to.equal(`#3:0,${32 + 64 + 2},80,48`)
+    expect(bodyRowInfo(3)).to.equal(`#4:0,${32 + 64 + 48 + 3},80,72`)
+}
+function checkRowHead32_64_48_72() {
+    expect(headRowInfo(0)).to.equal(`#1:0,0,16,32`)
+    expect(headRowInfo(1)).to.equal(`#2:0,${32 + 1},16,64`)
+    expect(headRowInfo(2)).to.equal(`#3:0,${32 + 64 + 2},16,48`)
+    expect(headRowInfo(3)).to.equal(`#4:0,${32 + 64 + 48 + 3},16,72`)
 }
 function check32_64_remove_head() {
     expect(bodyRowInfo(0)).to.equal(`#3:0,0,80,32`)

@@ -44,8 +44,8 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     prepare(): void {
-        this.prepareStaging()
         this.prepareCellsToBeMeasured()
+        this.prepareStaging()
     }
     firstFrame(): void {
         this.arrangeNewRowsInStaging()
@@ -127,7 +127,7 @@ export class InsertRowAnimation extends TableAnimation {
 
         // colWidth[] := width of existing columns || minCellWidth
         let colWidth = new Array<number>(this.adapter.colCount)
-        if (this.body.children.length !== 0) {
+        if (this.body.children.length > 0) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.body.children[col] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
@@ -138,6 +138,17 @@ export class InsertRowAnimation extends TableAnimation {
             }
         } else {
             colWidth.fill(this.table.minCellWidth)
+        }
+
+        // rowHeadWidth
+        let rowHeadWidth = 16 + this.table.WIDTH_ADJUST // this.table.minCellWidth
+        if (this.rowHeads && this.rowHeads.children.length > 0) {
+            const cell = this.rowHeads.children[0] as HTMLSpanElement
+            const bounds = cell.getBoundingClientRect()
+            rowHeadWidth = bounds.width
+            if (this.adapter.config.seamless) {
+                rowHeadWidth += 2
+            }
         }
 
         // rowHeight[] := height of each row to be inserted && totalHeight := height of all rows to be inserted
@@ -202,9 +213,12 @@ export class InsertRowAnimation extends TableAnimation {
         let y = top
 
         if (this.rowHeads !== undefined) {
+            console.log(this.staging)
+            console.log(this.headStaging)
+
             for (let row = 0; row < this.event.size; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement
-                this.setCellSize(cell, 0, y, 22, rowHeight[row]) // FIXME: fixed row head width
+                this.setCellSize(cell, 0, y, rowHeadWidth, rowHeight[row]) // FIXME: fixed row head width
                 this.headStaging.appendChild(cell)
 
                 y += rowHeight[row] - overlap
@@ -281,7 +295,7 @@ export class InsertRowAnimation extends TableAnimation {
         if (this.rowHeads) {
             this.headStaging.removeChild(this.headMask)
             this.rowHeads.removeChild(this.splitHead)
-            while(this.headStaging.children.length > 0) {
+            while (this.headStaging.children.length > 0) {
                 this.rowHeads.appendChild(this.headStaging.children[0])
             }
             if (this.splitHead.children.length > 0) {

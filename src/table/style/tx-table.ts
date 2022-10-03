@@ -109,6 +109,8 @@ style.textContent = css`
 .seamless > .body > .splitBody > span,
 .seamless > .cols > span,
 .seamless > .rows > span,
+.seamless > .cols > .splitBody > span,
+.seamless > .rows > .splitBody > span,
 .seamless > .measure > span,
 .seamless > .staging > span {
     border: none 0px;
@@ -159,7 +161,9 @@ style.textContent = css`
     cursor: row-resize;
 }
 
-.cols > span.head, .rows > span.head, .measure > span.head {
+.cols span.head,
+.rows span.head,
+.measure span.head {
     background: #1e1e1e;
     font-weight: 600;
 }
