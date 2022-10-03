@@ -161,6 +161,7 @@ style.textContent = css`
     cursor: row-resize;
 }
 
+.staging span.head,
 .cols span.head,
 .rows span.head,
 .measure span.head {

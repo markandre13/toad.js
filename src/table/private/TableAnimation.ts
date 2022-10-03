@@ -13,14 +13,13 @@ export abstract class TableAnimation extends TableFriend implements Animation {
     abstract lastFrame(): void
     prepareStaging() {
 
-        console.log(`setup staging`)
         this.staging = div()
         this.staging.className = "staging"
         this.staging.style.left = this.body.style.left
         this.staging.style.top = this.body.style.top
 
         if (this.rowHeads !== undefined) {
-            console.log(`setup headStaging`)
+            // console.log(`setup headStaging`)
             this.headStaging = div()
             this.headStaging.classList.add("staging")
             this.headStaging.style.top = this.rowHeads.style.top
@@ -39,7 +38,6 @@ export abstract class TableAnimation extends TableFriend implements Animation {
         this.scrollStaging()
     }
     disposeStaging() {
-        console.log(`dispose staging`)
         this.table.removeStaging(this.staging, this.headStaging)
     }
     scrollStaging(): void {

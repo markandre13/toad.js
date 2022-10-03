@@ -1208,7 +1208,6 @@ export class Table extends View {
             return
         }
         const overlap = this.adapter!.config.seamless ? 0 : 1
-        console.log(`splitHeadHorizontal(): seamless=${this.adapter!.config.seamless}, overlap=${overlap}`)
         this.splitHead = div()
         this.splitHead.className = "splitBody" // FIXME: splitHead?
         this.splitHead.style.left = `0`
@@ -1235,7 +1234,7 @@ export class Table extends View {
                     cell.style.top = `${y - top}px`
                     this.splitHead.appendChild(cell)
                 }
-                if (this.adapter!.config.seamless) { // FIXME: Why do I do this???
+                if (this.adapter!.config.seamless) { // FIXME: Why do I do this??? And only for the head?
                     height += overlap
                 }
                 this.splitHead.style.top = `${top}px`

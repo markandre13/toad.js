@@ -29,6 +29,8 @@ export class RemoveRowAnimation extends TableAnimation {
     removeAll: boolean
     overlap: number
     mask!: HTMLSpanElement
+    splitHead!: HTMLDivElement
+    headMask!: HTMLSpanElement
     topSplitBody!: number
     topMask!: number
 
@@ -59,6 +61,10 @@ export class RemoveRowAnimation extends TableAnimation {
     animationFrame(n: number): void {
         this.splitBody.style.top = `${this.topSplitBody - n * this.animationHeight}px`
         this.mask.style.top = `${this.topMask - n * this.animationHeight}px`
+        if (this.rowHeads !== undefined) {
+            this.splitHead.style.top = `${this.topSplitBody - n * this.animationHeight}px`
+            this.headMask.style.top = `${this.topMask - n * this.animationHeight}px`
+        }
     }
     lastFrame(): void {
         this.joinHorizontal()
@@ -66,6 +72,7 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     arrangeRowsInStaging() {
+        // body
         const idx = this.event.index * this.adapter.colCount
         const cellCount = this.event.size * this.adapter.colCount
         const start = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
@@ -91,15 +98,44 @@ export class RemoveRowAnimation extends TableAnimation {
         this.mask.style.height = `${this.animationHeight}px`
         this.mask.style.backgroundColor = Table.maskColor
         this.staging.appendChild(this.mask)
+
+        if (this.rowHeads === undefined) {
+            return
+        }
+
+        // row headers
+        for (let i = 0; i < this.event.size; ++i) {
+            this.headStaging.appendChild(this.rowHeads.children[this.event.index])
+        }
+
+        this.headMask = span()
+        this.headMask.style.boxSizing = `content-box`
+        this.headMask.style.left = `0`
+        this.headMask.style.right = `0`
+        this.headMask.style.top = `${bottomOfStaging}px`
+        this.headMask.style.border = 'none'
+        this.headMask.style.height = `${this.animationHeight}px`
+        this.headMask.style.backgroundColor = Table.maskColor
+        this.headStaging.appendChild(this.headMask)
     }
 
     splitHorizontal() {
         this.table.splitHorizontalNew(this.event.index)
+
+        if (this.rowHeads !== undefined) { // FIXME: Hack
+            this.splitHead = this.rowHeads.lastElementChild as HTMLDivElement
+        }
+
         // fix the stuff split horizontal row hadn't enough information to do
         const top = px2float(this.splitBody.style.top)
         this.splitBody.style.height = `${this.initialHeight - top}px`
         this.topSplitBody = top
         this.topMask = px2float(this.mask.style.top)
+
+        if (this.rowHeads !== undefined) {
+            this.splitHead.style.top = `${top}px`
+            this.splitHead.style.height = `${this.initialHeight - top}px`
+        }
     }
 
     joinHorizontal() {
@@ -107,8 +143,28 @@ export class RemoveRowAnimation extends TableAnimation {
         this.body.removeChild(this.splitBody)
         this.staging.replaceChildren()
         this.moveSplitBodyToBody()
+
+        if (this.rowHeads) {
+            this.headStaging.removeChild(this.headMask)
+            this.rowHeads.removeChild(this.splitHead)
+            this.headStaging.replaceChildren()
+            this.moveSplitHeadToHead()           
+        }
+
         if (this.table.animationDone) {
             this.table.animationDone()
+        }
+    }
+
+    private moveSplitHeadToHead() {
+        if (this.splitHead.children.length === 0) {
+            return
+        }
+        let top = px2float(this.splitHead.style.top)
+        while (this.splitHead.children.length > 0) {
+            const cell = this.splitHead.children[0] as HTMLSpanElement
+            cell.style.top = `${px2float(cell.style.top) + top}px`
+            this.rowHeads.appendChild(cell)
         }
     }
 

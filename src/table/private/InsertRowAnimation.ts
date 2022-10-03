@@ -213,9 +213,6 @@ export class InsertRowAnimation extends TableAnimation {
         let y = top
 
         if (this.rowHeads !== undefined) {
-            console.log(this.staging)
-            console.log(this.headStaging)
-
             for (let row = 0; row < this.event.size; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement
                 this.setCellSize(cell, 0, y, rowHeadWidth, rowHeight[row]) // FIXME: fixed row head width
