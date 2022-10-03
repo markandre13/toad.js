@@ -53,7 +53,7 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     prepare(): void {
-        this.prepareStaging()
+        this.prepareStagingWithRows()
         this.arrangeRowsInStaging()
         this.splitHorizontal()
     }

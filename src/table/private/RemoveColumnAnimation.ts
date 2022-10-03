@@ -58,7 +58,7 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
 
     prepare(): void {
-        this.prepareStaging()
+        this.prepareStagingWithRows()
         this.arrangeColumnsInStaging()
         this.splitVertical()
     }

@@ -44,6 +44,7 @@ export class TableAdapterConfig {
     editMode = EditMode.EDIT_ON_FOCUS
     seamless = false
     expandColumn = false
+    expandRow = false
 }
 
 export class TableAdapter<T extends TableModel> {

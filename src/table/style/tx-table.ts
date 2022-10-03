@@ -153,6 +153,9 @@ style.textContent = css`
     opacity: 0;
     background-color: #08f;
 }
+.fill {
+    opacity: 0;
+}
 
 .cols > span.handle {
     cursor: col-resize;

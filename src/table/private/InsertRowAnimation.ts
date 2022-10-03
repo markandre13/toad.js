@@ -45,7 +45,7 @@ export class InsertRowAnimation extends TableAnimation {
 
     prepare(): void {
         this.prepareCellsToBeMeasured()
-        this.prepareStaging()
+        this.prepareStagingWithRows()
     }
     firstFrame(): void {
         this.arrangeNewRowsInStaging()
@@ -112,8 +112,7 @@ export class InsertRowAnimation extends TableAnimation {
 
         // top := y position of the 1st cell to be inserted
         let top = 0
-        const splitRow = this.event.index
-        let idx = splitRow * this.adapter!.colCount
+        let idx = this.event.index * this.adapter!.colCount
         if (this.body.children.length !== 0) {
             if (idx < this.body.children.length) {
                 let cell = this.body.children[idx] as HTMLSpanElement
@@ -125,7 +124,7 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
-        // colWidth[] := width of existing columns || minCellWidth
+        // colWidth[] := width of all existing columns || minCellWidth
         let colWidth = new Array<number>(this.adapter.colCount)
         if (this.body.children.length > 0) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
@@ -140,7 +139,9 @@ export class InsertRowAnimation extends TableAnimation {
             colWidth.fill(this.table.minCellWidth)
         }
 
-        // rowHeadWidth
+        // --------------------------------
+
+        // rowHeadWidth := width of the row head column
         let rowHeadWidth = 16 + this.table.WIDTH_ADJUST // this.table.minCellWidth
         if (this.rowHeads && this.rowHeads.children.length > 0) {
             const cell = this.rowHeads.children[0] as HTMLSpanElement
@@ -151,10 +152,12 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
-        // rowHeight[] := height of each row to be inserted && totalHeight := height of all rows to be inserted
+        // rowHeight[] := height of each row to be inserted
+        // totalHeight := height of all rows to be inserted
+        // colWidth[]  : adjust if needed to new rows
         let rowHeight = new Array<number>(this.event.size)
-        this.totalHeight = 0
         rowHeight.fill(this.table.minCellHeight)
+        this.totalHeight = 0
         idx = 0
         if (this.rowHeads !== undefined) {
             for (let row = 0; row < this.event.size; ++row) {
@@ -167,20 +170,22 @@ export class InsertRowAnimation extends TableAnimation {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
+
+                rowHeight[row] = Math.max(rowHeight[row], bounds.height)
+
                 if (this.adapter.config.expandColumn) {
                     colWidth[col] = Math.ceil(Math.max(colWidth[col], bounds.width))
                 } else {
+                    // if there were no columns yet, use the new rows column width
                     if (row === 0 && this.body.children.length === 0) {
                         colWidth[col] = Math.ceil(bounds.width)
                     }
                 }
-                // console.log(`  measured colWidth[${col}]: bounds.width=${bounds.width}, cell.style.width=${cell.style.width}`)
-                rowHeight[row] = Math.max(rowHeight[row], bounds.height)
             }
             this.totalHeight += rowHeight[row] - overlap
         }
 
-        // adust left & width of all cells
+        // when expandColumn => adust left & width of all cells
         if (this.adapter.config.expandColumn) {
             idx = 0
             let x = 0
@@ -209,9 +214,10 @@ export class InsertRowAnimation extends TableAnimation {
             this.totalHeight -= 2 * this.event.size
         }
 
-        // place rows
-        let y = top
-
+        let y
+        
+        // place row headers
+        y = top
         if (this.rowHeads !== undefined) {
             for (let row = 0; row < this.event.size; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement
@@ -225,6 +231,7 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
+        // place body cells
         y = top
         for (let row = 0; row < this.event.size; ++row) {
             let x = 0
@@ -245,6 +252,7 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
+        // create mask
         this.mask = span()
         // this.mask.className = "mask"
         this.mask.style.boxSizing = `content-box`
@@ -289,6 +297,7 @@ export class InsertRowAnimation extends TableAnimation {
             return
         }
         this.done = true
+        
         if (this.rowHeads) {
             this.headStaging.removeChild(this.headMask)
             this.rowHeads.removeChild(this.splitHead)

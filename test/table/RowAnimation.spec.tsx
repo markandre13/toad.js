@@ -959,7 +959,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1035,7 +1035,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1115,7 +1115,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1189,7 +1189,7 @@ describe("table", function () {
                     const animation = RemoveRowAnimation.current!
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1263,7 +1263,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1339,7 +1339,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1435,7 +1435,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1540,7 +1540,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1641,7 +1641,7 @@ describe("table", function () {
                     // return
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging
@@ -1738,7 +1738,7 @@ describe("table", function () {
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
 
                     // WHEN ask for the new rows to be placed
-                    animation.prepareStaging()
+                    animation.prepareStagingWithRows()
                     animation.arrangeRowsInStaging()
 
                     // THEN they have been placed in staging

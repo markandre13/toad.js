@@ -137,25 +137,20 @@ export interface PrepareProps {
     height?: number
 }
 export async function prepareByRows(data: Measure[], props?: PrepareProps) {
-    TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
+    TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng Cell as 3rd arg?
     const model = new MeasureModel(Orientation.HORIZONTAL, Cell, 2, data.length, flatMapRows(data))
+    return await prepareCore(data, props, model)
+}
+export async function prepareByColumns(data: Measure[], props?: PrepareProps) {
+    TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng Cell as 3rd arg?
+    const model = new MeasureModel(Orientation.VERTICAL, Cell, data.length, 2, flatMapColumns(data))
+    return await prepareCore(data, props, model)
+}
+async function prepareCore(data: Measure[], props: PrepareProps | undefined, model: MeasureModel) {
     model.config.seamless = (props?.seamless) === true
     model.config.expandColumn = (props?.expandColumn) === true
     model.rowHeaders = (props?.rowHeaders) === true
     model.columnHeaders = (props?.columnHeaders) === true
-    document.body.replaceChildren(<Table style={{
-        width: `${props?.width ?? 720}px`,
-        height: `${props?.height ?? 350}px`
-    }} model={model} />)
-    await sleep()
-    return model
-}
-
-export async function prepareByColumns(data: Measure[], props?: PrepareProps) {
-    TableAdapter.register(MeasureAdapter, MeasureModel, Cell) // FIXME:  should also work without specifiyng MeasureRow as 3rd arg
-    const model = new MeasureModel(Orientation.VERTICAL, Cell, data.length, 2, flatMapColumns(data))
-    model.config.seamless = (props?.seamless) === true
-    model.config.expandColumn = (props?.expandColumn) === true
     document.body.replaceChildren(<Table style={{
         width: `${props?.width ?? 720}px`,
         height: `${props?.height ?? 350}px`
@@ -199,37 +194,37 @@ export function stagingRowInfo(row: number) {
 }
 export function headRowInfo(row: number) {
     const table = getTable()
-    const firstCellOfRow = table.rowHeads.children[row] as HTMLElement
-    const x = px2float(firstCellOfRow.style.left)
-    const y = px2float(firstCellOfRow.style.top)
-    const w = px2float(firstCellOfRow.style.width)
-    const h = px2float(firstCellOfRow.style.height)
-    let id = firstCellOfRow.innerText
-    id = id.substring(1)
-    return `#${id}:${x},${y},${w},${h}`
+    return infoCore(table.rowHeads.children[row])
+}
+export function headColInfo(row: number) {
+    const table = getTable()
+    return infoCore(table.colHeads.children[row])
 }
 export function stagingRowHeadInfo(row: number) {
     const table = getTable()
-    const firstCellOfRow = table.getHeadStaging()!.children[row] as HTMLElement
-    const x = px2float(firstCellOfRow.style.left)
-    const y = px2float(firstCellOfRow.style.top)
-    const w = px2float(firstCellOfRow.style.width)
-    const h = px2float(firstCellOfRow.style.height)
-    let id = firstCellOfRow.innerText
-    id = id.substring(1)
-    return `#${id}:${x},${y},${w},${h}`
+    return infoCore(table.getHeadStaging()!.children[row])
+}
+export function stagingColHeadInfo(col: number) {
+    const table = getTable()
+    return infoCore(table.getHeadStaging()!.children[col])
 }
 export function splitRowHeadInfo(row: number) {
     const table = getTable()
-
-    const firstCellOfRow = table.rowHeads.lastElementChild!.children[row] as HTMLElement
-
-    // const firstCellOfRow = table.getHeadStaging()!.children[row] as HTMLElement
-    const x = px2float(firstCellOfRow.style.left)
-    const y = px2float(firstCellOfRow.style.top)
-    const w = px2float(firstCellOfRow.style.width)
-    const h = px2float(firstCellOfRow.style.height)
-    let id = firstCellOfRow.innerText
+    return infoCore(table.rowHeads.lastElementChild!.children[row])
+}
+export function splitColHeadInfo(col: number) {
+    console.log(`splitColHeadInfo(${col})`)
+    const table = getTable()
+    console.log(table.colHeads.lastElementChild)
+    return infoCore(table.colHeads.lastElementChild!.children[col])
+}
+function infoCore(element: Element) {
+    const cell = element as HTMLElement
+    const x = px2float(cell.style.left)
+    const y = px2float(cell.style.top)
+    const w = px2float(cell.style.width)
+    const h = px2float(cell.style.height)
+    let id = cell.innerText
     id = id.substring(1)
     return `#${id}:${x},${y},${w},${h}`
 }
@@ -243,6 +238,16 @@ export function splitRowHeadH() {
     const split = table.rowHeads.lastElementChild as HTMLElement
     return px2float(split.style.height)
 }
+export function splitColHeadX() {
+    const table = getTable()
+    const split = table.colHeads.lastElementChild as HTMLElement
+    return px2float(split.style.left)
+}
+export function splitColHeadW() {
+    const table = getTable()
+    const split = table.colHeads.lastElementChild as HTMLElement
+    return px2float(split.style.width)
+}
 export function splitBodyY() {
     const table = getTable()
     return px2float(table.splitBody.style.top)
@@ -250,6 +255,16 @@ export function splitBodyY() {
 export function splitBodyH() {
     const table = getTable()
     return px2float(table.splitBody.style.height)
+}
+export function maskX() {
+    const table = getTable()
+    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.left)
+}
+export function maskW() {
+    const table = getTable()
+    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.width)
 }
 export function maskY() {
     const table = getTable()
@@ -270,6 +285,16 @@ export function headMaskH() {
     const table = getTable()
     const mask = table.getHeadStaging()!.children[table.getHeadStaging()!.children.length - 1] as HTMLSpanElement
     return px2float(mask.style.height)
+}
+export function headMaskX() {
+    const table = getTable()
+    const mask = table.getHeadStaging()!.children[table.getHeadStaging()!.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.left)
+}
+export function headMaskW() {
+    const table = getTable()
+    const mask = table.getHeadStaging()!.children[table.getHeadStaging()!.children.length - 1] as HTMLSpanElement
+    return px2float(mask.style.width)
 }
 export function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivElement) {
     const indexOf1stCellInRow = row * table.adapter.colCount
@@ -299,16 +324,6 @@ export function splitBodyX() {
 export function splitBodyW() {
     const table = getTable()
     return px2float(table.splitBody.style.width)
-}
-export function maskX() {
-    const table = getTable()
-    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.left)
-}
-export function maskW() {
-    const table = getTable()
-    const mask = table.getStaging()!.children[table.getStaging()!.children.length - 1] as HTMLSpanElement
-    return px2float(mask.style.width)
 }
 export function bodyColInfo(col: number) {
     const table = getTable()

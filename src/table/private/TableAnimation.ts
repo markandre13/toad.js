@@ -11,31 +11,43 @@ export abstract class TableAnimation extends TableFriend implements Animation {
     abstract firstFrame(): void
     abstract animationFrame(value: number): void
     abstract lastFrame(): void
-    prepareStaging() {
-
+    
+    // TODO: obsolete
+    prepareStagingWithRows() {
+        this.prepareBodyStaging()
+        this.prepareRowHeadStaging()
+        this.table.addStaging(this.staging, this.headStaging)
+        this.scrollStaging()
+    }
+    prepareStagingWithColumns() {
+        this.prepareBodyStaging()
+        this.prepareColHeadStaging()
+        this.table.addStaging(this.staging, this.headStaging)
+        this.scrollStaging()
+    }
+    private prepareBodyStaging() {
         this.staging = div()
         this.staging.className = "staging"
         this.staging.style.left = this.body.style.left
         this.staging.style.top = this.body.style.top
-
-        if (this.rowHeads !== undefined) {
-            // console.log(`setup headStaging`)
-            this.headStaging = div()
-            this.headStaging.classList.add("staging")
-            this.headStaging.style.top = this.rowHeads.style.top
-            this.headStaging.style.width = this.rowHeads.style.width
+    }
+    private prepareRowHeadStaging() {
+        if (this.rowHeads === undefined) {
+            return
         }
-
-        // if (this.colHeads !== undefined) {
-        //     this.headStaging = div()
-        //     this.headStaging.classList.add("staging")
-        //     this.headStaging.style.left = this.colHeads.style.left
-        //     this.headStaging.style.height = this.colHeads.style.height
-        // }
-
-        this.table.addStaging(this.staging, this.headStaging)
-
-        this.scrollStaging()
+        this.headStaging = div()
+        this.headStaging.classList.add("staging")
+        this.headStaging.style.top = this.rowHeads.style.top
+        this.headStaging.style.width = this.rowHeads.style.width
+    }
+    private prepareColHeadStaging() {
+        if (this.colHeads === undefined) {
+            return
+        }
+        this.headStaging = div()
+        this.headStaging.classList.add("staging")
+        this.headStaging.style.left = this.colHeads.style.left
+        this.headStaging.style.height = this.colHeads.style.height
     }
     disposeStaging() {
         this.table.removeStaging(this.staging, this.headStaging)
