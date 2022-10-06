@@ -237,7 +237,7 @@ export class InsertColumnAnimation extends TableAnimation {
             }
             totalWidth += columnWidth - 2
         }
-        this.totalWidth = totalWidth
+        this.totalWidth = totalWidth + 2
 
         this.mask = span()
         this.mask.style.boxSizing = `content-box`
@@ -283,7 +283,7 @@ export class InsertColumnAnimation extends TableAnimation {
                 this.colHeads.appendChild(this.headStaging.children[0])
             }
             if (this.splitHead.children.length > 0) {
-                let left = px2float(this.splitHead.style.left) + 2 // FIXME: why the +2 here?
+                let left = px2float(this.splitHead.style.left)
                 while (this.splitHead.children.length > 0) {
                     const cell = this.splitHead.children[0] as HTMLSpanElement
                     cell.style.left = `${px2float(cell.style.left) + left}px`
@@ -310,9 +310,9 @@ export class InsertColumnAnimation extends TableAnimation {
         }
 
         let left = this.totalWidth + this.animationLeft
-        if (!this.adapter.config.seamless) {
-            left += 2
-        }
+        // if (!this.adapter.config.seamless) {
+        //     left += 2
+        // }
 
         // insert splitBody (whose cells are per row)
         for (let row = 0; row < this.rowCount; ++row) {

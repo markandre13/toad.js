@@ -541,7 +541,7 @@ describe("table", function () {
 
                     expect(table.body.children).to.have.lengthOf(8)
                 })
-                it("two columns at middle", async function () {
+                it.only("two columns at middle", async function () {
                     // WHEN we have an empty table with two columns
                     const model = await prepareByColumns([
                         new Measure(1, 32),
@@ -595,9 +595,9 @@ describe("table", function () {
 
                     // ...and are hidden by a mask
                     expect(headMaskX()).to.equal(32 + spacing)
-                    expect(headMaskW()).to.equal(48 + 72 + 2 * spacing - 2) // FIXME: -2??
+                    expect(headMaskW()).to.equal(48 + 72 + 2 * spacing)
                     expect(maskX()).to.equal(32 + spacing)
-                    expect(maskW()).to.equal(48 + 72 + 2 * spacing - 2) // FIXME: -2??
+                    expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
                     animation.splitVertical()
@@ -612,11 +612,11 @@ describe("table", function () {
 
                     // WHEN we animate
                     animation.animationFrame(1)
-                    expect(headMaskX()).to.equal(32 + 48 + 72 + 3 * spacing - 2) // FIXME -2?
-                    expect(splitColHeadX()).to.equal(32 + 48 + 72 + 3 * spacing - 2) // FIXME -2??
+                    expect(headMaskX()).to.equal(32 + 48 + 72 + 3 * spacing)
+                    expect(splitColHeadX()).to.equal(32 + 48 + 72 + 3 * spacing)
 
-                    expect(maskX()).to.equal(32 + 48 + 72 + 3 * spacing - 2) // FIXME -2?
-                    expect(splitBodyX()).to.equal(32 + 48 + 72 + 3 * spacing - 2) // FIXME -2??
+                    expect(maskX()).to.equal(32 + 48 + 72 + 3 * spacing)
+                    expect(splitBodyX()).to.equal(32 + 48 + 72 + 3 * spacing)
 
                     animation.lastFrame()
                     check32_48_72_64()
