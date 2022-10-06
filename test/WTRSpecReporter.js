@@ -125,6 +125,7 @@ function getDuration(duration) {
 
 function start() {
     startTime = performance.now()
+    console.log(`${colour.boldWhite}TEST RUN: ${new Date().toISOString()}`)
     console.log()
     console.log(`${colour.boldWhite}${colour.underline}START:${colour.reset}`)
     console.log()
