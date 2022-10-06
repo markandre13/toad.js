@@ -42,6 +42,9 @@ export class TableFriend {
     get colHeads() {
         return (this.table as any).colHeads as HTMLDivElement
     }
+    set colHeads(div: HTMLDivElement) {
+        (this.table as any).colHeads = div
+    }
     get rowHeads() {
         return (this.table as any).rowHeads as HTMLDivElement
     }
@@ -50,6 +53,9 @@ export class TableFriend {
     }
     get colResizeHandles() {
         return (this.table as any).colResizeHandles as HTMLDivElement
+    }
+    set colResizeHandles(div: HTMLDivElement) {
+        (this.table as any).colResizeHandles = div
     }
     get rowResizeHandles() {
         return (this.table as any).rowResizeHandles as HTMLDivElement

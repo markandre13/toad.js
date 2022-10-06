@@ -106,7 +106,7 @@ describe("table", function () {
     describe("row", function () {
         describe("insert", function () {
             describe("body (no headers)", function () {
-                it("two rows into empty", async function () {
+                it.only("two rows into empty", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([])
                     expect(model.colCount).to.equal(2)

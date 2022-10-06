@@ -44,8 +44,8 @@ export class InsertColumnAnimation extends TableAnimation {
     }
 
     prepare(): void {
-        this.prepareStagingWithColumns()
         this.prepareCellsToBeMeasured()
+        this.prepareStagingWithColumns()
     }
     firstFrame(): void {
         this.arrangeNewColumnsInStaging()
@@ -78,17 +78,17 @@ export class InsertColumnAnimation extends TableAnimation {
         let colHeaders = new Array(this.event.size)
         for (let col = this.event.index; col < this.event.index + this.event.size; ++col) {
             const content = this.adapter!.getColumnHead(col)
-            if (this.rowHeads === undefined && content !== undefined) {
-                this.rowHeads = div()
-                this.rowHeads.className = "cols"
-                this.root.appendChild(this.rowHeads)
-                this.rowResizeHandles = div()
-                this.rowResizeHandles.className = "cols"
-                this.root.appendChild(this.rowResizeHandles)
+            if (this.colHeads === undefined && content !== undefined) {
+                this.colHeads = div()
+                this.colHeads.className = "cols"
+                this.root.appendChild(this.colHeads)
+                this.colResizeHandles = div()
+                this.colResizeHandles.className = "cols"
+                this.root.appendChild(this.colResizeHandles)
             }
             colHeaders[col - this.event.index] = content
         }
-        if (this.rowHeads !== undefined) {
+        if (this.colHeads !== undefined) {
             for (let row = 0; row < this.event.size; ++row) {
                 const cell = span(colHeaders[row])
                 cell.className = "head"
@@ -104,9 +104,6 @@ export class InsertColumnAnimation extends TableAnimation {
             }
         }
     }
-
-    // TODO: REVERT ALL CHANGES AND THEN REFACTOR INTO THE INSERTROWANIMATION APPROACH
-    // WHILE USING THE TESTS AS GUIDANCE!!!
 
     public arrangeNewColumnsInStaging() {      
         const previousColCount = this.colCount - this.event.size
@@ -204,6 +201,7 @@ export class InsertColumnAnimation extends TableAnimation {
         // place row headers
         let x = left
         if (this.colHeads !== undefined) {
+            console.log(`move col heads`)
             for (let col = 0; col < this.event.size; ++col) {
                 const cell = this.measure.children[0] as HTMLSpanElement
                 this.setCellSize(cell, x, 0, colWidth[col], colHeadHeight) // FIXME: fixed row head width
@@ -214,6 +212,8 @@ export class InsertColumnAnimation extends TableAnimation {
                     x -= 2
                 }
             }
+        } else {
+            console.log(`do not move col heads`)
         }
 
         // place body cells

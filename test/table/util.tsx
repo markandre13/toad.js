@@ -213,9 +213,7 @@ export function splitRowHeadInfo(row: number) {
     return infoCore(table.rowHeads.lastElementChild!.children[row])
 }
 export function splitColHeadInfo(col: number) {
-    console.log(`splitColHeadInfo(${col})`)
     const table = getTable()
-    console.log(table.colHeads.lastElementChild)
     return infoCore(table.colHeads.lastElementChild!.children[col])
 }
 function infoCore(element: Element) {
