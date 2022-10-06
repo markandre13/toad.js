@@ -46,6 +46,7 @@ export abstract class TableAnimation extends TableFriend implements Animation {
         }
         this.headStaging = div()
         this.headStaging.classList.add("staging")
+        this.headStaging.classList.add("colHack") // FIXME: clean up CSS
         this.headStaging.style.left = this.colHeads.style.left
         this.headStaging.style.height = this.colHeads.style.height
     }

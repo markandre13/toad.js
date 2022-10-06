@@ -1017,7 +1017,7 @@ export class Table extends View {
         }
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitHead = div()
-        this.splitHead.className = "splitBody" // FIXME: splitHead?
+        this.splitHead.className = "splitBody colHack" // FIXME: splitHead?
         this.splitHead.style.top = `0`
         this.splitHead.style.bottom = `0`
         this.splitHead.style.backgroundColor = Table.splitColor

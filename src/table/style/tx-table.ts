@@ -116,10 +116,6 @@ style.textContent = css`
     border: none 0px;
 }
 
-/* .splitBody {
-    transition: transform 5s;
-} */
-
 .body > span:hover {
     background: #1a1a1a;
 }
@@ -147,7 +143,8 @@ style.textContent = css`
     background: #401111;
 }
 
-.cols > span.handle, .rows > span.handle {
+.cols > span.handle,
+.rows > span.handle {
     padding: 0;
     border: 0 none;
     opacity: 0;
@@ -172,6 +169,7 @@ style.textContent = css`
     font-weight: 600;
 }
 
+.colHack > span,
 .cols > span {
     text-align: center;
 }
