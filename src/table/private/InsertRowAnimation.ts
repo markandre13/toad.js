@@ -108,6 +108,7 @@ export class InsertRowAnimation extends TableAnimation {
 
     // FIXME: while this works, it reads like a terrible pile of garbage
     public arrangeNewRowsInStaging() {
+        console.log(`arrangeNewRowsInStaging`)
         const overlap = this.adapter.config.seamless ? 0 : 1
 
         // top := y position of the 1st cell to be inserted
@@ -150,6 +151,12 @@ export class InsertRowAnimation extends TableAnimation {
             if (this.adapter.config.seamless) {
                 rowHeadWidth += 2
             }
+        }
+        if (this.rowHeads) {
+            this.rowHeads.style.top = `0px`
+            this.rowHeads.style.bottom = `0px`
+            this.rowHeads.style.width = `${rowHeadWidth}px`
+            this.body.style.left = `${rowHeadWidth}px`
         }
 
         // rowHeight[] := height of each row to be inserted

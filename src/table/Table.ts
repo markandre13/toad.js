@@ -89,8 +89,8 @@ export class Table extends View {
     // includes the padding and border, hence when using this size to set the size
     // of cells, we need to substract padding and border. which is where these
     // constants come in:
-    public WIDTH_ADJUST = 6 // border left & right + padding top
-    public HEIGHT_ADJUST = 2 // border left + padding top & bottom
+    public WIDTH_ADJUST = 6 // left & right (1px border + 2px padding)
+    public HEIGHT_ADJUST = 2 // top & bottom 1px border
     public HANDLE_SIZE = 5
     public HANDLE_SKEW = 3
 
@@ -777,9 +777,6 @@ export class Table extends View {
         filler.style.height = `${colHeadHeight}px`
         this.colHeads.appendChild(filler)
 
-        this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1)}px`
-        this.colHeads.style.height = `${colHeadHeight}px`
-
         // if resizeableColumns
         this.colResizeHandles!.style.left = `${rowHeadWidth}px`
         this.colResizeHandles!.style.height = `${colHeadHeight}px`
@@ -823,11 +820,6 @@ export class Table extends View {
         filler.style.height = `256px`
         this.rowHeads.appendChild(filler)
 
-        // this.rowHeads.style.left = `0px`
-        this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1)}px`
-        this.rowHeads.style.width = `${rowHeadWidth}px`
-        // this.rowHeads.style.bottom = `0`
-
         // if resizeableRows
         this.rowResizeHandles!.style.top = `${colHeadHeight}px`
         this.rowResizeHandles!.style.width = `${rowHeadWidth}px`
@@ -850,14 +842,37 @@ export class Table extends View {
     }
 
     private placeBody(rowHeadWidth: number, colHeadHeight: number) {
-        if (rowHeadWidth > 0) {
+        if (this.colHeads !== undefined) {
+            if (this.adapter?.config.seamless) {
+                this.colHeads.style.height = `${colHeadHeight-2}px`
+                this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1) - 1}px`
+            } else {
+                this.colHeads.style.height = `${colHeadHeight}px`
+                this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1)}px`
+            }
+        }
+        if (this.rowHeads !== undefined) {
+            if (this.adapter?.config.seamless) {
+                this.rowHeads.style.width = `${rowHeadWidth-2}px`
+                this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1) - 1}px`
+            } else {
+                this.rowHeads.style.width = `${rowHeadWidth}px`
+                this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1)}px`
+            }
+        }
+        if (rowHeadWidth > 0) { // TODO: this is the same logic as the - 0|1 above
             --rowHeadWidth
         }
         if (colHeadHeight > 0) {
             --colHeadHeight
         }
-        this.body.style.left = `${rowHeadWidth}px`
-        this.body.style.top = `${colHeadHeight}px`
+        if (this.adapter?.config.seamless) {
+        this.body.style.left = `${rowHeadWidth-1}px`
+        this.body.style.top = `${colHeadHeight-1}px`
+        } else {
+            this.body.style.left = `${rowHeadWidth}px`
+            this.body.style.top = `${colHeadHeight}px`   
+        }
         return { rowHeadWidth, colHeadHeight }
     }
 

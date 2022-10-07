@@ -5,7 +5,7 @@ import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { sleep } from "../testlib"
+import { sleep, px2float } from "../testlib"
 import { InsertColumnAnimation } from '@toad/table/private/InsertColumnAnimation'
 import { RemoveColumnAnimation } from '@toad/table/private/RemoveColumnAnimation'
 import { AnimationBase } from '@toad/util/animation'
@@ -393,7 +393,7 @@ describe("table", function () {
                 })
             })
             describe("column headers", function () {
-                it("two columns into empty", async function () {
+                it.only("two columns into empty", async function () {
                     // WHEN we have an empty table with two columns
                     const model = await prepareByColumns([], { columnHeaders: true })
 
@@ -456,6 +456,14 @@ describe("table", function () {
                     checkColHead48_72()
 
                     expect(table.body.children).to.have.lengthOf(4)
+
+                    expect(table.rowHeads).be.undefined
+                    expect(table.colHeads).not.be.undefined
+                    expect(table.colHeads.style.height).equals("20px")
+                    expect(table.colHeads.style.left).equals("0px")
+                    expect(table.colHeads.style.right).equals("0px")
+                    expect(table.body.style.top).equals("0px")
+                    expect(table.body.style.left).equals("21px")
                 })
                 it("two columns at head", async function () {
                     // WHEN we have a table with two rows 

@@ -152,6 +152,12 @@ export class InsertColumnAnimation extends TableAnimation {
                 colHeadHeight += 2
             }
         }
+        if (this.colHeads) {
+            this.colHeads.style.left = `0px`
+            this.colHeads.style.right = `0px`
+            this.colHeads.style.height = `${colHeadHeight}px`
+            this.body.style.top = `${colHeadHeight-1}px`
+        }
 
         // rowHeight[] := height of each row to be inserted
         // totalHeight := height of all rows to be inserted
