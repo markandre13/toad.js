@@ -5,12 +5,12 @@ import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { sleep, px2float } from "../testlib"
+import { sleep } from "../testlib"
 import { InsertColumnAnimation } from '@toad/table/private/InsertColumnAnimation'
 import { RemoveColumnAnimation } from '@toad/table/private/RemoveColumnAnimation'
 import { AnimationBase } from '@toad/util/animation'
 import {
-    Measure, prepareByColumns, flatMapColumns, getTable,
+    Measure, prepareByColumns, flatMapColumns, getTable, testTableLayout,
     bodyColInfo, splitColInfo, stagingColInfo, stagingInsertColInfo, splitBodyX, splitBodyW, maskX, maskW,
     headColInfo, stagingColHeadInfo, headMaskX, headMaskW, splitColHeadInfo, splitColHeadX, splitColHeadW
 } from "./util"
@@ -327,7 +327,7 @@ describe("table", function () {
                     it("extend")
                     it("shrink")
                 })
-                it("seamless (two columns at middle)", async function () {
+                it.only("seamless (two columns at middle)", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByColumns([
                         new Measure(1, 32),
@@ -446,6 +446,9 @@ describe("table", function () {
                     expect(splitBodyX()).to.equal(0)
                     expect(splitBodyW()).to.equal(1)
 
+                    expect(table.body.style.top).to.equal(`19px`)
+                    expect(animation.staging.style.top).to.equal(`19px`)
+
                     // WHEN we animate
                     animation.animationFrame(1)
                     expect(maskX()).to.equal(48 + 72 + 2 * spacing)
@@ -455,15 +458,12 @@ describe("table", function () {
                     check48_72()
                     checkColHead48_72()
 
-                    expect(table.body.children).to.have.lengthOf(4)
-
                     expect(table.rowHeads).be.undefined
                     expect(table.colHeads).not.be.undefined
-                    expect(table.colHeads.style.height).equals("20px")
-                    expect(table.colHeads.style.left).equals("0px")
-                    expect(table.colHeads.style.right).equals("0px")
-                    expect(table.body.style.top).equals("0px")
-                    expect(table.body.style.left).equals("21px")
+                    testTableLayout()
+
+                    expect(table.body.children).to.have.lengthOf(4)
+
                 })
                 it("two columns at head", async function () {
                     // WHEN we have a table with two rows 
