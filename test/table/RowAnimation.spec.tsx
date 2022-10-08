@@ -1789,7 +1789,7 @@ describe("table", function () {
             })
         })
         describe("table layout", function () {
-            describe.only("row and column header containers and body", function () {
+            describe("row and column header containers and body", function () {
                 forEach([
                     [false, false, false],
                     [true, false, false],

@@ -227,7 +227,7 @@ export class Table extends View {
     }
 
     addStaging(...elements: HTMLElement[]) {
-        for(const element of elements) {
+        for (const element of elements) {
             if (element === undefined) {
                 continue
             }
@@ -236,7 +236,7 @@ export class Table extends View {
     }
 
     removeStaging(...elements: HTMLElement[]) {
-        for(const element of elements) {
+        for (const element of elements) {
             if (element === undefined) {
                 continue
             }
@@ -844,8 +844,8 @@ export class Table extends View {
     private placeBody(rowHeadWidth: number, colHeadHeight: number) {
         if (this.colHeads !== undefined) {
             if (this.adapter?.config.seamless) {
-                this.colHeads.style.height = `${colHeadHeight-2}px`
-                this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1) - 1}px`
+                this.colHeads.style.height = `${colHeadHeight - 2}px`
+                this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 2)}px`
             } else {
                 this.colHeads.style.height = `${colHeadHeight}px`
                 this.colHeads.style.left = `${rowHeadWidth - (this.rowHeads == null ? 0 : 1)}px`
@@ -853,26 +853,29 @@ export class Table extends View {
         }
         if (this.rowHeads !== undefined) {
             if (this.adapter?.config.seamless) {
-                this.rowHeads.style.width = `${rowHeadWidth-2}px`
-                this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1) - 1}px`
+                this.rowHeads.style.width = `${rowHeadWidth - 2}px`
+                this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 2)}px`
             } else {
                 this.rowHeads.style.width = `${rowHeadWidth}px`
                 this.rowHeads.style.top = `${colHeadHeight - (this.colHeads == null ? 0 : 1)}px`
             }
         }
-        if (rowHeadWidth > 0) { // TODO: this is the same logic as the - 0|1 above
+
+        --rowHeadWidth
+        --colHeadHeight
+        if (this.adapter?.config.seamless) {
             --rowHeadWidth
-        }
-        if (colHeadHeight > 0) {
             --colHeadHeight
         }
-        if (this.adapter?.config.seamless) {
-        this.body.style.left = `${rowHeadWidth-1}px`
-        this.body.style.top = `${colHeadHeight-1}px`
-        } else {
-            this.body.style.left = `${rowHeadWidth}px`
-            this.body.style.top = `${colHeadHeight}px`   
+        if (rowHeadWidth < 0) {
+            rowHeadWidth = 0
         }
+        if (colHeadHeight < 0) {
+            colHeadHeight = 0
+        }
+        this.body.style.left = `${rowHeadWidth}px`
+        this.body.style.top = `${colHeadHeight}px`
+
         return { rowHeadWidth, colHeadHeight }
     }
 
@@ -993,7 +996,7 @@ export class Table extends View {
             }
         }
     }
-    
+
     protected handleUp(ev: PointerEvent) {
         if (this.handle === undefined) {
             return
