@@ -393,7 +393,7 @@ describe("table", function () {
                 })
             })
             describe("column headers", function () {
-                it.only("two columns into empty", async function () {
+                it("two columns into empty", async function () {
                     // WHEN we have an empty table with two columns
                     const model = await prepareByColumns([], { columnHeaders: true })
 

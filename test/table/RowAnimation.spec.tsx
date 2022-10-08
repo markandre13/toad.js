@@ -9,12 +9,12 @@ import { px2float, sleep } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
 import { AnimationBase } from '@toad/util/animation'
-
 import {
     Measure, prepareByRows, flatMapRows, getTable,
     bodyRowInfo, stagingRowInfo, maskY, maskH, splitRowInfo, splitBodyY, splitBodyH,
     headRowInfo, stagingRowHeadInfo, headMaskY, headMaskH, splitRowHeadInfo, splitRowHeadY, splitRowHeadH
 } from "./util"
+import { forEach } from 'test/mocha-each'
 
 describe("table", function () {
     beforeEach(async function () {
@@ -534,7 +534,7 @@ describe("table", function () {
 
                     expect(table.body.children).to.have.lengthOf(4)
 
-                    expect(table.colHeads).be.undefined   
+                    expect(table.colHeads).be.undefined
                     expect(table.rowHeads).not.be.undefined
                     expect(table.rowHeads.style.width).equals("22px")
                     expect(table.rowHeads.style.top).equals("0px")
@@ -891,9 +891,9 @@ describe("table", function () {
 
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#2:0,32,16,48`)
-                    expect(stagingRowHeadInfo(1)).to.equal(`#3:0,${32+48},16,72`) // 80 instead of 82
+                    expect(stagingRowHeadInfo(1)).to.equal(`#3:0,${32 + 48},16,72`) // 80 instead of 82
                     expect(stagingRowInfo(0)).to.equal(`#2:0,32,80,48`)
-                    expect(stagingRowInfo(1)).to.equal(`#3:0,${32+48},80,72`) // 80 instead of 82
+                    expect(stagingRowInfo(1)).to.equal(`#3:0,${32 + 48},80,72`) // 80 instead of 82
                     // ...and are hidden by a mask
                     const insertHeight = 48 + 72 // + 4 - 1
                     expect(headMaskY()).to.equal(32) // 32 instead of 33
@@ -1692,7 +1692,7 @@ describe("table", function () {
                         new Measure(2, 48),
                         new Measure(3, 72),
                         new Measure(4, 64)
-                    ], { 
+                    ], {
                         seamless: true,
                         rowHeaders: true
                     })
@@ -1789,32 +1789,26 @@ describe("table", function () {
             })
         })
         describe("table layout", function () {
-            describe("row and column header containers and body", function() {
-                it("rows and columns", async function() {
+            describe.only("row and column header containers and body", function () {
+                forEach([
+                    [false, false, false],
+                    [true, false, false],
+                    [false, true, false],
+                    [true, true, false],
+                    [false, false, true],
+                    [true, false, true],
+                    [false, true, true],
+                    [true, true, true]
+                ]).it("row header: {}, column header: {}, seamless: {}", async function(rowHeaders: boolean, columnHeaders: boolean, seamless: boolean) {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 48),
                         new Measure(3, 64),
                         new Measure(4, 72)
-                    ], {
-                        rowHeaders: true,
-                        columnHeaders: true
-                    })
+                    ], { rowHeaders, columnHeaders, seamless })
                     testTableLayout()
                 })
-                it("rows and columns (seamless)", async function() {
-                    await prepareByRows([
-                        new Measure(1, 32),
-                        new Measure(2, 48),
-                        new Measure(3, 64),
-                        new Measure(4, 72)
-                    ], {
-                        seamless: true,
-                        rowHeaders: true,
-                        columnHeaders: true
-                    })
-                    testTableLayout()
-                })
+
                 function testTableLayout() {
                     const table = getTable()
 
@@ -1823,48 +1817,78 @@ describe("table", function () {
                     const cellBorder = table.adapter.config.seamless ? 0 : 1
                     const overlap = table.adapter.config.seamless ? 0 : 1
 
-                    const rowHeadCellInnerWidth = px2float((table.rowHeads.children[0] as HTMLElement).style.width)
-                    const colHeadCellInnerHeight = px2float((table.colHeads.children[0] as HTMLElement).style.height)
+                    const rowHeadCellInnerWidth =
+                        table.rowHeads === undefined ? 0 : px2float((table.rowHeads.children[0] as HTMLElement).style.width)
+                    const colHeadCellInnerHeight =
+                        table.colHeads === undefined ? 0 : px2float((table.colHeads.children[0] as HTMLElement).style.height)
 
                     const cellDeltaInnerToOuterWidth = 2 * (horizontalCellPadding + cellBorder)
                     const cellDeltaInnerToOuterHeight = 2 * (verticalCellPadding + cellBorder)
 
-                    const rowHeadCellOuterWidth = rowHeadCellInnerWidth + cellDeltaInnerToOuterWidth
-                    const colHeadCellOuterHeight = colHeadCellInnerHeight + cellDeltaInnerToOuterHeight
+                    const rowHeadCellOuterWidth =
+                        table.rowHeads === undefined ? 0 : rowHeadCellInnerWidth + cellDeltaInnerToOuterWidth
+                    const colHeadCellOuterHeight =
+                        table.colHeads === undefined ? 0 : colHeadCellInnerHeight + cellDeltaInnerToOuterHeight
 
-                    let expectTop = 0
-                    for(let rowHead of table.rowHeads.children) {
-                        const cell = rowHead as HTMLElement
-                        expect(expectTop).to.equal(px2float(cell.style.top))
-                        const height = px2float(cell.style.height) + cellDeltaInnerToOuterHeight
-                        expectTop += height - overlap
+                    if (table.rowHeads !== undefined) {
+                        let expectTop = 0
+                        for (let rowHead of table.rowHeads.children) {
+                            const cell = rowHead as HTMLElement
+                            expect(expectTop).to.equal(px2float(cell.style.top))
+                            const height = px2float(cell.style.height) + cellDeltaInnerToOuterHeight
+                            expectTop += height - overlap
+                        }
                     }
 
-                    let expectLeft = 0
-                    for(let colHead of table.colHeads.children) {
-                        const cell = colHead as HTMLElement
-                        expect(expectLeft).to.equal(px2float(cell.style.left))
-                        const width = px2float(cell.style.width) + cellDeltaInnerToOuterWidth
-                        expectLeft += width - overlap
+                    if (table.colHeads !== undefined) {
+                        let expectLeft = 0
+                        for (let colHead of table.colHeads.children) {
+                            const cell = colHead as HTMLElement
+                            expect(expectLeft).to.equal(px2float(cell.style.left))
+                            const width = px2float(cell.style.width) + cellDeltaInnerToOuterWidth
+                            expectLeft += width - overlap
+                        }
                     }
 
                     // TODO: check header cell size
                     // TODO: check body cell position and size
 
-                    const rowHeadContainerWidth = px2float(table.rowHeads.style.width)
+                    const rowHeadContainerWidth =
+                        table.rowHeads === undefined ? 0 : px2float(table.rowHeads.style.width)
                     expect(rowHeadContainerWidth, `row header container width`).to.equal(rowHeadCellOuterWidth)
 
-                    const colHeadContainerHeight = px2float(table.colHeads.style.height)
+                    const colHeadContainerHeight =
+                        table.colHeads === undefined ? 0 : px2float(table.colHeads.style.height)
                     expect(colHeadContainerHeight, `col header container height`).to.equal(colHeadCellOuterHeight)
-                    
-                    expect(px2float(table.rowHeads.style.top), `row header container top`).to.equal(colHeadContainerHeight - overlap)
-                    expect(px2float(table.rowHeads.style.bottom)).to.equal(0)
 
-                    expect(px2float(table.colHeads.style.left), `column header container left`).to.equal(rowHeadContainerWidth - overlap)
-                    expect(px2float(table.colHeads.style.right)).to.equal(0)
+                    if (table.rowHeads) {
+                        if (table.colHeads) {
+                            expect(px2float(table.rowHeads.style.top), `row header container top`).to.equal(colHeadContainerHeight - overlap)
+                        } else {
+                            expect(px2float(table.rowHeads.style.top), `row header container top`).to.equal(0)
+                        }
+                        expect(px2float(table.rowHeads.style.bottom)).to.equal(0)
+                    }
 
-                    expect(px2float(table.body.style.left), `body container left`).to.equal(rowHeadContainerWidth - overlap)
-                    expect(px2float(table.body.style.top), `body container top`).to.equal(colHeadContainerHeight - overlap)
+                    if (table.colHeads) {
+                        if (table.rowHeads) {
+                            expect(px2float(table.colHeads.style.left), `column header container left`).to.equal(rowHeadContainerWidth - overlap)
+                        } else {
+                            expect(px2float(table.colHeads.style.left), `column header container left`).to.equal(0)
+                        }
+                        expect(px2float(table.colHeads.style.right)).to.equal(0)
+                    }
+
+                    if (table.rowHeads) {
+                        expect(px2float(table.body.style.left), `body container left`).to.equal(rowHeadContainerWidth - overlap)
+                    } else {
+                        expect(px2float(table.body.style.left), `body container left`).to.equal(0)
+                    }
+                    if (table.colHeads) {
+                        expect(px2float(table.body.style.top), `body container top`).to.equal(colHeadContainerHeight - overlap)
+                    } else {
+                        expect(px2float(table.body.style.top), `body container top`).to.equal(0)
+                    }
                 }
             })
             describe("insert", function () {
@@ -1942,9 +1966,11 @@ describe("table", function () {
                         new Measure(2, 48),
                         new Measure(3, 72),
                         new Measure(4, 64)
-                    ], { seamless: true,
+                    ], {
+                        seamless: true,
                         rowHeaders: true,
-                        columnHeaders: true })
+                        columnHeaders: true
+                    })
                     checkRowHead32_48_72_64_seamless()
                 })
                 it("body 32, 64, 48, 72", async function () {
@@ -2016,7 +2042,8 @@ describe("table", function () {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(4, 64)
-                    ], { seamless: true,
+                    ], {
+                        seamless: true,
                         rowHeaders: true,
                         columnHeaders: true
                     })
