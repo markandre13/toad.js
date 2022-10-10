@@ -584,6 +584,9 @@ export class Table extends View {
         if (!this.visible) {
             return
         }
+        if (this.adapter.colCount === 0 || this.adapter.rowCount === 0) {
+            return
+        }
 
         if (this.adapter!.config.seamless) {
             this.root.classList.add("seamless")

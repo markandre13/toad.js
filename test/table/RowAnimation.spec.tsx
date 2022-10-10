@@ -50,7 +50,7 @@ describe("table", function () {
         describe("placement of header and body containers", function () {
             it("just row headers", async function () {
                 // WHEN we have an empty table without headings
-                const model = await prepareByRows([
+                await prepareByRows([
                     new Measure(1, 32),
                     new Measure(4, 64)
                 ], {
@@ -62,7 +62,7 @@ describe("table", function () {
 
             it("just columns headers", async function () {
                 // WHEN we have an empty table without headings
-                const model = await prepareByRows([
+                await prepareByRows([
                     new Measure(1, 32),
                     new Measure(4, 64)
                 ], {
@@ -74,7 +74,7 @@ describe("table", function () {
 
             it("column and row headers", async function () {
                 // WHEN we have an empty table without headings
-                const model = await prepareByRows([
+                await prepareByRows([
                     new Measure(1, 32),
                     new Measure(4, 64)
                 ], {
@@ -467,7 +467,92 @@ describe("table", function () {
             describe("row headers", function () {
                 // NOTE: row headers will be tested for animation; column headers, ... let's see...
 
-                it("two rows into empty", async function () {
+                it("two rows into empty (and column headers)", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByRows([], { rowHeaders: true, columnHeaders: true })
+                    const table = getTable()
+
+                    // ...insert the 1st two rows
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
+                    model.insertRow(0, flatMapRows([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
+                    ]))
+
+                    // return
+
+                    expect(table.root.children.length).equal(1)
+
+                    // ...and ask for the new cells to be measured
+                    const animation = InsertRowAnimation.current!
+                    animation.prepare()
+
+                    expect(table.rowHeads).to.not.be.undefined
+                    expect(animation.staging).to.not.be.undefined
+                    expect(animation.headStaging).to.not.be.undefined
+                    await sleep()
+
+                    // THEN then two cells have been measured.
+                    expect(table.measure.children.length).to.equal(8)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.arrangeNewRowsInStaging()
+
+                    // return
+
+                    // THEN they have been placed in staging
+                    expect(stagingRowHeadInfo(0)).to.equal(`#1:0,0,16,32`)
+                    expect(stagingRowHeadInfo(1)).to.equal(`#2:0,${32 + 1},16,64`)
+                    expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,32`)
+                    expect(stagingRowInfo(1)).to.equal(`#2:0,${32 + 1},80,64`)
+
+                    // ...and are hidden by a mask
+                    const insertHeight = 32 + 64 + 4 - 1
+                    expect(headMaskY()).to.equal(0)
+                    expect(headMaskH()).to.equal(insertHeight)
+                    expect(maskY()).to.equal(0)
+                    expect(maskH()).to.equal(insertHeight)
+
+                    // WHEN we split the table for the animation
+                    animation.splitHorizontal()
+
+                    // THEN splitbody
+                    expect(splitRowHeadY()).to.equal(0)
+                    expect(splitRowHeadH()).to.equal(1)
+                    expect(splitBodyY()).to.equal(0)
+                    expect(splitBodyH()).to.equal(1)
+
+                    expect(table.body.style.left, `body left`).to.equal(`21px`)
+                    expect(table.body.style.top, `body top`).to.equal(`19px`)
+                    expect(table.rowHeads.style.top, `column container left`).to.equal(`19px`)
+                    expect(table.colHeads.style.left, `column container left`).to.equal(`21px`)
+                    expect(table.colHeads.style.right, `column container right`).to.equal(`0px`)
+                    expect(table.colHeads.style.height, `column container height`).to.equal(`20px`)
+
+                    expect(animation.staging.style.left, `staging left`).to.equal(`21px`)
+                    expect(animation.staging.style.top, `staging top`).to.equal(`19px`)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(headMaskY()).to.equal(insertHeight)
+                    expect(splitRowHeadY()).to.equal(insertHeight)
+                    expect(maskY()).to.equal(insertHeight)
+                    expect(splitBodyY()).to.equal(insertHeight)
+
+                    animation.joinHorizontal()
+                    check32_64()
+                    checkRowHead32_64()
+
+                    expect(table.colHeads).not.be.undefined
+                    expect(table.rowHeads).not.be.undefined
+                    testTableLayout()
+                })
+
+                it("two rows into empty (just row headers)", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([], { rowHeaders: true })
                     const table = getTable()

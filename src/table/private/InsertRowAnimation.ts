@@ -76,6 +76,7 @@ export class InsertRowAnimation extends TableAnimation {
     public prepareCellsToBeMeasured() {
         // console.log(`InsertRowAnimation.prepareCellsToBeMeasured(): model=${this.adapter.model.colCount}x${this.adapter.model.rowCount}, adapter=${this.adapter.colCount}x${this.adapter.rowCount}, index=${this.event.index}, size=${this.event.size}`)
 
+        // append row headers
         let rowHeaders = new Array(this.event.size)
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             const content = this.adapter!.getRowHead(row)
@@ -94,6 +95,30 @@ export class InsertRowAnimation extends TableAnimation {
                 const cell = span(rowHeaders[row])
                 cell.className = "head"
                 this.measure.appendChild(cell)
+            }
+        }
+
+        // FIXME: this is likely mostly duplicated code
+        if (this.colHeads === undefined && this.adapter.colCount == this.event.size) {
+            let colHeaders = new Array(this.adapter.colCount)
+            for (let col = 0; col < this.adapter.colCount; ++col) {
+                const content = this.adapter!.getColumnHead(col)
+                if (this.colHeads === undefined && content !== undefined) {
+                    this.colHeads = div()
+                    this.colHeads.className = "cols"
+                    this.root.appendChild(this.colHeads)
+                    this.colResizeHandles = div()
+                    this.colResizeHandles.className = "cols"
+                    this.root.appendChild(this.colResizeHandles)
+                }
+                colHeaders[col] = content
+            }
+            if (this.colHeads !== undefined) {
+                for (let col = 0; col < this.adapter.colCount; ++col) {
+                    const cell = span(colHeaders[col])
+                    cell.className = "head"
+                    this.measure.appendChild(cell)
+                }
             }
         }
 
@@ -173,6 +198,17 @@ export class InsertRowAnimation extends TableAnimation {
                 rowHeight[row] = Math.max(rowHeight[row], bounds.height)
             }
         }
+
+        let colHeadHeight = this.table.minCellHeight
+        if (this.colHeads !== undefined && this.colHeads.children.length === 0 && this.adapter.rowCount == this.event.size) {
+            for (let col = 0; col < this.adapter.colCount; ++col) {
+                const cell = this.measure.children[idx++] as HTMLSpanElement
+                const bounds = cell.getBoundingClientRect()
+                colWidth[col] = Math.max(colWidth[col], bounds.width - this.table.WIDTH_ADJUST)
+                colHeadHeight = Math.max(colHeadHeight, bounds.height - this.table.HEIGHT_ADJUST)
+            }
+        }
+
         for (let row = 0; row < this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
@@ -185,6 +221,7 @@ export class InsertRowAnimation extends TableAnimation {
                 } else {
                     // if there were no columns yet, use the new rows column width
                     if (row === 0 && this.body.children.length === 0) {
+                        // FIXME: this needs to work differently when there are column headers
                         colWidth[col] = Math.ceil(bounds.width)
                     }
                 }
@@ -222,7 +259,6 @@ export class InsertRowAnimation extends TableAnimation {
         }
 
         let y
-        
         // place row headers
         y = top
         if (this.rowHeads !== undefined) {
@@ -236,6 +272,27 @@ export class InsertRowAnimation extends TableAnimation {
                     y -= 2
                 }
             }
+        }
+
+        // place column headers
+        if (this.colHeads !== undefined && this.colHeads.children.length === 0 && this.adapter.rowCount == this.event.size) {
+            let x = 0
+            for (let col = 0; col < this.adapter.colCount; ++col) {
+                const cell = this.measure.children[0] as HTMLSpanElement
+                cell.style.left = `${x}px`
+                cell.style.width = `${colWidth[col]  - this.table.WIDTH_ADJUST}px`
+                cell.style.height = `${colHeadHeight}px`
+                this.colHeads.appendChild(cell)
+                x += colWidth[col] - overlap
+            }
+            colHeadHeight += this.table.HEIGHT_ADJUST
+            this.body.style.top = `${colHeadHeight-overlap}px`
+            this.staging.style.top = `${colHeadHeight-overlap}px`
+            this.rowHeads.style.top = `${colHeadHeight-overlap}px`
+            this.colHeads.style.left = `${rowHeadWidth-overlap}px`
+            this.colHeads.style.right = `0px`
+            this.colHeads.style.height = `${colHeadHeight}px`
+            this.rowHeads.style.top = `${colHeadHeight-overlap}px`
         }
 
         // place body cells
@@ -304,7 +361,7 @@ export class InsertRowAnimation extends TableAnimation {
             return
         }
         this.done = true
-        
+
         if (this.rowHeads) {
             this.headStaging.removeChild(this.headMask)
             this.rowHeads.removeChild(this.splitHead)
