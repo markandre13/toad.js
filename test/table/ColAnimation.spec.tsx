@@ -1170,6 +1170,313 @@ describe("table", function () {
                     check32_64_remove_seamless()
                 })
             })
+            describe("column headers", function () {
+                xit("all columns", async function () {
+                    // WHEN we have a table without headings
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 64)
+                    ])
+                    const table = getTable()
+
+                    const overlap = 1
+                    const spacing = table.table.WIDTH_ADJUST - overlap
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${32 + spacing},0,64,18`)
+                    expect(table.body.children).to.have.lengthOf(4)
+
+                    // ...remove all rows
+                    model.removeColumn(0, 2)
+
+                    const animation = RemoveColumnAnimation.current!
+                    // expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.prepareStagingWithRows()
+                    animation.arrangeColumnsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(stagingColInfo(1)).to.equal(`#2:${32 + spacing},0,64,18`)
+                    expect(table.body.children).to.have.lengthOf(0)
+
+                    // ...and there is a mask at the end of staging?
+                    expect(maskX()).to.equal(32 + 64 + 2 * spacing)
+                    expect(maskW()).to.equal(32 + 64 + 2 * spacing)
+
+                    // WHEN we split the table for the animation
+                    animation.splitVertical()
+                    expect(table.splitBody.children).has.length(0)
+
+                    // THEN splitbody
+                    expect(splitBodyX()).to.equal(0)
+                    expect(splitBodyW()).to.equal(32 + 64 + 2 * spacing)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(splitBodyX(), "splitBodyY after animation").to.equal(-(32 + 64 + 2 * spacing))
+                    expect(maskX(), "maskY after animation").to.equal(0)
+
+                    animation.joinVertical()
+                    expect(table.body.children).to.have.lengthOf(0)
+                })
+                xit("two columns at head", async function () {
+                    // WHEN we have a table without headings
+                    const model = await prepareByColumns([
+                        new Measure(1, 48),
+                        new Measure(2, 72),
+                        new Measure(3, 32),
+                        new Measure(4, 64)
+                    ])
+
+                    const table = getTable()
+
+                    const overlap = 1
+                    const spacing = table.table.WIDTH_ADJUST - overlap
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,48,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${48 + spacing},0,72,18`)
+                    expect(bodyColInfo(2)).to.equal(`#3:${48 + 72 + 2 * spacing},0,32,18`)
+                    expect(bodyColInfo(3)).to.equal(`#4:${48 + 72 + 32 + 3 * spacing},0,64,18`)
+                    expect(table.body.children).to.have.lengthOf(8)
+
+                    // ...at the head remove two rows
+                    model.removeColumn(0, 2)
+
+                    const animation = RemoveColumnAnimation.current!
+                    // expect(animation.initialWidth, "initialHeight").to.equal(initialHeight)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.prepareStagingWithRows()
+                    animation.arrangeColumnsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingColInfo(0)).to.equal(`#1:0,0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#2:${48 + spacing},0,72,18`)
+
+                    expect(bodyColInfo(0)).to.equal(`#3:${48 + 72 + 2 * spacing},0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:${48 + 72 + 32 + 3 * spacing},0,64,18`)
+
+                    // ...and there is a mask at the end of staging?
+                    expect(maskX(), "maskX before animation").to.equal(48 + 72 + 2 * spacing)
+                    expect(maskW(), "maskW before animation").to.equal(48 + 72 + 2 * spacing)
+
+                    // WHEN we split the table for the animation
+                    animation.splitVertical()
+                    expect(splitColInfo(0)).to.equal(`#3:0,0,32,18`)
+                    expect(splitColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
+
+                    // THEN splitbody
+                    expect(splitBodyX()).to.equal(48 + 72 + 2 * spacing)
+                    expect(splitBodyW()).to.equal(32 + 64 + 2 * spacing)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(splitBodyX(), "splitBodyY after animation").to.equal(0)
+                    expect(maskX(), "maskY after animation").to.equal(0)
+
+                    animation.joinVertical()
+                    expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
+                    expect(table.body.children).to.have.lengthOf(4)
+
+                    check32_64_remove_head()
+                })
+                xit("two columns at middle", async function () {
+                    // WHEN we have a table without headings
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
+                    ])
+                    const table = getTable()
+
+                    const overlap = 1
+                    const spacing = table.table.WIDTH_ADJUST - overlap
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${32 + 5},0,48,18`)
+                    expect(bodyColInfo(2)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
+                    expect(bodyColInfo(3)).to.equal(`#4:${32 + 48 + 72 + 3 * spacing},0,64,18`)
+
+                    expect(table.body.children).to.have.lengthOf(8)
+
+                    // ...at the head insert two rows
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
+                    model.removeColumn(1, 2)
+
+                    // return
+
+                    const animation = RemoveColumnAnimation.current!
+
+                    // expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.prepareStagingWithRows()
+                    animation.arrangeColumnsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
+
+                    // ...and are hidden by a mask
+                    expect(maskX(), "maskY before animation").to.equal(32 + 48 + 72 + 3 * spacing)
+                    expect(maskW(), "maskH before animation").to.equal(48 + 72 + 2 * spacing)
+
+                    // WHEN we split the table for the animation
+                    animation.splitVertical()
+
+                    // THEN splitbody
+                    expect(splitBodyX()).to.equal(32 + 48 + 72 + 3 * spacing)
+                    expect(splitBodyW()).to.equal(64 + spacing)
+                    expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(splitBodyX(), "splitBodyY after animation").to.equal(32 + spacing)
+                    expect(maskX(), "maskY after animation").to.equal(32 + spacing)
+
+                    animation.joinVertical()
+
+                    check32_64_remove_middle()
+                })
+                xit("two columns at end", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 64),
+                        new Measure(3, 48),
+                        new Measure(4, 72)
+                    ])
+                    const table = getTable()
+
+                    const overlap = 1
+                    const spacing = table.table.WIDTH_ADJUST - overlap
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${32 + spacing},0,64,18`)
+                    expect(bodyColInfo(2)).to.equal(`#3:${32 + 64 + 2 * spacing},0,48,18`)
+                    expect(bodyColInfo(3)).to.equal(`#4:${32 + 64 + 48 + 3 * spacing},0,72,18`)
+                    expect(table.body.children).to.have.lengthOf(8)
+
+                    // ...at the head insert two rows
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
+                    model.removeColumn(2, 2)
+
+                    // return
+
+                    const animation = RemoveColumnAnimation.current!
+
+                    // WHEN ask for the new rows to be placed
+                    animation.prepareStagingWithRows()
+                    animation.arrangeColumnsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(stagingColInfo(0)).to.equal(`#3:${32 + 64 + 2 * spacing},0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#4:${32 + 64 + 48 + 3 * spacing},0,72,18`)
+
+                    // we expect the mask right of the table, and the splitBody covering the last two columns (so it include staging)
+
+                    // ...and are hidden by a mask
+                    expect(maskX()).to.equal(32 + 64 + 48 + 72 + 4 * spacing)
+                    expect(maskW()).to.equal(48 + 72 + 2 * spacing)
+
+                    // WHEN we split the table for the animation
+                    animation.splitVertical()
+
+                    // THEN splitbody (the splitbody must meet the mask, height doesn't matter)
+                    expect(splitBodyX()).to.equal(32 + 64 + 2 * spacing)
+                    expect(splitBodyW()).to.equal(48 + 72 + 2 * spacing)
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+                    expect(splitBodyX(), "splitBodyX after animation").to.equal(-24)
+                    expect(maskX(), "maskX after animation").to.equal(106)
+
+                    animation.joinVertical()
+                    check32_64()
+                })
+                xit("seamless (two columns at middle)", async function () {
+                    // WHEN we have an empty table without headings
+                    const model = await prepareByColumns([
+                        new Measure(1, 32),
+                        new Measure(2, 48),
+                        new Measure(3, 72),
+                        new Measure(4, 64)
+                    ], { seamless: true })
+                    const table = getTable()
+                    const spacing = table.table.WIDTH_ADJUST - 2
+
+                    expect(table.body.children).to.have.lengthOf(8)
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#2:${32 + 1 * spacing},0,48,18`)
+                    expect(bodyColInfo(2)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
+                    expect(bodyColInfo(3)).to.equal(`#4:${32 + 48 + 72 + 3 * spacing},0,64,18`)
+
+                    // AnimationBase.animationFrameCount = 6000
+                    // Animator.halt = false
+
+                    // ...at the head insert two rows
+                    model.removeColumn(1, 2)
+
+                    // return
+
+                    const animation = RemoveColumnAnimation.current!
+
+                    // expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
+
+                    // WHEN ask for the new rows to be placed
+                    animation.prepareStagingWithRows()
+                    animation.arrangeColumnsInStaging()
+
+                    // THEN they have been placed in staging
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(stagingColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:${32 + 48 + 72 + 3 * spacing},0,64,18`)
+
+                    // ...and are hidden by a mask
+                    expect(maskX(), "maskX before animation").to.equal(32 + 48 + 72 + 3 * spacing + 1) // FIXME?
+                    expect(maskW(), "maskW before animation").to.equal(48 + 72 + 2 * spacing + 1) // FIXME?
+
+                    // WHEN we split the table for the animation
+                    animation.splitVertical()
+                    // THEN splitbody
+                    // expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(stagingColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
+                    expect(stagingColInfo(1)).to.equal(`#3:${32 + 48 + 2 * spacing},0,72,18`)
+                    expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
+                    expect(splitBodyX()).to.equal(32 + 48 + 72 + 3 * spacing)
+                    expect(splitBodyW()).to.equal(64 + spacing - 1) // FIXME?
+
+                    // WHEN we animate
+                    animation.animationFrame(1)
+
+                    expect(splitBodyX(), "splitBodyX after animation").to.equal(32 + spacing)
+                    expect(maskX(), "maskX after animation").to.equal(32 + spacing)
+
+                    animation.joinVertical()
+
+                    expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
+                    expect(bodyColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
+                    // expect(table.body.children).to.have.lengthOf(4)
+
+                    check32_64_remove_seamless()
+                })
+            })
+
         })
         describe("test support for expected final table layouts", function () {
             describe("insert", function () {
