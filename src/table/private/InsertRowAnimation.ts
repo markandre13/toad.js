@@ -99,7 +99,7 @@ export class InsertRowAnimation extends TableAnimation {
         }
 
         // FIXME: this is likely mostly duplicated code
-        if (this.colHeads === undefined && this.adapter.colCount == this.event.size) {
+        if (this.colHeads === undefined && this.adapter.colCount === this.event.size) {
             let colHeaders = new Array(this.adapter.colCount)
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const content = this.adapter!.getColumnHead(col)
@@ -167,7 +167,8 @@ export class InsertRowAnimation extends TableAnimation {
         // --------------------------------
 
         // rowHeadWidth := width of the row head column
-        let rowHeadWidth = 16 + this.table.WIDTH_ADJUST // this.table.minCellWidth
+        // FIXME: this doesn't work when we're in an empty table as the rowHeads ain't there yet
+        let rowHeadWidth = 16 + this.table.WIDTH_ADJUST // FIXME: this.table.minCellWidth
         if (this.rowHeads && this.rowHeads.children.length > 0) {
             const cell = this.rowHeads.children[0] as HTMLSpanElement
             const bounds = cell.getBoundingClientRect()
@@ -285,14 +286,15 @@ export class InsertRowAnimation extends TableAnimation {
                 this.colHeads.appendChild(cell)
                 x += colWidth[col] - overlap
             }
+            // rowHeadWidth += this.table.WIDTH_ADJUST
             colHeadHeight += this.table.HEIGHT_ADJUST
             this.body.style.top = `${colHeadHeight-overlap}px`
             this.staging.style.top = `${colHeadHeight-overlap}px`
+            this.headStaging.style.top = `${colHeadHeight-overlap}px`
             this.rowHeads.style.top = `${colHeadHeight-overlap}px`
             this.colHeads.style.left = `${rowHeadWidth-overlap}px`
             this.colHeads.style.right = `0px`
             this.colHeads.style.height = `${colHeadHeight}px`
-            this.rowHeads.style.top = `${colHeadHeight-overlap}px`
         }
 
         // place body cells

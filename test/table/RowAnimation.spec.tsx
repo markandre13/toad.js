@@ -467,7 +467,7 @@ describe("table", function () {
             describe("row headers", function () {
                 // NOTE: row headers will be tested for animation; column headers, ... let's see...
 
-                it("two rows into empty (and column headers)", async function () {
+                it("two rows into empty (row and column headers)", async function () {
                     // WHEN we have an empty table without headings
                     const model = await prepareByRows([], { rowHeaders: true, columnHeaders: true })
                     const table = getTable()
@@ -501,8 +501,6 @@ describe("table", function () {
                     // WHEN ask for the new rows to be placed
                     animation.arrangeNewRowsInStaging()
 
-                    // return
-
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#1:0,0,16,32`)
                     expect(stagingRowHeadInfo(1)).to.equal(`#2:0,${32 + 1},16,64`)
@@ -527,11 +525,14 @@ describe("table", function () {
 
                     expect(table.body.style.left, `body left`).to.equal(`21px`)
                     expect(table.body.style.top, `body top`).to.equal(`19px`)
-                    expect(table.rowHeads.style.top, `column container left`).to.equal(`19px`)
+
+                    expect(table.rowHeads.style.top, `row container top`).to.equal(`19px`)
+                    
                     expect(table.colHeads.style.left, `column container left`).to.equal(`21px`)
                     expect(table.colHeads.style.right, `column container right`).to.equal(`0px`)
                     expect(table.colHeads.style.height, `column container height`).to.equal(`20px`)
 
+                    expect(table.getHeadStaging()!.style.top, `head staging top`).to.equal(`19px`)
                     expect(animation.staging.style.left, `staging left`).to.equal(`21px`)
                     expect(animation.staging.style.top, `staging top`).to.equal(`19px`)
 
