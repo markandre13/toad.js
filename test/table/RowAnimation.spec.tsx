@@ -1639,13 +1639,12 @@ describe("table", function () {
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#2:0,${32 + 1},16,48`)
                     expect(stagingRowHeadInfo(1)).to.equal(`#3:0,${32 + 48 + 2},16,72`)
-
                     expect(stagingRowInfo(0)).to.equal(`#2:0,${32 + 1},80,48`)
                     expect(stagingRowInfo(1)).to.equal(`#3:0,${32 + 48 + 2},80,72`)
 
                     // ...and are hidden by a mask
-                    expect(headMaskY(), "maskY before animation").to.equal(maskY0)
-                    expect(headMaskH(), "maskH before animation").to.equal(maskH0)
+                    expect(headMaskY(), "headMaskY before animation").to.equal(maskY0)
+                    expect(headMaskH(), "headMaskH before animation").to.equal(maskH0)
                     expect(maskY(), "maskY before animation").to.equal(maskY0)
                     expect(maskH(), "maskH before animation").to.equal(maskH0)
 
@@ -1659,8 +1658,6 @@ describe("table", function () {
                     expect(splitBodyY()).to.equal(splitY0)
                     expect(splitBodyH()).to.equal(splitH0)
                     expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
-
-                    return
 
                     // WHEN we animate
                     animation.animationFrame(1)

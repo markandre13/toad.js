@@ -32,6 +32,8 @@ export class RemoveColumnAnimation extends TableAnimation {
     leftSplitBody!: number
     leftMask!: number
     mask!: HTMLSpanElement
+    splitHead!: HTMLDivElement
+    headMask!: HTMLSpanElement
 
     static current: RemoveColumnAnimation
 
@@ -58,7 +60,7 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
 
     prepare(): void {
-        this.prepareStagingWithRows()
+        this.prepareStagingWithColumns()
         this.arrangeColumnsInStaging()
         this.splitVertical()
     }
@@ -70,6 +72,10 @@ export class RemoveColumnAnimation extends TableAnimation {
         }
         this.splitBody.style.left = `${this.leftSplitBody - n * this.animationWidth + a}px`
         this.mask.style.left = `${this.leftMask - n * this.animationWidth}px`
+        if (this.colHeads !== undefined) {
+            this.splitHead.style.left = `${this.leftSplitBody - n * this.animationWidth + a}px`
+            this.headMask.style.left = `${this.leftMask - n * this.animationWidth}px`
+        }
     }
     lastFrame(): void {
         this.joinVertical()
@@ -77,8 +83,7 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
 
     arrangeColumnsInStaging() {
-        // console.log(`RemoveColumnAnimation.arrangeColumnsInStaging(): size = ${this.adapter.colCount} x ${this.adapter.rowCount}`)
-        // move all the columns which are to be removed into staging
+        // body
         let idx = this.event.index
         for (let row = 0; row < this.adapter.rowCount; ++row) {
             for (let col = 0; col < this.event.size; ++col) {
@@ -105,33 +110,83 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.mask.style.border = 'none'
         this.mask.style.backgroundColor = Table.maskColor
         this.staging.appendChild(this.mask)
+
+        // FIXME: split here into two methods (at least)
+
+        if (this.colHeads === undefined) {
+            return
+        }
+
+        // column headers
+        for (let i = 0; i < this.event.size; ++i) {
+            this.headStaging.appendChild(this.colHeads.children[this.event.index])
+        }
+
+        this.headMask = span()
+        this.headMask.style.boxSizing = `content-box`
+        this.headMask.style.top = `0`
+        this.headMask.style.bottom = `0`
+        this.headMask.style.left = `${rightOfStaging}px`
+        this.headMask.style.width = `${w}px`
+        this.headMask.style.border = 'none'
+        this.headMask.style.backgroundColor = Table.maskColor
+        this.headStaging.appendChild(this.headMask)
     }
 
     splitVertical() {
         this.table.splitVerticalNew(this.event.index)
+        if(this.colHeads !== undefined) { // FIXME: Hack
+            this.splitHead = this.colHeads.lastElementChild as HTMLDivElement
+        }
+
         // set the things split vertical hadn't enough information to do
         const left = px2float(this.splitBody.style.left)
         this.splitBody.style.width = `${this.initialWidth - left - 1}px` // FIXME: this might be overlap
         this.leftSplitBody = left
         this.leftMask = px2float(this.mask.style.left)
+
+        if (this.colHeads !== undefined) {
+            this.splitHead.style.left = `${left}px`
+            this.splitHead.style.width = `${this.initialWidth - left - 1}px`
+        }
     }
 
     joinVertical() {
-        if (this.done) {
+        this.staging.removeChild(this.mask)
+        this.body.removeChild(this.splitBody)
+        this.staging.replaceChildren()
+        this.moveSplitBodyToBody()
+
+        if (this.colHeads) {
+            this.headStaging.removeChild(this.headMask)
+            this.colHeads.removeChild(this.splitHead)
+            this.headStaging.replaceChildren()
+            this.moveSplitHeadToHead()           
+        }
+
+        if (this.table.animationDone) {
+            this.table.animationDone()
+        }
+    }
+
+    private moveSplitHeadToHead() {
+        if (this.splitHead.children.length === 0) {
             return
         }
-        this.done = true
+        let left = px2float(this.splitHead.style.left)
+        while (this.splitHead.children.length > 0) {
+            const cell = this.splitHead.children[0] as HTMLSpanElement
+            cell.style.left = `${px2float(cell.style.left) + left}px`
+            this.colHeads.appendChild(cell)
+        }
+    }
 
-        this.staging.replaceChildren()
-        this.body.removeChild(this.splitBody)
+    private moveSplitBodyToBody() {
+        if (this.splitBody.children.length === 0) {
+            return
+        }
 
-        // insert splitBody (whose cells are per row)
         let left = px2float(this.splitBody.style.left)
-        // if (this.adapter.config.seamless) {
-        //     left += 1
-        // }
-
-        // move split body into body
         for (let row = 0; row < this.rowCount; ++row) {
             for (let col = 0; col < this.colCount - this.event.index; ++col) {
                 const cell = this.splitBody.children[0] as HTMLSpanElement
@@ -139,35 +194,6 @@ export class RemoveColumnAnimation extends TableAnimation {
                 const idx = row * this.adapter.colCount + this.event.index + col
                 this.bodyInsertAt(cell, idx)
             }
-        }
-
-        // let idx = this.event.index
-        // for (let row = 0; row < this.rowCount; ++row) {
-        //     for (let col = 0; col < this.event.size; ++col) {
-        //         const cell = this.body.children[idx] as HTMLSpanElement
-        //         this.body.removeChild(this.body.children[idx])
-        //     }
-        //     idx += this.event.index - this.event.size + 1
-        // }
-
-        // this.table.joinVertical(this.event.index + this.event.size, -this.totalWidth, this.event.size, this.colCount, this.rowCount)
-
-        // if (this.colHeads) {
-        //     for (let col = 0; col < this.event.size; ++col) {
-        //         this.colHeads.removeChild(this.colHeads.children[this.event.index])
-        //         this.colResizeHandles.removeChild(this.colResizeHandles.children[this.event.index])
-        //     }
-        //     // adjust subsequent row heads and handles
-        //     for (let subsequentColumn = this.event.index; subsequentColumn < this.colCount; ++subsequentColumn) {
-        //         this.colHeads.children[subsequentColumn].replaceChildren(
-        //             this.adapter.getColumnHead(subsequentColumn)!
-        //         );
-        //         (this.colResizeHandles.children[subsequentColumn] as HTMLSpanElement).dataset["idx"] = `${subsequentColumn}`
-        //     }
-        // }
-
-        if (this.table.animationDone) {
-            this.table.animationDone()
         }
     }
 

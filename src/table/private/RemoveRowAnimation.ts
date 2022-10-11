@@ -99,6 +99,7 @@ export class RemoveRowAnimation extends TableAnimation {
         this.mask.style.backgroundColor = Table.maskColor
         this.staging.appendChild(this.mask)
 
+        // FIXME: split here into two methods (at least)
         if (this.rowHeads === undefined) {
             return
         }
