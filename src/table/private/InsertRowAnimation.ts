@@ -74,6 +74,7 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     public prepareCellsToBeMeasured() {
+        this.table.prepareMinCellSize()
         // console.log(`InsertRowAnimation.prepareCellsToBeMeasured(): model=${this.adapter.model.colCount}x${this.adapter.model.rowCount}, adapter=${this.adapter.colCount}x${this.adapter.rowCount}, index=${this.event.index}, size=${this.event.size}`)
 
         // append row headers
@@ -133,6 +134,7 @@ export class InsertRowAnimation extends TableAnimation {
 
     // FIXME: while this works, it reads like a terrible pile of garbage
     public arrangeNewRowsInStaging() {
+        this.table.calculateMinCellSize()
         const overlap = this.adapter.config.seamless ? 0 : 1
 
         // top := y position of the 1st cell to be inserted
@@ -168,21 +170,15 @@ export class InsertRowAnimation extends TableAnimation {
 
         // rowHeadWidth := width of the row head column
         // FIXME: this doesn't work when we're in an empty table as the rowHeads ain't there yet
-        let rowHeadWidth = 16 + this.table.WIDTH_ADJUST // FIXME: this.table.minCellWidth
+        let rowHeadWidth = this.table.minCellWidth
+        // take width of existing row heads
         if (this.rowHeads && this.rowHeads.children.length > 0) {
             const cell = this.rowHeads.children[0] as HTMLSpanElement
             const bounds = cell.getBoundingClientRect()
-            rowHeadWidth = bounds.width
+            rowHeadWidth = Math.max(rowHeadWidth, bounds.width)
             if (this.adapter.config.seamless) {
                 rowHeadWidth += 2
             }
-        }
-        if (this.rowHeads) {
-            this.rowHeads.style.top = `0px`
-            this.rowHeads.style.bottom = `0px`
-            this.rowHeads.style.width = `${rowHeadWidth}px`
-            this.body.style.left = `${rowHeadWidth - overlap}px`
-            this.staging.style.left = `${rowHeadWidth - overlap}px`
         }
 
         // rowHeight[] := height of each row to be inserted
@@ -197,7 +193,16 @@ export class InsertRowAnimation extends TableAnimation {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
                 rowHeight[row] = Math.max(rowHeight[row], bounds.height)
+                rowHeadWidth = Math.max(rowHeadWidth, bounds.width)
             }
+        }
+        rowHeadWidth = Math.ceil(rowHeadWidth)
+        if (this.rowHeads) {
+            this.rowHeads.style.top = `0px`
+            this.rowHeads.style.bottom = `0px`
+            this.rowHeads.style.width = `${rowHeadWidth}px`
+            this.body.style.left = `${rowHeadWidth - overlap}px`
+            this.staging.style.left = `${rowHeadWidth - overlap}px`
         }
 
         let colHeadHeight = this.table.minCellHeight
@@ -209,6 +214,7 @@ export class InsertRowAnimation extends TableAnimation {
                 colHeadHeight = Math.max(colHeadHeight, bounds.height - this.table.HEIGHT_ADJUST)
             }
         }
+        colHeadHeight = Math.ceil(colHeadHeight)
 
         for (let row = 0; row < this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
@@ -259,9 +265,8 @@ export class InsertRowAnimation extends TableAnimation {
             this.totalHeight -= 2 * this.event.size
         }
 
-        let y
         // place row headers
-        y = top
+        let y = top
         if (this.rowHeads !== undefined) {
             for (let row = 0; row < this.event.size; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement

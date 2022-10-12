@@ -109,8 +109,8 @@ export class Table extends View {
     static renderDelay = 50
 
     // this will be set to lineheight
-    minCellHeight = 0
-    minCellWidth = 32
+    minCellHeight!: number
+    minCellWidth!: number
 
     protected editing?: TablePos
 
@@ -592,7 +592,7 @@ export class Table extends View {
             this.root.classList.add("seamless")
         }
 
-        this.prepareMinCellHeight()
+        this.prepareMinCellSize()
         this.prepareColumnHeads()
         this.prepareRowHeads()
         this.prepareBody()
@@ -602,8 +602,7 @@ export class Table extends View {
 
     // this method is called once during the initial setup
     arrangeAllMeasuredInGrid() {
-        this.calculateMinCellHeight()
-        this.measure.removeChild(this.measure.children[0])
+        this.calculateMinCellSize()
 
         let { colWidths, colHeadHeight } = this.calculateColumnWidths()
         let { rowHeights, rowHeadWidth } = this.calculateRowHeights()
@@ -616,15 +615,23 @@ export class Table extends View {
         this.setHeadingFillerSizeToScrollbarSize()
     }
 
-    prepareMinCellHeight() {
+    prepareMinCellSize() {
+        if (this.minCellHeight !== undefined) {
+            return
+        }
         const measureLineHeight = span(text("Tg")) // let the adapter provide this
         this.measure.appendChild(measureLineHeight)
     }
 
-    calculateMinCellHeight() {
+    calculateMinCellSize() {
+        if (this.minCellHeight !== undefined) {
+            return
+        }
         const measureLineHeight = this.measure.children[0] as HTMLElement
         const b = measureLineHeight.getBoundingClientRect()
-        this.minCellHeight = Math.ceil(b.height)
+        this.minCellWidth = Math.ceil(b.width - this.WIDTH_ADJUST)
+        this.minCellHeight = Math.ceil(b.height - this.HEIGHT_ADJUST)
+        this.measure.removeChild(measureLineHeight)
     }
 
     prepareColumnHeads() {
