@@ -1,7 +1,7 @@
-import { TextModel } from "@toad/model/TextModel"
-import { HtmlModel } from "@toad/model/HtmlModel"
-import { NumberModel } from "@toad/model/NumberModel"
-import { ModelView, ModelViewProps } from "@toad/view/ModelView"
+import { TextModel } from "../model/TextModel"
+import { HtmlModel } from "../model/HtmlModel"
+import { NumberModel } from "../model/NumberModel"
+import { ModelView, ModelViewProps } from "../view/ModelView"
 
 export class Display extends ModelView<TextModel|HtmlModel|NumberModel> {
 

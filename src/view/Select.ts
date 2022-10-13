@@ -17,10 +17,10 @@
  */
 
 import { ModelView, ModelViewProps } from "./ModelView"
-import { OptionModelBase } from "@toad/model/OptionModelBase"
-import { input, button, svg, path, div, ul, li, array, text } from "@toad/util/lsx"
-import { placePopupVertical } from "@toad/menu/PopupMenu"
-import { TextModel } from "@toad/model/TextModel"
+import { OptionModelBase } from "../model/OptionModelBase"
+import { input, button, svg, path, div, ul, li, array, text } from "../util/lsx"
+import { placePopupVertical } from "../menu/PopupMenu"
+import { TextModel } from "../model/TextModel"
 import { globalController } from "../controller/globalController"
 
 import { style as txCombobox } from "../style/tx-combobox"

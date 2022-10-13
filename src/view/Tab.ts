@@ -21,7 +21,7 @@ import { ul, li, span, text, div, slot } from "../util/lsx"
 import { style as txTabs } from "../style/tx-tabs"
 import { HTMLElementProps } from "toad.jsx"
 import { ModelView, ModelViewProps } from "./ModelView"
-import { OptionModelBase } from "@toad/model/OptionModelBase"
+import { OptionModelBase } from "../model/OptionModelBase"
 
 export class Tabs extends ModelView<OptionModelBase> {
     markerLine: HTMLElement

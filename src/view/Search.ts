@@ -17,11 +17,8 @@
  */
 
 import { ModelView } from "./ModelView"
-import { OptionModelBase } from "@toad/model/OptionModelBase"
-import { form, input, button, svg, path, div } from "@toad/util/lsx"
-import { placePopupVertical } from "@toad/menu/PopupMenu"
-import { TextModel } from "@toad/model/TextModel"
-import { globalController } from "../controller/globalController"
+import { form, input, button, svg, path, div } from "../util/lsx"
+import { TextModel } from "../model/TextModel"
 import { style as txSearch } from "../style/tx-search"
 
 export class Search extends ModelView<TextModel> {

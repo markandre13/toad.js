@@ -21,7 +21,7 @@ import { TypedTableAdapter, InferTypedTableModelParameter } from "./TypedTableAd
 import { TableEvent } from "../TableEvent"
 import { TableEventType } from "../TableEventType"
 
-import { Reference } from "src"
+import { Reference } from "toad.jsx"
 import { TextModel } from "../../model/TextModel"
 import { Text } from "../../view/Text"
 import { TablePos } from "../TablePos"
