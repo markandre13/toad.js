@@ -553,7 +553,6 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent) {
-        // console.log(`Table.modelChanged(${event})`)
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement

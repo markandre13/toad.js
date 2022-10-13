@@ -197,24 +197,34 @@ export class InsertColumnAnimation extends TableAnimation {
             }
         }
         colHeadHeight = Math.ceil(colHeadHeight)
-        if (this.colHeads) {
-            this.colHeads.style.left = `0px`
-            this.colHeads.style.right = `0px`
-            this.colHeads.style.height = `${colHeadHeight}px`
-            this.body.style.top = `${colHeadHeight - 1}px`
-            this.staging.style.top = `${colHeadHeight - 1}px`
-        }
 
-        let rowHeadWidth = this.table.minCellWidth
+        let rowHeadWidth = 0
         if (this.rowHeads !== undefined && this.rowHeads.children.length === 0 && this.adapter.colCount == this.event.size) {
+            rowHeadWidth = this.table.minCellWidth
             for (let row = 0; row < this.adapter.rowCount; ++row) {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
                 const bounds = cell.getBoundingClientRect()
                 rowHeight[row] = Math.max(rowHeight[row], bounds.height - this.table.HEIGHT_ADJUST)
                 rowHeadWidth = Math.max(rowHeadWidth, bounds.width - this.table.WIDTH_ADJUST)
             }
+        } else {
+            if (this.rowHeads !== undefined) {
+                const b = this.rowHeads.children[0].getBoundingClientRect()
+                rowHeadWidth = b.width - this.table.WIDTH_ADJUST
+            }
         }
         rowHeadWidth = Math.ceil(rowHeadWidth)
+        if (this.colHeads) {
+            if (rowHeadWidth === 0) {
+                this.colHeads.style.left = `0px`
+            } else {
+                this.colHeads.style.left = `${rowHeadWidth + this.table.WIDTH_ADJUST + 2 - overlap}px` // FIXME: why do i cal
+            }
+            this.colHeads.style.right = `0px`
+            this.colHeads.style.height = `${colHeadHeight}px`
+            this.body.style.top = `${colHeadHeight - 1}px`
+            this.staging.style.top = `${colHeadHeight - 1}px`
+        }
 
         for (let col = 0; col < this.event.size; ++col) {
             for (let row = 0; row < this.adapter.rowCount; ++row) {

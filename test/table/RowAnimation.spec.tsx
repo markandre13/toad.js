@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { Animator, unbind } from "@toad"
+import { bindModel, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
@@ -8,13 +8,16 @@ import { style as txDark } from "@toad/style/tx-dark"
 import { px2float, sleep } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
-import { AnimationBase } from '@toad/util/animation'
+import { Animator, AnimationBase } from '@toad/util/animation'
 import {
     Measure, prepareByRows, flatMapRows, getTable, testTableLayout,
     bodyRowInfo, stagingRowInfo, maskY, maskH, splitRowInfo, splitBodyY, splitBodyH,
     headRowInfo, stagingRowHeadInfo, headMaskY, headMaskH, splitRowHeadInfo, splitRowHeadY, splitRowHeadH
 } from "./util"
 import { forEach } from 'test/mocha-each'
+import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
+import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
+import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 
 describe("table", function () {
     beforeEach(async function () {
@@ -25,6 +28,31 @@ describe("table", function () {
         AnimationBase.animationFrameCount = 1
         Animator.halt = true
         document.head.replaceChildren(txBase, txStatic, txDark)
+    })
+
+    xit("spreadsheet", async function() {
+        AnimationBase.animationFrameCount = 468
+        Animator.halt = false
+        const sheet = [
+            ["Name", "Pieces", "Price/Piece", "Price"],
+            ["Apple", "=4", "=0.98", "=B2*C2"],
+            ["Banana", "=2", "=1.98", "=B3*C3"],
+            ["Citrus", "=1", "=1.48", "=B4*C4"],
+            ["SUM", "", "", "=D2+D3+D4"],
+        ]
+
+        const spreadsheet = new SpreadsheetModel(5, 5)
+        for (let row = 0; row < spreadsheet.rowCount; ++row) {
+            for (let col = 0; col < spreadsheet.colCount; ++col) {
+                if (row < sheet.length && col < sheet[row].length) {
+                    spreadsheet.setField(col, row, sheet[row][col])
+                }
+            }
+        }
+        TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
+        bindModel("spreadsheet", spreadsheet)
+
+        document.body.innerHTML=`<tx-tabletool></tx-tabletool><tx-table style="width: 100%; height: 200px;" model="spreadsheet"></tx-table>`
     })
 
     describe("other", function () {
@@ -527,7 +555,7 @@ describe("table", function () {
                     expect(table.body.style.top, `body top`).to.equal(`19px`)
 
                     expect(table.rowHeads.style.top, `row container top`).to.equal(`19px`)
-                    
+
                     expect(table.colHeads.style.left, `column container left`).to.equal(`21px`)
                     expect(table.colHeads.style.right, `column container right`).to.equal(`0px`)
                     expect(table.colHeads.style.height, `column container height`).to.equal(`20px`)
@@ -1881,7 +1909,7 @@ describe("table", function () {
                     [true, false, true],
                     [false, true, true],
                     [true, true, true]
-                ]).it("row header: {}, column header: {}, seamless: {}", async function(rowHeaders: boolean, columnHeaders: boolean, seamless: boolean) {
+                ]).it("row header: {}, column header: {}, seamless: {}", async function (rowHeaders: boolean, columnHeaders: boolean, seamless: boolean) {
                     await prepareByRows([
                         new Measure(1, 32),
                         new Measure(2, 48),

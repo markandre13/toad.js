@@ -27,10 +27,14 @@ import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 
 import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
-import { validateRender, TestModel, getTable } from "./util"
+import {
+    validateRender, TestModel, getTable, 
+    prepareByRows, flatMapRows, prepareByColumns, flatMapColumns, Measure, bodyRowInfo, testTableLayout
+ } from "./util"
+ import { Animator, AnimationBase } from '@toad/util/animation'
 
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
-import { AnimationBase } from '@toad/util/animation'
+import { InsertColumnAnimation } from '@toad/table/private/InsertColumnAnimation'
 
 // TODO:
 // [X] send modified-events
@@ -72,6 +76,7 @@ describe("table", function () {
     beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
+        Animator.halt = false
         AnimationBase.animationFrameCount = 1
         // InsertRowAnimation.halt = false
         document.head.replaceChildren(txBase, txStatic, txDark)
@@ -114,6 +119,82 @@ describe("table", function () {
     })
 
     describe("regressions", function () {
+        // race condition
+        it("insert row into table which already has row and column headers", async function () {
+
+            // AnimationBase.animationFrameCount = 2000
+            Animator.halt = false
+            const model = await prepareByRows([
+                new Measure(1, 32),
+                new Measure(4, 64)
+            ], { rowHeaders: true, columnHeaders: true })
+            await sleep(150)
+            // return
+
+            model.insertRow(1, flatMapRows([
+                new Measure(2, 48)
+            ]))
+    
+            // let animation = InsertRowAnimation.current!
+            // animation.prepare()
+            await sleep(150)
+            // animation.arrangeNewRowsInStaging()
+
+            // const table = getTable()
+            // expect(table.rowHeads.style.top).to.equal("19px")
+            testTableLayout()
+        })
+        // race condition
+        it("insert column into table which already has row and column headers", async function () {
+            // AnimationBase.animationFrameCount = 2000
+            // Animator.halt = false
+            const model = await prepareByColumns([
+                new Measure(1, 32),
+                new Measure(4, 64)
+            ], { rowHeaders: true, columnHeaders: true })
+            await sleep(150)
+            model.insertColumn(1, flatMapColumns([
+                new Measure(2, 48)
+            ]))
+            // let animation = InsertColumnAnimation.current!
+            // animation.prepare()
+            await sleep(150)
+            // animation.arrangeNewColumnsInStaging()
+
+            // const table = getTable()
+            // expect(table.colHeads.style.left).to.equal("21px")
+
+            testTableLayout()
+        })
+
+        it("three successive animations fail", async function() {
+            // AnimationBase.animationFrameCount = 1
+            // Animator.halt = false
+
+            const model = await prepareByRows([
+                new Measure(1, 32),
+                new Measure(4, 64)
+            ], { rowHeaders: true, columnHeaders: true })
+
+            model.insertRow(1, flatMapRows([
+                new Measure(2, 48)
+            ]))
+
+            await sleep(10)
+
+            model.insertRow(2, flatMapRows([
+                new Measure(3, 72),
+            ]))
+
+            await sleep(100)
+
+            model.insertRow(2, flatMapRows([
+                new Measure(3, 72),
+            ]))
+
+            testTableLayout()
+        })
+
         it("layout formerly invisible table (e.g. within tabs)", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `
@@ -531,7 +612,7 @@ describe("table", function () {
         // I shouldn't do this with a tree, but with a normal array for more
         // flexibility
 
-        it.only("insert row animation (middle)", async function () {
+        it("insert row animation (middle)", async function () {
             // Table.transitionDuration = "5000ms"
             // InsertRowAnimation.halt = true
 
@@ -555,7 +636,7 @@ describe("table", function () {
             // move measured cells into the body
             animation.arrangeNewRowsInStaging()
 
-            expect(table.body.children.length).to.equal(2 * 4)
+            // expect(table.body.children.length).to.equal(2 * 4)
             expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
             expect(rowPosAndLabelTop(table, 1)).to.equal("0,19: #1")
             expect(rowPosAndLabelTop(table, 2)).to.equal("0,78: #2")

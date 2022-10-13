@@ -90,8 +90,9 @@ export class AnimationBase {
             this.requestAnimationFrame(this._animationFrame.bind(this))
         } else {
             this.lastFrame()
-            if (this.animator?.current === this)
+            if (this.animator && this.animator._current === this) {
                 this.animator.clearCurrent()
+            }
         }
     }
 
@@ -115,7 +116,7 @@ class AnimationWrapper extends AnimationBase {
         this.animation = animation
     }
 
-    override prepare() { 
+    override prepare() {
         this.animation.prepare()
     }
     override firstFrame() { 
@@ -133,7 +134,7 @@ class AnimationWrapper extends AnimationBase {
 // FIXME: no tests
 export class Animator {
     static halt = false
-    protected _current?: AnimationBase
+    _current?: AnimationBase
     get current(): Animation | undefined {
         if (this._current === undefined) {
             return undefined
@@ -153,12 +154,12 @@ export class Animator {
         } else {
             animationBase = animation
         }
-        const current = this._current
+        const previousAnimation = this._current
         this._current = animationBase
         animationBase.animator = this
-        if (current) {
-            current.animator = undefined
-            current.replace(animationBase)
+        if (previousAnimation) {
+            previousAnimation.animator = undefined
+            previousAnimation.replace(animationBase)
         } else {
             if (Animator.halt) {
                 return

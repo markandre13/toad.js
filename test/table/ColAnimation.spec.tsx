@@ -508,8 +508,6 @@ describe("table", function () {
                     // WHEN ask for the new columns to be placed
                     animation.arrangeNewColumnsInStaging()
 
-                    // return
-
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#1R0")
                     expect(table.getStaging()!.children[1].innerHTML).to.equal("#1R1")
