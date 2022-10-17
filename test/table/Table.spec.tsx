@@ -612,7 +612,14 @@ describe("table", function () {
         // I shouldn't do this with a tree, but with a normal array for more
         // flexibility
 
-        it("insert row animation (middle)", async function () {
+        // this is an incomplete test for the makehuman.js scenario with widgets within the tree
+        // todo:
+        // * decide whether to throw away
+        // * update for new animation implementation
+        // * will otherwise work well but look bad because we do not expand the columns
+        //   when the tree unfolds, hence displaying only '#' of the label and only part
+        //   of one of two controls
+        xit("insert row animation (middle)", async function () {
             // Table.transitionDuration = "5000ms"
             // InsertRowAnimation.halt = true
 
