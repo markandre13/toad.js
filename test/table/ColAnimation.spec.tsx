@@ -65,7 +65,7 @@ describe("table", function () {
                     // expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#1R0")
@@ -83,7 +83,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitBodyX()).to.equal(0)
@@ -146,7 +146,7 @@ describe("table", function () {
                     expect(table.measure.children[3].innerHTML).to.equal("#2R1")
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#1R0")
@@ -164,7 +164,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
                     expect(splitColInfo(0)).to.equal(`#3:0,0,32,18`)
                     expect(splitColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
                     // THEN splitbody
@@ -217,7 +217,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#2R0")
@@ -236,7 +236,7 @@ describe("table", function () {
 
                     // WHEN we split the table for the animation
                     // return
-                    animation.splitVertical()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
@@ -288,7 +288,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#3R0")
@@ -306,7 +306,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitBodyX()).to.equal(32 + 64 + 2 * spacing)
@@ -360,7 +360,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingInsertColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
@@ -376,7 +376,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
                     // THEN splitbody
                     expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
                     expect(splitBodyX()).to.equal(32 + spacing)
@@ -388,7 +388,7 @@ describe("table", function () {
                     expect(maskX()).to.equal(32 + 48 + 72 + 3 * spacing)
                     expect(splitBodyX()).to.equal(32 + 48 + 72 + 3 * spacing)
 
-                    animation.joinVertical()
+                    animation.join()
                     check32_48_72_64_seamless()
                 })
             })
@@ -422,7 +422,7 @@ describe("table", function () {
                     // expect(table.measure.children.length).to.equal(8)
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#1R0")
@@ -440,7 +440,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitBodyX()).to.equal(0)
@@ -456,8 +456,8 @@ describe("table", function () {
                     expect(table.rowHeads.style.width, `row container width`).to.equal(`22px`)
 
                     expect(table.getHeadStaging()!.style.left, `head staging left`).to.equal(`21px`)
-                    expect(animation.staging.style.top, `staging top`).to.equal(`19px`)
-                    expect(animation.staging.style.left).to.equal(`21px`)
+                    expect(animation.bodyStaging.style.top, `staging top`).to.equal(`19px`)
+                    expect(animation.bodyStaging.style.left).to.equal(`21px`)
 
                     // WHEN we animate
                     animation.animationFrame(1)
@@ -506,7 +506,7 @@ describe("table", function () {
                     // expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#1R0")
@@ -524,14 +524,14 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitBodyX()).to.equal(0)
                     expect(splitBodyW()).to.equal(1)
 
                     expect(table.body.style.top, `body top`).to.equal(`19px`)
-                    expect(animation.staging.style.top, `staging top`).to.equal(`19px`)
+                    expect(animation.bodyStaging.style.top, `staging top`).to.equal(`19px`)
 
                     // WHEN we animate
                     animation.animationFrame(1)
@@ -580,7 +580,7 @@ describe("table", function () {
                     await sleep()
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingColHeadInfo(0)).to.equal(`#1:0,0,48,18`)
@@ -597,7 +597,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
                     expect(splitColHeadInfo(0)).to.equal(`#3:0,0,32,18`)
                     expect(splitColHeadInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
 
@@ -661,7 +661,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#2R0")
@@ -683,7 +683,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitColHeadInfo(0)).to.equal(`#4:0,0,64,18`)
@@ -744,7 +744,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new columns to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // 1st column
                     expect(table.getStaging()!.children[0].innerHTML).to.equal("#3R0")
@@ -767,7 +767,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitColHeadX()).to.equal(32 + 64 + 2 * spacing)
@@ -828,7 +828,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewColumnsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingInsertColInfo(0)).to.equal(`#2:${32 + spacing},0,48,18`)
@@ -844,7 +844,7 @@ describe("table", function () {
                     expect(maskW()).to.equal(48 + 72 + 2 * spacing)
 
                     // WHEN we split the table for the animation
-                    animation.splitVertical()
+                    animation.split()
                     // THEN splitbody
                     expect(splitColInfo(0)).to.equal(`#4:0,0,64,18`)
                     expect(splitBodyX()).to.equal(32 + spacing)
@@ -856,7 +856,7 @@ describe("table", function () {
                     expect(maskX()).to.equal(32 + 48 + 72 + 3 * spacing)
                     expect(splitBodyX()).to.equal(32 + 48 + 72 + 3 * spacing)
 
-                    animation.joinVertical()
+                    animation.join()
                     check32_48_72_64_seamless()
                 })
             })

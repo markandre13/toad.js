@@ -87,13 +87,13 @@ export class RemoveColumnAnimation extends TableAnimation {
         let idx = this.event.index
         for (let row = 0; row < this.adapter.rowCount; ++row) {
             for (let col = 0; col < this.event.size; ++col) {
-                this.staging.appendChild(this.body.children[idx])
+                this.bodyStaging.appendChild(this.body.children[idx])
             }
             idx += this.colCount
         }
 
-        const firstCellOfStaging = this.staging.children[0] as HTMLSpanElement
-        const lastCellOfStaging = this.staging.children[this.staging.children.length - 1] as HTMLSpanElement
+        const firstCellOfStaging = this.bodyStaging.children[0] as HTMLSpanElement
+        const lastCellOfStaging = this.bodyStaging.children[this.bodyStaging.children.length - 1] as HTMLSpanElement
 
         let rightOfStaging = px2float(lastCellOfStaging.style.left) + px2float(lastCellOfStaging.style.width) + this.table.WIDTH_ADJUST
         rightOfStaging -= 1
@@ -101,15 +101,8 @@ export class RemoveColumnAnimation extends TableAnimation {
 
         this.animationWidth = w
 
-        this.mask = span()
-        this.mask.style.boxSizing = `content-box`
-        this.mask.style.top = `0`
-        this.mask.style.bottom = `0`
-        this.mask.style.left = `${rightOfStaging}px`
-        this.mask.style.width = `${w}px`
-        this.mask.style.border = 'none'
-        this.mask.style.backgroundColor = Table.maskColor
-        this.staging.appendChild(this.mask)
+        this.mask = this.makeColumnMask(rightOfStaging, w)
+        this.bodyStaging.appendChild(this.mask)
 
         // FIXME: split here into two methods (at least)
 
@@ -122,14 +115,7 @@ export class RemoveColumnAnimation extends TableAnimation {
             this.headStaging.appendChild(this.colHeads.children[this.event.index])
         }
 
-        this.headMask = span()
-        this.headMask.style.boxSizing = `content-box`
-        this.headMask.style.top = `0`
-        this.headMask.style.bottom = `0`
-        this.headMask.style.left = `${rightOfStaging}px`
-        this.headMask.style.width = `${w}px`
-        this.headMask.style.border = 'none'
-        this.headMask.style.backgroundColor = Table.maskColor
+        this.headMask = this.makeColumnMask(rightOfStaging, w)
         this.headStaging.appendChild(this.headMask)
     }
 
@@ -152,9 +138,9 @@ export class RemoveColumnAnimation extends TableAnimation {
     }
 
     joinVertical() {
-        this.staging.removeChild(this.mask)
+        this.bodyStaging.removeChild(this.mask)
         this.body.removeChild(this.splitBody)
-        this.staging.replaceChildren()
+        this.bodyStaging.replaceChildren()
         this.moveSplitBodyToBody()
 
         if (this.colHeads) {

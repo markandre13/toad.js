@@ -72,7 +72,7 @@ export class Dialog extends Controller {
     if (!link) {
       let link = document.createElement("link")
       link.rel = "import"
-      link.href = contentOrHref
+      link.href = contentOrHref as string
       link.onload = (event) => {
         let template = link.import!.querySelector("template")
         if (!template)

@@ -641,7 +641,7 @@ describe("table", function () {
             await sleep()
 
             // move measured cells into the body
-            animation.arrangeNewRowsInStaging()
+            animation.arrangeInStaging()
 
             // expect(table.body.children.length).to.equal(2 * 4)
             expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
@@ -650,7 +650,7 @@ describe("table", function () {
             expect(rowPosAndLabelTop(table, 3)).to.equal("0,19: #3")
 
             // now split at row 3
-            animation.splitHorizontal()
+            animation.split()
             expect(table.body.children.length).to.equal(2 * 3 + 1)
             expect(table.splitBody.children.length).to.equal(2 * 1)
             expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
@@ -661,9 +661,9 @@ describe("table", function () {
             expect(rowPosAndLabelBottom(table, 0)).to.equal("0,0: #3")
 
             // animation thingy (should check for transform being to to splitBody)
-            expect(animation.totalHeight).to.equal(118)
+            expect(animation.totalSize).to.equal(118)
 
-            animation.joinHorizontal()
+            animation.join()
             expect(table.body.children.length).to.equal(2 * 4)
             expect(rowPosAndLabelTop(table, 0)).to.equal("0,0: #0")
             expect(rowPosAndLabelTop(table, 1)).to.equal("0,19: #1")

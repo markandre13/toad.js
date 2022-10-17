@@ -20,56 +20,32 @@ import { TableEvent } from '../TableEvent'
 import { TablePos } from '../TablePos'
 import { span, div } from '@toad/util/lsx'
 import { Table, px2int, px2float } from '../Table'
-import { TableAnimation } from "./TableAnimation"
+import { InsertAnimation } from "./InsertAnimation"
 
-export class InsertColumnAnimation extends TableAnimation {
+export class InsertColumnAnimation extends InsertAnimation {
     static current?: InsertColumnAnimation
-    event: TableEvent
-    totalWidth!: number
-    animationLeft!: number
-    done = false;
     colCount: number
     rowCount: number
-    mask!: HTMLSpanElement
-    splitHead!: HTMLDivElement
-    headMask!: HTMLSpanElement
 
     constructor(table: Table, event: TableEvent) {
-        super(table)
+        super(table, event)
         this.event = event
-        this.joinVertical = this.joinVertical.bind(this)
+        this.join = this.join.bind(this)
         this.colCount = this.adapter.colCount
         this.rowCount = this.adapter.rowCount
         InsertColumnAnimation.current = this
     }
 
-    prepare(): void {
-        this.prepareCellsToBeMeasured()
+    prepareStaging() {
         this.prepareStagingWithColumns()
     }
-    firstFrame(): void {
-        this.arrangeNewColumnsInStaging()
-        this.splitVertical()
-    }
-    animationFrame(n: number): void {
-        const x = this.animationLeft + n * this.totalWidth
-        this.mask.style.left = `${x}px`
-        this.splitBody.style.left = `${x}px`
+    animate(pos: number) {
+        this.mask.style.left = `${pos}px`
+        this.splitBody.style.left = `${pos}px`
         if (this.colHeads !== undefined) {
-            this.splitHead.style.left = `${x}px`
-            this.headMask.style.left = `${x}px`
+            this.splitHead.style.left = `${pos}px`
+            this.headMask.style.left = `${pos}px`
         }
-    }
-    lastFrame(): void {
-        const x = this.animationLeft + this.totalWidth
-        this.mask.style.left = `${x}px`
-        this.splitBody.style.left = `${x}px`
-        if (this.colHeads !== undefined) {
-            this.splitHead.style.left = `${x}px`
-            this.headMask.style.left = `${x}px`
-        }
-        this.joinVertical()
-        this.disposeStaging()
     }
 
     // TODO: share code with InsertRowAnimation
@@ -130,7 +106,7 @@ export class InsertColumnAnimation extends TableAnimation {
         }
     }
 
-    public arrangeNewColumnsInStaging() {
+    public arrangeInStaging() {
         this.table.calculateMinCellSize()
         const previousColCount = this.colCount - this.event.size
         const overlap = this.adapter.config.seamless ? 0 : 1
@@ -149,7 +125,7 @@ export class InsertColumnAnimation extends TableAnimation {
                 left = px2int(cell.style.left) + px2int(cell.style.width) + this.table.WIDTH_ADJUST - overlap
             }
         }
-        this.animationLeft = left
+        this.animationStart = left
 
         // rowHeight[] := height of existing rows || minCellHeight
         let rowHeight = new Array<number>(this.adapter.rowCount)
@@ -186,7 +162,7 @@ export class InsertColumnAnimation extends TableAnimation {
         // colWidth[]  : adjust if needed to new rows
         let colWidth = new Array<number>(this.event.size)
         colWidth.fill(this.table.minCellWidth)
-        this.totalWidth = 0
+        this.totalSize = 0
         idx = 0
         if (this.colHeads !== undefined) {
             for (let col = 0; col < this.event.size; ++col) {
@@ -223,7 +199,7 @@ export class InsertColumnAnimation extends TableAnimation {
             this.colHeads.style.right = `0px`
             this.colHeads.style.height = `${colHeadHeight}px`
             this.body.style.top = `${colHeadHeight - 1}px`
-            this.staging.style.top = `${colHeadHeight - 1}px`
+            this.bodyStaging.style.top = `${colHeadHeight - 1}px`
         }
 
         for (let col = 0; col < this.event.size; ++col) {
@@ -243,16 +219,16 @@ export class InsertColumnAnimation extends TableAnimation {
                     }
                 }
             }
-            this.totalWidth += colWidth[col] - overlap
+            this.totalSize += colWidth[col] - overlap
         }
         colWidth.forEach((v, i) => colWidth[i] = v + 4)
 
         // when expandColumn => adust left & width of all cells
         // TBD
 
-        this.totalWidth += overlap
+        this.totalSize += overlap
         if (this.adapter.config.seamless) {
-            this.totalWidth -= 2 * this.event.size
+            this.totalSize -= 2 * this.event.size
         }
 
         // place column headers
@@ -281,11 +257,8 @@ export class InsertColumnAnimation extends TableAnimation {
                 y += rowHeight[row] - overlap
             }
             rowHeadWidth += this.table.WIDTH_ADJUST
-            // colHeadHeight += this.table.HEIGHT_ADJUST
-            // FIXME: this may need tweaking
-            // colHeadHeight += this.table.HEIGHT_ADJUST
             this.body.style.left = `${rowHeadWidth - overlap}px`
-            this.staging.style.left = `${rowHeadWidth - overlap}px`
+            this.bodyStaging.style.left = `${rowHeadWidth - overlap}px`
             this.headStaging.style.left = `${rowHeadWidth - overlap}px`
             this.colHeads.style.left = `${rowHeadWidth - overlap}px`
             this.rowHeads.style.top = `${colHeadHeight - overlap}px`
@@ -302,7 +275,7 @@ export class InsertColumnAnimation extends TableAnimation {
             for (let row = 0; row < this.rowCount; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement
                 this.setCellSize(cell, x, y, columnWidth, rowHeight[row])
-                this.staging.appendChild(cell)
+                this.bodyStaging.appendChild(cell)
                 y += rowHeight[row] - overlap
                 if (this.adapter.config.seamless) {
                     y -= 2
@@ -314,32 +287,18 @@ export class InsertColumnAnimation extends TableAnimation {
             }
             totalWidth += columnWidth - 2
         }
-        this.totalWidth = totalWidth + 2
+        this.totalSize = totalWidth + 2
 
-        this.mask = span()
-        this.mask.style.boxSizing = `content-box`
-        this.mask.style.left = `${left}px`
-        this.mask.style.width = `${this.totalWidth}px`
-        this.mask.style.top = `0`
-        this.mask.style.bottom = `0`
-        this.mask.style.border = 'none'
-        this.mask.style.backgroundColor = Table.maskColor
-        this.staging.appendChild(this.mask)
+        this.mask = this.makeColumnMask(left, this.totalSize)
+        this.bodyStaging.appendChild(this.mask)
 
         if (this.colHeads !== undefined) {
-            this.headMask = span()
-            this.headMask.style.boxSizing = `content-box`
-            this.headMask.style.left = `${left}px`
-            this.headMask.style.width = `${this.totalWidth}px`
-            this.headMask.style.top = `0`
-            this.headMask.style.bottom = `0`
-            this.headMask.style.border = 'none'
-            this.headMask.style.backgroundColor = Table.maskColor
+            this.headMask = this.makeColumnMask(left, this.totalSize)
             this.headStaging.appendChild(this.headMask)
         }
     }
 
-    splitVertical() {
+    split() {
         this.table.splitVerticalNew(this.event.index)
 
         if (this.colHeads !== undefined) { // FIXME: Hack
@@ -347,29 +306,27 @@ export class InsertColumnAnimation extends TableAnimation {
         }
     }
 
-    joinVertical() {
-        if (this.done) {
+    joinHeader() {
+        if (this.colHeads === undefined) {
             return
         }
-        this.done = true
-
-        if (this.colHeads) {
-            this.headStaging.removeChild(this.headMask)
-            this.colHeads.removeChild(this.splitHead)
-            while (this.headStaging.children.length > 0) {
-                this.colHeads.appendChild(this.headStaging.children[0])
-            }
-            if (this.splitHead.children.length > 0) {
-                let left = px2float(this.splitHead.style.left)
-                while (this.splitHead.children.length > 0) {
-                    const cell = this.splitHead.children[0] as HTMLSpanElement
-                    cell.style.left = `${px2float(cell.style.left) + left}px`
-                    this.colHeads.appendChild(cell)
-                }
+        this.headStaging.removeChild(this.headMask)
+        this.colHeads.removeChild(this.splitHead)
+        while (this.headStaging.children.length > 0) {
+            this.colHeads.appendChild(this.headStaging.children[0])
+        }
+        if (this.splitHead.children.length > 0) {
+            let left = px2float(this.splitHead.style.left)
+            while (this.splitHead.children.length > 0) {
+                const cell = this.splitHead.children[0] as HTMLSpanElement
+                cell.style.left = `${px2float(cell.style.left) + left}px`
+                this.colHeads.appendChild(cell)
             }
         }
+    }
 
-        this.staging.removeChild(this.mask)
+    joinBody() {
+        this.bodyStaging.removeChild(this.mask)
         this.body.removeChild(this.splitBody)
 
         const totalWidth = this.adapter.model.colCount
@@ -380,13 +337,13 @@ export class InsertColumnAnimation extends TableAnimation {
         // insert staging (cells are per column)
         for (let col = 0; col < stagingWidth; ++col) {
             for (let row = 0; row < this.rowCount; ++row) {
-                const cell = this.staging.children[0]
+                const cell = this.bodyStaging.children[0]
                 const idx = row * (bodyWidth + stagingWidth) + bodyWidth + col
                 this.bodyInsertAt(cell, idx)
             }
         }
 
-        let left = this.totalWidth + this.animationLeft
+        let left = this.totalSize + this.animationStart
         // if (!this.adapter.config.seamless) {
         //     left += 2
         // }
@@ -399,10 +356,6 @@ export class InsertColumnAnimation extends TableAnimation {
                 const idx = row * totalWidth + bodyWidth + stagingWidth + col
                 this.bodyInsertAt(cell, idx)
             }
-        }
-
-        if (this.table.animationDone) {
-            this.table.animationDone()
         }
     }
 

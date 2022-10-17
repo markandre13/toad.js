@@ -158,7 +158,7 @@ describe("table", function () {
                     // expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,32`)
@@ -170,7 +170,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitBodyY()).to.equal(0)
@@ -182,7 +182,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(insertHeight)
                     expect(splitBodyY()).to.equal(insertHeight)
 
-                    animation.joinHorizontal()
+                    animation.join()
                     check32_64()
 
                     expect(table.body.children).to.have.lengthOf(4)
@@ -213,7 +213,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowInfo(0)).to.equal(`#1:0,0,80,48`)
@@ -225,7 +225,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
                     expect(splitRowInfo(0)).to.equal(`#3:0,0,80,32`)
                     expect(splitRowInfo(1)).to.equal(`#4:0,33,80,64`)
                     // THEN splitbody
@@ -238,7 +238,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(insertHeight - 1)
                     expect(splitBodyY()).to.equal(insertHeight - 1)
 
-                    animation.joinHorizontal()
+                    animation.join()
                     check48_72_32_64()
                 })
                 it("two rows at middle", async function () {
@@ -267,7 +267,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
@@ -279,7 +279,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
                     // THEN splitbody
                     expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
                     expect(splitBodyY()).to.equal(33)
@@ -291,7 +291,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
-                    animation.joinHorizontal()
+                    animation.join()
                     check32_48_72_64()
                 })
                 it("two rows at end", async function () {
@@ -320,7 +320,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowInfo(0)).to.equal(`#3:0,98,80,48`)
@@ -332,7 +332,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
                     // THEN splitbody
                     // FIXME: this should contain data
                     expect(splitBodyY()).to.equal(98)
@@ -344,7 +344,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(98 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(98 + insertHeight - 1)
 
-                    animation.joinHorizontal()
+                    animation.join()
 
                     check32_64_48_72()
                 })
@@ -375,7 +375,7 @@ describe("table", function () {
                         expect(table.measure.children.length).to.equal(2)
 
                         // WHEN ask for the new rows to be placed
-                        animation.arrangeNewRowsInStaging()
+                        animation.arrangeInStaging()
 
                         // THEN they have been placed in staging
                         expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
@@ -406,7 +406,7 @@ describe("table", function () {
                         expect(table.measure.children.length).to.equal(2)
 
                         // WHEN ask for the new rows to be placed
-                        animation.arrangeNewRowsInStaging()
+                        animation.arrangeInStaging()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
                         expect(bodyRowInfo(1)).to.equal(`#3:0,33,128,64`)
 
@@ -419,7 +419,7 @@ describe("table", function () {
                         expect(maskH()).to.equal(insertHeight)
 
                         // WHEN we split the table for the animation
-                        animation.splitHorizontal()
+                        animation.split()
                         // THEN splitbody
                         expect(splitRowInfo(0)).to.equal(`#3:0,0,128,64`)
                         expect(splitBodyY()).to.equal(33)
@@ -431,7 +431,7 @@ describe("table", function () {
                         // expect(maskY()).to.equal(33 + insertHeight - 1)
                         // expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
-                        animation.joinHorizontal()
+                        animation.join()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
                         expect(bodyRowInfo(1)).to.equal(`#2:0,33,128,48`)
                         expect(bodyRowInfo(2)).to.equal(`#3:0,82,128,64`)
@@ -465,7 +465,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(4)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowInfo(0)).to.equal(`#2:0,32,80,48`)
@@ -476,7 +476,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
                     // THEN splitbody
                     expect(splitRowInfo(0)).to.equal(`#4:0,0,80,64`)
                     expect(splitBodyY()).to.equal(32) // 32 instead of 33
@@ -488,7 +488,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(33 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
-                    animation.joinHorizontal()
+                    animation.join()
                     check32_48_72_64_seamless()
                 })
             })
@@ -519,7 +519,7 @@ describe("table", function () {
                     animation.prepare()
 
                     expect(table.rowHeads).to.not.be.undefined
-                    expect(animation.staging).to.not.be.undefined
+                    expect(animation.bodyStaging).to.not.be.undefined
                     expect(animation.headStaging).to.not.be.undefined
                     await sleep()
 
@@ -527,7 +527,7 @@ describe("table", function () {
                     // expect(table.measure.children.length).to.equal(8)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#1:0,0,16,32`)
@@ -543,7 +543,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitRowHeadY()).to.equal(0)
@@ -561,8 +561,8 @@ describe("table", function () {
                     expect(table.colHeads.style.height, `column container height`).to.equal(`20px`)
 
                     expect(table.getHeadStaging()!.style.top, `head staging top`).to.equal(`19px`)
-                    expect(animation.staging.style.left, `staging left`).to.equal(`21px`)
-                    expect(animation.staging.style.top, `staging top`).to.equal(`19px`)
+                    expect(animation.bodyStaging.style.left, `staging left`).to.equal(`21px`)
+                    expect(animation.bodyStaging.style.top, `staging top`).to.equal(`19px`)
 
                     // WHEN we animate
                     animation.animationFrame(1)
@@ -572,7 +572,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(insertHeight)
                     expect(splitBodyY()).to.equal(insertHeight)
 
-                    animation.joinHorizontal()
+                    animation.join()
                     check32_64()
                     checkRowHead32_64()
 
@@ -602,7 +602,7 @@ describe("table", function () {
                     const animation = InsertRowAnimation.current!
                     animation.prepare()
                     expect(table.rowHeads).to.not.be.undefined
-                    expect(animation.staging).to.not.be.undefined
+                    expect(animation.bodyStaging).to.not.be.undefined
                     expect(animation.headStaging).to.not.be.undefined
                     await sleep()
 
@@ -610,7 +610,7 @@ describe("table", function () {
                     // expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#1:0,0,16,32`)
@@ -626,7 +626,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitRowHeadY()).to.equal(0)
@@ -635,7 +635,7 @@ describe("table", function () {
                     expect(splitBodyH()).to.equal(1)
 
                     expect(table.body.style.left).to.equal(`21px`)
-                    expect(animation.staging.style.left).to.equal(`21px`)
+                    expect(animation.bodyStaging.style.left).to.equal(`21px`)
 
                     // WHEN we animate
                     animation.animationFrame(1)
@@ -645,7 +645,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(insertHeight)
                     expect(splitBodyY()).to.equal(insertHeight)
 
-                    animation.joinHorizontal()
+                    animation.join()
                     check32_64()
                     checkRowHead32_64()
 
@@ -688,7 +688,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#1:0,0,16,48`)
@@ -704,7 +704,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
 
                     // THEN splitbody
 
@@ -727,7 +727,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(insertHeight - 1)
                     expect(splitBodyY()).to.equal(insertHeight - 1)
 
-                    animation.joinHorizontal()
+                    animation.join()
                     check48_72_32_64()
                     checkRowHead48_72_32_64()
                 })
@@ -765,7 +765,7 @@ describe("table", function () {
                     await sleep()
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#2:0,${32 + 1},16,48`)
@@ -781,7 +781,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitRowHeadInfo(0)).to.equal(`#4:0,0,16,64`)
@@ -838,7 +838,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#3:0,${32 + 64 + 2},16,48`)
@@ -854,7 +854,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
 
                     // THEN splitbody
                     expect(splitRowHeadY()).to.equal(32 + 64 + 2)
@@ -870,7 +870,7 @@ describe("table", function () {
                     expect(maskY()).to.equal(32 + 64 + 2 + insertHeight - 1)
                     expect(splitBodyY()).to.equal(32 + 64 + 2 + insertHeight - 1)
 
-                    animation.joinHorizontal()
+                    animation.join()
 
                     check32_64_48_72()
                     checkRowHead32_64_48_72()
@@ -902,7 +902,7 @@ describe("table", function () {
                         expect(table.measure.children.length).to.equal(2)
 
                         // WHEN ask for the new rows to be placed
-                        animation.arrangeNewRowsInStaging()
+                        animation.arrangeInStaging()
 
                         // THEN they have been placed in staging
                         expect(stagingRowInfo(0)).to.equal(`#2:0,33,80,48`)
@@ -933,7 +933,7 @@ describe("table", function () {
                         expect(table.measure.children.length).to.equal(2)
 
                         // WHEN ask for the new rows to be placed
-                        animation.arrangeNewRowsInStaging()
+                        animation.arrangeInStaging()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
                         expect(bodyRowInfo(1)).to.equal(`#3:0,33,128,64`)
 
@@ -946,7 +946,7 @@ describe("table", function () {
                         expect(maskH()).to.equal(insertHeight)
 
                         // WHEN we split the table for the animation
-                        animation.splitHorizontal()
+                        animation.split()
                         // THEN splitbody
                         expect(splitRowInfo(0)).to.equal(`#3:0,0,128,64`)
                         expect(splitBodyY()).to.equal(33)
@@ -958,7 +958,7 @@ describe("table", function () {
                         // expect(maskY()).to.equal(33 + insertHeight - 1)
                         // expect(splitBodyY()).to.equal(33 + insertHeight - 1)
 
-                        animation.joinHorizontal()
+                        animation.join()
                         expect(bodyRowInfo(0)).to.equal(`#1:0,0,128,32`)
                         expect(bodyRowInfo(1)).to.equal(`#2:0,33,128,48`)
                         expect(bodyRowInfo(2)).to.equal(`#3:0,82,128,64`)
@@ -1000,7 +1000,7 @@ describe("table", function () {
                     expect(table.measure.children.length).to.equal(6)
 
                     // WHEN ask for the new rows to be placed
-                    animation.arrangeNewRowsInStaging()
+                    animation.arrangeInStaging()
 
                     // THEN they have been placed in staging
                     expect(stagingRowHeadInfo(0)).to.equal(`#2:0,32,16,48`)
@@ -1015,7 +1015,7 @@ describe("table", function () {
                     expect(maskH()).to.equal(insertHeight)
 
                     // WHEN we split the table for the animation
-                    animation.splitHorizontal()
+                    animation.split()
 
                     // THEN splitbody
 

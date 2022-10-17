@@ -77,27 +77,20 @@ export class RemoveRowAnimation extends TableAnimation {
         const cellCount = this.event.size * this.adapter.colCount
         const start = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
         for (let i = 0; i < cellCount; ++i) {
-            this.staging.appendChild(this.body.children[idx])
+            this.bodyStaging.appendChild(this.body.children[idx])
         }
 
         let bottomOfStaging
         if (idx < this.body.children.length) {
             bottomOfStaging = px2float((this.body.children[idx] as HTMLSpanElement).style.top)
         } else {
-            const cell = this.staging.children[this.staging.children.length - 1] as HTMLSpanElement
+            const cell = this.bodyStaging.children[this.bodyStaging.children.length - 1] as HTMLSpanElement
             bottomOfStaging = px2float(cell.style.top) + px2float(cell.style.height) + this.table.HEIGHT_ADJUST
         }
         this.animationHeight = bottomOfStaging - start
 
-        this.mask = span()
-        this.mask.style.boxSizing = `content-box`
-        this.mask.style.left = `0`
-        this.mask.style.right = `0`
-        this.mask.style.top = `${bottomOfStaging}px`
-        this.mask.style.border = 'none'
-        this.mask.style.height = `${this.animationHeight}px`
-        this.mask.style.backgroundColor = Table.maskColor
-        this.staging.appendChild(this.mask)
+        this.mask = this.makeRowMask(bottomOfStaging, this.animationHeight)
+        this.bodyStaging.appendChild(this.mask)
 
         // FIXME: split here into two methods (at least)
         if (this.rowHeads === undefined) {
@@ -109,14 +102,7 @@ export class RemoveRowAnimation extends TableAnimation {
             this.headStaging.appendChild(this.rowHeads.children[this.event.index])
         }
 
-        this.headMask = span()
-        this.headMask.style.boxSizing = `content-box`
-        this.headMask.style.left = `0`
-        this.headMask.style.right = `0`
-        this.headMask.style.top = `${bottomOfStaging}px`
-        this.headMask.style.border = 'none'
-        this.headMask.style.height = `${this.animationHeight}px`
-        this.headMask.style.backgroundColor = Table.maskColor
+        this.headMask = this.makeRowMask(bottomOfStaging, this.animationHeight)
         this.headStaging.appendChild(this.headMask)
     }
 
@@ -140,9 +126,9 @@ export class RemoveRowAnimation extends TableAnimation {
     }
 
     joinHorizontal() {
-        this.staging.removeChild(this.mask)
+        this.bodyStaging.removeChild(this.mask)
         this.body.removeChild(this.splitBody)
-        this.staging.replaceChildren()
+        this.bodyStaging.replaceChildren()
         this.moveSplitBodyToBody()
 
         if (this.rowHeads) {

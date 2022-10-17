@@ -19,65 +19,38 @@
 import { TablePos } from '../TablePos'
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
-import { TableAnimation } from "./TableAnimation"
+import { InsertAnimation } from "./InsertAnimation"
 import { span, div } from '@toad/util/lsx'
 
-export class InsertRowAnimation extends TableAnimation {
+export class InsertRowAnimation extends InsertAnimation {
     static current?: InsertRowAnimation
-    event: TableEvent
-    totalHeight!: number
-    done = false;
-    initialRowCount: number
-    mask!: HTMLSpanElement
-    splitHead!: HTMLDivElement
-    headMask!: HTMLSpanElement
 
-    animationTop!: number
-    animationHeight!: number
+    initialRowCount: number
 
     constructor(table: Table, event: TableEvent) {
-        super(table)
-        this.event = event
-        this.joinHorizontal = this.joinHorizontal.bind(this)
+        super(table, event)
+        this.join = this.join.bind(this)
         this.initialRowCount = this.adapter.rowCount - event.size
         InsertRowAnimation.current = this
     }
 
-    prepare(): void {
-        this.prepareCellsToBeMeasured()
+    prepareStaging() {
         this.prepareStagingWithRows()
     }
-    firstFrame(): void {
-        this.arrangeNewRowsInStaging()
-        this.splitHorizontal()
-    }
-    animationFrame(n: number): void {
-        const y = this.animationTop + n * this.animationHeight
-        this.splitBody.style.top = `${y}px`
-        this.mask.style.top = `${y}px`
+    animate(pos: number) {
+        this.splitBody.style.top = `${pos}px`
+        this.mask.style.top = `${pos}px`
         if (this.rowHeads !== undefined) {
-            this.splitHead.style.top = `${y}px`
-            this.headMask.style.top = `${y}px`
+            this.splitHead.style.top = `${pos}px`
+            this.headMask.style.top = `${pos}px`
         }
-    }
-    lastFrame(): void {
-        const y = this.animationTop + this.animationHeight
-        this.splitBody.style.top = `${y}px`
-        this.mask.style.top = `${y}px`
-        if (this.rowHeads !== undefined) {
-            this.splitHead.style.top = `${y}px`
-            this.headMask.style.top = `${y}px`
-        }
-
-        this.joinHorizontal()
-        this.disposeStaging()
     }
 
     public prepareCellsToBeMeasured() {
         this.table.prepareMinCellSize()
         // console.log(`InsertRowAnimation.prepareCellsToBeMeasured(): model=${this.adapter.model.colCount}x${this.adapter.model.rowCount}, adapter=${this.adapter.colCount}x${this.adapter.rowCount}, index=${this.event.index}, size=${this.event.size}`)
 
-        // append row headers
+        // append new row headers
         let rowHeaders = new Array(this.event.size)
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             const content = this.adapter!.getRowHead(row)
@@ -99,6 +72,7 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
+        // if there aren't column headers yet, create if needed
         // FIXME: this is likely mostly duplicated code
         if (this.colHeads === undefined && this.adapter.colCount === this.event.size) {
             let colHeaders = new Array(this.adapter.colCount)
@@ -123,6 +97,7 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
+        // measure new body cells
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.table.createCell()
@@ -133,7 +108,7 @@ export class InsertRowAnimation extends TableAnimation {
     }
 
     // FIXME: while this works, it reads like a terrible pile of garbage
-    public arrangeNewRowsInStaging() {
+    public arrangeInStaging() {
         this.table.calculateMinCellSize()
         const overlap = this.adapter.config.seamless ? 0 : 1
 
@@ -186,7 +161,7 @@ export class InsertRowAnimation extends TableAnimation {
         // colWidth[]  : adjust if needed to new rows
         let rowHeight = new Array<number>(this.event.size)
         rowHeight.fill(this.table.minCellHeight)
-        this.totalHeight = 0
+        this.totalSize = 0
         idx = 0
         if (this.rowHeads !== undefined) {
             for (let row = 0; row < this.event.size; ++row) {
@@ -217,7 +192,7 @@ export class InsertRowAnimation extends TableAnimation {
         colHeadHeight = Math.ceil(colHeadHeight)
 
         if (this.rowHeads) {
-            console.log(`colHeadHeight=${colHeadHeight}`)
+            // console.log(`colHeadHeight=${colHeadHeight}`)
             if (colHeadHeight === 0) {
                 this.rowHeads.style.top = `0px`
             } else {
@@ -226,7 +201,7 @@ export class InsertRowAnimation extends TableAnimation {
             this.rowHeads.style.bottom = `0px`
             this.rowHeads.style.width = `${rowHeadWidth}px`
             this.body.style.left = `${rowHeadWidth - overlap}px`
-            this.staging.style.left = `${rowHeadWidth - overlap}px`
+            this.bodyStaging.style.left = `${rowHeadWidth - overlap}px`
         }
 
         for (let row = 0; row < this.event.size; ++row) {
@@ -246,7 +221,7 @@ export class InsertRowAnimation extends TableAnimation {
                     }
                 }
             }
-            this.totalHeight += rowHeight[row] - overlap
+            this.totalSize += rowHeight[row] - overlap
         }
 
         // when expandColumn => adust left & width of all cells
@@ -273,9 +248,9 @@ export class InsertRowAnimation extends TableAnimation {
             }
         }
 
-        this.totalHeight += overlap
+        this.totalSize += overlap
         if (this.adapter.config.seamless) {
-            this.totalHeight -= 2 * this.event.size
+            this.totalSize -= 2 * this.event.size
         }
 
         // place row headers
@@ -307,7 +282,7 @@ export class InsertRowAnimation extends TableAnimation {
             // rowHeadWidth += this.table.WIDTH_ADJUST
             colHeadHeight += this.table.HEIGHT_ADJUST
             this.body.style.top = `${colHeadHeight-overlap}px`
-            this.staging.style.top = `${colHeadHeight-overlap}px`
+            this.bodyStaging.style.top = `${colHeadHeight-overlap}px`
             this.headStaging.style.top = `${colHeadHeight-overlap}px`
             this.rowHeads.style.top = `${colHeadHeight-overlap}px`
             this.colHeads.style.left = `${rowHeadWidth-overlap}px`
@@ -323,7 +298,7 @@ export class InsertRowAnimation extends TableAnimation {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[0] as HTMLElement
                 this.setCellSize(cell, x, y, colWidth[col], rowHeight[row])
-                this.staging.appendChild(cell)
+                this.bodyStaging.appendChild(cell)
                 x += colWidth[col] - overlap
                 if (this.adapter.config.seamless) {
                     x -= 2
@@ -337,70 +312,52 @@ export class InsertRowAnimation extends TableAnimation {
         }
 
         // create mask
-        this.mask = span()
-        // this.mask.className = "mask"
-        this.mask.style.boxSizing = `content-box`
-        this.mask.style.left = `0`
-        this.mask.style.right = `0`
-        this.mask.style.top = `${top}px`
-        this.mask.style.border = 'none'
-        this.mask.style.height = `${this.totalHeight}px`
-        this.mask.style.backgroundColor = Table.maskColor
-        this.staging.appendChild(this.mask)
+        this.mask = this.makeRowMask(top, this.totalSize)
+        this.bodyStaging.appendChild(this.mask)
 
         if (this.rowHeads !== undefined) {
-            this.headMask = span()
-            this.headMask.style.boxSizing = `content-box`
-            this.headMask.style.left = `0`
-            this.headMask.style.right = `0`
-            this.headMask.style.top = `${top}px`
-            this.headMask.style.border = 'none'
-            this.headMask.style.height = `${this.totalHeight}px`
-            this.headMask.style.backgroundColor = Table.maskColor
+            this.headMask = this.makeRowMask(top, this.totalSize)
             this.headStaging.appendChild(this.headMask)
+        }
+
+        if (this.initialRowCount !== 0) {
+            const overlap = this.adapter.config.seamless ? 0 : 1
+            this.totalSize -= overlap
         }
     }
 
-    splitHorizontal() {
+    split() {
         this.table.splitHorizontalNew(this.event.index)
-
         if (this.rowHeads !== undefined) { // FIXME: Hack
             this.splitHead = this.rowHeads.lastElementChild as HTMLDivElement
         }
-
-        this.animationHeight = this.totalHeight
-        if (this.initialRowCount !== 0) {
-            const overlap = this.adapter.config.seamless ? 0 : 1
-            this.animationHeight -= overlap
-        }
-        this.animationTop = px2float(this.splitBody.style.top)
+        this.animationStart = px2float(this.splitBody.style.top)
     }
 
-    joinHorizontal() {
-        if (this.done) {
+    joinHeader() {
+        if (this.rowHeads === undefined) {
             return
         }
-        this.done = true
-
-        if (this.rowHeads) {
-            this.headStaging.removeChild(this.headMask)
-            this.rowHeads.removeChild(this.splitHead)
-            while (this.headStaging.children.length > 0) {
-                this.rowHeads.appendChild(this.headStaging.children[0])
-            }
-            if (this.splitHead.children.length > 0) {
-                let top = px2float(this.splitHead.style.top)
-                while (this.splitHead.children.length > 0) {
-                    const cell = this.splitHead.children[0] as HTMLSpanElement
-                    cell.style.top = `${px2float(cell.style.top) + top}px`
-                    this.rowHeads.appendChild(cell)
-                }
+        this.headStaging.removeChild(this.headMask)
+        this.rowHeads.removeChild(this.splitHead)
+        while (this.headStaging.children.length > 0) {
+            this.rowHeads.appendChild(this.headStaging.children[0])
+        }
+        if (this.splitHead.children.length > 0) {
+            let top = px2float(this.splitHead.style.top)
+            while (this.splitHead.children.length > 0) {
+                const cell = this.splitHead.children[0] as HTMLSpanElement
+                cell.style.top = `${px2float(cell.style.top) + top}px`
+                this.rowHeads.appendChild(cell)
             }
         }
-        this.staging.removeChild(this.mask)
+    }
+
+    joinBody() {
+        this.bodyStaging.removeChild(this.mask)
         this.body.removeChild(this.splitBody)
-        while (this.staging.children.length > 0) {
-            this.body.appendChild(this.staging.children[0])
+        while (this.bodyStaging.children.length > 0) {
+            this.body.appendChild(this.bodyStaging.children[0])
         }
         if (this.splitBody.children.length > 0) {
             let top = px2float(this.splitBody.style.top)
@@ -409,9 +366,6 @@ export class InsertRowAnimation extends TableAnimation {
                 cell.style.top = `${px2float(cell.style.top) + top}px`
                 this.body.appendChild(cell)
             }
-        }
-        if (this.table.animationDone) {
-            this.table.animationDone()
         }
     }
 }
