@@ -86,17 +86,12 @@ export class Tabs extends ModelView<OptionModelBase> {
         }
     }
 
-    setTab(tab: HTMLElement, panel: Tab) {
-        const line = this.markerLine
-        if (this.hasAttribute("vertical")) {
-            line.style.top = `${tab.offsetTop}px`
-            line.style.height = `${tab.clientHeight}px`
-        } else {
-            line.style.top = `-2px`
-            line.style.left = `${tab.offsetLeft}px`
-            line.style.width = `${tab.clientWidth}px`
-        }
+    override connectedCallback() {
+        super.connectedCallback()
+        this.adjustLine()
+    }
 
+    protected setTab(tab: HTMLElement, panel: Tab) {
         this.activeTab!.classList.remove("active")
         this.activeTab = tab
         this.activeTab.classList.add("active")
@@ -105,8 +100,25 @@ export class Tabs extends ModelView<OptionModelBase> {
         this.activePanel = panel
         this.activePanel.style.display = ""
 
+        this.adjustLine()
+
         if (this.model && panel.value) {
             this.model.stringValue = panel.value
+        }
+    }
+
+    protected adjustLine() {
+        const line = this.markerLine
+        const tab = this.activeTab
+        if (tab !== undefined) {
+            if (this.hasAttribute("vertical")) {
+                line.style.top = `${tab.offsetTop}px`
+                line.style.height = `${tab.clientHeight}px`
+            } else {
+                line.style.top = `-2px`
+                line.style.left = `${tab.offsetLeft}px`
+                line.style.width = `${tab.clientWidth}px`
+            }
         }
     }
 }
