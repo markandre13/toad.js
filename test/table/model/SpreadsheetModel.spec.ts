@@ -160,11 +160,13 @@ describe.only("spreadsheetmodel", function () {
         })
         it("cycle", function () {
             const m = new SpreadsheetModel(4, 4)
-            m.setField(0, 0, "=1")
-            m.setField(1, 0, "=A1+1")
-            m.setField(2, 0, "=B1+2")
+            m.setField(0, 0, "=1")    // A1 := 1
+            m.setField(1, 0, "=A1+1") // B1 := A1 +1
+            m.setField(2, 0, "=B1+2") // C1 := B1 + 2
 
-            expect(() => m.setField(0, 0, "=C1+3")).to.throw()
+            expect(m.getCell(0,0)._error).to.be.undefined
+            m.setField(0, 0, "=C1+3")
+            expect(m.getCell(0,0)._error).to.not.be.undefined
         })
     })
 })
