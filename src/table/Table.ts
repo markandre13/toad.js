@@ -63,6 +63,9 @@ export function px2float(s: string) {
 }
 
 function isVisible(e: HTMLElement): boolean {
+    if (e.isConnected === false) {
+        return false
+    }
     if (window.getComputedStyle(e).display === "none") {
         return false
     }
