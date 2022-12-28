@@ -22,7 +22,7 @@ import { GenericTool } from "../view/GenericTool"
 import { textAreaStyle } from "../view/textAreaStyle"
 
 import { Table } from "./Table"
-import { RowEditInterface, ColumnEditInterface } from "./model/TableModel"
+import { TableModel, RowEditInterface, ColumnEditInterface } from "./model/TableModel"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
@@ -63,8 +63,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && 'insertRow' in model) {
-                (model as RowEditInterface).insertRow(selection.row)
+            if (selection && isRowEditInterface(model)) {
+                model.insertRow(selection.row)
             }
         }
         this.toolbar.appendChild(this.buttonAddRowAbove)
@@ -83,8 +83,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && 'insertRow' in model) {
-                (model as RowEditInterface).insertRow(selection.row+1)
+            if (selection && isRowEditInterface(model)) {
+                model.insertRow(selection.row+1)
             }
         }
         this.toolbar.appendChild(this.buttonAddRowBelow)
@@ -102,8 +102,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && 'removeRow' in model) {
-                (model as RowEditInterface).removeRow(selection.row, 1)
+            if (selection && isRowEditInterface(model)) {
+                model.removeRow(selection.row, 1)
             }
         }
         this.toolbar.appendChild(this.buttonDeleteRow)
@@ -124,8 +124,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && 'insertColumn' in model) {
-                (model as ColumnEditInterface).insertColumn(selection.col)
+            if (selection && isColumnEditInterface(model)) {
+                model.insertColumn(selection.col)
             }
         }
         this.toolbar.appendChild(this.buttonAddColumnLeft)
@@ -144,8 +144,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && 'insertColumn' in model) {
-                (model as ColumnEditInterface).insertColumn(selection.col+1)
+            if (selection && isColumnEditInterface(model)) {
+                model.insertColumn(selection.col+1)
             }
         }
         this.toolbar.appendChild(this.buttonAddColumnRight)
@@ -163,8 +163,8 @@ export class TableTool extends GenericTool<Model> {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
             const selection = this.lastActiveTable?.selection
-            if (selection && model && 'removeRow' in model) {
-                (model as ColumnEditInterface).removeColumn(selection.col, 1)
+            if (selection && isColumnEditInterface(model)) {
+                model.removeColumn(selection.col, 1)
             }
         }
         this.toolbar.appendChild(this.buttonDeleteColumn)
@@ -290,3 +290,11 @@ export class TableTool extends GenericTool<Model> {
     // }
 }
 View.define("tx-tabletool", TableTool)
+
+function isRowEditInterface(model: any): model is RowEditInterface {
+    return model !== undefined && 'insertRow' in model && "removeRow" in model
+}
+
+function isColumnEditInterface(model: any): model is ColumnEditInterface {
+    return model !== undefined && 'insertColumn' in model && "removeColumn" in model
+}
