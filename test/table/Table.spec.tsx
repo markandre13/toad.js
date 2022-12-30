@@ -139,7 +139,6 @@ describe("table", function () {
 
             // TODO: add some test
         })
-
         it("display array of objects (custom adapter)", function () {
             // Domain Layer
             class Book {
@@ -193,7 +192,6 @@ describe("table", function () {
 
             // TODO: add some test
         })
-
         it("display and edit array of objects (custom adapter, EDIT_ON_ENTER)", async function () {
             // Domain Layer
             class Book {
