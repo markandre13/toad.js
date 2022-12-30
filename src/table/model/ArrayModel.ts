@@ -23,6 +23,6 @@ export class ArrayModel<T> extends ArrayTableModel<T> {
         super(data, rowClass)
     }
     get colCount(): number {
-        throw Error(`ArrayModel.colCount() should not be called. Use ArrayAdapter.colCount() instead.`)
-     }
+        throw Error(`ArrayModel.colCount() should not be called. Override TableAdapter.colCount() instead.`)
+    }
 }

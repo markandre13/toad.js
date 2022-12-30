@@ -32,12 +32,18 @@ export class Text extends ModelView<TextModel|NumberModel> {
     this.attachShadow({mode: 'open'})
     this.attachStyle(txText)
     this.shadowRoot!.appendChild(this.input)
+
+    this.input.onclick = () => {
+        console.log(`<Text> onClick`)
+    }
   }
   
   override focus() {
+    console.log(`Text.focus()`)
     this.input.focus()
   }
   override blur() {
+    console.log(`Text.blur()`)
     this.input.blur()
   }
   

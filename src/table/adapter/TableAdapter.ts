@@ -47,42 +47,92 @@ export class TableAdapterConfig {
     expandRow = false
 }
 
+/**
+ * TableAdapters assist Table to render and edit the data in a model at a given (column, row).
+ * 
+ * Adapters are hidden from the HTML/JSX level, were one can just write <Table model={myModel} />
+ * to render a certain model.
+ *
+ * For this to work, Available adapters need to be registered using TableAdapter.register(adapter, model [,data]).
+ * Table will then search the registered adapters to find a one suitable for a given model.
+ * 
+ * TODO: Allow to register multiple adapters for the same model, which are then distinguished
+ *       by and additional id.
+ */
 export class TableAdapter<T extends TableModel> {
-    model?: T
+    model: T
     config = new TableAdapterConfig()
     constructor(model: T) {
         this.model = model
     }
 
-    get colCount(): number {
-        return this.model === undefined ? 0 : this.model.colCount
-    }
-    get rowCount(): number {
-        return this.model === undefined ? 0 : this.model.rowCount
-    }
-    setModel(model: T): void {
-        this.model = model
-    }
+    get colCount(): number { return this.model === undefined ? 0 : this.model.colCount }
+    get rowCount(): number { return this.model === undefined ? 0 : this.model.rowCount }
+    // setModel(model: T): void { this.model = model }
+    /**
+     * Override to return a column header.
+     * 
+     * @param col column number
+     * @returns A HTMLSpanElement to be used as column header.
+     */
     getColumnHead(col: number): Node | undefined { return undefined }
+    /**
+     * Override to return a row header.
+     * 
+     * @param row row number
+     * @returns A HTMLSpanElement to be used as row header.
+     */
     getRowHead(row: number): Node | undefined { return undefined }
 
-    // old style: remove
-    // getDisplayCell(col: number, row: number): Node | Node[] | undefined { return undefined }
-    // getEditorCell(col: number, row: number): Node | undefined { return undefined }
-
-    // new style
+    /**
+     * Override to copy data from the model into the table cell.
+     * 
+     * @param pos cell position (col, row) to use when getting data frm the model.
+     * @param cell table cell whose content to be set by this method.
+     */
     showCell(pos: TablePos, cell: HTMLSpanElement) { }
-    editCell(pos: TablePos, cell: HTMLSpanElement) { }
+    /**
+     * Override to copy data from the table cell to the model.
+     * 
+     * @param pos 
+     * @param cell table cell with the edited value.
+     */
     saveCell(pos: TablePos, cell: HTMLSpanElement) { }
+    /**
+     * Override when using 'contenteditable' is not sufficient to edit the cell.
+     * 
+     * E.g. a spreadsheet's cell has two values: a formular only visible when editing
+     * and the result of the evaluated formular when not editing.
+     * 
+     * @param pos 
+     * @param cell 
+     */
+    editCell(pos: TablePos, cell: HTMLSpanElement) { }
 
+    /**
+     * Override when 'true' needs to be returned so that the cells won't be separated
+     * by a border. E.g. used in the TreeView to render the tree nodes without a separating
+     * border/seam.
+     * 
+     * @todo Going to be obsoleted by TableAdapterConfig.seamless ?
+     * 
+     * @returns 'false' when the cells are to be separated by lines
+     */
     isViewCompact(): boolean { return false }
 
     // FIXME: convert the comments below into clean code
     // data is used for TypeTableModel
     // Map<model, Map<data, adapter>>
-
     private static modelToAdapter = new Map<ModelConstructor, TypeToAdapter>();
 
+    /**
+     * Register an adapter for <Table model={model} /> which helps to render and edit the given model.
+     * @see {@link lookup}
+     * 
+     * @param adapter The adapter's constructor.
+     * @param model The model's constructor.
+     * @param data When _model_ is of TypedTableModel, the constructor for types stored in _model_.
+     */
     static register<M extends TableModel>(
         adapter: new (model: M) => TableAdapter<M>,
         model: new (...args: any[]) => M): void
@@ -120,10 +170,23 @@ export class TableAdapter<T extends TableModel> {
         }
     }
 
+    /**
+     * Delete all registered adapters.
+     * 
+     * For now only used in tests.
+     * @see {@link register} 
+     */
     static unbind() {
         TableAdapter.modelToAdapter.clear()
     }
 
+    /**
+     * Used by <Table model={model} /> to find and create an adapter able to render 'model'.
+     * @see {@link register} 
+     * 
+     * @param model 
+     * @returns 
+     */
     static lookup(model: TableModel): (new (model: TableModel) => TableAdapter<any>) {
         // console.log(`TableAdapter.lookup(${(model as any).constructor.name}) ============`)
 

@@ -36,6 +36,7 @@ import { HTMLElementProps, setInitialProperties } from 'toad.jsx'
 import { span, div, text } from '../util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
 import { style as txTable } from './style/tx-table'
+import { hasFocus } from '@toad/util/dom'
 
 // TABLE ANIMATION
 //
@@ -203,7 +204,8 @@ export class Table extends View {
         if (Table.observer === undefined) {
             Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
                 Table.allTables.forEach(table => {
-                    if (table.visible === false) {
+                    if (isVisible(table)) {
+                        Table.allTables.delete(this)
                         table.prepareCells()
                     }
                 })
@@ -213,11 +215,14 @@ export class Table extends View {
                 subtree: true
             })
         }
-
     }
 
     override connectedCallback(): void {
-        Table.allTables.add(this)
+        if (isVisible(this)) {
+            this.prepareCells()
+        } else {
+            Table.allTables.add(this)
+        }
         super.connectedCallback()
         if (this.selection === undefined) {
             this.selection = new SelectionModel(TableEditMode.SELECT_CELL)
@@ -299,41 +304,40 @@ export class Table extends View {
                             ev.stopPropagation()
                         }
                         break
-                    //             case "Tab":
-                    //                 if (ev.shiftKey) {
-                    //                     if (pos.col > 0) {
-                    //                         --pos.col
-                    //                         ev.preventDefault()
-                    //                         ev.stopPropagation()
-                    //                     } else {
-                    //                         if (pos.row > 0) {
-                    //                             pos.col = this.adapter!.colCount - 1
-                    //                             --pos.row
-                    //                             ev.preventDefault()
-                    //                             ev.stopPropagation()
-                    //                         }
-                    //                     }
-                    //                 } else {
-                    //                     if (pos.col + 1 < this.adapter!.colCount) {
-                    //                         ++pos.col
-                    //                         ev.preventDefault()
-                    //                         ev.stopPropagation()
-                    //                     } else {
-                    //                         if (pos.row + 1 < this.adapter!.rowCount) {
-                    //                             pos.col = 0
-                    //                             ++pos.row
-                    //                             ev.preventDefault()
-                    //                             ev.stopPropagation()
-                    //                         }
-                    //                     }
-                    //                 }
-                    //                 break
+                    // case "Tab":
+                    //     if (ev.shiftKey) {
+                    //         if (pos.col > 0) {
+                    //             --pos.col
+                    //             ev.preventDefault()
+                    //             ev.stopPropagation()
+                    //         } else {
+                    //             if (pos.row > 0) {
+                    //                 pos.col = this.adapter!.colCount - 1
+                    //                 --pos.row
+                    //                 ev.preventDefault()
+                    //                 ev.stopPropagation()
+                    //             }
+                    //         }
+                    //     } else {
+                    //         if (pos.col + 1 < this.adapter!.colCount) {
+                    //             ++pos.col
+                    //             ev.preventDefault()
+                    //             ev.stopPropagation()
+                    //         } else {
+                    //             if (pos.row + 1 < this.adapter!.rowCount) {
+                    //                 pos.col = 0
+                    //                 ++pos.row
+                    //                 ev.preventDefault()
+                    //                 ev.stopPropagation()
+                    //             }
+                    //         }
+                    //     }
+                    //     break
                     case "Enter":
-                        if (this.adapter?.config.editMode !== EditMode.EDIT_ON_ENTER) {
-                            break
-                        }
                         if (this.editing === undefined) {
-                            this.editCell()
+                            if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
+                                this.editCell()
+                            }
                         } else {
                             this.saveCell()
                             if (pos.row + 1 < this.adapter!.rowCount) {
@@ -350,10 +354,13 @@ export class Table extends View {
                 }
                 this.selection.value = pos
             } break
+            // case TableEditMode.EDIT_CELL:
+            //     break
         }
     }
 
     cellKeyDown(ev: KeyboardEvent) {
+        // console.log(`Table.cellKeyDown()`)
         const cell = ev.target as HTMLElement
         // console.log(`### CELL KEYDOWN ${ev.key}, edit=${cell.classList.contains("edit")}, editing=${this.editing !== undefined}`)
         // console.log(cell)
@@ -380,7 +387,9 @@ export class Table extends View {
                     break
                 default:
                     // console.log("### CELL KEYDOWN PREVENT DEFAULT")
-                    ev.preventDefault()
+                    if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
+                        ev.preventDefault()
+                    }
             }
         } else {
             // console.log(`### CELL NO SPECIAL`)
@@ -437,6 +446,15 @@ export class Table extends View {
     }
 
     editCell() {
+        if (this.editing !== undefined) {
+            if (this.editing.col === this.selection!.value.col &&
+                this.editing.row === this.selection!.value.row) {
+                return
+            } else {
+                console.log(`WARN: Table.editCell(): already editing ANOTHER cell`)
+            }
+        }
+        // console.log(`Table.editCell()`)
         const col = this.selection!.value.col
         const row = this.selection!.value.row
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
@@ -450,6 +468,7 @@ export class Table extends View {
         if (this.editing === undefined) {
             return
         }
+        // console.log(`Table.saveCell()`)
         const col = this.editing.col
         const row = this.editing.row
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
@@ -462,7 +481,7 @@ export class Table extends View {
     }
 
     pointerDown(ev: PointerEvent) {
-        // // console.log("Table.pointerDown()")
+        // console.log("Table.pointerDown()")
         // ev.preventDefault()
         // // this.focus()
 
@@ -534,16 +553,21 @@ export class Table extends View {
                 // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
                 if (document.activeElement === this) {
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                    cell.focus()
+                    // cell.focus()
                     scrollIntoView(cell)
                 }
             } break
             case TableEditMode.SELECT_CELL: {
-                // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
                 if (document.activeElement === this) {
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                    cell.focus()
+                    // TODO: don't focus on cell in case controll inside the cell was clicked
+                    if (!hasFocus(cell)) {
+                        cell.focus()
+                    }
                     scrollIntoView(cell)
+                    if (this.adapter?.config.editMode === EditMode.EDIT_ON_FOCUS) {
+                        this.editCell()
+                    }
                 }
                 break
             }
@@ -912,9 +936,9 @@ export class Table extends View {
         cell.onfocus = this.cellFocus
         cell.onkeydown = this.cellKeyDown
         cell.tabIndex = 0
-        if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
-            cell.setAttribute("contenteditable", "")
-        }
+        // if (this.adapter?.config.editMode !== EditMode.NO_EDIT) {
+        cell.setAttribute("contenteditable", "")
+        // }
         return cell
     }
 

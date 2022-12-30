@@ -65,8 +65,6 @@ import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
-import { span, text } from "@toad/util/lsx"
-
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
 
@@ -167,7 +165,7 @@ action("help", () => {
 })
 
 //
-// Books
+// Spreadsheet
 //
 
 const sheet = [

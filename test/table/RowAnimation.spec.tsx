@@ -30,6 +30,7 @@ describe("table", function () {
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
+    // TODO: spreadsheet can't handle insert/remove row/column yet
     xit("spreadsheet", async function() {
         AnimationBase.animationFrameCount = 468
         Animator.halt = false
@@ -53,6 +54,9 @@ describe("table", function () {
         bindModel("spreadsheet", spreadsheet)
 
         document.body.innerHTML=`<tx-tabletool></tx-tabletool><tx-table style="width: 100%; height: 200px;" model="spreadsheet"></tx-table>`
+
+        const r = spreadsheet.getCell(3,4)
+        expect(r.value).to.equal("9.36")
     })
 
     describe("other", function () {

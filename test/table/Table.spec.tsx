@@ -1,6 +1,6 @@
 import { expect } from '@esm-bundle/chai'
 
-import { bindModel, unbind } from "@toad"
+import { bindModel, unbind, Fragment, refs, TableEditMode } from "@toad"
 
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
@@ -12,7 +12,9 @@ import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 
+import { ArrayModel } from '@toad/table/model/ArrayModel'
 import { TableAdapter, EditMode } from '@toad/table/adapter/TableAdapter'
+import { ArrayAdapter } from "@toad/table/adapter/ArrayAdapter"
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { TableFriend } from '@toad/table/private/TableFriend'
@@ -20,21 +22,24 @@ import { TableFriend } from '@toad/table/private/TableFriend'
 import { NumberModel } from "@toad/model/NumberModel"
 import { Text as TextView } from "@toad/view/Text"
 import { Slider } from "@toad/view/Slider"
+import { Tab, Tabs } from '@toad/view/Tab'
 
 import { span, input, text } from "@toad/util/lsx"
+
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 
 import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
 import {
-    validateRender, TestModel, getTable, 
+    validateRender, TestModel, getTable,
     prepareByRows, flatMapRows, prepareByColumns, flatMapColumns, Measure, bodyRowInfo, testTableLayout
- } from "./util"
- import { Animator, AnimationBase } from '@toad/util/animation'
+} from "./util"
+import { Animator, AnimationBase } from '@toad/util/animation'
 
 import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
-import { InsertColumnAnimation } from '@toad/table/private/InsertColumnAnimation'
+import { SelectionModel } from '@toad/table/model/SelectionModel'
+import { hasFocus } from '@toad/util/dom'
 
 // TODO:
 // [X] send modified-events
@@ -100,6 +105,275 @@ describe("table", function () {
         })
     })
 
+    describe.only("Table Examples", function () {
+        it("display array of objects (using ArrayAdapter)", function () {
+            // Domain Layer
+            class Book {
+                title: string = ""
+                author: string = ""
+                year: number = 1970
+            }
+
+            const bookList = [
+                { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
+                { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
+                { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
+                { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
+                { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
+                { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
+                { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
+                { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
+            ]
+
+            // Application Layer
+            const model = new ArrayModel<Book>(bookList, Book)
+            class BookAdapter extends ArrayAdapter<ArrayModel<Book>> {
+                override getColumnHeads() { return ["Title", "Author", "Year"] }
+                override getRow(book: Book) { return refs(book, "title", "author", "year") }
+            }
+            TableAdapter.register(BookAdapter, ArrayModel, Book)
+
+            // View Layer
+            document.body.replaceChildren(<Table style={{ width: `720px`, height: `350px` }} model={model} />)
+
+            // TODO: add some test
+        })
+
+        it("display array of objects (custom adapter)", function () {
+            // Domain Layer
+            class Book {
+                title: string = ""
+                author: string = ""
+                year: number = 1970
+            }
+
+            const bookList = [
+                { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
+                { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
+                { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
+                { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
+                { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
+                { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
+                { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
+                { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
+            ]
+
+            // Application Layer
+            const model = new ArrayModel<Book>(bookList, Book)
+            class BookAdapter extends TableAdapter<ArrayModel<Book>> {
+                constructor(model: ArrayModel<Book>) { super(model) }
+                override get colCount(): number { return 3 }
+                override getColumnHead(col: number): Node | undefined {
+                    switch (col) {
+                        case 0: return text("Title")
+                        case 1: return text("Author")
+                        case 2: return text("Year")
+                    }
+                }
+                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override showCell(pos: TablePos, cell: HTMLSpanElement) {
+                    switch (pos.col) {
+                        case 0:
+                            cell.replaceChildren(text(this.model?.data[pos.row].title!))
+                            break
+                        case 1:
+                            cell.replaceChildren(text(this.model?.data[pos.row].author!))
+                            break
+                        case 2:
+                            cell.replaceChildren(text(`${this.model?.data[pos.row].year}`))
+                            break
+                    }
+                }
+            }
+            TableAdapter.register(BookAdapter, ArrayModel, Book)
+
+            // View Layer
+            document.body.replaceChildren(<Table style={{ width: `720px`, height: `350px` }} model={model} />)
+
+            // TODO: add some test
+        })
+
+        it("display and edit array of objects (custom adapter, EDIT_ON_ENTER)", async function () {
+            // Domain Layer
+            class Book {
+                title: string = ""
+                author: string = ""
+                year: number = 1970
+            }
+
+            const bookList = [
+                { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
+                { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
+                { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
+                { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
+                { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
+                { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
+                { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
+                { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
+            ]
+
+            // Application Layer
+            const model = new ArrayModel<Book>(bookList, Book)
+            class BookAdapter extends TableAdapter<ArrayModel<Book>> {
+                constructor(model: ArrayModel<Book>) {
+                    super(model)
+                    this.config.editMode = EditMode.EDIT_ON_ENTER
+                }
+                override get colCount(): number { return 3 }
+                override getColumnHead(col: number): Node | undefined {
+                    switch (col) {
+                        case 0: return text("Title")
+                        case 1: return text("Author")
+                        case 2: return text("Year")
+                    }
+                }
+                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override showCell(pos: TablePos, cell: HTMLSpanElement) {
+                    switch (pos.col) {
+                        case 0:
+                            cell.replaceChildren(text(this.model?.data[pos.row].title!))
+                            break
+                        case 1:
+                            cell.replaceChildren(text(this.model?.data[pos.row].author!))
+                            break
+                        case 2:
+                            cell.replaceChildren(text(`${this.model?.data[pos.row].year}`))
+                            break
+                    }
+                }
+                override saveCell(pos: TablePos, cell: HTMLSpanElement) {
+                    const row = this.model!.data[pos.row]
+                    switch (pos.col) {
+                        case 0: row.title = cell.innerText; break
+                        case 1: row.author = cell.innerText; break
+                        case 2: row.year = parseInt(cell.innerText); break
+                    }
+                }
+            }
+            TableAdapter.register(BookAdapter, ArrayModel, Book)
+
+            // for now the EDIT_ON_ENTER code only works when in SELECT_CELL
+            const selectionModel = new SelectionModel(TableEditMode.SELECT_CELL)
+
+            // View Layer
+            document.body.replaceChildren(
+                <Table
+                    style={{ width: `720px`, height: `350px` }}
+                    model={model}
+                    selectionModel={selectionModel}
+                />
+            )
+
+            // Test
+            await sleep()
+
+            const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
+            expect(c0r1).to.not.be.undefined
+
+            click(c0r1)
+            expect(hasFocus(c0r1)).to.be.true
+
+            keyboard({ key: "Enter" }) // enter edit mode
+
+            type("Hello", true)
+
+            keyboard({ key: "Enter" }) // leave edit mode and jump to next cell
+            expect(hasFocus(c0r1)).to.be.false
+
+            expect(model.data[1].title).to.equal("Hello")
+        })
+        it("display and edit array of objects (custom adapter, EDIT_ON_FOCUS)", async function () {
+             // Domain Layer
+             class Book {
+                title: string = ""
+                author: string = ""
+                year: number = 1970
+            }
+
+            const bookList = [
+                { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
+                { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
+                { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
+                { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
+                { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
+                { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
+                { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
+                { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
+            ]
+
+            // Application Layer
+            const model = new ArrayModel<Book>(bookList, Book)
+            class BookAdapter extends TableAdapter<ArrayModel<Book>> {
+                constructor(model: ArrayModel<Book>) {
+                    super(model)
+                    this.config.editMode = EditMode.EDIT_ON_FOCUS
+                }
+                override get colCount(): number { return 3 }
+                override getColumnHead(col: number): Node | undefined {
+                    switch (col) {
+                        case 0: return text("Title")
+                        case 1: return text("Author")
+                        case 2: return text("Year")
+                    }
+                }
+                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override showCell(pos: TablePos, cell: HTMLSpanElement) {
+                    switch (pos.col) {
+                        case 0:
+                            cell.replaceChildren(text(this.model?.data[pos.row].title!))
+                            break
+                        case 1:
+                            cell.replaceChildren(text(this.model?.data[pos.row].author!))
+                            break
+                        case 2:
+                            cell.replaceChildren(text(`${this.model?.data[pos.row].year}`))
+                            break
+                    }
+                }
+                override saveCell(pos: TablePos, cell: HTMLSpanElement) {
+                    const row = this.model!.data[pos.row]
+                    switch (pos.col) {
+                        case 0: row.title = cell.innerText; break
+                        case 1: row.author = cell.innerText; break
+                        case 2: row.year = parseInt(cell.innerText); break
+                    }
+                }
+            }
+            TableAdapter.register(BookAdapter, ArrayModel, Book)
+
+            // for now the EDIT_ON_ENTER code only works when in SELECT_CELL
+            const selectionModel = new SelectionModel(TableEditMode.SELECT_CELL)
+
+            // View Layer
+            document.body.replaceChildren(
+                <Table
+                    style={{ width: `720px`, height: `350px` }}
+                    model={model}
+                    selectionModel={selectionModel}
+                />
+            )
+
+            // Test
+            await sleep()
+
+            const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
+            expect(c0r1).to.not.be.undefined
+
+            click(c0r1)
+            // expect(hasFocus(c0r1)).to.be.true
+
+            // keyboard({ key: "Enter" }) // enter edit mode
+
+            type("Hello", true)
+
+            keyboard({ key: "Enter" }) // leave edit mode and jump to next cell
+            // // expect(hasFocus(c0r1)).to.be.false
+
+            expect(model.data[1].title).to.equal("Hello")
+        })
+
+    })
+
     describe("event", function () {
         xit("test", async function () {
             let i0, i1, i2
@@ -119,9 +393,113 @@ describe("table", function () {
     })
 
     describe("regressions", function () {
-        // race condition
-        it("insert row into table which already has row and column headers", async function () {
+        it("JSX renders correctly", async function () {
+            const model = createModel(4, 4)
+            document.body.replaceChildren(<Table style={{ width: `720px`, height: `350px` }} model={model} />)
+            await sleep()
+            validateRender(model)
+        })
+        it("HTML renders correctly", async function () {
+            const model = createModel(4, 4)
+            document.body.innerHTML = `<tx-table model="model" style="width: 720px; height: 350px;"></tx-table>`
+            await sleep()
+            validateRender(model)
+        })
+        it("makehuman.js, pose table, 1st column has size 0", async function () {
+            class Bone {
+                name: string
+                children: Bone[]
+                constructor(name: string, children: Bone[]) {
+                    this.name = name
+                    this.children = children
+                }
+            }
+            class PoseNode implements TreeNode {
+                static count = 0
+                bone!: Bone
+                next?: PoseNode
+                down?: PoseNode
 
+                x: NumberModel
+                y: NumberModel
+                z: NumberModel
+
+                constructor(bone: Bone | undefined = undefined) {
+                    this.x = new NumberModel(0, { min: -180, max: 180 })
+                    this.y = new NumberModel(0, { min: -180, max: 180 })
+                    this.z = new NumberModel(0, { min: -180, max: 180 })
+
+                    if (bone === undefined) {
+                        return
+                    }
+                    this.bone = bone
+                    bone.children.forEach(childBone => {
+                        if (this.down === undefined) {
+                            this.down = new PoseNode(childBone)
+                        } else {
+                            const next = this.down
+                            this.down = new PoseNode(childBone)
+                            this.down.next = next
+                        }
+                    })
+                }
+            }
+
+            // this tells <toad-table> how to render TreeNodeModel<PoseNode>
+            class PoseTreeAdapter extends TreeAdapter<PoseNode> {
+                constructor(model: TreeNodeModel<PoseNode>) {
+                    super(model)
+                    this.config.expandColumn = true
+                }
+                override get colCount(): number {
+                    return 2
+                }
+                override showCell(pos: TablePos, cell: HTMLSpanElement) {
+                    if (this.model === undefined) {
+                        console.log("no model")
+                        return
+                    }
+                    const node = this.model.rows[pos.row].node
+                    switch (pos.col) {
+                        case 0:
+                            this.treeCell(pos, cell, node.bone.name)
+                            break
+                        case 1:
+                            const x = <>
+                                <TextView model={node.x} style={{ width: '50px' }} />
+                                <TextView model={node.y} style={{ width: '50px' }} />
+                                <TextView model={node.z} style={{ width: '50px' }} />
+                            </> as Fragment
+                            cell.replaceChildren(...x)
+                            break
+                    }
+                }
+            }
+
+            const bones = new Bone("root", [new Bone("spine.05", [])])
+            const poseNodes = new PoseNode(bones)
+
+            TreeAdapter.register(PoseTreeAdapter, TreeNodeModel, PoseNode)
+            const poseControls = new TreeNodeModel(PoseNode, poseNodes)
+
+            document.body.replaceChildren(
+                <Tabs>
+                    <Tab label="Morph" value="MORPH">WIP</Tab>
+                    <Tab label="Pose" value="POSE">
+                        <Table style={{
+                            width: `720px`,
+                            height: `350px`
+                        }} model={poseControls} />
+                    </Tab>
+                </Tabs>
+            )
+            await sleep()
+
+            // [ ] Morph Tab has no bar
+            // [ ] switching to Pose tab results in first column of width 0
+        })
+        // FIXME: unstable test
+        it("insert row into table which already has row and column headers", async function () {
             // AnimationBase.animationFrameCount = 2000
             Animator.halt = false
             const model = await prepareByRows([
@@ -134,7 +512,7 @@ describe("table", function () {
             model.insertRow(1, flatMapRows([
                 new Measure(2, 48)
             ]))
-    
+
             // let animation = InsertRowAnimation.current!
             // animation.prepare()
             await sleep(150)
@@ -166,8 +544,8 @@ describe("table", function () {
 
             testTableLayout()
         })
-
-        it("three successive animations fail", async function() {
+        // FIXME: unstable test
+        it("three successive animations fail", async function () {
             // AnimationBase.animationFrameCount = 1
             // Animator.halt = false
 
@@ -194,7 +572,7 @@ describe("table", function () {
 
             testTableLayout()
         })
-
+        // FIXME: unstable test
         it("layout formerly invisible table (e.g. within tabs)", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `

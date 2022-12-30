@@ -22,8 +22,6 @@ import { TableEvent } from "../TableEvent"
 import { TableEventType } from "../TableEventType"
 
 import { Reference } from "toad.jsx"
-import { TextModel } from "../../model/TextModel"
-import { Text } from "../../view/Text"
 import { TablePos } from "../TablePos"
 
 export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {

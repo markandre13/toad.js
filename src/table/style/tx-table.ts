@@ -179,7 +179,7 @@ style.textContent = css`
     opacity: 0;
 }
 
-.body > span.edit, .splitBody > span.edit {
+.body > span.edit, .splitBody > span.edit, .body > span.edit:hover, .splitBody > span.edit:hover {
     caret-color: currentcolor;
 }
 `
