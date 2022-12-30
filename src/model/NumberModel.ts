@@ -19,32 +19,48 @@
 import { GenericModel } from "./GenericModel"
 
 export interface NumberModelOptions {
-  min?: number
-  max?: number
-  step?: number
+    min?: number
+    max?: number
+    step?: number
 }
 
 export class NumberModel extends GenericModel<number> {
-  min?: number
-  max?: number
-  step?: number
+    min?: number
+    max?: number
+    step?: number
 
-  constructor(value: number, options?: NumberModelOptions) {
-    super(value)
-    if (options) {
-      this.min = options.min
-      this.max = options.max
-      this.step = options.step
+    constructor(value: number, options?: NumberModelOptions) {
+        super(value)
+        if (options) {
+            this.min = options.min
+            this.max = options.max
+            this.step = options.step
+        }
     }
-  }
-  increment() {
-    if (this.step !== undefined) {
-        this.value += this.step
+    increment() {
+        if (this.step !== undefined) {
+            this.value += this.step
+        }
     }
-  }
-  decrement() {
-    if (this.step !== undefined) {
-        this.value -= this.step
+    decrement() {
+        if (this.step !== undefined) {
+            this.value -= this.step
+        }
     }
-  }
+    override get value(): number {
+        return super.value
+    }
+    override set value(value: number) {
+        if (this.min !== undefined) {
+            if (value < this.min) {
+                value = this.min
+            }
+        }
+        if (this.max !== undefined) {
+            if (value > this.max) {
+                value = this.max
+            }
+        }
+        super.value = value
+    }
 }
