@@ -21,68 +21,68 @@ import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
 
-export class Text extends ModelView<TextModel|NumberModel> {
-  input: HTMLInputElement
+export class Text extends ModelView<TextModel | NumberModel> {
+    input: HTMLInputElement
 
-  constructor(init?: ModelViewProps<TextModel|NumberModel>) {
-    super(init)
-    this.input = document.createElement("input")
-    this.input.classList.add("tx-text")
-    this.input.oninput = () => { this.updateModel() }
-    this.attachShadow({mode: 'open'})
-    this.attachStyle(txText)
-    this.shadowRoot!.appendChild(this.input)
+    constructor(init?: ModelViewProps<TextModel | NumberModel>) {
+        super(init)
+        this.input = document.createElement("input")
+        this.input.classList.add("tx-text")
+        this.input.oninput = () => { this.updateModel() }
+        this.attachShadow({ mode: 'open' })
+        this.attachStyle(txText)
+        this.shadowRoot!.appendChild(this.input)
 
-    this.input.onclick = () => {
-        console.log(`<Text> onClick`)
-    }
-  }
-  
-  override focus() {
-    console.log(`Text.focus()`)
-    this.input.focus()
-  }
-  override blur() {
-    console.log(`Text.blur()`)
-    this.input.blur()
-  }
-  
-  static get observedAttributes() { return ['value'] }
-  
-  attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
-    switch(name) {
-      case "value":
-        if (this.model && newValue !== undefined) {
-          this.model.value = newValue
+        this.input.onclick = () => {
+            console.log(`<Text> onClick`)
         }
-        break
     }
-  }
-  
-  override updateModel() {
-    if (this.model) {
-      this.model.value = this.input.value
-    }
-    this.setAttribute("value", this.input.value)
-  }
 
-  override updateView() {
-    if (!this.model)
-      return
-    const strValue = `${this.model.value}`
-    if (this.input.value !== strValue) {
-      this.input.value = strValue
-      this.setAttribute("value", this.input.value)
+    override focus() {
+        console.log(`Text.focus()`)
+        this.input.focus()
     }
-  }
-  
-  get value() {
-    return this.input.value
-  }
-  set value(value: string) {
-    this.input.value = value
-    this.updateModel() // FIXME: do we need this?
-  }
+    override blur() {
+        console.log(`Text.blur()`)
+        this.input.blur()
+    }
+
+    static get observedAttributes() { return ['value'] }
+
+    attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
+        switch (name) {
+            case "value":
+                if (this.model && newValue !== undefined) {
+                    this.model.value = newValue
+                }
+                break
+        }
+    }
+
+    override updateModel() {
+        if (this.model) {
+            this.model.value = this.input.value
+        }
+        this.setAttribute("value", this.input.value)
+    }
+
+    override updateView() {
+        if (!this.model)
+            return
+        const strValue = `${this.model.value}`
+        if (this.input.value !== strValue) {
+            this.input.value = strValue
+            this.setAttribute("value", this.input.value)
+        }
+    }
+
+    get value() {
+        return this.input.value
+    }
+    set value(value: string) {
+        this.input.value = value
+        this.updateModel() // FIXME: do we need this?
+    }
 }
 
 Text.define("tx-text", Text)

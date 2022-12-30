@@ -51,8 +51,9 @@ export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends V
             model.modified.add((data: T) => view.updateView(data), view)
 
         this.model = model
-        if (this.isConnected)
+        if (this.isConnected) {
             this.updateView(undefined)
+        }
     }
 
     override connectedCallback() {

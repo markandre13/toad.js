@@ -19,8 +19,9 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { TableFriend } from '@toad/table/private/TableFriend'
 
+import { TextModel } from "@toad/model/TextModel"
 import { NumberModel } from "@toad/model/NumberModel"
-import { Text as TextView } from "@toad/view/Text"
+import { Text } from "@toad/view/Text"
 import { Slider } from "@toad/view/Slider"
 import { Tab, Tabs } from '@toad/view/Tab'
 
@@ -105,7 +106,7 @@ describe("table", function () {
         })
     })
 
-    describe.only("Table Examples", function () {
+    describe("Table Examples", function () {
         it("display array of objects (using ArrayAdapter)", function () {
             // Domain Layer
             class Book {
@@ -283,8 +284,8 @@ describe("table", function () {
             expect(model.data[1].title).to.equal("Hello")
         })
         it("display and edit array of objects (custom adapter, EDIT_ON_FOCUS)", async function () {
-             // Domain Layer
-             class Book {
+            // Domain Layer
+            class Book {
                 title: string = ""
                 author: string = ""
                 year: number = 1970
@@ -371,7 +372,80 @@ describe("table", function () {
 
             expect(model.data[1].title).to.equal("Hello")
         })
+        it("display and edit array of objects (custom adapter, cell contains elements)", async function () {
+            // Domain Layer
+            class Book {
+                title: TextModel
+                author: TextModel
+                year: NumberModel
+                constructor(title: string = "", author: string = "", year: number = 1970) {
+                    this.title = new TextModel(title)
+                    this.author = new TextModel(author)
+                    this.year = new NumberModel(year)
+                }
+            }
 
+            const bookList = [
+                { title: "The Moon Is A Harsh Mistress", author: "Robert A. Heinlein", year: 1966 },
+                { title: "Stranger In A Strange Land", author: "Robert A. Heinlein", year: 1961 },
+                { title: "The Fountains of Paradise", author: "Arthur C. Clarke", year: 1979 },
+                { title: "Rendezvous with Rama", author: "Arthur C. Clarke", year: 1973 },
+                { title: "2001: A Space Odyssey", author: "Arthur C. Clarke", year: 1968 },
+                { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
+                { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
+                { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
+            ].map(book => new Book(book.title, book.author, book.year))
+
+            // Application Layer
+            const model = new ArrayModel<Book>(bookList, Book)
+            class BookAdapter extends TableAdapter<ArrayModel<Book>> {
+                constructor(model: ArrayModel<Book>) {
+                    super(model)
+                    this.config.editMode = EditMode.EDIT_ON_FOCUS
+                }
+                override get colCount(): number { return 1 }
+                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override showCell(pos: TablePos, cell: HTMLSpanElement) {
+                    cell.replaceChildren(
+                        <Text model={model.data[pos.row].title} style={{ width: "100px" }} />,
+                        <Text model={model.data[pos.row].author} style={{ width: "100px" }} />,
+                        <Text model={model.data[pos.row].year} style={{ width: "50px" }}/>
+                    )
+                }
+            }
+            TableAdapter.register(BookAdapter, ArrayModel, Book)
+
+            // for now the EDIT_ON_ENTER code only works when in SELECT_CELL
+            const selectionModel = new SelectionModel(TableEditMode.SELECT_CELL)
+
+            // View Layer
+            document.body.replaceChildren(
+                <Table
+                    style={{ width: `720px`, height: `350px` }}
+                    model={model}
+                    selectionModel={selectionModel}
+                />
+            )
+
+            // Test
+            await sleep()
+
+            const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
+            console.log(c0r1)
+            expect(c0r1).to.not.be.undefined
+
+            click(c0r1)
+            expect(hasFocus(c0r1)).to.be.true
+
+            // type("Hello", true)
+            console.log(c0r1)
+            c0r1.setAttribute("value", "Hello")
+
+            keyboard({ key: "Enter" }) // leave edit mode and jump to next cell
+            // expect(hasFocus(c0r1)).to.be.false
+
+            expect(model.data[1].title.value).to.equal("Hello")
+        })
     })
 
     describe("event", function () {
@@ -466,10 +540,10 @@ describe("table", function () {
                             break
                         case 1:
                             const x = <>
-                                <TextView model={node.x} style={{ width: '50px' }} />
-                                <TextView model={node.y} style={{ width: '50px' }} />
-                                <TextView model={node.z} style={{ width: '50px' }} />
-                            </> as Fragment
+                                <Text model={node.x} style={{ width: '50px' }} />
+                                <Text model={node.y} style={{ width: '50px' }} />
+                                <Text model={node.z} style={{ width: '50px' }} />
+                            </>
                             cell.replaceChildren(...x)
                             break
                     }
@@ -1173,7 +1247,7 @@ class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
             case 1:
                 if (node.model && node.down === undefined) {
                     const x = <>
-                        <TextView model={node.model} style={{ width: '50px', margin: '10px' }} />
+                        <Text model={node.model} style={{ width: '50px', margin: '10px' }} />
                         <Slider model={node.model} style={{ margin: '10px' }} />
                     </>
                     cell.replaceChildren(...x)

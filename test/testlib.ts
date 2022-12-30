@@ -2,6 +2,8 @@
 // https://testing-library.com/docs/dom-testing-library/cheatsheet
 // https://testing-library.com/docs/user-event/intro
 
+import { Text as TextView } from "@toad/view/Text"
+
 export function sleep(milliseconds: number = 0) {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
@@ -23,9 +25,16 @@ export function getById(id: string) {
 }
 
 export function getByText(text: string, node: Node = document): Element | undefined {
+    // HTML Text
     if (node instanceof Text) {
         if (text == node.nodeValue) {
-            return node.parentNode as Element
+            return (node as any).parentElement
+        }
+    }
+    // toad.js Text view
+    if (node instanceof TextView) {
+        if (text == node.value) {
+            return node
         }
     }
     if (node instanceof HTMLElement) {
