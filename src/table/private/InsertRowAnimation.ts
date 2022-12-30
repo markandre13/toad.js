@@ -101,10 +101,7 @@ export class InsertRowAnimation extends InsertAnimation {
         for (let row = this.event.index; row < this.event.index + this.event.size; ++row) {
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.table.createCell()
-                this.adapter.showCell(new TablePos(col, row), cell)
-                if (cell.children.length !== 0) {
-                    cell.style.caretColor = 'currentcolor'
-                }
+                this.table.showCell(new TablePos(col, row), cell)
                 this.measure.appendChild(cell)
             }
         }

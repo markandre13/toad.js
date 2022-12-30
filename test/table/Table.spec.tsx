@@ -1,6 +1,6 @@
 import { expect } from '@esm-bundle/chai'
 
-import { bindModel, unbind, Fragment, refs, TableEditMode } from "@toad"
+import { bindModel, unbind, refs, TableEditMode } from "@toad"
 
 import { Table } from '@toad/table/Table'
 import { TablePos } from "@toad/table/TablePos"
@@ -429,14 +429,12 @@ describe("table", function () {
             await sleep()
 
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
-            console.log(c0r1)
             expect(c0r1).to.not.be.undefined
 
             click(c0r1)
             expect(hasFocus(c0r1)).to.be.true
 
             // type("Hello", true)
-            console.log(c0r1)
             c0r1.setAttribute("value", "Hello")
 
             keyboard({ key: "Enter" }) // leave edit mode and jump to next cell

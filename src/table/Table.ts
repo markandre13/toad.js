@@ -526,7 +526,7 @@ export class Table extends View {
     }
 
     selectionChanged() {
-        console.log(`Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}, mode=${this.selection ? TableEditMode[this.selection!.mode] : 'undefined'}`)
+        // console.log(`Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}, mode=${this.selection ? TableEditMode[this.selection!.mode] : 'undefined'}`)
         if (this.selection === undefined) {
             return
         }
@@ -566,11 +566,7 @@ export class Table extends View {
         switch (event.type) {
             case TableEventType.CELL_CHANGED: {
                 const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
-                this.adapter!.showCell(event, cell)
-                // in case there are children, we may not edit inline and the children may need a non-transparent caret
-                if (cell.children.length !== 0) {
-                    cell.style.caretColor = 'currentcolor'
-                }
+                this.showCell(event, cell)
             } break
             case TableEventType.INSERT_ROW:
                 this.animator.run(new InsertRowAnimation(this, event))
@@ -697,15 +693,18 @@ export class Table extends View {
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = this.createCell()
-                this.adapter!.showCell({ col, row }, cell)
-
-                // in case there are children, we may not edit inline and the children may need a non-transparent caret
-                if (cell.children.length !== 0) {
-                    cell.style.caretColor = 'currentcolor'
-                }
-
+                this.showCell(new TablePos(col, row), cell)
                 this.measure.appendChild(cell)
             }
+        }
+    }
+
+    showCell(pos: TablePos, cell: HTMLSpanElement) {
+        this.adapter!.showCell(pos, cell)
+        
+        // in case there are children, we may not edit inline and the children may need a non-transparent caret
+        if (cell.children.length !== 0) {
+            cell.style.caretColor = 'currentcolor'
         }
     }
 
