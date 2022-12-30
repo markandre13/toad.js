@@ -475,7 +475,7 @@ describe("table", function () {
             await sleep()
             validateRender(model)
         })
-        it("makehuman.js, pose table, 1st column has size 0", async function () {
+        it.only("makehuman.js, pose table, 1st column has size 0", async function () {
             class Bone {
                 name: string
                 children: Bone[]
@@ -495,9 +495,9 @@ describe("table", function () {
                 z: NumberModel
 
                 constructor(bone: Bone | undefined = undefined) {
-                    this.x = new NumberModel(0, { min: -180, max: 180 })
-                    this.y = new NumberModel(0, { min: -180, max: 180 })
-                    this.z = new NumberModel(0, { min: -180, max: 180 })
+                    this.x = new NumberModel(0, { min: -180, max: 180, step: 5})
+                    this.y = new NumberModel(0, { min: -180, max: 180, step: 5 })
+                    this.z = new NumberModel(0, { min: -180, max: 180, step: 5 })
 
                     if (bone === undefined) {
                         return

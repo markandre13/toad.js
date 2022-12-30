@@ -29,6 +29,8 @@ export class Text extends ModelView<TextModel | NumberModel> {
         this.input = document.createElement("input")
         this.input.classList.add("tx-text")
         this.input.oninput = () => { this.updateModel() }
+        this.wheel = this.wheel.bind(this)
+        this.input.onwheel = this.wheel
         this.attachShadow({ mode: 'open' })
         this.attachStyle(txText)
         this.shadowRoot!.appendChild(this.input)
@@ -36,6 +38,19 @@ export class Text extends ModelView<TextModel | NumberModel> {
         // this.input.onclick = () => {
         //     console.log(`<Text> onClick`)
         // }
+    }
+
+    protected wheel(e: WheelEvent) {
+        if (this.model instanceof NumberModel) {
+            if (e.deltaY > 0) {
+                this.model.decrement()
+                e.preventDefault()
+            }
+            if (e.deltaY < 0) {
+                this.model.increment()
+                e.preventDefault()
+            }
+        }
     }
 
     override focus() {

@@ -37,4 +37,14 @@ export class NumberModel extends GenericModel<number> {
       this.step = options.step
     }
   }
+  increment() {
+    if (this.step !== undefined) {
+        this.value += this.step
+    }
+  }
+  decrement() {
+    if (this.step !== undefined) {
+        this.value -= this.step
+    }
+  }
 }
