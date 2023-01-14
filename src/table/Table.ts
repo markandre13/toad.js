@@ -205,7 +205,7 @@ export class Table extends View {
             Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
                 Table.allTables.forEach(table => {
                     if (isVisible(table)) {
-                        Table.allTables.delete(this)
+                        Table.allTables.delete(table)
                         table.prepareCells()
                     }
                 })
