@@ -109,9 +109,6 @@ export class Table extends View {
     // test api
     animationDone?: () => void
 
-    // delay before we can successfully start a transition after adding elements to the dom
-    static renderDelay = 50
-
     // this will be set to lineheight
     minCellHeight!: number
     minCellWidth!: number
@@ -699,6 +696,24 @@ export class Table extends View {
         }
     }
 
+    createCell() {
+        const cell = span()
+        cell.onfocus = this.cellFocus
+        cell.onkeydown = this.cellKeyDown
+        cell.tabIndex = 0
+        // if (this.adapter?.config.editMode !== EditMode.NO_EDIT) {
+        cell.setAttribute("contenteditable", "")
+        // }
+        return cell
+    }
+
+    setCellSize(span: HTMLSpanElement, x: number, y: number, w: number, h: number) {
+        span.style.left = `${x}px`
+        span.style.top = `${y}px`
+        span.style.width = `${w - this.WIDTH_ADJUST}px`
+        span.style.height = `${h - this.HEIGHT_ADJUST}px`
+    }
+
     showCell(pos: TablePos, cell: HTMLSpanElement) {
         this.adapter!.showCell(pos, cell)
         
@@ -921,24 +936,6 @@ export class Table extends View {
             }
             y += rowHeights[row] - 2 + seam
         }
-    }
-
-    createCell() {
-        const cell = span()
-        cell.onfocus = this.cellFocus
-        cell.onkeydown = this.cellKeyDown
-        cell.tabIndex = 0
-        // if (this.adapter?.config.editMode !== EditMode.NO_EDIT) {
-        cell.setAttribute("contenteditable", "")
-        // }
-        return cell
-    }
-
-    setCellSize(span: HTMLSpanElement, x: number, y: number, w: number, h: number) {
-        span.style.left = `${x}px`
-        span.style.top = `${y}px`
-        span.style.width = `${w - this.WIDTH_ADJUST}px`
-        span.style.height = `${h - this.HEIGHT_ADJUST}px`
     }
 
     createHandle(idx: number, x: number, y: number, w: number, h: number) {

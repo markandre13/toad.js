@@ -546,7 +546,17 @@ describe("table", function () {
                 }
             }
 
-            const bones = new Bone("root", [new Bone("spine.05", [])])
+            const bones = new Bone("root", [
+                new Bone("pelvis.R", [
+                    new Bone("upperleg01.R", [])
+                ]),
+                new Bone("pelvis.L", [
+                    new Bone("upperleg01.L", [])
+                ]),
+                new Bone("spine05", [
+                    new Bone("spine04", [])
+                ])
+            ])
             const poseNodes = new PoseNode(bones)
 
             TreeAdapter.register(PoseTreeAdapter, TreeNodeModel, PoseNode)
@@ -565,8 +575,14 @@ describe("table", function () {
             )
             await sleep()
 
-            // [ ] Morph Tab has no bar
-            // [ ] switching to Pose tab results in first column of width 0
+            // [X] Morph Tab has no bar
+            // [X] switching to Pose tab results in first column of width 0
+            // [ ] o switch to pose tab
+            //     o open root
+            //     o switch to morph tab
+            //     o switch to pose tab
+            //      o close root
+            //      => two root nodes appear
         })
         // FIXME: unstable test
         it("insert row into table which already has row and column headers", async function () {

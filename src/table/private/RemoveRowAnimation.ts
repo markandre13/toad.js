@@ -19,7 +19,6 @@
 import { TableEvent } from '../TableEvent'
 import { Table, px2float } from '../Table'
 import { TableAnimation } from "./TableAnimation"
-import { span } from '@toad/util/lsx'
 
 export class RemoveRowAnimation extends TableAnimation {
     static current?: RemoveRowAnimation
@@ -42,9 +41,9 @@ export class RemoveRowAnimation extends TableAnimation {
         if (this.body.children.length === 0) {
             this.initialHeight = 0
         } else {
-            const cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-            const top = px2float(cell.style.top)
-            const bounds = cell.getBoundingClientRect()
+            const bottomCell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+            const top = px2float(bottomCell.style.top)
+            const bounds = bottomCell.getBoundingClientRect()
             this.initialHeight = top + bounds.height
         }
         this.overlap = this.adapter.config.seamless ? 0 : 1
