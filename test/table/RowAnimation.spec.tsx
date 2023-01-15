@@ -1,6 +1,5 @@
 import { expect } from '@esm-bundle/chai'
 import { bindModel, unbind } from "@toad"
-import { Table } from '@toad/table/Table'
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
@@ -23,8 +22,8 @@ describe("table", function () {
     beforeEach(async function () {
         unbind()
         TableAdapter.unbind()
-        Table.maskColor = `rgba(0,0,128,0.3)`
-        Table.splitColor = `rgba(255,128,0,0.5)`
+        // Table.maskColor = `rgba(0,0,128,0.3)`
+        // Table.splitColor = `rgba(255,128,0,0.5)`
         AnimationBase.animationFrameCount = 1
         Animator.halt = true
         document.head.replaceChildren(txBase, txStatic, txDark)
@@ -1068,7 +1067,7 @@ describe("table", function () {
                     const removeHeight = initialHeight
                     // the split body has a border on top and bottom
                     const splitY0 = 0
-                    const splitH0 = initialHeight
+                    const splitH0 = 1 // no rows
                     // the mask will hide the rows to be removed, hence it is placed directly below them
                     const maskY0 = initialHeight
                     const maskH0 = initialHeight
@@ -1077,8 +1076,13 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#2:0,${y1},80,64`)
                     expect(table.body.children).to.have.lengthOf(4)
 
-                    // ...remote all rows
+                    // AnimationBase.animationFrameCount = 468
+                    // Animator.halt = false
+
+                    // ...remove all rows
                     model.removeRow(0, 2)
+
+                    // return
 
                     const animation = RemoveRowAnimation.current!
                     expect(animation.initialHeight, "initialHeight").to.equal(initialHeight)
@@ -1297,7 +1301,7 @@ describe("table", function () {
                     const removeHeight = border + 48 + border + 72
                     // the split body has a border on top and bottom
                     const splitY0 = y2
-                    const splitH0 = border + 48 + border + 72 + border
+                    const splitH0 = 1 // split body is empty
                     // the mask will hide the rows to be removed, hence it is placed directly below them
                     // FIXME: this is one too much!!!
                     const maskY0 = initialHeight
@@ -1309,7 +1313,7 @@ describe("table", function () {
                     expect(bodyRowInfo(3)).to.equal(`#4:0,${y3},80,72`)
                     expect(table.body.children).to.have.lengthOf(8)
 
-                    // ...at the head insert two rows
+                    // ...at the end remove two rows
                     model.removeRow(2, 2)
                     const animation = RemoveRowAnimation.current!
 
@@ -1440,7 +1444,7 @@ describe("table", function () {
                     const removeHeight = initialHeight
                     // the split body has a border on top and bottom
                     const splitY0 = 0
-                    const splitH0 = initialHeight
+                    const splitH0 = 1 // no rows
                     // the mask will hide the rows to be removed, hence it is placed directly below them
                     const maskY0 = initialHeight
                     const maskH0 = initialHeight
@@ -1451,7 +1455,7 @@ describe("table", function () {
                     expect(bodyRowInfo(1)).to.equal(`#2:0,${y1},80,64`)
                     expect(table.body.children).to.have.lengthOf(4)
 
-                    // ...remote all rows
+                    // ...remove all rows
 
                     // AnimationBase.animationFrameCount = 6000
                     // Animator.halt = false
@@ -1754,13 +1758,13 @@ describe("table", function () {
 
                     // ...at the head insert two rows
 
-                    // AnimationBase.animationFrameCount = 6000
-                    // Animator.halt = false
+                    AnimationBase.animationFrameCount = 6000
+                    Animator.halt = false
 
                     model.removeRow(2, 2)
                     const animation = RemoveRowAnimation.current!
 
-                    // return
+                    return
 
                     // WHEN ask for the new rows to be placed
                     animation.prepareStagingWithRows()

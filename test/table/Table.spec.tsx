@@ -83,7 +83,7 @@ describe("table", function () {
         unbind()
         TableAdapter.unbind()
         Animator.halt = false
-        AnimationBase.animationFrameCount = 1
+        AnimationBase.animationFrameCount = 2000
         // InsertRowAnimation.halt = false
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
@@ -562,16 +562,19 @@ describe("table", function () {
             TreeAdapter.register(PoseTreeAdapter, TreeNodeModel, PoseNode)
             const poseControls = new TreeNodeModel(PoseNode, poseNodes)
 
+            Table.maskColor = `rgba(0,0,128,0.3)`
+            Table.splitColor = `rgba(255,128,0,0.5)`
+
             document.body.replaceChildren(
-                <Tabs>
-                    <Tab label="Morph" value="MORPH">WIP</Tab>
-                    <Tab label="Pose" value="POSE">
+                // <Tabs>
+                //     <Tab label="Morph" value="MORPH">WIP</Tab>
+                //     <Tab label="Pose" value="POSE">
                         <Table style={{
                             width: `720px`,
                             height: `350px`
                         }} model={poseControls} />
-                    </Tab>
-                </Tabs>
+                //     </Tab>
+                // </Tabs>
             )
             await sleep()
 

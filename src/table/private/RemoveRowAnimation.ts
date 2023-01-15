@@ -113,15 +113,8 @@ export class RemoveRowAnimation extends TableAnimation {
         }
 
         // fix the stuff split horizontal row hadn't enough information to do
-        const top = px2float(this.splitBody.style.top)
-        this.splitBody.style.height = `${this.initialHeight - top}px`
-        this.topSplitBody = top
+        this.topSplitBody = px2float(this.splitBody.style.top)
         this.topMask = px2float(this.mask.style.top)
-
-        if (this.rowHeads !== undefined) {
-            this.splitHead.style.top = `${top}px`
-            this.splitHead.style.height = `${this.initialHeight - top}px`
-        }
     }
 
     joinHorizontal() {

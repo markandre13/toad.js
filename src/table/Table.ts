@@ -1356,6 +1356,7 @@ export class Table extends View {
         this.splitBody.style.backgroundColor = Table.splitColor
         const idx = splitRow * this.adapter!.colCount
         if (this.body.children.length === 0) {
+            // body is empty, nothing to split, just add a line to affect the scrollbars (?)
             this.splitBody.style.top = `0px`
             this.splitBody.style.height = `1px`
         } else {
@@ -1381,10 +1382,10 @@ export class Table extends View {
                 this.splitBody.style.top = `${top}px`
                 this.splitBody.style.height = `${height}px`
             } else {
-                let cell = this.body.children[this.body.children.length - 1] as HTMLSpanElement
-                let b = cell.getBoundingClientRect()
-                let top = px2float(cell.style.top) + b.height - overlap
-                this.splitBody.style.top = `${top}px`
+                let cellAtBottom = this.body.children[this.body.children.length - 1] as HTMLSpanElement
+                let b = cellAtBottom.getBoundingClientRect()
+                let top = px2float(cellAtBottom.style.top) + b.height - overlap
+                this.splitBody.style.top = `${top}px` // FIXME: the should rather be at the end of staging?
                 this.splitBody.style.height = `1px`
             }
         }

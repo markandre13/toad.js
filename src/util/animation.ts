@@ -86,6 +86,10 @@ export class AnimationBase {
             return
         }
 
+        // if (value >= 0.1) {
+        //     return
+        // }
+
         if (value < 1.0) {
             this.requestAnimationFrame(this._animationFrame.bind(this))
         } else {
