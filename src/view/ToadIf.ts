@@ -17,17 +17,22 @@
  */
 
 import { BooleanModel } from "../model/BooleanModel"
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 
 // <tx-if> requires correct XHTML otherwise <tx-if> and it's content might
 // be separated by stuff like an </p> inserted automatically by the browser
 // so one should use stuff like htmltidy or htmlhint
 export class ToadIf extends ModelView<BooleanModel> {
-  override updateView() {
-    if (this.model) {
-      this.style.display = this.model.value ? "" : "none"
+
+    constructor(init?: ModelViewProps<BooleanModel>) {
+        super(init)
     }
-  }
+
+    override updateView() {
+        if (this.model) {
+            this.style.display = this.model.value ? "" : "none"
+        }
+    }
 }
 
 ToadIf.define("tx-if", ToadIf)

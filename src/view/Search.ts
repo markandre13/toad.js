@@ -16,14 +16,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 import { form, input, button, svg, path, div } from "../util/lsx"
 import { TextModel } from "../model/TextModel"
 import { style as txSearch } from "../style/tx-search"
 
 export class Search extends ModelView<TextModel> {
-    constructor() {
-        super()
+    constructor(init?: ModelViewProps<TextModel>) {
+        super(init)
         let s0, s1, b, i, p
         const f = form(
             div(

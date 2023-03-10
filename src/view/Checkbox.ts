@@ -17,14 +17,17 @@
  */
 
 import { BooleanView } from "./BooleanView"
+import { BooleanModel } from "../model/BooleanModel"
+import { ModelViewProps } from "./ModelView"
 
 import { input, svg, path } from "../util/lsx"
 import { style as txCheckbox } from "../style/tx-checkbox"
 
+
 export class Checkbox extends BooleanView {
 
-    constructor() {
-        super()
+    constructor(init?: ModelViewProps<BooleanModel>) {
+        super(init)
 
         this.classList.add("tx-checkbox")
 

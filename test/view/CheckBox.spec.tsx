@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { BooleanModel, bindModel, unbind } from "@toad"
+import { Checkbox, BooleanModel, bindModel, unbind } from "@toad"
 
 describe("view", function () {
 
@@ -34,6 +34,17 @@ describe("view", function () {
                     bindModel("bool", model)
                     document.body.innerHTML = "<tx-checkbox model='bool'></tx-checkbox>"
                     expect(isChecked()).to.equal(false)
+                })
+
+                it.only("works when using JSX", async function () {
+                    // const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
+                    const model = new BooleanModel(true)
+
+                    document.body.innerHTML = ""
+                    document.body.appendChild(<Checkbox model={model} />)
+
+                    // let view = document.body.children[0]
+                    // expect(view.getAttribute("value")).to.equal("alpha")
                 })
             })
 

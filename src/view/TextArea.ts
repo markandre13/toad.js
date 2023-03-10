@@ -18,16 +18,16 @@
 
 import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
-import { ModelView } from "./ModelView"
 import { TextTool } from "./TextTool"
+import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
 
 export class TextArea extends ModelView<TextModel> {
 
     content: HTMLElement
 
-    constructor() {
-        super()
+    constructor(init?: ModelViewProps<TextModel | HtmlModel>) {
+        super(init)
 
         // FIXME: when model is not HtmlModel but TextModel, use <textarea> instead of <div contenteditable>
         let content = document.createElement("div")

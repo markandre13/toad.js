@@ -16,13 +16,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { input, span } from "../util/lsx"
 import { BooleanView } from "./BooleanView"
+import { BooleanModel } from "../model/BooleanModel"
+import { ModelViewProps } from "./ModelView"
+
 import { style as txSwitch } from "../style/tx-switch"
+import { input, span } from "../util/lsx"
 
 export class Switch extends BooleanView {
-    constructor() {
-        super()
+
+    constructor(init?: ModelViewProps<BooleanModel>) {
+        super(init)
 
         this.classList.add("tx-switch")
 

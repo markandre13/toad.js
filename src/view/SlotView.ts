@@ -18,21 +18,23 @@
 
 import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 
 export class SlotView extends ModelView<TextModel> {
-  constructor() { super() }
-  override updateView() {
-    if (!this.model)
-      return
+    constructor(init?: ModelViewProps<TextModel>) {
+        super(init)
+    }
+    override updateView() {
+        if (!this.model)
+            return
 
-    let value = this.model.value === undefined ? "" : this.model.value
-    if (this.model instanceof HtmlModel)
-      this.innerHTML = value
+        let value = this.model.value === undefined ? "" : this.model.value
+        if (this.model instanceof HtmlModel)
+            this.innerHTML = value
 
-    else
-      this.innerText = value
-  }
+        else
+            this.innerText = value
+    }
 }
 
 SlotView.define("tx-slot", SlotView)
