@@ -23,7 +23,6 @@ import { TextModel } from "@toad/model/TextModel"
 import { NumberModel } from "@toad/model/NumberModel"
 import { Text } from "@toad/view/Text"
 import { Slider } from "@toad/view/Slider"
-import { Tab, Tabs } from '@toad/view/Tab'
 
 import { span, input, text } from "@toad/util/lsx"
 

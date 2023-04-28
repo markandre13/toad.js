@@ -82,6 +82,17 @@ interface TableProps extends HTMLElementProps {
 }
 
 /**
+ * Table can be used to render 
+ * * lists (one column/row has width 1)
+ * * tables (any column and row size) and
+ * * trees (the first column visualizes the tree structure and allows to open/close subtrees)
+ * 
+ * TableModel objects wrap your application's data representation and may include support to
+ *   add/remove entries.
+ * 
+ * TableAdapter objects are centrally registered and looked up by Table to render the cells
+ *   of specific TableModels.
+ * 
  * @category View
  */
 export class Table extends View {
@@ -259,20 +270,20 @@ export class Table extends View {
             return
         // FIXME: based on the selection model we could plug in a behaviour class
         switch (this.selection.mode) {
-            //     case TableEditMode.SELECT_ROW: {
-            //         let row = this.selection.value.row
-            //         switch (ev.key) {
-            //             case "ArrowDown":
-            //                 if (row + 1 < this.adapter!.rowCount)
-            //                     ++row
-            //                 break
-            //             case "ArrowUp":
-            //                 if (row > 0)
-            //                     --row
-            //                 break
-            //         }
-            //         this.selection.row = row
-            //     } break
+            case TableEditMode.SELECT_ROW: {
+                let row = this.selection.value.row
+                switch (ev.key) {
+                    case "ArrowDown":
+                        if (row + 1 < this.adapter!.rowCount)
+                            ++row
+                        break
+                    case "ArrowUp":
+                        if (row > 0)
+                            --row
+                        break
+                }
+                this.selection.row = row
+            } break
             case TableEditMode.SELECT_CELL: {
                 let pos = { col: this.selection.col, row: this.selection.row }
                 switch (ev.key) {
@@ -437,7 +448,7 @@ export class Table extends View {
                 console.log(`WARN: Table.editCell(): already editing ANOTHER cell`)
             }
         }
-        // console.log(`Table.editCell()`)
+        console.log(`Table.editCell()`)
         const col = this.selection!.value.col
         const row = this.selection!.value.row
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
@@ -451,7 +462,7 @@ export class Table extends View {
         if (this.editing === undefined) {
             return
         }
-        // console.log(`Table.saveCell()`)
+        console.log(`Table.saveCell()`)
         const col = this.editing.col
         const row = this.editing.row
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
@@ -533,14 +544,6 @@ export class Table extends View {
         this.saveCell()
         switch (this.selection.mode) {
             case TableEditMode.EDIT_CELL: {
-                // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-                if (document.activeElement === this) {
-                    const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                    // cell.focus()
-                    scrollIntoView(cell)
-                }
-            } break
-            case TableEditMode.SELECT_CELL: {
                 if (document.activeElement === this) {
                     const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
                     // TODO: don't focus on cell in case controll inside the cell was clicked
@@ -552,13 +555,21 @@ export class Table extends View {
                         this.editCell()
                     }
                 }
-                break
-            }
+            } break
+            case TableEditMode.SELECT_CELL:
             case TableEditMode.SELECT_ROW: {
-                // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-                // this.toggleRowSelection(this.selectionModel.value.row, true)
-                break
-            }
+                // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                if (document.activeElement === this) {
+                    const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
+                    cell.focus()
+                    scrollIntoView(cell)
+                }
+            } break
+            // case TableEditMode.SELECT_ROW: {
+            //     // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+            //     // this.toggleRowSelection(this.selectionModel.value.row, true)
+
+            // } break
         }
     }
 
@@ -719,7 +730,7 @@ export class Table extends View {
 
     showCell(pos: TablePos, cell: HTMLSpanElement) {
         this.adapter!.showCell(pos, cell)
-        
+
         // in case there are children, we may not edit inline and the children may need a non-transparent caret
         if (cell.children.length !== 0) {
             cell.style.caretColor = 'currentcolor'

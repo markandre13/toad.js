@@ -19,8 +19,6 @@
 import { Model } from "../../model/Model"
 import { TableEvent } from "../TableEvent"
 
-// TODO: API for insert, delete and move rows and columns
-
 /**
  * @category Application Model
  */
