@@ -156,6 +156,8 @@ export class Table extends View {
 
     constructor(props?: TableProps) {
         super()
+        // super(props) // FIXME: this breaks toggling the trees in the treeview.
+        // console.log("Table::constructor()")
 
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
         this.hostKeyDown = this.hostKeyDown.bind(this)
@@ -208,8 +210,9 @@ export class Table extends View {
 
         if (props) {
             setInitialProperties(this, props)
-            if (props.selectionModel)
+            if (props.selectionModel) {
                 this.setModel(props.selectionModel)
+            }
         }
 
         if (Table.observer === undefined) {
@@ -229,11 +232,20 @@ export class Table extends View {
     }
 
     override connectedCallback(): void {
-        if (isVisible(this)) {
-            this.prepareCells()
-        } else {
-            Table.allTables.add(this)
-        }
+        // console.log(`Table::connectedCallback()`)
+
+        // when defined as HTML, isVisible() for the parents does not work as they are
+        // HTMLElements waiting to be upgraded to our custom elements.
+        setTimeout(() => {
+            if (isVisible(this)) {
+                // console.log(`Table::connectedCallback2(): visible ${this.parentElement?.children.length}`)
+                this.prepareCells()
+            } else {
+                // console.log(`Table::connectedCallback2(): not visible`)
+                Table.allTables.add(this)
+            }
+        }, 0)
+
         super.connectedCallback()
         if (this.selection === undefined) {
             this.selection = new SelectionModel(TableEditMode.SELECT_CELL)
