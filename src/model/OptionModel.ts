@@ -18,6 +18,9 @@
 
 import { OptionModelBase } from "./OptionModelBase"
 
+/**
+ * @category Application Model
+ */
 export class OptionModel<T> extends OptionModelBase {
     private stringToType = new Map<string, T>()
     private typeToString = new Map<T, string>()

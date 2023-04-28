@@ -24,6 +24,9 @@ import { TableEventType } from "../TableEventType"
 import { Reference } from "toad.jsx"
 import { TablePos } from "../TablePos"
 
+/**
+ * @category Table Adapter
+ */
 export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
 
     abstract getColumnHeads(): Array<string> | undefined

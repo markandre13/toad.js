@@ -21,6 +21,9 @@ import { MenuButton } from "./MenuButton"
 import { MenuState } from "./MenuState"
 import { HTMLElementProps } from "toad.jsx"
 
+/**
+ * @internal 
+ */
 export class MenuButtonContainer extends View {
   vertical: boolean
   closeOnClose: boolean

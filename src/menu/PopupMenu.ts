@@ -21,6 +21,9 @@ import { MenuButton } from "./MenuButton"
 import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuHelper"
 
+/**
+ * @internal 
+ */
 export class PopupMenu extends MenuButtonContainer {
   root: MenuNode
   // vertical: boolean

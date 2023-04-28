@@ -23,6 +23,8 @@ import { SpreadsheetCell } from "./SpreadsheetCell"
 
 /**
  * A simple spreadsheet.
+ * 
+ * @category Application Model
  */
 export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
     protected dependencies = new Map<SpreadsheetCell, Set<SpreadsheetCell>>();

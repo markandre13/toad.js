@@ -23,6 +23,8 @@ import { ColumnEditInterface, RowEditInterface } from "./TableModel"
 
 /**
  * A two dimensional grid in which rows and columns can be added and removed.
+ * 
+ * @category Application Model
  */
 export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInterface, ColumnEditInterface {
     protected _cols: number

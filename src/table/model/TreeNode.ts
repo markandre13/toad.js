@@ -16,6 +16,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @category Application Model
+ */
 export interface TreeNode {
     next?: TreeNode
     down?: TreeNode

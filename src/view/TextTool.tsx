@@ -22,6 +22,9 @@ import { textAreaStyle } from "./textAreaStyle"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
+/**
+ * @category View
+ */
 export class TextTool extends ModelView<Model> {
     // FIXME: make this a list where all texttools register/unregister via connectedCallback()/disconnectedCallback()
     // FIXME: disable texttool when it is not above an active textarea in the view hierachy

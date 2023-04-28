@@ -22,6 +22,9 @@ import { TextTool } from "./TextTool"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
 
+/**
+ * @category View
+ */
 export class TextArea extends ModelView<TextModel> {
 
     content: HTMLElement

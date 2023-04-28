@@ -20,6 +20,9 @@ import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txSlider } from "../style/tx-slider"
 
+/**
+ * @category View
+ */
 export class Slider extends ModelView<NumberModel> {
   input: HTMLInputElement
 

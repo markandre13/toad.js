@@ -20,6 +20,9 @@ import { HtmlModel } from "../model/HtmlModel"
 import { TextModel } from "../model/TextModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 
+/**
+ * @category View
+ */
 export class SlotView extends ModelView<TextModel> {
     constructor(init?: ModelViewProps<TextModel>) {
         super(init)

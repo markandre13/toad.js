@@ -19,6 +19,9 @@
 import { TreeModel } from './TreeModel'
 import { TreeNode } from './TreeNode'
 
+/**
+ * @category Application Model
+ */
 export class TreeNodeModel<T extends TreeNode> extends TreeModel<T> {
     root?: T
     constructor(nodeClass: new() => T, root?: T) {

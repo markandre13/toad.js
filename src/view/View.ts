@@ -22,6 +22,10 @@ import { Controller } from "../controller/Controller"
 import { HTMLElementProps, setInitialProperties } from "toad.jsx"
 
 // TODO: do we use this directly or is GenericView it's only subclass?
+
+/**
+ * @category View
+ */
 export class View extends HTMLElement {
 
     public static define(name: string, view: CustomElementConstructor, options?: ElementDefinitionOptions) {

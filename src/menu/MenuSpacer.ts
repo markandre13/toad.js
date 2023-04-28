@@ -17,6 +17,10 @@
  */
 
 import { View } from "../view/View"
+
+/**
+ * @internal 
+ */
 export class MenuSpacer extends HTMLElement {}
 
 View.define("tx-menuspacer", MenuSpacer)

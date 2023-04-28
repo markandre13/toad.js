@@ -21,6 +21,9 @@ import { MenuButtonContainer } from "./MenuHelper"
 import { TextModel } from "../model/TextModel"
 import { HtmlModel } from "../model/HtmlModel"
 
+/**
+ * @internal 
+ */
 export class MenuNode {
   title: string
   label: string

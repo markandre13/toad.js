@@ -20,6 +20,9 @@
 //     return Buffer.from(str).toString("base64")
 // }
 
+/**
+ * @internal 
+ */
 export const menuStyle = document.createElement("style")
 menuStyle.textContent=`
   :host(.menu-button) {

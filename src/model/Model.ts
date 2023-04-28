@@ -20,6 +20,9 @@ import { Signal } from "../Signal"
 
 export type InferModelParameter<M> = M extends Model<infer T> ? T : never
 
+/**
+ * @category Application Model
+ */
 export abstract class Model<T = void> {
     modified: Signal<T>
     protected _enabled = true

@@ -39,6 +39,9 @@ interface MenuProps extends HTMLElementProps {
   config?: MenuConfig[]
 }
 
+/**
+ * @category View
+ */
 export class Menu extends MenuButtonContainer {
   root: MenuNode
   view?: HTMLElement

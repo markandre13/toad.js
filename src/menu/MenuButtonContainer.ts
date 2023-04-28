@@ -19,6 +19,9 @@
 import { MenuButton } from "./MenuButton"
 import { MenuState } from "./MenuState"
 
+/**
+ * @internal 
+ */
 export class MenuButtonContainer extends HTMLElement {
   vertical: boolean
   closeOnClose: boolean

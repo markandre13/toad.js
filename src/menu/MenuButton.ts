@@ -28,6 +28,9 @@ import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuButtonContainer"
 import { PopupMenu } from "./PopupMenu"
 
+/**
+ * @internal 
+ */
 export class MenuButton extends ModelView<TextModel> {
   static inside?: MenuButton
   static buttonDown: boolean

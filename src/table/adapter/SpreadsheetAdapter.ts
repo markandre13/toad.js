@@ -21,6 +21,9 @@ import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { EditMode } from '@toad/table/adapter/TableAdapter'
 import { GridAdapter } from "./GridAdapter"
 
+/**
+ * @category Table Adapter
+ */
 export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<T> {
 
     constructor(model: T) {

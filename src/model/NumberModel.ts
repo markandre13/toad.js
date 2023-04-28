@@ -24,6 +24,9 @@ export interface NumberModelOptions {
     step?: number
 }
 
+/**
+ * @category Application Model
+ */
 export class NumberModel extends GenericModel<number> {
     min?: number
     max?: number

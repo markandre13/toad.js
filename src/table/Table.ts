@@ -81,6 +81,9 @@ interface TableProps extends HTMLElementProps {
     selectionModel?: SelectionModel
 }
 
+/**
+ * @category View
+ */
 export class Table extends View {
 
     static maskColor = `#1e1e1e`

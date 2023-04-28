@@ -58,6 +58,7 @@ export class TableAdapterConfig {
  * 
  * TODO: Allow to register multiple adapters for the same model, which are then distinguished
  *       by and additional id.
+ * @category Table Adapter
  */
 export class TableAdapter<T extends TableModel> {
     model: T

@@ -22,7 +22,9 @@ import { RowEditInterface } from "./TableModel"
 import { TypedTableModel } from "./TypedTableModel"
 
 /**
- * A one dimensional array of rows of type T.
+ *  A one dimensional array of rows of type T.
+ * 
+ * @category Application Model
  */
 export abstract class ArrayTableModel<T>
     extends TypedTableModel<T>

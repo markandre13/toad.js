@@ -26,6 +26,9 @@ import { TableModel, RowEditInterface, ColumnEditInterface } from "./model/Table
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
+/**
+ * @category View
+ */
 export class TableTool extends GenericTool<Model> {
     toolbar: HTMLDivElement
     buttonAddRowAbove: HTMLElement

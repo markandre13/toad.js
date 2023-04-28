@@ -21,6 +21,9 @@ import { GridTableModel } from "@toad/table/model/GridTableModel"
 import { TypedTableAdapter } from '@toad/table/adapter/TypedTableAdapter'
 import { TablePos } from "../TablePos"
 
+/**
+ * @category Table Adapter
+ */
 export abstract class GridAdapter<M extends GridTableModel<any>> extends TypedTableAdapter<M> {
     override showCell(pos: TablePos, cell: HTMLSpanElement){
         if (!this.model) {

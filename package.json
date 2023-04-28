@@ -37,6 +37,7 @@
         "dev:test": "if test -z \"$npm_config_file\" ; then wtr --watch 'lib/test/**/*.spec.js' ; else wtr --watch \"$npm_config_file\" ; fi",
         "dev:serve": "wds --node-resolve --watch --open --app-index docs/index.dev.html",
         "build:docs": "hash=`date | shasum` ; hash=${hash%% *} ; rollup --config docs/rollup.config.js && sed \"s|../lib/docs/main.js|main.js?hash=${hash}|;s|../style/|style/|g;s|../polyfill/||\" docs/index.dev.html > docs/index.html && mkdir -p docs/style && cp style/* docs/style",
+        "build:html": "typedoc --categorizeByGroup --excludeInternal --out html src",
         "update": "npx npm-check-updates -u && npm install"
     },
     "devDependencies": {
@@ -50,6 +51,7 @@
         "@web/test-runner": "^0.16.1",
         "rollup-plugin-typescript2": "^0.34.1",
         "ttypescript": "^1.5.15",
+        "typedoc": "^0.24.6",
         "typescript": "^4.9.5"
     },
     "dependencies": {

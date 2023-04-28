@@ -23,6 +23,9 @@ import { ModelViewProps } from "./ModelView"
 import { style as txSwitch } from "../style/tx-switch"
 import { input, span } from "../util/lsx"
 
+/**
+ * @category View
+ */
 export class Switch extends BooleanView {
 
     constructor(init?: ModelViewProps<BooleanModel>) {

@@ -18,6 +18,9 @@
 
 import { TextModel } from "./TextModel"
 
+/**
+ * @category Application Model
+ */
 export class HtmlModel extends TextModel {
   constructor(value: string) {
     super(value)

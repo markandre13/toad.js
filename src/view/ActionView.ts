@@ -29,6 +29,9 @@ export interface ActionViewProps extends HTMLElementProps {
     action?: Action | Function
 }
 
+/**
+ * @category View
+ */
 export abstract class ActionView extends ModelView<TextModel> {
   action?: Action
 

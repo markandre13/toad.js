@@ -56,6 +56,9 @@ export interface ToolButtonProps extends ModelViewProps<OptionModelBase> {
     disabled?: boolean
 }
 
+/**
+ * @category View
+ */
 export class ToolButton extends ModelView<OptionModelBase> {
     constructor(init?: ToolButtonProps) {
         super(init)

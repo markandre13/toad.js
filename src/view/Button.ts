@@ -22,6 +22,9 @@ import { ActionView, ActionViewProps } from "./ActionView"
 import { button, span } from "../util/lsx"
 import { style as txButton } from  "../style/tx-button"
 
+/**
+ * @category View
+ */
 export class Button extends ActionView {
     button: HTMLButtonElement
     label: HTMLSpanElement

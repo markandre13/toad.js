@@ -19,6 +19,9 @@
 import { BooleanModel } from "../model/BooleanModel"
 import { ModelView } from "./ModelView"
 
+/**
+ * @category View
+ */
 export abstract class BooleanView extends ModelView<BooleanModel> {
     input!: HTMLInputElement
 

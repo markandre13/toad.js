@@ -23,7 +23,9 @@ import { ModelViewProps } from "./ModelView"
 import { input, svg, path } from "../util/lsx"
 import { style as txCheckbox } from "../style/tx-checkbox"
 
-
+/**
+ * @category View
+ */
 export class Checkbox extends BooleanView {
 
     constructor(init?: ModelViewProps<BooleanModel>) {

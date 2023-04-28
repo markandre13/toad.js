@@ -18,6 +18,9 @@
 
 import { Model } from "./Model"
 
+/**
+ * @category Application Model
+ */
 export class GenericModel<T> extends Model {
   protected _value: T
 

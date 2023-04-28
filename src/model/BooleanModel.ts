@@ -18,6 +18,9 @@
 
 import { GenericModel } from "./GenericModel"
 
+/**
+ * @category Application Model
+ */
 export class BooleanModel extends GenericModel<boolean> {
   constructor(value: boolean) {
     super(value)

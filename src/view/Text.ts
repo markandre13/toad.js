@@ -21,6 +21,9 @@ import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
 
+/**
+ * @category View
+ */
 export class Text extends ModelView<TextModel | NumberModel> {
     input: HTMLInputElement
 

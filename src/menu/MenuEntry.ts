@@ -17,6 +17,10 @@
  */
 
 import { View } from "../view/View"
+
+/**
+ * @internal 
+ */
 export class MenuEntry extends HTMLElement {}
 
 View.define("tx-menuentry", MenuEntry)

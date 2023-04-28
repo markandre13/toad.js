@@ -22,6 +22,10 @@ import { ModelView, ModelViewProps } from "./ModelView"
 // <tx-if> requires correct XHTML otherwise <tx-if> and it's content might
 // be separated by stuff like an </p> inserted automatically by the browser
 // so one should use stuff like htmltidy or htmlhint
+
+/**
+ * @category View
+ */
 export class ToadIf extends ModelView<BooleanModel> {
 
     constructor(init?: ModelViewProps<BooleanModel>) {

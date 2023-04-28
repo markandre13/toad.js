@@ -21,6 +21,9 @@ import { Lexer } from '../../util/expressions/Lexer'
 import { expression } from '../../util/expressions/expression'
 import { SpreadsheetModel } from './SpreadsheetModel'
 
+/**
+ * @category Application Model
+ */
 export class SpreadsheetCell {
     _inputValue?: string
     _node?: ExpressionNode

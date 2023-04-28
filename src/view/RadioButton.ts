@@ -27,6 +27,9 @@ export interface RadioButtonProps extends ModelViewProps<OptionModelBase> {
     disabled?: boolean
 }
 
+/**
+ * @category View
+ */
 export class RadioButton extends ModelView<OptionModelBase> {
     input: HTMLInputElement
 

@@ -24,6 +24,9 @@ export interface ModelViewProps<M> extends HTMLElementProps {
     model?: M
 }
 
+/**
+ * @category View
+ */
 export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
     model?: M
 

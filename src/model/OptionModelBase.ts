@@ -18,6 +18,9 @@
 
 import { Model } from "./Model"
 
+/**
+ * @category Application Model
+ */
 export class OptionModelBase extends Model {
   private _stringValue: string
 

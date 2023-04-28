@@ -18,6 +18,9 @@
 
 import { ArrayTableModel } from "./ArrayTableModel"
 
+/**
+ * @category Application Model
+ */
 export class ArrayModel<T> extends ArrayTableModel<T> {
     constructor(data: Array<T>, rowClass: new () => T) {
         super(data, rowClass)

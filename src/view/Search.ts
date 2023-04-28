@@ -21,6 +21,9 @@ import { form, input, button, svg, path, div } from "../util/lsx"
 import { TextModel } from "../model/TextModel"
 import { style as txSearch } from "../style/tx-search"
 
+/**
+ * @category View
+ */
 export class Search extends ModelView<TextModel> {
     constructor(init?: ModelViewProps<TextModel>) {
         super(init)

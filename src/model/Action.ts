@@ -19,6 +19,9 @@
 import { Model } from "./Model"
 import { Signal } from "../Signal"
 
+/**
+ * @category Application Model
+ */
 export class Action extends Model {
   signal: Signal
   title: string

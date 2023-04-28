@@ -20,6 +20,9 @@ import { TypedTableModel } from "./TypedTableModel"
 import { TableEvent } from "../TableEvent"
 import { TableEventType } from "../TableEventType"
 
+/**
+ * @category Application Model
+ */
 export class RowInfo<T> {
     node: T
     open: boolean
@@ -31,6 +34,9 @@ export class RowInfo<T> {
     }
 }
 
+/**
+ * @category Application Model
+ */
 export abstract class TreeModel<T> extends TypedTableModel<T> {
 
     rows: Array<RowInfo<T>>

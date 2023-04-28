@@ -20,17 +20,27 @@ import { Model } from "../../model/Model"
 import { TableEvent } from "../TableEvent"
 
 // TODO: API for insert, delete and move rows and columns
+
+/**
+ * @category Application Model
+ */
 export abstract class TableModel extends Model<TableEvent> {
   abstract get colCount(): number
   abstract get rowCount(): number
   isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
 }
 
+/**
+ * @category Application Model
+ */
 export interface RowEditInterface {
     insertRow(row: number, rowData?: Array<any>): number
     removeRow(row: number, count: number): number 
 }
 
+/**
+ * @category Application Model
+ */
 export interface ColumnEditInterface {
     insertColumn(row: number, rowData?: Array<any>): number
     removeColumn(row: number, count: number): number 

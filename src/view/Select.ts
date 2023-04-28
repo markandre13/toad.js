@@ -26,6 +26,9 @@ import { globalController } from "../controller/globalController"
 import { style as txCombobox } from "../style/tx-combobox"
 import { style as txMenu } from "../style/tx-menu"
 
+/**
+ * @category View
+ */
 export class Select extends ModelView<OptionModelBase> {
     input: HTMLInputElement
     button: HTMLButtonElement

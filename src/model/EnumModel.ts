@@ -18,6 +18,9 @@
 
 import { OptionModelBase } from "./OptionModelBase"
 
+/**
+ * @category Application Model
+ */
 export class EnumModel<T extends Object> extends OptionModelBase {
 
     protected enumClass: any

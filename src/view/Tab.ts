@@ -23,6 +23,9 @@ import { HTMLElementProps } from "toad.jsx"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 
+/**
+ * @category View
+ */
 export class Tabs extends ModelView<OptionModelBase> {
     markerLine: HTMLElement
     content: HTMLElement

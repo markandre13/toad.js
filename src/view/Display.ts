@@ -3,6 +3,9 @@ import { HtmlModel } from "../model/HtmlModel"
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "../view/ModelView"
 
+/**
+ * @category View
+ */
 export class Display extends ModelView<TextModel|HtmlModel|NumberModel> {
 
   constructor(init?: ModelViewProps<TextModel|HtmlModel|NumberModel>) {

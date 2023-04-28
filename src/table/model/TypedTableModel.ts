@@ -18,6 +18,9 @@
 
 import { TableModel } from "./TableModel"
 
+/**
+ * @category Application Model
+ */
 export abstract class TypedTableModel<T> extends TableModel {
     nodeClass: new () => T
     constructor(nodeClass: new () => T, root?: T) {

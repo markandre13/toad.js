@@ -21,6 +21,9 @@ import { TypedTableAdapter } from "./TypedTableAdapter"
 import { TablePos } from "../TablePos"
 import { svg, rect, line, span, text } from "@toad/util/lsx"
 
+/**
+ * @category Table Adapter
+ */
 export class TreeAdapter<T> extends TypedTableAdapter<TreeModel<T>> {
     constructor(model: TreeModel<T>) {
         super(model)
