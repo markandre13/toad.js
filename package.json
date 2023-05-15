@@ -56,6 +56,6 @@
     },
     "dependencies": {
         "@webcomponents/webcomponentsjs": "^2.8.0",
-        "toad.jsx": "^0.0.3"
+        "toad.jsx": "^0.0.4"
     }
 }
