@@ -24,10 +24,12 @@ import { OptionModelBase } from "./OptionModelBase"
 export class OptionModel<T> extends OptionModelBase {
     private stringToType = new Map<string, T>()
     private typeToString = new Map<T, string>()
+    list: string[] = []
 
     add(id: string, value: T) {
         this.stringToType.set(id, value)
         this.typeToString.set(value, id)
+        this.list.push(id)
     }
 
     override isValidStringValue(stringValue: string): boolean {

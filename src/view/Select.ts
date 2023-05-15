@@ -25,6 +25,7 @@ import { globalController } from "../controller/globalController"
 
 import { style as txCombobox } from "../style/tx-combobox"
 import { style as txMenu } from "../style/tx-menu"
+import { OptionModel } from "@toad/model/OptionModel"
 
 /**
  * @category View
@@ -161,7 +162,7 @@ export class Select extends ModelView<OptionModelBase> {
         }
         if (model instanceof TextModel) {
             this.text = model
-            this.text.modified.add( () => {
+            this.text.modified.add(() => {
                 this.input.value = this.text!.value
             }, this)
         }
@@ -236,6 +237,9 @@ export class Select extends ModelView<OptionModelBase> {
     }
 
     protected displayName(value: string) {
+        if (this.children.length === 0) {
+            return value
+        }
         for (let i = 0; i < this.children.length; ++i) {
             const child = this.children[i]
             if (child.nodeName === "OPTION") {
@@ -257,9 +261,9 @@ export class Select extends ModelView<OptionModelBase> {
             all = " empty option list"
         }
 
-        console.log(`'${value}' is not in${all} of <tx-select model="${this.getAttribute("model")}">`)
-        console.trace(this)
-        return ""
+        console.log(`'${value}' is not in${all} of <tx-select model="${this.model}">`)
+        // console.trace(this)
+        return value
     }
 
     open() {
@@ -267,10 +271,10 @@ export class Select extends ModelView<OptionModelBase> {
         let u
         this.popup = div(
             u = ul(
-                ...array(this.children.length, (idx) => {
+                ...array(this.getLength(), (idx) => {
                     const l = li(
                         text(
-                            (this.children.item(idx) as HTMLElement).innerText
+                            this.getLabel(idx)
                         )
                     )
                     l.tabIndex = 0
@@ -286,7 +290,7 @@ export class Select extends ModelView<OptionModelBase> {
                         // console.log(`list click ${idx}`)
                         view.select(idx)
                     }
-                    this.children[idx]
+                    // this.children[idx]
                     return l
                 })
             )
@@ -309,26 +313,56 @@ export class Select extends ModelView<OptionModelBase> {
         }
     }
 
+    protected getLength(): number {
+        if (this.children.length !== 0) {
+            return this.children.length
+        } else {
+            const m = this.model as OptionModel<any>
+            return m.list.length
+        }
+    }
+
+    protected getLabel(idx: number): string {
+        if (this.children.length !== 0) {
+            return (this.children.item(idx) as HTMLElement).innerText
+        } else {
+            const m = this.model as OptionModel<any>
+            return m.list[idx]
+        }
+    }
+
     select(index: number) {
         if (this.model === undefined) {
             console.log(`<tx-select model='${this.getAttribute("model")}'> has no model`)
             return
         }
         this.close()
-        const option = this.children[index]
-        if (!(option instanceof HTMLOptionElement)) {
-            console.log(`<tx-select>: unpexected element <${option.nodeName.toLowerCase()}> instead of <option>`)
-            return
+        if (this.children.length !== 0) {
+            const option = this.children[index]
+            if (!(option instanceof HTMLOptionElement)) {
+                console.log(`<tx-select>: unpexected element <${option.nodeName.toLowerCase()}> instead of <option>`)
+                return
+            }
+            this.model!.stringValue = option.value
+        } else {
+            const m = this.model as OptionModel<any>
+            this.model!.stringValue = m.list[index]
         }
-
-        this.model!.stringValue = option.value
     }
 
     getIndex(): number | undefined {
         const v = this.model?.stringValue
-        for (let i = 0; i < this.children.length; ++i) {
-            if ((this.children[i] as HTMLOptionElement).value === v)
-                return i
+        if (this.children.length !== 0) {
+            for (let i = 0; i < this.children.length; ++i) {
+                if ((this.children[i] as HTMLOptionElement).value === v)
+                    return i
+            }
+        } else {
+            const m = this.model as OptionModel<any>
+            for (let i = 0; i < m.list.length; ++i) {
+                if (m.list[i] === v)
+                    return i
+            }
         }
         return undefined
     }
@@ -340,7 +374,7 @@ export class Select extends ModelView<OptionModelBase> {
         } else {
             ++index
         }
-        if (index >= this.children.length) {
+        if (index >= this.getLength()) {
             return
         }
         this.select(index)
@@ -349,7 +383,7 @@ export class Select extends ModelView<OptionModelBase> {
     previousItem() {
         let index = this.getIndex()
         if (index === undefined) {
-            index = this.children.length - 1
+            index = this.getLength() - 1
         } else {
             --index
         }
