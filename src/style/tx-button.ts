@@ -14,54 +14,51 @@ style.textContent = css`
     box-shadow: none;
 }
 
-:host(.tx-default) > .tx-button {
-    color: var(--tx-gray-50);
-    background-color: var(--tx-gray-800);
+.tx-button:hover, .tx-button:active {
+    color: var(--tx-gray-900);
+    background-color: var(--tx-gray-400);
 }
 
 /* accent */
 
-:host(.tx-accent) > .tx-button {
+.tx-button.tx-accent {
     color: var(--tx-static-white);
     background-color: var(--tx-static-blue-600);
 }
-
-:host(.tx-accent) > .tx-button:hover, :host(.tx-accent) > .tx-button:active {
+.tx-button.tx-accent:hover, .tx-button.tx-accent:active {
     color: var(--tx-static-white);
     background-color: var(--tx-static-blue-700);
 }
-:host(.tx-accent) > .tx-button:hover:active {
+.tx-button.tx-accent:hover:active {
     color: var(--tx-static-white);
     background-color: var(--tx-static-blue-500);
 }
 
 /* negative */
 
-:host(.tx-negative) > .tx-button {
+.tx-button.tx-negative {
     color: var(--tx-static-white);
     background-color: var(--tx-static-red-600);
 }
-:host(.tx-negative) > :hover, :host(.tx-negative) > :active {
+.tx-button.tx-negative:hover, .tx-button.tx-negative:active {
     color: var(--tx-static-white);
     background-color: var(--tx-static-red-700);
 }
-:host(.tx-negative) > :hover:active {
+.tx-button.tx-negative:hover:active {
     color: var(--tx-static-white);
     background-color: var(--tx-static-red-500);
 }
 
-.tx-button:hover, .tx-button:active {
-    color: var(--tx-gray-900);
-    background-color: var(--tx-gray-400);
-}
-:host(.tx-default) > .tx-button:hover, :host(.tx-default) > .tx-button:hover:active {
+/* primary */
+
+.tx-button.tx-default {
     color: var(--tx-gray-50);
-    background-color: var(--tx-gray-900);
+    background-color: var(--tx-gray-800);
 }
 
-.tx-button:hover:active {
-    color: var(--tx-gray-900);
-    background-color: var(--tx-gray-500);
+.tx-button.tx-default:hover, .tx-button.tx-default:hover:active {
+    color: var(--tx-gray-50);
+    background-color: var(--tx-gray-900);
 }
 
 .tx-button:hover:active > span {
@@ -69,7 +66,7 @@ style.textContent = css`
     transform: translate(1px, 1px);
 }
 
-:host(.tx-default) > .tx-button:active {
+.tx-button.tx-default:active {
     color: var(--tx-gray-50);
     background-color: var(--tx-gray-900);
 }
@@ -83,5 +80,10 @@ style.textContent = css`
     justify-self: center;
     /* align children in the center */
     text-align: center;
+}
+
+:host([disabled]) > .tx-button, :host([disabled]) > .tx-button:active {
+    color: var(--tx-fg-color-disabled);
+    background-color: var(--tx-gray-200);
 }
 `

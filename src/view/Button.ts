@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -22,6 +22,17 @@ import { ActionView, ActionViewProps } from "./ActionView"
 import { button, span } from "../util/lsx"
 import { style as txButton } from  "../style/tx-button"
 
+export enum ButtonVariant {
+    PRIMARY,
+    SECONDARY,
+    ACCENT,
+    NEGATIVE
+}
+
+export interface ButtonProps extends ActionViewProps {
+    variant?: ButtonVariant
+}
+
 /**
  * @category View
  */
@@ -31,7 +42,7 @@ export class Button extends ActionView {
     _observer?: MutationObserver
     _timer?: number
 
-    constructor(init?: ActionViewProps) {
+    constructor(init?: ButtonProps) {
         super(init)
 
         this.button = button(
@@ -43,7 +54,33 @@ export class Button extends ActionView {
             if (this.action)
                 this.action.trigger()
         }
-        this.button.disabled = true
+
+        switch(this.getAttribute("variant")) {
+            case "primary":
+                this.button.classList.add("tx-default")
+                break
+            case "secondary":
+                break
+            case "accent":
+                this.button.classList.add("tx-accent")
+                break
+            case "negative":
+                this.button.classList.add("tx-negative")
+                break    
+        }
+        switch(init?.variant) {
+            case ButtonVariant.PRIMARY:
+                this.button.classList.add("tx-default")
+                break
+            case ButtonVariant.SECONDARY:
+                break
+            case ButtonVariant.ACCENT:
+                this.button.classList.add("tx-accent")
+                break
+            case ButtonVariant.NEGATIVE:
+                this.button.classList.add("tx-negative")
+                break
+        }
 
         this.attachShadow({ mode: 'open' })
         this.attachStyle(txButton)
@@ -55,7 +92,7 @@ export class Button extends ActionView {
         if (this.children.length !== 0) {
             return
         }
-        // Chrome, Opera invoke connectedCallback() before the children are conected
+        // Chrome, Opera invoke connectedCallback() before the children are connected
         this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
             if (this._timer !== undefined)
                 clearTimeout(this._timer)
@@ -83,8 +120,11 @@ export class Button extends ActionView {
             this.label.innerHTML = this.innerHTML
         }
 
-        this.button.disabled = !this.isEnabled()
-        // FIXME: set "disabled" property of this
+        if (this.isEnabled()) {
+            this.removeAttribute("disabled")
+        } else {
+            this.setAttribute("disabled", "disabled")
+        }
     }
 }
 
