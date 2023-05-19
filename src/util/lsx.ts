@@ -33,6 +33,14 @@ export function css(strings: TemplateStringsArray, ...values: any) {
     return str
 }
 
+export function html(strings: TemplateStringsArray, ...values: any) {
+    let str = strings[0]
+    values.forEach( (s: string, i: number) => {
+        str = str.concat(s).concat(strings[i+1])
+    })
+    return str
+}
+
 export function element<T>(type: string, children: Node[]): T {
     const element = document.createElement(type)
     for (let i = 0; i < children.length; ++i) {

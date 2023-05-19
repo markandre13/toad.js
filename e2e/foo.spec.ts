@@ -3,6 +3,8 @@ import { expect, use } from "chai"
 import { spawn } from "child_process"
 import { Browser, connect, executablePath, Page } from "puppeteer"
 
+import { css, html } from '../src/util/lsx'
+
 import { PNG } from "pngjs"
 import pixelmatch from "pixelmatch"
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs"
@@ -102,6 +104,7 @@ describe("section one", function () {
         page = await browser.newPage()!
         page.setCacheEnabled(false)
         page.setViewport({ width: 640, height: 480, deviceScaleFactor: 1 })
+        page.goto("http://localhost:8080/e2e/index.html", { waitUntil: 'domcontentloaded' })
     })
 
     afterEach(async function () {
@@ -111,7 +114,33 @@ describe("section one", function () {
     })
 
     it("foo bar", async function () {
-        page.setContent(`<html><body><button>Hello</button></body></html>`)
+        // if i'd run my own server, i could serve my own content
+        // for the code side.... bundle all foo.code.ts files?
+        // the html could then refer to the models within
+
+        await sleep(20)
+        // page.setContent(
+        //     html`<!doctype html>
+        //     <html>
+            
+        //     <head>
+        //         <meta charset="utf-8">         
+        //         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        //         <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+        //         <link rel="stylesheet" type="text/css"
+        //             href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin" />
+        //         <link rel="stylesheet" type="text/css"
+        //             href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400&subset=latin" />
+        //         <link rel="stylesheet" type="text/css" href="/style/tx-static.css" />
+        //         <link rel="stylesheet" type="text/css" href="/style/tx-dark.css" />
+        //         <link rel="stylesheet" type="text/css" href="/style/tx.css" />
+        //         <script type="application/javascript" src="/polyfill/webcomponents-hi-sd-ce.js"></script>
+        //         <script type="module" src="/docs/main.js"></script>
+        //     </head>
+        //     <body>
+        //         <tx-button>Hello</tx-button>
+        //     </body>
+        //     </html>`)
         const image = await page.screenshot()
         expect(image).toMatchImageSnapshot(this)
     })
@@ -132,12 +161,20 @@ export async function getBrowser(): Promise<Browser> {
         } catch (e) {
             if (flagLaunched === false) {
                 console.log(`launching chrome '${executablePath()}'`)
-                spawn(executablePath(), [`--remote-debugging-port=${chromeDebugPort}`], {
+                spawn(executablePath(), [
+                    `--remote-debugging-port=${chromeDebugPort}`,
+                    '--disable-web-security',
+                    '--disable-features=IsolateOrigins',
+                    '--disable-site-isolation-trials',
+                    '--disable-features=BlockInsecurePrivateNetworkRequests',
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox'
+                ], {
                     detached: true,
                 })
                 flagLaunched = true
             }
-            await sleep(1000) 
+            await sleep(1000)
             ++connectTries
             if (connectTries > 10) {
                 console.log("failed to connect to chrome")
