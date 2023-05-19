@@ -51,7 +51,7 @@
     "include": [
         "src",
         "test",
-        "docs",
-        "e2e/**/*.code.ts"
+        "e2e",
+        "docs"
     ]
 }

@@ -6,18 +6,15 @@ export default {
     input: 'e2e/main.ts',
     output: {
       name: 'e2e',
-      file: 'e2e/main.js',
+      file: 'build/e2e/main.js',
       format: 'iife',
       sourcemap: false
     },
     plugins: [
         typescript({
             tsconfigOverride: {
-                compilerOptions: {
-                    outDir: "e2e"
-                },
                 include: [ "e2e/**/*.code.ts", "lib" ],
-                exclude: [ "src", "test" ]
+                exclude: [ "e2e/**/*.spec.ts", "docs", "src", "test" ]
             },
         }),
         nodeResolve(),

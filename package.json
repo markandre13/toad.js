@@ -32,7 +32,9 @@
     "scripts": {
         "build": "ttsc",
         "test": "wtr \"lib/test/**/*.spec.js\"",
-        "e2e": "concurrently -k \"npm run e2e:httpd\" \"npm run e2e:mocha\"",
+        "e2e": "npm run e2e-once:build && concurrently -k \"npm:e2e:*\"",
+        "e2e-once:build": "rollup --bundleConfigAsCjs --config e2e/rollup.config.js",
+        "e2e:build": "rollup --watch --bundleConfigAsCjs --config e2e/rollup.config.js",
         "e2e:httpd": "http-server --silent -c -1",
         "e2e:mocha": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha --slow 5000 ---timeout 10000 -r ts-node/register --watch --watch-files e2e/**/*.spec.ts,e2e/**/*.html e2e/**/*.spec.ts",
         "dev:build": "ttsc --watch",
@@ -40,7 +42,6 @@
         "dev:test": "if test -z \"$npm_config_file\" ; then wtr --watch 'lib/test/**/*.spec.js' ; else wtr --watch \"$npm_config_file\" ; fi",
         "dev:e2e": "",
         "dev:serve": "wds --node-resolve --watch --open --app-index docs/index.dev.html",
-        "build:e2e": "rollup --bundleConfigAsCjs --config e2e/rollup.config.js",
         "build:docs": "hash=`date | shasum` ; hash=${hash%% *} ; rollup --bundleConfigAsCjs --config docs/rollup.config.js && sed \"s|../lib/docs/main.js|main.js?hash=${hash}|;s|../style/|style/|g;s|../polyfill/||\" docs/index.dev.html > docs/index.html && mkdir -p docs/style && cp style/* docs/style",
         "build:html": "typedoc --categorizeByGroup --excludeInternal --out html src",
         "update": "npx npm-check-updates -u && npm install"

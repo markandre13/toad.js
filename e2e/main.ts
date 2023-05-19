@@ -1,13 +1,5 @@
-
-import { main as fooMain } from "./foo.code"
-
-console.log("LOADAED")
+import { main as buttonMain } from "./button.code"
 
 window.onload = () => {
-    main()
-}
-
-export function main(): void {
-    console.log("MAIN")
-    fooMain()
+    buttonMain()
 }
