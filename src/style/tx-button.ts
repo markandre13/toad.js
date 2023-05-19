@@ -19,6 +19,16 @@ style.textContent = css`
     background-color: var(--tx-gray-400);
 }
 
+.tx-button:hover:active > span {
+    transition: transform 130ms ease-in-out;
+}
+:host > .tx-button:hover:active {
+    transform: translate(1px, 1px);
+}
+:host([disabled]) > .tx-button:hover:active {
+    transform: translate(0px, 0px);
+}
+
 /* accent */
 
 .tx-button.tx-accent {
@@ -59,11 +69,6 @@ style.textContent = css`
 .tx-button.tx-default:hover, .tx-button.tx-default:hover:active {
     color: var(--tx-gray-50);
     background-color: var(--tx-gray-900);
-}
-
-.tx-button:hover:active > span {
-    transition: transform 130ms ease-in-out;
-    transform: translate(1px, 1px);
 }
 
 .tx-button.tx-default:active {
