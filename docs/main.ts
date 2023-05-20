@@ -16,35 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* the need to do the following is... not cool */
-import { Select } from "@toad/view/Select"
-Select
-import { Text } from "@toad/view/Text"
-Text
-import { Menu } from "@toad/menu/Menu"
-Menu
-import { TextArea } from "@toad/view/TextArea"
-TextArea
-import { TextTool } from "@toad/view/TextTool"
-TextTool
-import { TableTool } from "@toad/table/TableTool"
-TableTool
-import { Button } from "@toad/view/Button"
-Button
-import { RadioButton } from "@toad/view/RadioButton"
-RadioButton
-import { Checkbox } from "@toad/view/Checkbox"
-Checkbox
-import { Tab } from "@toad/view/Tab"
-Tab
-import { Table } from "@toad/table/Table"
-Table
-import { Slider } from "@toad/view/Slider"
-Slider
-import { Switch } from "@toad/view/Switch"
-Switch
-import { ToadIf } from "@toad/view/ToadIf"
-ToadIf
+import { loadComponents } from "@toad/util/loadComponents"
 
 import { TextModel } from "@toad/model/TextModel"
 import { HtmlModel } from "@toad/model/HtmlModel"
@@ -67,6 +39,8 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
+
+loadComponents()
 
 window.onload = () => {
     main()
