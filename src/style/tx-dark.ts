@@ -1,7 +1,6 @@
 /* 
  * Dark Theme https://spectrum.adobe.com/page/color/
  */
-
 import { css } from 'src/util/lsx'
 
 export const style = document.createElement("style")
@@ -54,5 +53,4 @@ style.textContent = css`
     --tx-global-red-600: #f76d74;
     /* okay */
     --tx-global-green-600: #12805c;
-}
-`
+}`

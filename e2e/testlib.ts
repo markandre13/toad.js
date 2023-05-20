@@ -23,7 +23,7 @@ export async function getBrowser(): Promise<Browser> {
                     '--disable-site-isolation-trials',
                     '--disable-features=BlockInsecurePrivateNetworkRequests',
                     '--no-sandbox',
-                    '--disable-setuid-sandbox'
+                    // '--disable-setuid-sandbox'
                 ], {
                     detached: true,
                 })

@@ -12,6 +12,7 @@ style.textContent = css`
     height: 28px;
     border-radius: 16px;
     box-shadow: none;
+    font-family: inherit;
 }
 
 .tx-button:hover, .tx-button:active {

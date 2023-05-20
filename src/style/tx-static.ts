@@ -12,7 +12,6 @@
  * themes.
  *                              -- https://spectrum.adobe.com/page/color/
  */
-
 import { css } from 'src/util/lsx'
 
 export const style = document.createElement("style")
