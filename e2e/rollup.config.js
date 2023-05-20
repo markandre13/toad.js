@@ -13,6 +13,9 @@ export default {
     plugins: [
         typescript({
             tsconfigOverride: {
+                compilerOptions: {
+                    declaration: false
+                },    
                 include: [ "e2e/**/*.code.ts", "lib" ],
                 exclude: [ "e2e/**/*.spec.ts", "docs", "src", "test" ]
             },

@@ -29,7 +29,6 @@ import { HTMLElementProps, setInitialProperties } from "toad.jsx"
 export class View extends HTMLElement {
 
     public static define(name: string, view: CustomElementConstructor, options?: ElementDefinitionOptions) {
-        console.log(`define custom element ${name}`)
         const element = window.customElements.get(name)
         if (element === undefined) {
             window.customElements.define(name, view, options)

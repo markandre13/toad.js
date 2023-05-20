@@ -30,7 +30,7 @@ import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
 
-import { bindModel as bind, action } from "@toad/controller/globalController"
+import { bindModel as bind, action, bindModel } from "@toad/controller/globalController"
 import { Template } from "@toad/controller/Template"
 
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
@@ -39,6 +39,8 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
+import { TextFieldModel } from "@toad/model/TextFieldModel"
+import { NumberFieldModel } from "@toad/model/NumberFieldModel"
 
 loadComponents()
 
@@ -52,6 +54,30 @@ export function main(): void {
     initializeStarSystem()
     initializeTree()
 }
+
+const nameModel = new TextFieldModel()
+nameModel.label = "The Name of Your Avatar"
+nameModel.description = `An avatar is a computer-enhanced doppelganger; a
+computer-generated image that takes your place in a three-dimensional online
+encounter.`
+
+const mailModel = new TextFieldModel()
+mailModel.label = "Email address"
+mailModel.description = `Contains a locally interpreted string followed by the
+at-sign character ("@", ASCII value 64) followed by an Internet domain. The
+locally interpreted string is either a quoted-string or a dot-atom.  If the
+string can be represented as a dot-atom (that is, it contains no characters
+other than atext characters or "." surrounded by atext characters), then the
+dot-atom form SHOULD be used and the quoted-string form SHOULD NOT be used.
+Comments and folding white space SHOULD NOT be used around the "@" in the addr-spec.`
+
+const birthModel = new NumberFieldModel(1970, {min: 1900, max: 2025 })
+birthModel.label = "Year of Birth"
+birthModel.description = `Unlikely and invalid entries should result in an error message.`
+
+bindModel("nameModel", nameModel)
+bindModel("mailModel", mailModel)
+bindModel("birthModel", birthModel)
 
 //
 // <tx-text>
@@ -80,6 +106,7 @@ var hitMeMore = action("hitMeMore", () => {
     textModel.value = "You hit me!"
     hitMeMore.enabled = false
 })
+action("dummy", () => { })
 
 //
 // <tx-checkbox>, <tx-switch> and <tx-if>

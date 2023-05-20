@@ -14,7 +14,7 @@ export default {
         typescript({
             tsconfigOverride: {
                 compilerOptions: {
-                    outDir: "docs"
+                    declaration: false
                 },
                 include: [ "docs", "lib" ],
                 exclude: [ "src", "test" ]

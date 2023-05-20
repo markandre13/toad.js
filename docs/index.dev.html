@@ -76,6 +76,40 @@
     </p>
 
     <tx-tabs style="width: 100%; min-height: 100vh;" vertical>
+        <h3>Form</h3>
+
+        <div class="section">
+            <p>
+                Forms contain labels, fields and descriptions.
+            </p>
+            <p>
+                The labels and descriptions may be provided by the model.
+            </p>
+        </div>
+
+        <tx-tab label="Form">
+            <tx-form>
+
+                <tx-formlabel model="nameModel"></tx-formlabel>
+                <tx-formfield>
+                    <tx-text model="nameModel"></tx-text>
+                </tx-formfield>
+                <tx-formhelp model="nameModel"></tx-formhelp>
+
+                <tx-formlabel model="mailModel"></tx-formlabel>
+                <tx-formfield>
+                    <tx-text model="mailModel"></tx-text>
+                </tx-formfield>
+                <tx-formhelp model="mailModel"></tx-formhelp>
+
+                <tx-formlabel model="birthModel"></tx-formlabel>
+                <tx-formfield>
+                    <tx-text model="birthModel"></tx-text>
+                </tx-formfield>
+                <tx-formhelp model="birthModel"></tx-formhelp>
+            </tx-form>
+
+        </tx-tab>
         <tx-tab label="Introduction">
 
             <u>Please note</u>: This overview represents the state of the master branch, not the 0.0.x package on npm.
@@ -264,7 +298,6 @@ Quantity <span style="color: var(--tx-static-orange-400);">&lt;tx-text</span> mo
             <h3>The Application Layer</h3>
 
             <div class="section">
-
                 The Application Layer controls how the application behaves.
             </div>
 
@@ -377,13 +410,15 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
             <h3>&lt;tx-button&gt;</h3>
 
             <div class="section">
-                <tx-button class="tx-default">Default</tx-button>
-                <tx-button class="tx-accent">Accent</tx-button>
-                <tx-button class="tx-negative">Negative</tx-button>
+                <tx-button action="dummy" variant="primary">Primary</tx-button>
+                <tx-button action="dummy" variant="secondary">Secondary</tx-button>
+                <tx-button action="dummy" variant="accent">Accent</tx-button>
+                <tx-button action="dummy" variant="negative">Negative</tx-button>
 
                 <tx-button action="hitMe">Hit me!</tx-button>
-                <tx-button action="hitMeMore" model="hello">I get my text from the
-                    model registered as 'hello'</tx-button>
+                <tx-button action="hitMeMore" model="hello">
+                    I get my text from the model registered as 'hello'
+                </tx-button>
             </div>
 
 
@@ -619,133 +654,133 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
 
             <div class="section">
 
-            <table>
-                <tr>
-                    <th></th>
-                    <th colspan="3">
-                        enabled
-                    </th>
-                    <th colspan="3">
-                        disabled
-                    </th>
-                    <th>when to use</th>
-                </tr>
-                <tr>
-                    <th rowspan="2">radiobutton</th>
-                    <td>
-                        <tx-radiobutton model="flavourEnabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourEnabled" value="GRAPE"></tx-radiobutton> Grape
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourEnabled" value="TANGERINE"></tx-radiobutton> Tangerine
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourDisabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourDisabled" value="GRAPE"></tx-radiobutton> Grape
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourDisabled" value="TANGERINE"></tx-radiobutton> Tangerine
-                    </td>
-                    <td rowspan="2">
-                        enough space to display all options
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <tx-radiobutton model="flavourEnabled" value="LIME"></tx-radiobutton> Lime
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourEnabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourEnabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourDisabled" value="LIME"></tx-radiobutton> Lime
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourDisabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
-                    </td>
-                    <td>
-                        <tx-radiobutton model="flavourDisabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        select
-                    </th>
-                    <td colspan="3">
-                        <tx-select model="flavourEnabled">
-                            <option value="BLUEBERRY">Blueberry</option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option>
-                        </tx-select>
-                    </td>
-                    <td colspan="3">
-                        <tx-select model="flavourDisabled">
-                            <option value="BLUEBERRY">Blueberry</option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option>
-                        </tx-select>
-                    </td>
-                    <td>
-                        limited screen space, move through options with scroll wheel
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        combobox
-                    </th>
-                    <td colspan="3">
-                        <tx-select model="flavourEnabled" text="customFlavour">
-                            <option value="BLUEBERRY">Blueberry</option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option>
-                        </tx-select>
-                    </td>
-                    <td colspan="3">
-                        <tx-select model="flavourDisabled" text="customFlavourDisabled">
-                            <option value="BLUEBERRY">Blueberry</option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option>
-                        </tx-select>
-                    </td>
-                    <td>
-                        combination of select and text
-                    </td>
-                </tr>
-                <tr>
-                    <th>
-                        search
-                    </th>
-                    <td colspan="3">
-                        <tx-search></tx-search>
-                    </td>
-                    <td colspan="3"></td>
-                    <td>(not ready yet for use)</td>
-                </tr>
-                <tr>
-                    <th>
-                        search within
-                    </th>
-                </tr>
-            </table>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th colspan="3">
+                            enabled
+                        </th>
+                        <th colspan="3">
+                            disabled
+                        </th>
+                        <th>when to use</th>
+                    </tr>
+                    <tr>
+                        <th rowspan="2">radiobutton</th>
+                        <td>
+                            <tx-radiobutton model="flavourEnabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourEnabled" value="GRAPE"></tx-radiobutton> Grape
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourEnabled" value="TANGERINE"></tx-radiobutton> Tangerine
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourDisabled" value="BLUEBERRY"></tx-radiobutton> Blueberry
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourDisabled" value="GRAPE"></tx-radiobutton> Grape
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourDisabled" value="TANGERINE"></tx-radiobutton> Tangerine
+                        </td>
+                        <td rowspan="2">
+                            enough space to display all options
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <tx-radiobutton model="flavourEnabled" value="LIME"></tx-radiobutton> Lime
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourEnabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourEnabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourDisabled" value="LIME"></tx-radiobutton> Lime
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourDisabled" value="STRAWBERRY"></tx-radiobutton> Strawberry
+                        </td>
+                        <td>
+                            <tx-radiobutton model="flavourDisabled" value="BONDIBLUE"></tx-radiobutton> Bondi Blue
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            select
+                        </th>
+                        <td colspan="3">
+                            <tx-select model="flavourEnabled">
+                                <option value="BLUEBERRY">Blueberry</option>
+                                <option value="GRAPE">Grape</option>
+                                <option value="TANGERINE">Tangerine</option>
+                                <option value="LIME">Lime</option>
+                                <option value="STRAWBERRY">Strawberry</option>
+                                <option value="BONDIBLUE">Bondi Blue</option>
+                            </tx-select>
+                        </td>
+                        <td colspan="3">
+                            <tx-select model="flavourDisabled">
+                                <option value="BLUEBERRY">Blueberry</option>
+                                <option value="GRAPE">Grape</option>
+                                <option value="TANGERINE">Tangerine</option>
+                                <option value="LIME">Lime</option>
+                                <option value="STRAWBERRY">Strawberry</option>
+                                <option value="BONDIBLUE">Bondi Blue</option>
+                            </tx-select>
+                        </td>
+                        <td>
+                            limited screen space, move through options with scroll wheel
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            combobox
+                        </th>
+                        <td colspan="3">
+                            <tx-select model="flavourEnabled" text="customFlavour">
+                                <option value="BLUEBERRY">Blueberry</option>
+                                <option value="GRAPE">Grape</option>
+                                <option value="TANGERINE">Tangerine</option>
+                                <option value="LIME">Lime</option>
+                                <option value="STRAWBERRY">Strawberry</option>
+                                <option value="BONDIBLUE">Bondi Blue</option>
+                            </tx-select>
+                        </td>
+                        <td colspan="3">
+                            <tx-select model="flavourDisabled" text="customFlavourDisabled">
+                                <option value="BLUEBERRY">Blueberry</option>
+                                <option value="GRAPE">Grape</option>
+                                <option value="TANGERINE">Tangerine</option>
+                                <option value="LIME">Lime</option>
+                                <option value="STRAWBERRY">Strawberry</option>
+                                <option value="BONDIBLUE">Bondi Blue</option>
+                            </tx-select>
+                        </td>
+                        <td>
+                            combination of select and text
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            search
+                        </th>
+                        <td colspan="3">
+                            <tx-search></tx-search>
+                        </td>
+                        <td colspan="3"></td>
+                        <td>(not ready yet for use)</td>
+                    </tr>
+                    <tr>
+                        <th>
+                            search within
+                        </th>
+                    </tr>
+                </table>
             </div>
 
         </tx-tab>
@@ -756,8 +791,8 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
             <h3>&lt;tx-text&gt; &amp; &lt;tx-slider&gt;</h3>
             <div class="section">
 
-            <tx-text model="size"></tx-text>
-            <tx-slider model="size"></tx-slider>
+                <tx-text model="size"></tx-text>
+                <tx-slider model="size"></tx-slider>
             </div>
 
             <my-code-button condition="slider-condition"></my-code-button>
@@ -779,9 +814,9 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
 
             <div class="section">
 
-            <p>
-                While tables are a work in progress, the following should illustrate the intended versatility:
-            </p>
+                <p>
+                    While tables are a work in progress, the following should illustrate the intended versatility:
+                </p>
             </div>
 
             <h2>Array of Records</h2>

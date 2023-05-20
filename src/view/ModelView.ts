@@ -50,8 +50,9 @@ export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends V
         if (this.model)
             this.model.modified.remove(view)
 
-        if (model)
+        if (model) {
             model.modified.add((data: T) => view.updateView(data), view)
+        }
 
         this.model = model
         if (this.isConnected) {

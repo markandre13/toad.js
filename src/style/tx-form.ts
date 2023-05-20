@@ -20,12 +20,14 @@ styleBase.textContent = css`
     grid-column: 1 / span 1;
     font-size: var(--tx-font-size-info);
     font-weight: bolder;
+    text-align: right;
     padding-top: 4px;
     padding-right: 12px;
 }
 
 ::slotted(tx-formfield) {
     grid-column: 2 / span 1;
+    text-align: left;
 }
 
 ::slotted(tx-formhelp) {
