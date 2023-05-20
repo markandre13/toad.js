@@ -1,6 +1,3 @@
-import { Button } from "@toad/view/Button"
-Button
-
 import { action } from "@toad/controller/globalController"
 
 export function main() {
