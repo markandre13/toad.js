@@ -3,11 +3,8 @@ import { View } from "./View"
 import { slot } from 'src/util/lsx'
 import { styleBase, styleNarrow } from "@toad/style/tx-form"
 
-import { TextFieldModel } from "src/model/TextFieldModel"
 import { Model } from "src/model/Model"
 import { ModelView, ModelViewProps } from "./ModelView"
-import { TextModel } from "@toad/model/TextModel"
-import { NumberFieldModel } from "@toad/model/NumberFieldModel"
 
 export class Form extends View {
     constructor(init?: HTMLElementProps) {
@@ -20,8 +17,8 @@ export class Form extends View {
         this.shadowRoot!.appendChild(slot())
     }
 }
-export class FormLabel extends ModelView<TextFieldModel | NumberFieldModel> {
-    constructor(init?: ModelViewProps<TextFieldModel>) {
+export class FormLabel extends ModelView<Model> {
+    constructor(init?: ModelViewProps<Model>) {
         super(init)
     }
     override updateView(): void {
@@ -33,11 +30,22 @@ export class FormLabel extends ModelView<TextFieldModel | NumberFieldModel> {
     }
 }
 export class FormField extends View { }
-export class FormHelp extends ModelView<TextFieldModel | NumberFieldModel> {
-    constructor(init?: ModelViewProps<TextFieldModel | NumberFieldModel>) {
+export class FormHelp extends ModelView<Model> {
+    constructor(init?: ModelViewProps<Model | Model>) {
         super(init)
     }
     override updateView(): void {
+        if (this.model?.error) {
+            this.classList.add("tx-error")
+            let text = this.model.error
+            if (this.model.description) {
+                text += '<br/>' + this.model.description
+            }
+            this.innerHTML = text
+            return
+        } else {
+            this.classList.remove("tx-error")
+        }
         if (this.model?.description) {
             this.innerHTML = this.model.description
         } else {

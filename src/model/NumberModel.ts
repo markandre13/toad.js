@@ -51,14 +51,14 @@ export class NumberModel extends GenericModel<number, NumberModelOptions> {
             if (this.autocorrect) {
                 value = this.min
             } else {
-                this.error = `${value} must not be below ${this.min}`
+                this.error = `The value must not be below ${this.min}.`
             }
         }
         if (this.max !== undefined && value > this.max) {
             if (this.autocorrect) {
                 value = this.max
             } else {
-                this.error = `${value} must not be above ${this.max}`
+                this.error = `The value must not be above ${this.max}.`
             }
         }
         super.value = value
@@ -107,5 +107,5 @@ export class NumberModel extends GenericModel<number, NumberModelOptions> {
         this.options.autocorrect = autocorrect
         this.modified.trigger(undefined as any)
     }
-    get autocorrect(): boolean { return this.options?.autocorrect !== false}
+    get autocorrect(): boolean { return this.options?.autocorrect === true}
 }
