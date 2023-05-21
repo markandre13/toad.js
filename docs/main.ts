@@ -39,6 +39,7 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
+import { EmailModel } from "@toad/model/EmailModel"
 
 loadComponents()
 
@@ -60,7 +61,7 @@ computer-generated image that takes your place in a three-dimensional online
 encounter.`
 })
 
-const mailModel = new TextModel("", {
+const mailModel = new EmailModel("", {
     label: "Email address",
     description: `Contains a locally interpreted string followed by the
 at-sign character ("@", ASCII value 64) followed by an Internet domain. The
