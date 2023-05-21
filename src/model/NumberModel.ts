@@ -46,22 +46,26 @@ export class NumberModel extends GenericModel<number, NumberModelOptions> {
     }
 
     override set value(value: number) {
-        this.error = undefined
-        if (this.min !== undefined && value < this.min) {
-            if (this.autocorrect) {
-                value = this.min
-            } else {
-                this.error = `The value must not be below ${this.min}.`
+        this.modified.withLock(() => {
+            let error: string | undefined = undefined
+            if (this.min !== undefined && value < this.min) {
+                if (this.autocorrect) {
+                    value = this.min
+                } else {
+                    error = `The value must not be below ${this.min}.`
+                }
             }
-        }
-        if (this.max !== undefined && value > this.max) {
-            if (this.autocorrect) {
-                value = this.max
-            } else {
-                this.error = `The value must not be above ${this.max}.`
+            if (this.max !== undefined && value > this.max) {
+                if (this.autocorrect) {
+                    value = this.max
+                } else {
+                    error = `The value must not be above ${this.max}.`
+                }
             }
-        }
-        super.value = value
+            super.value = value
+            this.error = error
+        })
+
     }
     override get value(): number { return super.value }
 
@@ -107,5 +111,5 @@ export class NumberModel extends GenericModel<number, NumberModelOptions> {
         this.options.autocorrect = autocorrect
         this.modified.trigger(undefined as any)
     }
-    get autocorrect(): boolean { return this.options?.autocorrect === true}
+    get autocorrect(): boolean { return this.options?.autocorrect === true }
 }

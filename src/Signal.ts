@@ -76,6 +76,13 @@ export class Signal<T = void> {
         }
     }
 
+    withLock<R>(closure: () => R) {
+        this.lock()
+        const r = closure()
+        this.unlock()
+        return r
+    }
+
     trigger(data: T): void {
         if (this.locked) {
             this.triggered = { data: data }

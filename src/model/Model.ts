@@ -48,7 +48,7 @@ export abstract class Model<T = void, O extends ModelOptions = ModelOptions> {
         this.options.enabled = enabled
         this.modified.trigger(undefined as any)
     }
-    get enabled(): boolean { return this.options?.enabled === true }
+    get enabled(): boolean { return this.options?.enabled !== false }
 
     set color(color: string | undefined) {
         if (this.options?.color === color)

@@ -90,7 +90,7 @@ export class Text extends ModelView<TextModel | NumberModel> {
         const strValue = `${this.model.value}`
         if (this.input.value !== strValue) {
             this.input.value = strValue
-            this.setAttribute("value", this.input.value)
+            this.setAttribute("value", strValue)
         }
     }
 
