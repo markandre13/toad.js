@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2023 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,27 +16,27 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "./Model"
+import { Model, ModelOptions } from "./Model"
 
 /**
  * @category Application Model
  */
-export class GenericModel<T> extends Model {
-  protected _value: T
+export class GenericModel<T, O extends ModelOptions = ModelOptions> extends Model<void, O> {
+    protected _value: T
 
-  constructor(value: T) {
-    super()
-    this._value = value
-  }
+    constructor(value: T, options?: O) {
+        super(options)
+        this._value = value
+    }
 
-  set value(value: T) {
-    if (this._value == value)
-      return
-    this._value = value
-    this.modified.trigger()
-  }
+    set value(value: T) {
+        if (this._value == value)
+            return
+        this._value = value
+        this.modified.trigger()
+    }
 
-  get value(): T {
-    return this._value
-  }
+    get value(): T {
+        return this._value
+    }
 }

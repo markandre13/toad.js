@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2023 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -17,28 +17,22 @@
  */
 
 import { GenericModel } from "./GenericModel"
+import { ModelOptions } from "./Model"
 
-export interface NumberModelOptions {
+export interface NumberModelOptions extends ModelOptions {
     min?: number
     max?: number
     step?: number
+    autocorrect?: boolean
 }
 
 /**
  * @category Application Model
  */
-export class NumberModel extends GenericModel<number> {
-    min?: number
-    max?: number
-    step?: number
+export class NumberModel extends GenericModel<number, NumberModelOptions> {
 
     constructor(value: number, options?: NumberModelOptions) {
-        super(value)
-        if (options) {
-            this.min = options.min
-            this.max = options.max
-            this.step = options.step
-        }
+        super(value, options)
     }
     increment() {
         if (this.step !== undefined) {
@@ -50,20 +44,68 @@ export class NumberModel extends GenericModel<number> {
             this.value -= this.step
         }
     }
-    override get value(): number {
-        return super.value
-    }
+
     override set value(value: number) {
-        if (this.min !== undefined) {
-            if (value < this.min) {
+        this.error = undefined
+        if (this.min !== undefined && value < this.min) {
+            if (this.autocorrect) {
                 value = this.min
+            } else {
+                this.error = `${value} must not be below ${this.min}`
             }
         }
-        if (this.max !== undefined) {
-            if (value > this.max) {
+        if (this.max !== undefined && value > this.max) {
+            if (this.autocorrect) {
                 value = this.max
+            } else {
+                this.error = `${value} must not be above ${this.max}`
             }
         }
         super.value = value
     }
+    override get value(): number { return super.value }
+
+    set min(min: number | undefined) {
+        if (this.options?.min === min)
+            return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.min = min
+        this.modified.trigger(undefined as any)
+    }
+    get min(): number | undefined { return this.options?.min }
+
+    set max(max: number | undefined) {
+        if (this.options?.max === max)
+            return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.max = max
+        this.modified.trigger(undefined as any)
+    }
+    get max(): number | undefined { return this.options?.max }
+
+    set step(step: number | undefined) {
+        if (this.options?.step === step)
+            return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.step = step
+        this.modified.trigger(undefined as any)
+    }
+    get step(): number | undefined { return this.options?.step }
+
+    set autocorrect(autocorrect: boolean | undefined) {
+        if (this.options?.autocorrect === autocorrect)
+            return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.autocorrect = autocorrect
+        this.modified.trigger(undefined as any)
+    }
+    get autocorrect(): boolean { return this.options?.autocorrect !== false}
 }

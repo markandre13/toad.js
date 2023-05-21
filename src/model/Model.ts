@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2023 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -20,25 +20,77 @@ import { Signal } from "../Signal"
 
 export type InferModelParameter<M> = M extends Model<infer T> ? T : never
 
+export interface ModelOptions {
+    enabled?: boolean
+    color?: string
+    label?: string
+    description?: string
+    error?: string 
+}
+
 /**
  * @category Application Model
  */
-export abstract class Model<T = void> {
-    modified: Signal<T>
-    protected _enabled = true
+export abstract class Model<T = void, O extends ModelOptions = ModelOptions> {
+    modified = new Signal<T>()
+    options?: O
 
-    constructor() {
-        this.modified = new Signal<T>()
+    constructor(options?: O) {
+        this.options = options
     }
 
     set enabled(enabled: boolean) {
-        if (this._enabled == enabled)
+        if (this.options?.enabled === enabled)
             return
-        this._enabled = enabled
+        if (this.options === undefined) {
+            this.options = {} as O
+        }
+        this.options.enabled = enabled
         this.modified.trigger(undefined as any)
     }
+    get enabled(): boolean { return this.options?.enabled === true }
 
-    get enabled(): boolean {
-        return this._enabled
+    set color(color: string | undefined) {
+        if (this.options?.color === color)
+            return
+        if (this.options === undefined) {
+            this.options = {} as O
+        }
+        this.options.color = color
+        this.modified.trigger(undefined as any)
     }
+    get color(): string | undefined { return this.options?.color }
+
+    set label(label: string | undefined) {
+        if (this.options?.label === label)
+            return
+        if (this.options === undefined) {
+            this.options = {} as O
+        }
+        this.options.label = label
+        this.modified.trigger(undefined as any)
+    }
+    get label(): string | undefined { return this.options?.label }
+
+    set description(description: string | undefined) {
+        if (this.options?.description === description)
+            return
+        if (this.options === undefined) {
+            this.options = {} as O
+        }
+        this.options.description = description
+        this.modified.trigger(undefined as any)
+    }
+    get description(): string | undefined { return this.options?.description }
+
+    set error(error: string | undefined) {
+        if (this.options?.error === error)
+            return
+        if (this.options === undefined) {
+            this.options = {} as O
+        }
+        this.options.error = error
+        this.modified.trigger(undefined as any)
+    }
+    get error(): string | undefined { return this.options?.error }
 }

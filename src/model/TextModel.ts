@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "./Model"
+import { Model, ModelOptions } from "./Model"
 
 /**
  * @category Application Model
@@ -24,8 +24,8 @@ import { Model } from "./Model"
 export class TextModel extends Model {
   protected _value: string | Function
 
-  constructor(value: string = "") {
-    super()
+  constructor(value: string = "", options?: ModelOptions) {
+    super(options)
     this._value = value
   }
 

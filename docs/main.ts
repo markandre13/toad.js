@@ -39,8 +39,6 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
-import { TextFieldModel } from "@toad/model/TextFieldModel"
-import { NumberFieldModel } from "@toad/model/NumberFieldModel"
 
 loadComponents()
 
@@ -55,26 +53,29 @@ export function main(): void {
     initializeTree()
 }
 
-const nameModel = new TextFieldModel()
-nameModel.label = "The Name of Your Avatar"
-nameModel.description = `An avatar is a computer-enhanced doppelganger; a
+const nameModel = new TextModel("", {
+    label: "The Name of Your Avatar",
+    description: `An avatar is a computer-enhanced doppelganger; a
 computer-generated image that takes your place in a three-dimensional online
 encounter.`
+})
 
-const mailModel = new TextFieldModel()
-mailModel.label = "Email address"
-mailModel.description = `Contains a locally interpreted string followed by the
+const mailModel = new TextModel("", {
+    label: "Email address",
+    description: `Contains a locally interpreted string followed by the
 at-sign character ("@", ASCII value 64) followed by an Internet domain. The
 locally interpreted string is either a quoted-string or a dot-atom.  If the
 string can be represented as a dot-atom (that is, it contains no characters
 other than atext characters or "." surrounded by atext characters), then the
 dot-atom form SHOULD be used and the quoted-string form SHOULD NOT be used.
 Comments and folding white space SHOULD NOT be used around the "@" in the addr-spec.`
+})
 
-const birthModel = new NumberFieldModel(1970, {min: 1900, max: 2025 })
-birthModel.label = "Year of Birth"
-birthModel.description = `Unlikely and invalid entries should result in an error message.`
-
+const birthModel = new NumberModel(1970, {
+    min: 1900, max: 2025,
+    label: "Year of Birth",
+    description: `Unlikely and invalid entries should result in an error message.`
+})
 bindModel("nameModel", nameModel)
 bindModel("mailModel", mailModel)
 bindModel("birthModel", birthModel)
