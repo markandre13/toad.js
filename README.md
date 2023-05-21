@@ -7,78 +7,68 @@
   → <a href="https://markandre13.github.io/toad.js/">Demo</a>
 </p>
 
-# About
+## About
 
-toad.js supports building platform independent desktop applications as [Progressive Web Apps](https://en.wikipedia.org/wiki/Progressive_Web_Apps).
+toad.js is for building desktop applications on top of [modern web](https://modern-web.dev/)
+technologies with a TypeScript transpiler and a browser being the only dependencies.
 
-“desktop application” means
-* large amount of input elements with also a significant amount of coupling between them
-* large screen, hence support for mobile devices is not being a priority
-* mouse and scroll wheel, hence support for touch screens not a priority
-* pro users, hence a cooperate identity dependent look is not a priority
-* undo/redo support (not yet)
+With <q>desktop applications</q> refering to:
 
-[toad.js](https://github.com/markandre13/toad.js#readme) is based on dozen of UI libraries I looked into for inspiration, my experience creating the TOAD C++ GUI library ([UNIX/X11](https://github.com/markandre13/toad-x11#readme), [macOS/Cocoa](https://github.com/markandre13/toad-macosx#readme)), various applications I wrote and being the architect of the UIMS behind the [Phoenix Contact FL mGuard routers](https://www.phoenixcontact.com/en-us/products/industrial-communication/industrial-routers-and-cybersecurity), which feature different views for web, SNMP and CLI on top of shared application and domain layers.
+* complex domain data with a significant amount of coupling
+* large screen ⇒ support for mobile devices is not being a priority
+* mouse and scroll wheel ⇒ support for touch screens not a priority
+* pro users ⇒ no eye candy, all apps look the same
 
-The idea for a browser version of _toad_ dates back to 1995, when Netscape released JavaScript and I was wondering whether to choose X11/C++ or Netscape/JavaScript as a platform.
+For this toad.js provides a toolbox for a design pattern known as
 
-# Layered Architecture
+* Layered Architecture (<a href="#ref1">DDD</a>),
+* Clean Architecture with <a href="#ref5">Presenters and Humble Objects</a>,
+* <a href="#ref2">Presentation Model</a> (Martin Fowler), or
+* <a href="#ref3">Application Model</a> (VisualWorks)
+* and <a href="#asterisk">one</a> which is usually misunderstood and needs some
+  more explanation.
 
-toad.js supports two layers of a horizontal architecture (→ <a href="#ref1">DDD</a>, <a href="#ref2">Presentation Model</a>, <a href="#ref3">Application Model</a>)
+While this pattern slices an application horizontally (e.g. presentation, application, domain), some believe it to be obsolete and replaced by vertical slices (e.g. customer, article, payment, ...). This, of course, depends. When vertical slices remain too wide because of the coupling imposed by the domain there is still the option to do both.
+
+## Layered Architecture
+
+Layer names are in the order of DDD / Clean Architecture:
 
 <table>
   <tr>
-    <th>Layer Name (DDD/Clean Architecture)</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>View/Presenters</td>
+    <th valign="top">View / Presentation</th>
     <td>
       <p>
-        Defines the structure of the User Interface.
+        Defines the structure of the User Interface using plain HTML/JSX and CSS aimed at
+        UI/UX/Web Designers.
       </p>
       <p>
-        UX experts with a basic understanding of HTML/CSS should be able to
-        work here, so the use of JavaScript or HTML attributes like <i>value</i>,
-        <i>enabled</i>, <i>onchange</i>, ... is highly discouraged here.<br/>
-        (→ <a href="#ref5">Presenters and Humble Objects</a>)
-      </p>
-      <p>
-        Instead the HTML/JSX views provided by toad.js (e.g. Button, CheckBox, Text, Table ...)
-        provide a <i>model</i>/<i>action</i> attribute refering to an Application Model which
-        will then handle <i>value</i>, <i>enabled</i>, <i>onchange</i>, ... instead.
-      </p>
-      <p>
-        Example: <br/>
-        <code>&lt;Table model={shoppingList}/&gt;<br/>
-        &lt;Button action={order}&gt;Buy&lt;/Button&gt;</code>
-      </p>
-      <p>
-        Note for developers: JSX is merely used to be notified about type errors
-        ASAP while editing or compiling. It translates directly to DOM with toad.js
-        elements being web components.
+        All application behaviour/code has been removed from this layer, meaning that
+        HTML attributes like <i>value</i>, <i>disabled</i>, <i>onchange</i> are replaced
+        by <i>model</i>/<i>action</i> attributes referring to the next layer.
       </p>
     </td>
     <td></td>
   </tr>
   <tr>
-    <td>Application/Use Cases</td>
+    <th valign="top">Application / Use Case</th>
     <td>
       <p>
-        Defines the behaviour of the User Interface using Application Models
-        provided by toad.js (e.g. TextModel, NumberModel, BooleanModel, OptionModel, ...)
+        Application specific rules which define the behaviour of the user interface.
       </p>
       <p>
-        Example:<br/>
-        <code>const shoppingList = StringArrayModel(getCurrentShoppingList())</br>
-        const order = Action(() => orderCurrentShoppingList())<br/>
-        order.enabled = false</code><br/>
-        (Action isn't implemented like this yet...)
+        For this toad.js provides a collection of ViewModels, like TextModel, EmailModel,
+        or NumberModel, which broker between the View and the Domain layer.
+      </p>
+      <p>
+        Additionally to this they can be enabled/disabled, provide labels and more detailed descriptions, validate input, provide error messages, provide support for undo/redo
+        or even perform simple arithmetics, e.g. converting input like 6*7 into 42 or
+        10cm+5mm into 105mm. (Not all of it yet implemented.)
       </p>
     </td>
   </tr>
   <tr>
-    <td>Domain/Entities</td>
+    <th valign="top">Domain / Entities</th>
     <td>
         <p>
             Enterprise wide business rules, e.g. customer numbers, articles, orders, ... 
@@ -99,9 +89,89 @@ toad.js supports two layers of a horizontal architecture (→ <a href="#ref1">DD
   </tr>
 </table>
 
-# State and Progress
+## About me
+
+I've been developing applications on top of my own user interface libraries since [OWL](https://en.wikipedia.org/wiki/Object_Windows_Library) in 1991, always trying to look at how other frameworks worked. With one exception: SmallTalk. While most SmallTalk systems didn't age well, ideas like
+live coding or user programmable computers still look like something from the future.
+
+The C++ version of TOAD began in 1995 after having worked with [OSF/Motif](https://en.wikipedia.org/wiki/Motif_(software)) when I realized that
+
+* an ugly user interface framework will most likely result in an ugly user experience
+* there is nothing more annoying than being forced to write lots of boilerplate code
+* user interface creation should be interactive
+
+Besides the C++ versions of TOAD on top of Java AWT, Fresco, macOS, Windows and X11 and it being the subject of my diploma thesis, toad.js also builds on almost two decades as architect of the [Phoenix Contact mGuard](http://help.mguard.com/)'s frontend, whose device independent application layer is able to serve CLI, SNMP and Web interfaces and which made UI development an absolute no-brainer.
 
 Development is happening in my spare time and focused on the desktop version of Safari to support the development of [workflow](https://github.com/markandre13/workflow#readme) and [makehuman.js](https://github.com/markandre13/makehuman.js#readme).
+
+<hr/>
+
+<a id="asterisk">*</a>) You may recognise that the above accumulates into a pattern known as
+Model-View-Controller (MVC), which, undeservedly, got a somewhat bad reputation during recent
+years. So let's set the record straight:
+
+* MVC in a nutshell:
+
+  * <q>We can solve any problem by introducing an extra level of indirection.</q><br />
+  <cite>[Fundamental Theorem of Software Engineering](https://en.wikipedia.org/wiki/Fundamental_theorem_of_software_engineering)<cite>
+  * _Model_ means a model of something, e.g. a shopping cart, inside the computer,
+    consiting of data *and* behaviour.
+  * _View_ means a visual representation of that model to the user. E.g. a number might be
+    represented by a text field and a slider.
+  * _MVC_ means to keep View and Model separate. (Think Flux, Redux, MobX, ...)
+  * _MVVM_ means to further separate the Model into an application independent domain part
+    and an application relevant part.
+  
+* The MVC you see in Ruby on Rails or Spring Boot are **not** MVC.
+  The correct name is [JSP model 2](https://en.wikipedia.org/wiki/JSP_model_2_architecture).
+
+* Forget about the _Controller_ in MVC. The _Controller_ is an aspect of SmallTalk to
+  insert the view into the system's message distribution. In contemporary systems they can be
+  considered as part of the View.
+
+* The true leverage of MVC/MVVM does not come from the pattern itself, but the vast collection of
+  prefabricated Views and ViewModels from which you can assemble your application.
+
+  It should support forms with input validation including dependencies between different values;
+  arbitrary sized tables which can be edited, resized, sorted and filtered; arithmetic in numerical
+  fields; undo/redo, etc.
+
+* Most MVC/MVVM frameworks are overcomplicated while lacking an adequate collection of Views
+  and ViewModels.
+
+* What Facebook's React team got wrong about MVC:
+
+  * <q>Let’s look at what happens to this [MVC] diagram when we add a lot of models and when we add
+    a lot of views to the system. There's just an explosion of arrows.</q><br />
+    <cite>[Hacker Way: Rethinking Web App Development at Facebook 10:49](https://youtu.be/nYkdrAPrdcw?t=649)</cite>
+
+    What the React team shows here is **NOT** MVC.
+
+  * <q>And if you just look at these arrows, can you tell if there's an infinite loop here?
+    Where, you know, the model triggers something in the view and the view triggers something in
+    a different model. It goes in a cycle. It’s really hard to tell just by looking at this</q><br />
+    <cite>[Hacker Way: Rethinking Web App Development at Facebook 10:49](https://youtu.be/nYkdrAPrdcw?t=649)</cite>
+
+    This does **NOT** happen in MVC. The View changes the Model only on user input. An infinite loop
+    of this kind can still happen in both MVC and React/Flux when the View does not adhere to this
+    rule.
+
+    Infinite loops may happen in the application layer, e.g. when a RGB triple sets a HSV triple
+    which in turn wants to set the RGB triple again and variation in floating point calculation
+    results in an endless loop. Explicit locks or implicit locks in the model are a means to get
+    rid of these kinds of loops.
+
+  * <q>So we want to do away with all of this. We want, what we propose instead, is something
+    called FLUX.</q><br />
+    <cite>[Hacker Way: Rethinking Web App Development at Facebook 11:40](https://youtu.be/nYkdrAPrdcw?t=700)</cite>
+
+    FLUX is a rebranded MVC: Action = Message, Store = Model, Dispatcher = Event Loop, View = View.
+
+   * <q>It’s a single directional data flow. Em, and that avoids all of the double arrows that
+     are going, that go in both directions, that make it really hard to understand the system.</q><br />
+     <cite>[Hacker Way: Rethinking Web App Development at Facebook 11:45](https://youtu.be/nYkdrAPrdcw?t=705)</cite>
+
+     Same as in MVC. Still, both go around in a circle, so both are still bi-directional.
 
 <hr/>
 
