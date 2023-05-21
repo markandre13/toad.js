@@ -23,27 +23,27 @@ import { Signal } from "../Signal"
  * @category Application Model
  */
 export class Action extends Model {
-  signal: Signal
-  title: string
-  
-  constructor(parent: HTMLElement | undefined, title: string) {
-    super()
-    this.signal = new Signal()
-    this.title = title
-    this._enabled = true
-  }
-  
-  set value(placeHolder: any) {
-    throw Error("Action.value can not be assigned a value")
-  }
+    signal: Signal
+    title: string
 
-  get value(): any {
-    throw Error("Action.value can not return a value")
-  }
-  
-  trigger(data?: any): void {
-    if (!this._enabled)
-      return
-    this.signal.trigger(data)
-  }
+    constructor(parent: HTMLElement | undefined, title: string) {
+        super()
+        this.signal = new Signal()
+        this.title = title
+    }
+
+    set value(placeHolder: any) {
+        throw Error("Action.value can not be assigned a value")
+    }
+
+    get value(): any {
+        throw Error("Action.value can not return a value")
+    }
+
+    trigger(data?: any): void {
+        if (!this.enabled) {
+            return
+        }
+        this.signal.trigger(data)
+    }
 }

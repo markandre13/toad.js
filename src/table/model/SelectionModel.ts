@@ -69,6 +69,6 @@ export class SelectionModel extends Model {
     }
 
     override toString() {
-        return `SelectionModel {enabled: ${this._enabled}, mode: ${TableEditMode[this.mode]}, value: ${this._value}}`
+        return `SelectionModel {enabled: ${this.enabled}, mode: ${TableEditMode[this.mode]}, value: ${this._value}}`
     }
 }
