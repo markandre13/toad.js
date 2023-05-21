@@ -15,20 +15,21 @@ technologies with a TypeScript transpiler and a browser being the only dependenc
 With <q>desktop applications</q> refering to:
 
 * complex domain data with a significant amount of coupling
-* large screen ⇒ support for mobile devices is not being a priority
-* mouse and scroll wheel ⇒ support for touch screens not a priority
-* pro users ⇒ no eye candy, all apps look the same
+* large screen, mouse and scroll wheel ⇒ support for mobile devices is not a priority
+* pro users ⇒ no eye candy, all apps have the same look
 
-For this toad.js provides a toolbox for a design pattern known as
+For this toad.js provides a toolbox for design patterns like
 
 * Layered Architecture (<a href="#ref1">DDD</a>),
-* Clean Architecture with <a href="#ref5">Presenters and Humble Objects</a>,
-* <a href="#ref2">Presentation Model</a> (Martin Fowler), or
-* <a href="#ref3">Application Model</a> (VisualWorks)
-* and <a href="#asterisk">one</a> which is usually misunderstood and needs some
-  more explanation.
+* <a href="#ref5">Presenters and Humble Objects</a> (Clean Architecture),
+* <a href="#ref2">Presentation Model</a> (Martin Fowler),
+* <a href="#ref3">Application Model</a> (VisualWorks) and
+* good ol' <a href="#asterisk">MVC</a>. 😁
 
-While this pattern slices an application horizontally (e.g. presentation, application, domain), some believe it to be obsolete and replaced by vertical slices (e.g. customer, article, payment, ...). This, of course, depends. When vertical slices remain too wide because of the coupling imposed by the domain there is still the option to do both.
+While this pattern slices an application horizontally (e.g. presentation, application, domain),
+some believe it to be obsolete and replaced by vertical slices (e.g. customer, article, payment, ...).
+This, of course, depends. When vertical slices remain too wide because of the coupling imposed
+by the domain there is still the option to do both.
 
 ## Layered Architecture
 
