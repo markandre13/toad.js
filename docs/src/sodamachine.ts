@@ -19,7 +19,7 @@ export function initializeSodaMachine() {
     flavour.value = Flavour.CLASSIC
     bind("flavour", flavour)
 
-    const quantity = new NumberModel(defaultSize, { min: 0, max: 1500 })
+    const quantity = new NumberModel(defaultSize, { min: 0, max: 1500, autocorrect: true })
     bind("quantity", quantity)
 
     action("fill", () => {
