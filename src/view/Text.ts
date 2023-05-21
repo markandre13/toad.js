@@ -92,6 +92,11 @@ export class Text extends ModelView<TextModel | NumberModel> {
             this.input.value = strValue
             this.setAttribute("value", strValue)
         }
+        if (this.model.error !== undefined) {
+            this.input.classList.add("tx-error")
+        } else {
+            this.input.classList.remove("tx-error")
+        }
     }
 
     get value() {

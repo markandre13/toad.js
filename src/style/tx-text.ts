@@ -13,7 +13,7 @@ style.textContent = css`
     color: var(--tx-edit-fg-color);
     background-color: var(--tx-edit-bg-color);
 
-    /* we'll use the border instead of an outline to indicate the focus */
+    /* we use the border instead of an outline to indicate the focus */
     outline: none;
     border-width: var(--tx-border-width);
     border-style: solid;
@@ -49,5 +49,8 @@ style.textContent = css`
 }
 .tx-text:focus {
     border-color: var(--tx-outline-color);
+}
+.tx-text.tx-error {
+    border-color: var(--tx-warning-color)
 }
 `
