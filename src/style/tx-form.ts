@@ -66,6 +66,10 @@ styleNarrow.textContent = css`
     padding-bottom: 8px;
 }
 
+::slotted(tx-formlabel) {
+    text-align: left;
+}
+
 ::slotted(tx-formfield) {
     grid-column: 1 / span 1;
 }
