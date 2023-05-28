@@ -40,6 +40,7 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
 import { EmailModel } from "@toad/model/EmailModel"
+import { css, div, HTMLElementProps, Slider, span, input, View } from "@toad"
 
 loadComponents()
 
@@ -52,6 +53,316 @@ export function main(): void {
     // initializeBooks()
     initializeStarSystem()
     initializeTree()
+}
+
+class Slider2 extends View {
+    vertical: boolean
+
+    constructor(init?: HTMLElementProps) {
+        super(init)
+
+        this.vertical = this.getAttribute("orientation") === "vertical"
+
+        let container, rail: HTMLSpanElement, track: HTMLSpanElement, thumb: HTMLSpanElement, slider: HTMLInputElement
+        container = [
+            rail = span(),
+            track = span(),
+            thumb = span(
+                slider = input()
+            )
+        ]
+        rail.classList.add('tx-rail')
+        track.classList.add('tx-track')
+        thumb.classList.add('tx-thumb')
+        slider.type = "range"
+        slider.min = "0"
+        slider.max = "255"
+        slider.value = "128"
+
+        const placeSlider = () => {
+            const min = parseFloat(slider.min)
+            const max = parseFloat(slider.max)
+            const value = parseFloat(slider.value)
+            const v = (value - min) / (max - min) * 100
+            if (this.vertical) {
+                track.style.top = `${100-v}%`
+                track.style.height = `${v}%`
+                thumb.style.top = `${100-v}%`
+            } else {
+                track.style.left = `0%`
+                track.style.width = `${v}%`
+                thumb.style.left = `${v}%`
+            }
+        }
+        placeSlider()
+
+        slider.onfocus = () => {
+            thumb.classList.add("tx-focus")
+        }
+        slider.onblur = () => {
+            thumb.classList.remove("tx-focus")
+        }
+        slider.oninput = () => {
+            placeSlider()
+        }
+        let skew: number | undefined = undefined
+        thumb.onpointerdown = (ev: PointerEvent) => {
+            thumb.setPointerCapture(ev.pointerId)
+            const value = parseFloat(slider.value)
+            const b = this.getBoundingClientRect()
+            const min = parseFloat(slider.min)
+            const max = parseFloat(slider.max)
+            if (this.vertical) {
+                const v = max - (ev.clientY - b.y) / b.height * (max - min)
+                skew = value - v
+            } else {
+                const v = (ev.clientX - b.x) / b.width * (max - min) + min
+                skew = value - v
+            }
+        }
+        thumb.onpointermove = (ev: PointerEvent) => {
+            if (skew === undefined) {
+                return
+            }
+            ev.preventDefault()
+
+            const b = this.getBoundingClientRect()
+            const min = parseFloat(slider.min)
+            const max = parseFloat(slider.max)
+
+            let v
+            if (this.vertical) {
+                v = max - (ev.clientY - b.y) / b.height * (max - min)
+            } else {
+                v = (ev.clientX - b.x) / b.width * (max - min) + min + skew
+            }
+            if (v < min) {
+                v = min
+            }
+            if (v > max) {
+                v = max
+            }
+            slider.value = `${v}`
+            placeSlider()
+        }
+        thumb.onpointerup = (ev: PointerEvent) => {
+            if (skew === undefined) {
+                return
+            }
+            thumb.onpointermove!(ev)
+            skew = undefined
+        }
+
+        const style = new CSSStyleSheet()
+        style.replaceSync(css`
+        :host {
+            position: relative;
+            box-sizing: content-box;
+            display: inline-block;
+        }
+
+        :host(:not([orientation="vertical"])) {
+            height: 4px;
+            width: 100%;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        :host([orientation="vertical"]) {
+            width: 4px;
+            height: 100%;
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+
+        .tx-rail {
+            background-color: var(--tx-gray-500);
+            position: absolute;
+            display: block;
+            border-radius: 2px;
+        }
+
+        :host(:not([orientation="vertical"])) .tx-rail {
+            top: 50%;
+            width: 100%;
+            height: 4px;
+            transform: translateY(-50%);
+        }
+
+        :host([orientation="vertical"]) .tx-rail {
+            left: 50%;
+            height: 100%;
+            width: 4px;
+            transform: translateX(-50%);
+        }
+
+        .tx-track {
+            background-color: var(--tx-gray-700);
+            position: absolute;
+            display: block;
+            border-radius: 2px;
+        }
+
+        :host(:not([orientation="vertical"])) .tx-track {  
+            top: 50%;
+            height: 4px;
+            transform: translateY(-50%);
+        }
+
+        :host([orientation="vertical"]) .tx-track {  
+            left: 50%;
+            width: 4px;
+            transform: translateX(-50%);
+        }
+
+        .tx-thumb {
+            border: 2px solid var(--tx-gray-700); /* knob border */
+            border-radius: 50%;
+            background: var(--tx-gray-75); /* inside knob */
+            cursor: pointer;
+            position: absolute;
+            display: flex;
+            width: 14px;
+            height: 14px;
+            box-sizing: border-box;
+            outline-width: 0px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        :host(:not([orientation="vertical"])) .tx-thumb { 
+            top: 50%;
+        }
+        :host([orientation="vertical"]) .tx-thumb { 
+            left: 50%;
+        }
+
+        .tx-focus {
+            outline: 2px solid;
+            outline-color: var(--tx-outline-color);
+            outline-offset: 1px;
+        }
+
+        .tx-thumb>input {
+            border: 0;
+            clip: rect(0, 0, 0, 0);
+            width: 100%;
+            height: 100%;
+            margin: -1px;
+            /* this hides most of the slider and centers the thumb */
+            overflow: hidden;
+            position: absolute;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        `)
+
+        this.attachShadow({ mode: 'open', delegatesFocus: true })
+        this.shadowRoot!.adoptedStyleSheets = [style]
+        this.shadowRoot!.replaceChildren(...container)
+    }
+}
+Slider2.define("tx-slider2", Slider2)
+
+class ColorSelector extends View {
+    constructor(init?: HTMLElementProps) {
+        super(init)
+        this.attachShadow({ mode: 'open' })
+        const canvas = document.createElement("canvas")
+        canvas.id = "canvas"
+        canvas.width = 256 + 32
+        canvas.height = 256
+
+        const ctx = canvas.getContext("2d")!
+        const myImageData = ctx.createImageData(256 + 32, 256)
+
+        for (let iy = 0, y = -1.0; iy < 256; ++iy, y += 2.0 / 255.0) {
+            for (let ix = 0, x = -1.0; ix < 256; ++ix, x += 2.0 / 255.0) {
+                let s = Math.hypot(x, y)
+                if (s <= 1.0) {
+                    const { r, g, b } = hsv2rgb(
+                        (Math.atan2(y, x) + Math.PI) / (2.0 * Math.PI) * 360.0,
+                        s,
+                        1.0)
+                    const ptr = (ix + iy * myImageData.width) * 4
+                    myImageData.data[ptr] = Math.round(r * 255)
+                    myImageData.data[ptr + 1] = Math.round(g * 255)
+                    myImageData.data[ptr + 2] = Math.round(b * 255)
+                    myImageData.data[ptr + 3] = 255
+                }
+            }
+            for (let ix = 256 + 16; ix < 256 + 32; ++ix) {
+                const v = 255 - iy
+                const ptr = (ix + iy * myImageData.width) * 4
+                myImageData.data[ptr] = Math.round(v)
+                myImageData.data[ptr + 1] = Math.round(v)
+                myImageData.data[ptr + 2] = Math.round(v)
+                myImageData.data[ptr + 3] = 255
+            }
+        }
+
+        ctx.putImageData(myImageData, 0, 0)
+
+        const r = new NumberModel(0, { min: 0, max: 255 })
+        const g = new NumberModel(0, { min: 0, max: 255 })
+        const b = new NumberModel(0, { min: 0, max: 255 })
+
+        // i don't seem to have a vertical slider
+        // and a gradient as a background would also be nice
+        const sliderR = new Slider({ id: "sr", model: r })
+        const sliderG = new Slider({ id: "sg", model: g })
+        const sliderB = new Slider({ id: "sb", model: b })
+
+        const root = div()
+        root.id = "root"
+
+        const style = new CSSStyleSheet()
+        style.replaceSync(css`
+        #root {
+            position: relative;
+            width: 256px;
+            height: 256px;
+        }
+        #canvas {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+        }
+        #sr {
+            position: absolute;
+            top: 5px;
+            left: 292px;
+            height: 256px;
+        }
+        #sg {
+            position: absolute;
+            top: 5px;
+            left: 312px;
+            height: 256px;
+        }
+        #sb {
+            position: absolute;
+            top: 5px;
+            left: 332px;
+            height: 256px;
+        }
+        
+        `)
+        this.shadowRoot!.adoptedStyleSheets = [style]
+        root.appendChild(canvas)
+        root.appendChild(sliderR)
+        root.appendChild(sliderG)
+        root.appendChild(sliderB)
+        this.shadowRoot!.appendChild(root)
+    }
+
+}
+ColorSelector.define("tx-color", ColorSelector)
+
+// https://stackoverflow.com/questions/17242144/javascript-convert-hsb-hsv-color-to-rgb-accurately
+function hsv2rgb(h: number, s: number, v: number): { r: number, g: number, b: number } {
+    const f = (n: number, k = (n + h / 60) % 6) => v - v * s * Math.max(Math.min(k, 4 - k, 1), 0)
+    return { r: f(5), g: f(3), b: f(1) }
 }
 
 const nameModel = new TextModel("", {

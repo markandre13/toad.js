@@ -21,10 +21,15 @@ style.textContent = css`
 }
 :host(.tx-slider) > input {
     position: absolute;
-    top: 4px;
+    /* top: 4px; */
+    left: 4px;
     -webkit-appearance: none;
-    width: 100%;
-    height: 2px;
+    /* width: 100%;
+    height: 2px; */
+    -webkit-appearance: slider-vertical;
+    writing-mode: bt-lr;
+    width: 2px;
+    height: 100%;
     border: none;
     background: var(--tx-gray-700); /* track */
     outline: none;
