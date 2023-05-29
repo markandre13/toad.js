@@ -40,6 +40,7 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
 import { EmailModel } from "@toad/model/EmailModel"
+import { RGBModel } from "@toad/model/RGBModel"
 
 loadComponents()
 
@@ -53,6 +54,9 @@ export function main(): void {
     initializeStarSystem()
     initializeTree()
 }
+
+const colorModel = new RGBModel("#f80")
+bindModel("colorModel", colorModel)
 
 const nameModel = new TextModel("", {
     label: "The Name of Your Avatar",

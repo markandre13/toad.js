@@ -3,10 +3,10 @@ import { css } from "../util/lsx"
 export const style = new CSSStyleSheet()
 style.replaceSync(css`
 #root {
+    display: inline-block;
     position: relative;
     width: 354px;
     height: 344px;
-    border: solid 1px #fff;
 }
 #canvas {
     position: absolute;
