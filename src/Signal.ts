@@ -36,7 +36,8 @@ export class SignalLink {
  * @category Observer Pattern
  */
 export class Signal<T = void> {
-    protected locked?: boolean
+    protected locked: boolean = false
+    protected busy: boolean = false
     protected triggered?: any
     callbacks?: Array<SignalLink>
 
@@ -68,7 +69,7 @@ export class Signal<T = void> {
     }
 
     unlock(): void {
-        this.locked = undefined
+        this.locked = false
         if (this.triggered) {
             let data = this.triggered.data
             this.triggered = undefined
@@ -84,14 +85,23 @@ export class Signal<T = void> {
     }
 
     trigger(data: T): void {
-        if (this.locked) {
-            this.triggered = { data: data }
+        if (this.busy) {
             return
         }
-        if (!this.callbacks)
+        this.busy = true
+        if (this.locked) {
+            this.triggered = { data: data }
+            this.busy = false
             return
+        }
+        if (!this.callbacks) {
+            this.busy = false
+            return
+        }
 
-        for (let i = 0; i < this.callbacks.length; ++i)
+        for (let i = 0; i < this.callbacks.length; ++i) {
             this.callbacks[i].callback(data)
+        }
+        this.busy = false
     }
 }

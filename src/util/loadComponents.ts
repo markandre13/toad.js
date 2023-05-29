@@ -13,6 +13,7 @@ import { Text } from "@toad/view/Text"
 import { TextArea } from "@toad/view/TextArea"
 import { TextTool } from "@toad/view/TextTool"
 import { ToadIf } from "@toad/view/ToadIf"
+import { ColorSelector } from "@toad/view/ColorSelector"
 
 /**
  * Only needed when defining the UI via HTML.
@@ -23,6 +24,7 @@ import { ToadIf } from "@toad/view/ToadIf"
  * This function initializes all components part of toad.js 
  */
 export function loadComponents() {
+    ColorSelector
     Select
     Text
     Menu

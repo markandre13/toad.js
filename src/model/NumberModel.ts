@@ -113,3 +113,4 @@ export class NumberModel extends GenericModel<number, NumberModelOptions> {
     }
     get autocorrect(): boolean { return this.options?.autocorrect === true }
 }
+

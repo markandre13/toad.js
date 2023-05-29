@@ -1,93 +1,106 @@
-/*
- * The slider in Spectrum is quite complex and requires JavaScript
- *
- * The implementation is fairly simple and follows the advise given and
- * linked to in
- *
- * https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-slider-thumb
- *
- */
 
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+    style.replaceSync(css`
+    :host {
+        position: relative;
+        box-sizing: content-box;
+        display: inline-block;
+    }
 
-:host(.tx-slider) {
-    height: 14px;
-    position: relative;
-    width: 100%;
-    display: inline-block;
-}
-:host(.tx-slider) > input {
-    position: absolute;
-    /* top: 4px; */
-    left: 4px;
-    -webkit-appearance: none;
-    /* width: 100%;
-    height: 2px; */
-    -webkit-appearance: slider-vertical;
-    writing-mode: bt-lr;
-    width: 2px;
-    height: 100%;
-    border: none;
-    background: var(--tx-gray-700); /* track */
-    outline: none;
-}
+    :host(:not([orientation="vertical"])) {
+        height: 4px;
+        width: 100%;
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
 
-:host(.tx-slider) > input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--tx-gray-700); /* knob border */
-    border-radius: 50%;
-    background: var(--tx-gray-75); /* inside knob */
-    cursor: pointer;
-    box-sizing: border-box;
-}
-:host(.tx-slider) > input::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border: 2px solid var(--tx-gray-700); /* knob border */
-    border-radius: 50%;
-    background: var(--tx-gray-75); /* inside knob */
-    box-sizing: border-box;
-}
+    :host([orientation="vertical"]) {
+        width: 4px;
+        height: 100%;
+        padding-left: 8px;
+        padding-right: 8px;
+    }
 
-/* focus ring */
-:host(.tx-slider) > input:focus::-webkit-slider-thumb {
-    outline: 2px solid;
-    outline-color: var(--tx-outline-color);
-    outline-offset: 2px;
-}
-:host(.tx-slider) > input:focus::-moz-range-thumb {
-    outline: 2px solid;
-    outline-color: var(--tx-outline-color);
-    outline-offset: 2px;
-}
+    .tx-rail {
+        background-color: var(--tx-gray-500);
+        position: absolute;
+        display: block;
+        border-radius: 2px;
+    }
 
-:host(.tx-slider) > input::-moz-focus-outer {
-    border: 0;
-}
+    :host(:not([orientation="vertical"])) .tx-rail {
+        top: 50%;
+        width: 100%;
+        height: 4px;
+        transform: translateY(-50%);
+    }
 
-:host(.tx-slider) > input:hover {
-    background: var(--tx-gray-800); /* track */
-}
-:host(.tx-slider) > input:hover::-webkit-slider-thumb {
-    border: 2px solid var(--tx-gray-800); /* knob border */
-}
-:host(.tx-slider) > input:hover::-moz-range-thumb {
-    border: 2px solid var(--tx-gray-800); /* knob border */
-}
+    :host([orientation="vertical"]) .tx-rail {
+        left: 50%;
+        height: 100%;
+        width: 4px;
+        transform: translateX(-50%);
+    }
 
-:host(.tx-slider) > input:disabled {
-    background: var(--tx-gray-500); /* track */
-}
-:host(.tx-slider) > input:disabled::-webkit-slider-thumb {
-    border: 2px solid var(--tx-gray-500); /* knob border */
-}
-:host(.tx-slider) > input:disabled::-moz-range-thumb {
-    border: 2px solid var(--tx-gray-500); /* knob border */
-}
-`
+    .tx-track {
+        background-color: var(--tx-gray-700);
+        position: absolute;
+        display: block;
+        border-radius: 2px;
+    }
+
+    :host(:not([orientation="vertical"])) .tx-track {  
+        top: 50%;
+        height: 4px;
+        transform: translateY(-50%);
+    }
+
+    :host([orientation="vertical"]) .tx-track {  
+        left: 50%;
+        width: 4px;
+        transform: translateX(-50%);
+    }
+
+    .tx-thumb {
+        border: 2px solid var(--tx-gray-700); /* knob border */
+        border-radius: 50%;
+        background: var(--tx-gray-75); /* inside knob */
+        cursor: pointer;
+        position: absolute;
+        display: flex;
+        width: 14px;
+        height: 14px;
+        box-sizing: border-box;
+        outline-width: 0px;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    :host(:not([orientation="vertical"])) .tx-thumb { 
+        top: 50%;
+    }
+    :host([orientation="vertical"]) .tx-thumb { 
+        left: 50%;
+    }
+
+    .tx-focus {
+        outline: 2px solid;
+        outline-color: var(--tx-outline-color);
+        outline-offset: 1px;
+    }
+
+    .tx-thumb>input {
+        border: 0;
+        clip: rect(0, 0, 0, 0);
+        width: 100%;
+        height: 100%;
+        margin: -1px;
+        /* this hides most of the slider and centers the thumb */
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap;
+        direction: ltr;
+    }
+`)
