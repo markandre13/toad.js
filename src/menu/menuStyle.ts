@@ -16,6 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { css } from 'src/util/lsx'
+
 // function btoa(str: string): string {
 //     return Buffer.from(str).toString("base64")
 // }
@@ -23,8 +25,9 @@
 /**
  * @internal 
  */
-export const menuStyle = document.createElement("style")
-menuStyle.textContent=`
+
+export const menuStyle = new CSSStyleSheet()
+menuStyle.replaceSync(css`
   :host(.menu-button) {
     font-family: var(--tx-font-family);
     font-size: var(--tx-edit-font-size);
@@ -84,4 +87,4 @@ menuStyle.textContent=`
     flex-direction: column;
     box-shadow: 2px 2px 5px var(--tx-gray-50);
   }
-`
+`)

@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 /*
   tabs, line, content
 */
@@ -89,5 +89,4 @@ style.textContent = css`
 .content {
     flex-grow: 1;
 }
-
-`
+`)

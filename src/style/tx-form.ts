@@ -4,8 +4,8 @@
  */
 import { css } from 'src/util/lsx'
 
-export const styleBase = document.createElement("style")
-styleBase.textContent = css`
+export const styleBase = new CSSStyleSheet()
+styleBase.replaceSync(css`
 :host {
     display: grid;
     background-color: var(--tx-gray-100);
@@ -57,10 +57,10 @@ styleBase.textContent = css`
     height: 18px;
     padding-bottom: 3px;
     margin: 0 8px 0 0;
-}`
+}`)
 
-export const styleNarrow = document.createElement("style")
-styleNarrow.textContent = css`
+export const styleNarrow = new CSSStyleSheet()
+styleNarrow.replaceSync(css`
 :host {
     padding-top: 8px;
     padding-bottom: 8px;
@@ -76,4 +76,4 @@ styleNarrow.textContent = css`
 
 ::slotted(tx-formhelp) {
     grid-column: 1 / span 1;
-}`
+}`)

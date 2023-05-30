@@ -46,12 +46,6 @@ export class View extends HTMLElement {
 
     controller?: Controller
 
-    attachStyle(style: HTMLStyleElement) {
-        this.shadowRoot!.appendChild(
-            document.importNode(style, true)
-        )
-    }
-
     setModel(model?: Model<any>): void {
         console.trace(`Please note that View.setModel(model) has no implementation.`)
     }

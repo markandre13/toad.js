@@ -10,9 +10,10 @@ export class Form extends View {
     constructor(init?: HTMLElementProps) {
         super(init)
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(styleBase)
         if (this.getAttribute("variant") === "narrow") {
-            this.attachStyle(styleNarrow)
+            this.shadowRoot!.adoptedStyleSheets = [styleBase, styleNarrow]
+        } else {
+            this.shadowRoot!.adoptedStyleSheets = [styleBase]
         }
         this.shadowRoot!.appendChild(slot())
     }

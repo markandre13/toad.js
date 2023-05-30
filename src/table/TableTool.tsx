@@ -257,7 +257,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonDeleteNode)
 
         this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(document.importNode(textAreaStyle, true))
+        this.shadowRoot!.adoptedStyleSheets = [textAreaStyle]
         this.shadowRoot!.appendChild(this.toolbar)
     }
 

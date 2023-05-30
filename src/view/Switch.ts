@@ -40,7 +40,7 @@ export class Switch extends BooleanView {
         }
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(txSwitch)
+        this.shadowRoot!.adoptedStyleSheets = [txSwitch]
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(span())
     }

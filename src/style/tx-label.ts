@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 .tx-label {
     display: block;
     box-sizing: border-box;
@@ -12,5 +12,4 @@ style.textContent = css`
 
 .tx-label.disabled {
     color: var(--tx-fg-color-disabled)
-}
-`
+}`)

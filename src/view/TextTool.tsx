@@ -229,7 +229,7 @@ export class TextTool extends ModelView<Model> {
         // toolbar.appendChild(this.buttonOrderedList)
 
         this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(document.importNode(textAreaStyle, true))
+        this.shadowRoot!.adoptedStyleSheets = [textAreaStyle]
         this.shadowRoot!.appendChild(toolbar)
     }
 

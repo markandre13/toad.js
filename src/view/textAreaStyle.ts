@@ -16,8 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-export let textAreaStyle = document.createElement("style")
-textAreaStyle.textContent=`
+import { css } from 'src/util/lsx'
+
+export const textAreaStyle = new CSSStyleSheet()
+textAreaStyle.replaceSync(css`
 
 /* try to follow material ui: when active render button labels in black, otherwise in gray */
 svg .fill {
@@ -118,4 +120,4 @@ div.textarea h4 {
 div.textarea div {
   padding: 2px 0 2px 0;
 }
-`
+`)

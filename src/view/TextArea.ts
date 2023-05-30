@@ -133,7 +133,7 @@ export class TextArea extends ModelView<TextModel> {
         }
 
         this.attachShadow({mode: 'open'})
-        this.attachStyle(txText)
+        this.shadowRoot!.adoptedStyleSheets = [txText]
         this.shadowRoot!.appendChild(content)
     }
     

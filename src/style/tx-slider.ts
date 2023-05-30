@@ -2,7 +2,7 @@
 import { css } from 'src/util/lsx'
 
 export const style = new CSSStyleSheet()
-    style.replaceSync(css`
+style.replaceSync(css`
     :host {
         position: relative;
         box-sizing: content-box;

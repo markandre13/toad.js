@@ -78,7 +78,7 @@ export class Tabs extends ModelView<OptionModelBase> {
         }
 
         this.attachShadow({ mode: 'open' })
-        this.shadowRoot!.appendChild(document.importNode(txTabs, true))
+        this.shadowRoot!.adoptedStyleSheets = [txTabs]
         this.shadowRoot!.appendChild(tabContainer)
         this.shadowRoot!.appendChild(this.markerLine = div())
         this.shadowRoot!.appendChild(this.content)

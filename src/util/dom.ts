@@ -26,6 +26,9 @@ export function instantiateTemplate(name: string): DocumentFragment {
   return tmpl(name);
 }
 
+/**
+ * Obsolete
+ */
 export function tmpl(name: string): DocumentFragment {
   let t = document.querySelector('template[id="'+name+'"]');
   if (!t) {

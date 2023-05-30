@@ -125,8 +125,10 @@ export class Select extends ModelView<OptionModelBase> {
 
         this.classList.add("tx-combobox")
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(txCombobox)
-        this.attachStyle(txMenu) // menu & popover
+        this.shadowRoot!.adoptedStyleSheets = [
+            txCombobox,
+            txMenu // menu & popover
+        ]
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(b)
     }

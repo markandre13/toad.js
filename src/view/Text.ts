@@ -35,7 +35,7 @@ export class Text extends ModelView<TextModel | NumberModel> {
         this.wheel = this.wheel.bind(this)
         this.input.onwheel = this.wheel
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(txText)
+        this.shadowRoot!.adoptedStyleSheets = [txText]
         this.shadowRoot!.appendChild(this.input)
 
         // this.input.onclick = () => {

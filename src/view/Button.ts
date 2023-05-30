@@ -83,7 +83,7 @@ export class Button extends ActionView {
         }
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(txButton)
+        this.shadowRoot!.adoptedStyleSheets = [txButton]
         this.shadowRoot!.appendChild(this.button)
     }
 

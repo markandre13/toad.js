@@ -209,7 +209,7 @@ export class Menu extends MenuButtonContainer {
     }
 
     this.attachShadow({ mode: 'open' })
-    this.shadowRoot!.appendChild(document.importNode(menuStyle, true))
+    this.shadowRoot!.adoptedStyleSheets = [menuStyle]
     this.shadowRoot!.appendChild(this.view)
   }
 }

@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 .tx-popover {
     background-color: var(--tx-gray-50);
     border: 1px solid var(--tx-gray-400);
@@ -54,4 +54,4 @@ style.textContent = css`
 }
 .tx-menu > li.tx-disabled:hover {
     background-color: var(--tx-gray-50);
-}`
+}`)

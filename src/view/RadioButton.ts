@@ -51,7 +51,7 @@ export class RadioButton extends ModelView<OptionModelBase> {
         }
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(txRadio)
+        this.shadowRoot!.adoptedStyleSheets = [txRadio]
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(span())
     }

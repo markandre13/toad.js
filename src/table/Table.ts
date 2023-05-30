@@ -204,7 +204,7 @@ export class Table extends View {
         this.body.onpointerdown = this.pointerDown
 
         this.attachShadow({ mode: 'open', delegatesFocus: true })
-        this.attachStyle(txTable)
+        this.shadowRoot!.adoptedStyleSheets = [txTable]
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
 

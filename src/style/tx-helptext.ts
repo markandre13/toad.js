@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 .tx-helptext {
     display: flex;
     margin: 0;
@@ -30,4 +30,4 @@ style.textContent = css`
     color: var(--tx-warning-color);
     fill: var(--tx-warning-color);
 }
-`
+`)

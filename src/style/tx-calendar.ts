@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 .tx-calendar {
     display: inline-block;
     width: fit-content;
@@ -72,4 +72,4 @@ style.textContent = css`
 .tx-calendar td span.tx-selected {
     background: #334961;
     border-color: #334961;
-}`
+}`)

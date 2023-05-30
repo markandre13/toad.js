@@ -202,9 +202,10 @@ export class MenuButton extends ModelView<TextModel> {
     this.attachShadow({ mode: 'open' })
     if (!this.shadowRoot)
       throw Error("yikes")
-    this.shadowRoot.appendChild(document.importNode(menuStyle, true))
-    if (!this.node.modelId)
+      this.shadowRoot!.adoptedStyleSheets = [menuStyle]
+    if (!this.node.modelId) {
       this.shadowRoot.appendChild(document.createTextNode(node.label))
+    }
   }
 
   override connectedCallback() {

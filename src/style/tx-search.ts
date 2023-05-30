@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 .tx-search {
     display: inline-block;
     position: relative;
@@ -96,4 +96,4 @@ style.textContent = css`
 }
 .tx-search > button:disabled > svg {
     fill: var(--tx-gray-400);
-}`
+}`)

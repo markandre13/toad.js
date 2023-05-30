@@ -43,7 +43,7 @@ export class Checkbox extends BooleanView {
         )
 
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(txCheckbox)
+        this.shadowRoot!.adoptedStyleSheets = [txCheckbox]
         this.shadowRoot!.appendChild(this.input)
         this.shadowRoot!.appendChild(checkmark)
     }

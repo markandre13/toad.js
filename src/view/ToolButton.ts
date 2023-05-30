@@ -19,8 +19,10 @@
 import { OptionModelBase } from "../model/OptionModelBase"
 import { ModelView, ModelViewProps } from "./ModelView"
 
-let toolbuttonStyle = document.createElement("style")
-toolbuttonStyle.textContent=`
+import { css } from 'src/util/lsx'
+
+export const toolbuttonStyle = new CSSStyleSheet()
+toolbuttonStyle.replaceSync(css`
 :host {
     display: inline-block;
     overflow: hidden;
@@ -47,8 +49,7 @@ toolbuttonStyle.textContent=`
 }
 
 :host([checked][disabled]) {
-}
-`
+}`)
 
 export interface ToolButtonProps extends ModelViewProps<OptionModelBase> {
     value: string,
@@ -98,7 +99,7 @@ export class ToolButton extends ModelView<OptionModelBase> {
         // button.appendChild(img)
 
         this.attachShadow({mode: 'open'})
-        this.shadowRoot!.appendChild(document.importNode(toolbuttonStyle, true))
+        this.shadowRoot!.adoptedStyleSheets = [toolbuttonStyle]
         this.shadowRoot!.appendChild(img) // FIXME: use <slot> when no image was provided
     }
 

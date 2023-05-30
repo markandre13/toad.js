@@ -54,7 +54,7 @@ export class Search extends ModelView<TextModel> {
 
         f.classList.add("tx-search")
         this.attachShadow({ mode: 'open' })
-        this.attachStyle(txSearch)
+        this.shadowRoot!.adoptedStyleSheets = [txSearch]
         this.shadowRoot!.appendChild(f)
         //         this.attachStyle("menu") // menu & popover
         //         this.shadowRoot!.appendChild(this.input)

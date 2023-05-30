@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 :host {
     position: relative;
     display: inline-block;
@@ -182,4 +182,4 @@ style.textContent = css`
 .body > span.edit, .splitBody > span.edit, .body > span.edit:hover, .splitBody > span.edit:hover {
     caret-color: currentcolor;
 }
-`
+`)

@@ -1,7 +1,7 @@
 import { css } from 'src/util/lsx'
 
-export const style = document.createElement("style")
-style.textContent = css`
+export const style = new CSSStyleSheet()
+style.replaceSync(css`
 .tx-button {
     padding: 2px 14px 2px 14px;
     margin: 0;
@@ -92,4 +92,4 @@ style.textContent = css`
     color: var(--tx-fg-color-disabled);
     background-color: var(--tx-gray-200);
 }
-`
+`)
