@@ -1,6 +1,14 @@
 
 import { css } from 'src/util/lsx'
 
+// rail disabled: 3f3f3f
+// thumb disabled: 6a6a6a
+
+// rail enabled: 4b4b4b
+// track/rail filled: a3a3a3
+// thumb enabled: d0d0d0
+// thumb hover: ebebeb
+
 export const style = new CSSStyleSheet()
 style.replaceSync(css`
     :host {
@@ -46,7 +54,7 @@ style.replaceSync(css`
     }
 
     .tx-rail {
-        background-color: var(--tx-gray-500);
+        background-color: var(--tx-gray-300);
         position: absolute;
         display: block;
         border-radius: 2px;
@@ -55,16 +63,27 @@ style.replaceSync(css`
     :host(:not([orientation="vertical"])) .tx-rail {
         top: 50%;
         width: 100%;
-        height: 4px;
+        height: 2px;
         transform: translateY(-50%);
     }
 
     :host([orientation="vertical"]) .tx-rail {
         left: 50%;
         height: 100%;
-        width: 4px;
+        width: 2px;
         transform: translateX(-50%);
     }
+
+    :host([disabled]) .tx-rail {
+        background-color: var(--tx-gray-100);
+    }
+    :host([disabled]) .tx-track {
+        background-color: var(--tx-gray-100);
+    }
+    :host([disabled]) .tx-thumb {
+        border-color: var(--tx-gray-500);
+    }
+
 
     .tx-track {
         background-color: var(--tx-gray-700);
@@ -75,13 +94,13 @@ style.replaceSync(css`
 
     :host(:not([orientation="vertical"])) .tx-track {  
         top: 50%;
-        height: 4px;
+        height: 2px;
         transform: translateY(-50%);
     }
 
     :host([orientation="vertical"]) .tx-track {  
         left: 50%;
-        width: 4px;
+        width: 2px;
         transform: translateX(-50%);
     }
 
@@ -98,6 +117,9 @@ style.replaceSync(css`
         outline-width: 0px;
         border-radius: 50%;
         transform: translate(-50%, -50%);
+    }
+    .tx-thumb:hover {
+        border-color: var(--tx-gray-800)
     }
 
     :host(:not([orientation="vertical"])) .tx-thumb { 

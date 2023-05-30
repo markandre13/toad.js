@@ -35,6 +35,7 @@ interface SliderProps extends ModelViewProps<NumberModel> {
 export class Slider extends ModelView<NumberModel> {
     input: HTMLInputElement
     thumb: HTMLSpanElement
+    rail: HTMLSpanElement
     track: HTMLSpanElement
     vertical: boolean
     minColor?: RGBA
@@ -60,21 +61,20 @@ export class Slider extends ModelView<NumberModel> {
         thumb.classList.add('tx-thumb')
         slider.type = "range"
         this.input = slider
+        this.rail = rail
         this.track = track
         this.thumb = thumb
 
         const minColor = init ? init.minColor : this.getAttribute("minColor")
         const maxColor = init ? init.maxColor : this.getAttribute("maxColor")
-        if (minColor && maxColor) {
-            if (this.vertical) {
-                rail.style.backgroundImage = `linear-gradient(0deg, ${minColor}, ${maxColor})`
-            } else {
-                rail.style.backgroundImage = `linear-gradient(90deg, ${minColor}, ${maxColor})`
-            }
-            track.style.display = "none"
+        if (minColor) {
             this.minColor = parseColor(minColor)
+        }
+        if (maxColor) {
             this.maxColor = parseColor(maxColor)
         }
+
+        this.setGradient()
 
         this.updateView()
 
@@ -92,6 +92,9 @@ export class Slider extends ModelView<NumberModel> {
         }
         let skew: number | undefined = undefined
         thumb.onpointerdown = (ev: PointerEvent) => {
+            if (this.model?.enabled !== true) {
+                return
+            }
             thumb.setPointerCapture(ev.pointerId)
             const value = parseFloat(slider.value)
             const b = this.getBoundingClientRect()
@@ -143,6 +146,20 @@ export class Slider extends ModelView<NumberModel> {
         this.shadowRoot!.replaceChildren(container)
     }
 
+    protected setGradient() {
+        if (this.minColor && this.maxColor) {
+            if (this.model?.enabled === true) {
+                const rot = this.vertical ? "0deg" : "90deg"
+                const a = this.minColor
+                const b = this.maxColor   
+                this.rail.style.backgroundImage = `linear-gradient(${rot}, rgb(${a.r},${a.g},${a.b}), rgb(${b.r},${b.g},${b.b}))`
+            } else {
+                this.rail.style.backgroundImage = ""
+            }
+            this.track.style.display = "none"
+        }
+    }
+
     override updateModel() {
         if (this.model) {
             this.model.value = Number.parseFloat(this.input.value)
@@ -150,8 +167,17 @@ export class Slider extends ModelView<NumberModel> {
     }
 
     override updateView() {
-        if (!this.model)
+        this.setGradient()
+
+        if (!this.model) {
+            this.setAttribute("disabled", "disabled")
             return
+        }
+        if (this.model.enabled) {
+            this.removeAttribute("disabled")
+        } else {
+            this.setAttribute("disabled", "disabled")
+        }
         if (this.model.step === undefined && this.model.min !== undefined && this.model.max !== undefined) {
             this.input.step = `${(this.model.max - this.model.min) / 100}`
         } else {
@@ -166,8 +192,12 @@ export class Slider extends ModelView<NumberModel> {
         const value = this.model.value
         let v = (value - min) / (max - min)
         if (this.minColor && this.maxColor) {
-            const f = `rgb(${(this.maxColor.r - this.minColor.r) * v + this.minColor.r},${(this.maxColor.g - this.minColor.g) * v + this.minColor.g},${(this.maxColor.b - this.minColor.b) * v + this.minColor.b})`
-            this.thumb.style.backgroundColor = f
+            if (this.model?.enabled !== true) {
+                this.thumb.style.backgroundColor = ""
+            } else {
+                const f = `rgb(${(this.maxColor.r - this.minColor.r) * v + this.minColor.r},${(this.maxColor.g - this.minColor.g) * v + this.minColor.g},${(this.maxColor.b - this.minColor.b) * v + this.minColor.b})`
+                this.thumb.style.backgroundColor = f
+            }
         }
         v *= 100
 

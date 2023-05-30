@@ -160,6 +160,19 @@ bind("customFlavourDisabled", customFlavourDisabled)
 // <tx-slider>
 //
 
+let sliderMin = new NumberModel(0, { min: 0, max: 99 })
+bind("sliderMin", sliderMin)
+
+let sliderMax = new NumberModel(99, { min: 0, max: 99 })
+bind("sliderMax", sliderMax)
+
+let sliderMiddle = new NumberModel(42, { min: 0, max: 99 })
+bind("sliderMiddle", sliderMiddle)
+
+let sliderDisabled = new NumberModel(83, { min: 0, max: 99 })
+sliderDisabled.enabled = false
+bind("sliderDisabled", sliderDisabled)
+
 let size = new NumberModel(42, { min: 0, max: 99 })
 bind("size", size)
 

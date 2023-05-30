@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+
+<head>
+    <script type="module" src="/build/e2e/main.js"></script>
+</head>
+<body>
+    <div style="width: 200px; border: 1px solid;">
+        <tx-slider model="sliderMin"></tx-slider>
+        <tx-slider model="sliderMax"></tx-slider>
+        <tx-slider model="sliderMiddle"></tx-slider>
+        <tx-slider model="sliderDisabled"></tx-slider>
+        <tx-slider model="sliderMiddle" minColor="#00f" maxColor="#f00"></tx-slider>
+        <tx-slider model="sliderDisabled" minColor="#000" maxColor="#f00"></tx-slider>
+    </div>
+    <div style="height: 200px; border: 1px solid;">
+        <tx-slider model="sliderMin" orientation="vertical"></tx-slider>
+        <tx-slider model="sliderMax" orientation="vertical"></tx-slider>
+        <tx-slider model="sliderMiddle" orientation="vertical"></tx-slider>
+        <tx-slider model="sliderDisabled" orientation="vertical"></tx-slider>
+        <tx-slider model="sliderMiddle" minColor="#00f" maxColor="#f00" orientation="vertical"></tx-slider>
+        <tx-slider model="sliderDisabled" minColor="#000" maxColor="#f00" orientation="vertical"></tx-slider>
+    </div>
+</body>
+</html>
