@@ -19,7 +19,7 @@
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txSlider } from "../style/tx-slider"
-import { input, span } from "@toad/util/lsx"
+import { div, input, span } from "@toad/util/lsx"
 import { parseColor, RGBA } from "@toad/util/color"
 
 /**
@@ -46,13 +46,15 @@ export class Slider extends ModelView<NumberModel> {
         this.vertical = init ? init.orientation === "vertical" : this.getAttribute("orientation") === "vertical"
 
         let container, rail: HTMLSpanElement, track: HTMLSpanElement, thumb: HTMLSpanElement, slider: HTMLInputElement
-        container = [
-            rail = span(),
-            track = span(),
-            thumb = span(
-                slider = input()
+        container =
+            div(
+                rail = span(),
+                track = span(),
+                thumb = span(
+                    slider = input()
+                )
             )
-        ]
+        container.classList.add("tx-space")
         rail.classList.add('tx-rail')
         track.classList.add('tx-track')
         thumb.classList.add('tx-thumb')
@@ -138,7 +140,7 @@ export class Slider extends ModelView<NumberModel> {
         }
         this.attachShadow({ mode: 'open', delegatesFocus: true })
         this.shadowRoot!.adoptedStyleSheets = [txSlider]
-        this.shadowRoot!.replaceChildren(...container)
+        this.shadowRoot!.replaceChildren(container)
     }
 
     override updateModel() {

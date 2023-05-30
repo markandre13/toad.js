@@ -23,6 +23,28 @@ style.replaceSync(css`
         padding-right: 8px;
     }
 
+    .tx-space {
+        position: absolute;
+        box-sizing: content-box;
+        padding: 0;
+        margin: 0;
+        border: 0;
+    }
+
+    :host(:not([orientation="vertical"])) .tx-space {
+        left: 8px;
+        right: 8px;
+        top: 0;
+        bottom: 0;
+    }
+
+    :host([orientation="vertical"]) .tx-space {
+        left: 0;
+        right: 0;
+        top: 8px;
+        bottom: 8px;
+    }
+
     .tx-rail {
         background-color: var(--tx-gray-500);
         position: absolute;
