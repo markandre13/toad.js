@@ -80,29 +80,6 @@
 
         <tx-tab label="Introduction">
 
-            <hr />
-
-            <div style="width: 200px; border: 1px solid;">
-                <tx-slider model="sliderMin"></tx-slider>
-                <tx-slider model="sliderMax"></tx-slider>
-                <tx-slider model="sliderMiddle"></tx-slider>
-                <tx-slider model="sliderDisabled"></tx-slider>
-                <tx-slider model="sliderMiddle" minColor="#00f" maxColor="#f00"></tx-slider>
-                <tx-slider model="sliderDisabled" minColor="#000" maxColor="#f00"></tx-slider>
-            </div>
-            <div style="height: 200px; border: 1px solid;">
-                <tx-slider model="sliderMin" orientation="vertical"></tx-slider>
-                <tx-slider model="sliderMax" orientation="vertical"></tx-slider>
-                <tx-slider model="sliderMiddle" orientation="vertical"></tx-slider>
-                <tx-slider model="sliderDisabled" orientation="vertical"></tx-slider>
-                <tx-slider model="sliderMiddle" minColor="#00f" maxColor="#f00" orientation="vertical"></tx-slider>
-                <tx-slider model="sliderDisabled" minColor="#000" maxColor="#f00" orientation="vertical"></tx-slider>
-            </div>
-
-            <tx-color model="colorModel"></tx-color>
-
-            <hr />
-
             <u>Please note</u>: This overview represents the state of the master branch, not the 0.0.x package on npm.
 
             <h1>Introduction</h1>
@@ -646,6 +623,55 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
             </tx-if>
 
         </tx-tab>
+
+        <tx-tab label="Number">
+
+            <h1>Number</h1>
+
+            <h3>&lt;tx-slider&gt;</h3>
+            <div class="section">
+                <div style="width: 200px;">
+                    <tx-slider model="sliderMiddle"></tx-slider>
+                    <tx-slider model="sliderMiddle" minColor="#00f" maxColor="#f00"></tx-slider>
+                    <tx-slider model="sliderDisabled"></tx-slider>
+                </div>
+            </div>
+
+            <h3>&lt;tx-slider orientation="vertical"&gt;</h3>
+            <div class="section">
+
+                <div style="height: 200px;">
+                    <tx-slider model="sliderMiddle" orientation="vertical"></tx-slider>
+                    <tx-slider model="sliderMiddle" minColor="#00f" maxColor="#f00" orientation="vertical"></tx-slider>
+                    <tx-slider model="sliderDisabled" orientation="vertical"></tx-slider>
+                </div>
+            </div>
+
+            <h3>&lt;tx-color&gt;</h3>
+
+            <div class="section">
+                <tx-color model="colorModel"></tx-color>
+            </div>
+
+            <h3>&lt;tx-text&gt; &amp; &lt;tx-slider&gt;</h3>
+            <div class="section">
+                <tx-text model="size"></tx-text><tx-slider model="size"></tx-slider>
+            </div>
+
+            <my-code-button condition="slider-condition"></my-code-button>
+            <tx-if model="slider-condition">
+                <h4>HTML</h4>
+                <pre>
+      &lt;tx-text model="size"&gt;&lt;/tx-text&gt;
+      &lt;tx-slider model="size"&gt;&lt;/tx-slider&gt;</pre>
+                <h4>JavaScipt</h4>
+                <pre>
+      let size = new toad.NumberModel(42, {min: 0, max: 99})
+      toad.bind("size", size)</pre>
+            </tx-if>
+
+        </tx-tab>
+
         <tx-tab label="Boolean">
 
             <h1>Boolean</h1>
@@ -875,32 +901,8 @@ flavour.<span style="color: var(--tx-static-red-400);">value</span> = Flavour.<s
                     </tr>
                 </table>
             </div>
-
         </tx-tab>
-        <tx-tab label="Number">
 
-            <h1>Number</h1>
-
-            <h3>&lt;tx-text&gt; &amp; &lt;tx-slider&gt;</h3>
-            <div class="section">
-
-                <tx-text model="size"></tx-text>
-                <tx-slider model="size"></tx-slider>
-            </div>
-
-            <my-code-button condition="slider-condition"></my-code-button>
-            <tx-if model="slider-condition">
-                <h4>HTML</h4>
-                <pre>
-      &lt;tx-text model="size"&gt;&lt;/tx-text&gt;
-      &lt;tx-slider model="size"&gt;&lt;/tx-slider&gt;</pre>
-                <h4>JavaScipt</h4>
-                <pre>
-      let size = new toad.NumberModel(42, {min: 0, max: 99})
-      toad.bind("size", size)</pre>
-            </tx-if>
-
-        </tx-tab>
         <tx-tab label="Table">
 
             <h1>Table</h1>
