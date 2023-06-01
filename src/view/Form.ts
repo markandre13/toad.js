@@ -1,16 +1,20 @@
 import { HTMLElementProps } from "toad.jsx/lib/jsx-runtime"
 import { View } from "./View"
-import { slot } from 'src/util/lsx'
+import { slot } from '../util/lsx'
 import { styleBase, styleNarrow } from "@toad/style/tx-form"
 
-import { Model } from "src/model/Model"
+import { Model } from "../model/Model"
 import { ModelView, ModelViewProps } from "./ModelView"
 
+interface FormProps extends HTMLElementProps {
+    variant?: "wide" | "narrow"
+}
+
 export class Form extends View {
-    constructor(init?: HTMLElementProps) {
+    constructor(init?: FormProps) {
         super(init)
         this.attachShadow({ mode: 'open' })
-        if (this.getAttribute("variant") === "narrow") {
+        if (init?.variant === "narrow" || this.getAttribute("variant") === "narrow") {
             this.shadowRoot!.adoptedStyleSheets = [styleBase, styleNarrow]
         } else {
             this.shadowRoot!.adoptedStyleSheets = [styleBase]

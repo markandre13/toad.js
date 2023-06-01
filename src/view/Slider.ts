@@ -19,8 +19,8 @@
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txSlider } from "../style/tx-slider"
-import { div, input, span } from "@toad/util/lsx"
-import { parseColor, RGBA } from "@toad/util/color"
+import { div, input, span } from "../util/lsx"
+import { parseColor, RGBA } from "../util/color"
 
 /**
  * @category View
