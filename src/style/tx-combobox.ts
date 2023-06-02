@@ -97,4 +97,11 @@ style.replaceSync(css`
 :host(.tx-combobox) > input:disabled + button > svg {
     fill: var(--tx-gray-400);
 }
+:host(.tx-combobox) > input.tx-error {
+    color: var(--tx-warning-color);
+    border-color: var(--tx-warning-color)
+}
+:host(.tx-combobox) > input.tx-error + button {
+    border-color: var(--tx-warning-color)
+}
 `)

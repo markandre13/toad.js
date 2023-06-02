@@ -36,7 +36,7 @@ export class FormLabel extends ModelView<Model> {
 }
 export class FormField extends View { }
 export class FormHelp extends ModelView<Model> {
-    constructor(init?: ModelViewProps<Model | Model>) {
+    constructor(init?: ModelViewProps<Model>) {
         super(init)
     }
     override updateView(): void {

@@ -38,10 +38,20 @@ export class OptionModelBase<O extends ModelOptions = ModelOptions> extends Mode
   }
 
   set stringValue(v: string) {
-    if (this._stringValue === v)
+    if (this.error === undefined && this._stringValue === v)
       return
+    this.error = undefined
     this._stringValue = v
-    this.modified.trigger(v)
+    try {
+        this.modified.trigger(v)
+    }
+    catch(ex) {
+        this.error = `${ex}`
+        try {
+            this.modified.trigger(v)
+        }
+        catch(ex) {}
+    }
   }
 
   get stringValue() {

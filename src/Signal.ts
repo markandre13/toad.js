@@ -98,15 +98,18 @@ export class Signal<T = void> {
             this.busy = false
             return
         }
-        try {
-            for (let i = 0; i < this.callbacks.length; ++i) {
+        let error: any
+        for (let i = 0; i < this.callbacks.length; ++i) {
+            try {
                 this.callbacks[i].callback(data)
             }
-        }
-        catch (e) {
-            this.busy = false
-            throw e
+            catch (e) {
+                error = e
+            }
         }
         this.busy = false
+        if (error !== undefined) {
+            throw error
+        }
     }
 }

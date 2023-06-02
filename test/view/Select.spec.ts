@@ -24,7 +24,8 @@ const htmlComboBox = `<tx-select model='option' text='text'>
 
 describe("view", function () {
 
-    it.only("be able to change the model after an exception", function() {
+    // FIXME: this is actually: signal: clear busy flag after exception
+    it("be able to change the model after an exception", function() {
         const model = new OptionModel<string>()
         model.add("A", "a")
         model.add("B", "b")
@@ -45,6 +46,10 @@ describe("view", function () {
         }
         model.value = "b"
         expect(list).to.deep.equal(["A", "fail", "B"])
+    })
+
+    it.only("select should switch value even when trigger threw exception", function() {
+
     })
 
     describe("select", function () {

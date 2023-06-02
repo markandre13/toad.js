@@ -230,6 +230,11 @@ export class Select extends ModelView<OptionModelBase> {
         } else {
             this.input.removeAttribute("disabled")
         }
+        if (this.model?.error !== undefined) {
+            this.input.classList.add("tx-error")
+        } else {
+            this.input.classList.remove("tx-error")
+        }
 
         if (this.model !== undefined) {
             // console.log(`Select.updateView() to ${this.model.stringValue}`)
