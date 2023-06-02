@@ -1,5 +1,5 @@
 import { expect } from '@esm-bundle/chai'
-import { bindModel as bind } from "@toad"
+import { bindModel as bind, OptionModel } from "@toad"
 import { TextModel } from '@toad/model/TextModel'
 import { EnumModel } from '@toad/model/EnumModel'
 
@@ -23,6 +23,30 @@ const htmlComboBox = `<tx-select model='option' text='text'>
 </tx-select>`
 
 describe("view", function () {
+
+    it.only("be able to change the model after an exception", function() {
+        const model = new OptionModel<string>()
+        model.add("A", "a")
+        model.add("B", "b")
+
+        const list: string[] = []
+        model.modified.add((a) => {
+            list.push(a)
+            if (a === "A") {
+                throw Error("yikes")
+            }
+        })
+
+        try {
+            model.value = "a"
+        }
+        catch(e) {
+            list.push("fail")
+        }
+        model.value = "b"
+        expect(list).to.deep.equal(["A", "fail", "B"])
+    })
+
     describe("select", function () {
         describe("OptionModel", function() {
             it("updates the html element when the model changes", function() {

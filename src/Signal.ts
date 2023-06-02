@@ -98,9 +98,14 @@ export class Signal<T = void> {
             this.busy = false
             return
         }
-
-        for (let i = 0; i < this.callbacks.length; ++i) {
-            this.callbacks[i].callback(data)
+        try {
+            for (let i = 0; i < this.callbacks.length; ++i) {
+                this.callbacks[i].callback(data)
+            }
+        }
+        catch (e) {
+            this.busy = false
+            throw e
         }
         this.busy = false
     }

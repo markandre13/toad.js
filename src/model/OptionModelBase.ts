@@ -16,12 +16,20 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "./Model"
+import { Model, ModelOptions } from "./Model"
 
 /**
  * @category Application Model
+ * 
+ * This class dates back from before adding JSX to toad.js and the stringValue was introduced
+ * to support <option value="...">.
+ * 
+ * All of this has to go away.
+ * 
+ * What we actually want now is a user defined type for the options and a HTML/JSX fragment
+ * to represent it in the UI.
  */
-export class OptionModelBase extends Model {
+export class OptionModelBase<O extends ModelOptions = ModelOptions> extends Model<string, O> {
   private _stringValue: string
 
   constructor() {
@@ -33,7 +41,7 @@ export class OptionModelBase extends Model {
     if (this._stringValue === v)
       return
     this._stringValue = v
-    this.modified.trigger()
+    this.modified.trigger(v)
   }
 
   get stringValue() {
