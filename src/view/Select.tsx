@@ -181,8 +181,7 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
             return
         }
         const e = this.shadowRoot!.elementFromPoint(ev.clientX, ev.clientY)
-        if (this.button.contains(e)) {
-            // this.displayElement.focus()
+        if (this.displayElement.contains(e) || this.button.contains(e)) {
             return
         }
         this.close()
@@ -287,7 +286,7 @@ export class Select<V> extends SelectBase<V> {
         this.displayElement = div()
         this.displayElement.tabIndex = 0
         this.displayElement.style.minWidth = "200px"
-        // this.displayElement.onpointerdown = this.pointerdown
+        this.displayElement.onpointerdown = this.pointerdown
         this.displayElement.onkeydown = this.keydown
         // this.displayElement.onkeydown = this.keydown
         this.finalize()
