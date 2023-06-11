@@ -13,19 +13,26 @@ style.replaceSync(css`
 .tx-menu {
     display: inline-block;
     padding: 0;
-    margin: 4px 0 4px 0;
+    margin: 2px 0 2px 0;
 }
 .tx-menu > li {
     cursor: pointer;
     display: flex;
     border: none;
     border-left: 2px solid var(--tx-gray-50);
-    border-right: 2px solid var(--tx-gray-50);
-    /* padding: 7px 11px 7px 10px; */
+    margin-right: 2px;
     padding: 0;
     margin: 0;
     font-weight: 500;
     outline: none;
+}
+.tx-menu > li:first-child {
+    border-top-right-radius: 4px;
+    overflow: hidden;
+}
+.tx-menu > li:last-child {
+    border-bottom-right-radius: 4px;
+    overflow: hidden;
 }
 .tx-menu > li > :first-child {
     padding: 7px 11px 7px 10px;
