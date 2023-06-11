@@ -146,13 +146,7 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
         if (this.popup === undefined) {
             return
         }
-        const e = this.shadowRoot!.elementFromPoint(ev.clientX, ev.clientY)
-        let newHover
-        if (e instanceof HTMLLIElement) { // FIXME: this only works when there are no tags within the LI
-            newHover = e
-        } else {
-            newHover = undefined
-        }
+        let newHover = this.findMenuItem(ev)
         if (this.hover !== newHover) {
             if (this.hover) {
                 this.hover.classList.remove("tx-hover")
@@ -163,6 +157,22 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
             }
         }
     }
+
+    // when the pointer is captured, we need to find out on our own where we are...
+    protected findMenuItem(ev: PointerEvent) {
+        let e: Element | null | undefined = this.shadowRoot!.elementFromPoint(ev.clientX, ev.clientY)
+        while (e) {
+            if (e.nodeName === "LI"
+                && e.parentElement?.classList.contains("tx-menu")
+                && e.parentElement?.parentElement?.classList.contains("tx-popover")
+            ) {
+                break
+            }
+            e = e?.parentElement
+        }
+        return (e ? e : undefined) as HTMLLIElement | undefined
+    }
+
     protected pointerup(ev: PointerEvent) {
         if (this.hover) {
             const idx = parseInt(this.hover.dataset["idx"]!)
@@ -239,7 +249,7 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
         this.hover = undefined
         if (this.popup !== undefined) {
             this.shadowRoot!.removeChild(this.popup!)
-            this.popup = undefined;
+            this.popup = undefined
             this.displayElement.focus()
         }
     }

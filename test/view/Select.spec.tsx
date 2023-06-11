@@ -46,6 +46,7 @@ describe("Select", function () {
             LIME
         }
 
+        // note: referencing the document's stylesheet in the label won't work
         const model0 = new OptionModel(IMAC.BONDI, [
             [IMAC.BONDI, <div style={{color: "#FFFFFF", background: "#0095b6"}}>Bondi</div>],
             [IMAC.BLUEBERRY, <div style={{color: "#FFFFFF", background: "#4169E1"}}>Blueberry</div>],
