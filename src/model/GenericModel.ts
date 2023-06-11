@@ -20,8 +20,10 @@ import { Model, ModelOptions } from "./Model"
 
 /**
  * @category Application Model
+ * 
+ * a better name would be ValueModel
  */
-export class GenericModel<T, O extends ModelOptions = ModelOptions> extends Model<void, O> {
+export class GenericModel<T, O extends ModelOptions = ModelOptions> extends Model<T, O> {
     protected _value: T
 
     constructor(value: T, options?: O) {
@@ -29,11 +31,11 @@ export class GenericModel<T, O extends ModelOptions = ModelOptions> extends Mode
         this._value = value
     }
 
-    set value(value: T) {
+    set value(value:  T) {
         if (this._value == value)
             return
         this._value = value
-        this.modified.trigger()
+        this.modified.trigger(this._value)
     }
 
     get value(): T {

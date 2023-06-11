@@ -16,84 +16,60 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ModelOptions } from "./Model"
 import { OptionModelBase } from "./OptionModelBase"
 
 /**
  * @category Application Model
  */
-export class EnumModel<T extends Object> extends OptionModelBase {
+export type EnumType<T> = {
+    [id: string]: T | string;
+    [nu: number]: string
+}
 
-    protected enumClass: any
-    protected _value!: T
-
-    // TODO: find a way to replace 'any' with something like 'typeof T'
-    constructor(enumClass: any, value?: T) {
-        super()
-        this.enumClass = enumClass
-        if (value !== undefined) {
-            this._value = value
+export class EnumModel<V, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, O>
+{
+    protected enumType: EnumType<V>
+    constructor(enumType: EnumType<V>, value: V, options?: O) {
+        super(value, options)
+        this.enumType = enumType
+    }
+    forEach(callback: (value: V, key: string, label: any, index: number) => void): void {
+        let type = "string"
+        const entries = Object.entries(this.enumType)
+        for (const v0 of entries) {
+            if (typeof v0[1] === "object") {
+                type = "object"
+                break
+            }
+            if (typeof v0[1] === "number") {
+                type = "number"
+                break
+            }
         }
-    }
 
-    get value() {
-        return this._value
-    }
-
-    set value(value: T) {
-        this.setValue(value)
-    }
-
-    override get stringValue() {
-        return this.toString()
-    }
-
-    override set stringValue(value: string) {
-        this.fromString(value)
-    }
-
-    getValue(): T {
-        return this._value
-    }
-
-    setValue(value: T) {
-        if (this._value === value) {
-            return
-        }
-        this._value = value
-        this.modified.trigger()
-    }
-
-    override toString(): string {
-        return this.enumClass[this._value]
-    }
-
-    fromString(value: string) {
-        const x = this.enumClass[value]
-        if (x === undefined || typeof this.enumClass[x] !== "string") {
-            let allValidValues = ""
-            Object.keys(this.enumClass).forEach(
-                key => {
-                    const validValue = this.enumClass[key]
-                    if (typeof validValue === "string") {
-                        if (allValidValues.length !== 0) {
-                            allValidValues = `${allValidValues}, ${validValue}`
-                        } else {
-                            allValidValues = validValue
-                        }
+        let idx = 0
+        switch (type) {
+            case "object":
+                for (const v of entries) {
+                    if (typeof v[1] === "object") {
+                        callback(v[1] as any, v[0], this.asHtml(v[1]), idx++)
                     }
-                })
-            console.trace(`EnumModel<T>.fromString('${value}'): invalid value, must be one of ${allValidValues}`)
-            return
+                }
+                break
+            case "number":
+                for (const v of entries) {
+                    if (typeof v[1] === "number") {
+                        callback(v[1] as any, v[0], this.asHtml(v[0]), idx++)
+                    }
+                }
+                break
+            default:
+                for (const v of entries) {
+                    if (typeof v[0] === "string") {
+                        callback(v[1] as any, v[0], this.asHtml(v[1]), idx++)
+                    }
+                }
         }
-        if (this._value === x) {
-            return
-        }
-        this._value = x
-        this.modified.trigger()
-    }
-
-    override isValidStringValue(value: string): boolean {
-        const x = this.enumClass[value]
-        return x !== undefined && typeof this.enumClass[x] === "string"
     }
 }

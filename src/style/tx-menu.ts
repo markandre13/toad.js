@@ -21,10 +21,14 @@ style.replaceSync(css`
     border: none;
     border-left: 2px solid var(--tx-gray-50);
     border-right: 2px solid var(--tx-gray-50);
-    padding: 7px 11px 7px 10px;
+    /* padding: 7px 11px 7px 10px; */
+    padding: 0;
     margin: 0;
     font-weight: 500;
     outline: none;
+}
+.tx-menu > li > :first-child {
+    padding: 7px 11px 7px 10px;
 }
 .tx-menu > li:hover {
     background-color: var(--tx-gray-100);

@@ -26,7 +26,7 @@ export class RGBModel extends GenericModel<RGB, ModelOptions> {
         this._value.r = value.r
         this._value.g = value.g
         this._value.b = value.b
-        this.modified.trigger()
+        this.modified.trigger(this._value)
     }
 
     override get value(): RGB {

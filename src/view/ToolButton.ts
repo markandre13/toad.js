@@ -51,7 +51,7 @@ toolbuttonStyle.replaceSync(css`
 :host([checked][disabled]) {
 }`)
 
-export interface ToolButtonProps extends ModelViewProps<OptionModelBase> {
+export interface ToolButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {
     value: string,
     img: string,
     disabled?: boolean
@@ -60,8 +60,8 @@ export interface ToolButtonProps extends ModelViewProps<OptionModelBase> {
 /**
  * @category View
  */
-export class ToolButton extends ModelView<OptionModelBase> {
-    constructor(init?: ToolButtonProps) {
+export class ToolButton<V> extends ModelView<OptionModelBase<V>> {
+    constructor(init?: ToolButtonProps<V>) {
         super(init)
 
         // FIXME: this is what lit could take care of, but what we might not need anyway in toad.js
@@ -90,7 +90,8 @@ export class ToolButton extends ModelView<OptionModelBase> {
             this.focus()
             event.preventDefault()
             if (this.model !== undefined) {
-                this.model.stringValue = this.getValue()
+                throw Error("yikes")
+                // this.model.stringValue = this.getValue()
             }
         }
 
@@ -117,22 +118,23 @@ export class ToolButton extends ModelView<OptionModelBase> {
     }
    
     override updateView() {
-        if (this.model === undefined) {
-            this.setAttribute("disabled", "")
-            this.removeAttribute("selected")
-            return
-        }
-        let value = this.getValue()
-        if (this.model.isValidStringValue(value)) {
-            this.removeAttribute("disabled")
-        } else {
-            this.setAttribute("disabled", "")
-        }
-        if (this.model.stringValue === value) {
-            this.setAttribute("selected", "")
-        } else {
-            this.removeAttribute("selected")
-        }
+        throw Error("yikes")
+        // if (this.model === undefined) {
+        //     this.setAttribute("disabled", "")
+        //     this.removeAttribute("selected")
+        //     return
+        // }
+        // let value = this.getValue()
+        // if (this.model.isValidStringValue(value)) {
+        //     this.removeAttribute("disabled")
+        // } else {
+        //     this.setAttribute("disabled", "")
+        // }
+        // if (this.model.stringValue === value) {
+        //     this.setAttribute("selected", "")
+        // } else {
+        //     this.removeAttribute("selected")
+        // }
     }
 }
 

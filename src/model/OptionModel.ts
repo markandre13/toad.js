@@ -16,36 +16,27 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ModelOptions } from "./Model"
 import { OptionModelBase } from "./OptionModelBase"
 
 /**
  * @category Application Model
  */
-export class OptionModel<T> extends OptionModelBase {
-    private stringToType = new Map<string, T>()
-    private typeToString = new Map<T, string>()
-    list: string[] = []
-
-    add(id: string, value: T) {
-        this.stringToType.set(id, value)
-        this.typeToString.set(value, id)
-        this.list.push(id)
-    }
-
-    override isValidStringValue(stringValue: string): boolean {
-        return this.stringToType.has(stringValue)
-    }
-
-    get value(): T {
-        return this.stringToType.get(this.stringValue)!
-    }
-
-    set value(value: T) {
-        if (!this.typeToString.has(value)) {
-            this.add(`${value}`, value)
-            this.stringValue = `${value}`
+export class OptionModel<V, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, O> {
+    _mapping: Map<V, string>
+    constructor(value: V, mapping: readonly (readonly [V, string] | string)[], options?: O) {
+        super(value, options)
+        if (mapping[0] instanceof Array) {
+            this._mapping = new Map(mapping as [])
         } else {
-            this.stringValue = this.typeToString.get(value)!
+            this._mapping = new Map()
+            mapping.forEach( v => this._mapping.set(v as V, `${v}`))
         }
+    }
+    forEach(callback: (value: V, key: string, label: any, index: number) => void): void {
+        let idx = 0
+        this._mapping.forEach((label, value) => {
+            callback(value, `${value}`, this.asHtml(label), idx++)
+        })
     }
 }

@@ -78,7 +78,7 @@ describe("view", function () {
                         <tx-tab label="Tres">T3</tx-tab>
                     </tx-tabs>
                 `
-                const table = document.querySelector("tx-tabs") as Tabs
+                const table = document.querySelector("tx-tabs") as Tabs<unknown>
                 const bounds = table.getBoundingClientRect()
                 expect(bounds.width).to.equal(window.innerWidth)
                 expect(bounds.height).to.equal(window.innerHeight)

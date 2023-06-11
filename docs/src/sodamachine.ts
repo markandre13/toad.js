@@ -15,8 +15,7 @@ export function initializeSodaMachine() {
         soda.classList.remove("animated")
     }
 
-    const flavour = new EnumModel<Flavour>(Flavour)
-    flavour.value = Flavour.CLASSIC
+    const flavour = new EnumModel<Flavour>(Flavour, Flavour.CLASSIC)
     bind("flavour", flavour)
 
     const quantity = new NumberModel(defaultSize, { min: 0, max: 1500, autocorrect: true })

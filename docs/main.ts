@@ -143,13 +143,11 @@ enum Color {
     BONDIBLUE
 }
 
-const flavourEnabled = new EnumModel<Color>(Color)
-flavourEnabled.value = Color.GRAPE
+const flavourEnabled = new EnumModel<Color>(Color, Color.GRAPE)
 bind("flavourEnabled", flavourEnabled)
 
-const flavourDisabled = new EnumModel<Color>(Color)
+const flavourDisabled = new EnumModel<Color>(Color, Color.TANGERINE)
 flavourDisabled.enabled = false
-flavourDisabled.value = Color.TANGERINE
 bind("flavourDisabled", flavourDisabled)
 
 const customFlavour = new TextModel("")

@@ -21,7 +21,7 @@ import { OptionModelBase } from "../model/OptionModelBase"
 import { input, span } from "../util/lsx"
 import { style as txRadio } from "../style/tx-radio"
 
-export interface RadioButtonProps extends ModelViewProps<OptionModelBase> {
+export interface RadioButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {
     value: string,
     img: string,
     disabled?: boolean
@@ -30,13 +30,13 @@ export interface RadioButtonProps extends ModelViewProps<OptionModelBase> {
 /**
  * @category View
  */
-export class RadioButton extends ModelView<OptionModelBase> {
+export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
     input: HTMLInputElement
 
     static radioGroupCounter = 0
-    static radioGroups = new WeakMap<OptionModelBase, number>()
+    static radioGroups = new WeakMap<OptionModelBase<unknown>, number>()
 
-    constructor(init?: RadioButtonProps) {
+    constructor(init?: RadioButtonProps<V>) {
         super(init)
         this.classList.add("tx-radio")
 
@@ -57,9 +57,10 @@ export class RadioButton extends ModelView<OptionModelBase> {
     }
 
     override updateModel() {
-        if (this.model) {
-            this.model.stringValue = this.input.value
-        }
+        throw Error("yikes")
+        // if (this.model) {
+        //     this.model.stringValue = this.input.value
+        // }
     }
 
     override updateView() {
@@ -81,7 +82,8 @@ export class RadioButton extends ModelView<OptionModelBase> {
         }
 
         if (this.model) {
-            this.input.checked = this.model.stringValue === this.input.value
+            throw Error("yikes")
+            // this.input.checked = this.model.stringValue === this.input.value
         }
     }
 }

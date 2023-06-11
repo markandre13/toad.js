@@ -16,49 +16,87 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, ModelOptions } from "./Model"
+import { span, text } from "@toad/util/lsx"
+import { GenericModel } from "./GenericModel"
+import { ModelOptions } from "./Model"
 
 /**
  * @category Application Model
- * 
- * This class dates back from before adding JSX to toad.js and the stringValue was introduced
- * to support <option value="...">.
- * 
- * All of this has to go away.
- * 
- * What we actually want now is a user defined type for the options and a HTML/JSX fragment
- * to represent it in the UI.
  */
-export class OptionModelBase<O extends ModelOptions = ModelOptions> extends Model<string, O> {
-  private _stringValue: string
-
-  constructor() {
-    super()
-    this._stringValue = ""
-  }
-
-  set stringValue(v: string) {
-    if (this.error === undefined && this._stringValue === v)
-      return
-    this.error = undefined
-    this._stringValue = v
-    try {
-        this.modified.trigger(v)
+export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> extends GenericModel<V, O> {
+    abstract forEach(callback: (value: V, key: string, label: any, index: number) => void): void
+    map<R>(callback: (value: V, key: string, label: any, idx: number) => R): R[] {
+        const out: R[] = []
+        let idx = 0
+        this.forEach((value, key, label, index) => {
+            out.push(callback(value, key, label, idx++))
+        })
+        return out
     }
-    catch(ex) {
-        this.error = `${ex}`
-        try {
-            this.modified.trigger(v)
+    get html(): any | undefined {
+        let l: any
+        this.forEach( (value, key, label, index) => {
+            if (this.value === value) {
+                l = label
+            }
+        })
+        return this.asHtml(l)
+    }
+    // FIXME: move into SelectBase
+    // * we wrap plain text into a span because for the layout for work we need
+    //   to have a HTMLElement there which can display a margin
+    asHtml(l: any) {
+        if (typeof l === "string") {
+            return span(text(l))
         }
-        catch(ex) {}
+        if (typeof l === "number") {
+            return span(text(`${l}`))
+        }
+        if (typeof l === "object") {
+            if (l instanceof Node) {
+                let h = l.cloneNode(true) as HTMLElement
+                const NODE_TYPE_TEXT = 3
+                if (l.nodeType === NODE_TYPE_TEXT) {
+                    l = span(l)
+                }
+                h.style.height = "100%"
+                h.style.width = "100%"
+                return h
+            }
+        }
+        // fallback
+        return span(text(`${l}`))
     }
-  }
-
-  get stringValue() {
-    return this._stringValue
-  }
-
-  isValidStringValue(stringValue: string): boolean {
-    return false
-  }
+    set index(idx: number | undefined) {
+        this.forEach( (value, key, label, index) => {
+            if (index === idx) {
+                this.value = value
+            }
+        })
+    }
+    get index(): number | undefined {
+        let idx: number | undefined
+        this.forEach( (value, key, label, index) => {
+            if (this.value === value) {
+                idx = index
+            }
+        })
+        return idx
+    }
+    next() {
+        const idx = this.index
+        if (idx === undefined) {
+            this.index = 0
+        } else {
+            this.index = idx + 1
+        }
+    }
+    prev() {
+        const idx = this.index
+        if (idx === undefined) {
+            this.index = 0
+        } else {
+            this.index = idx - 1
+        }
+    }
 }

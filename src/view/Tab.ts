@@ -26,14 +26,14 @@ import { OptionModelBase } from "../model/OptionModelBase"
 /**
  * @category View
  */
-export class Tabs extends ModelView<OptionModelBase> {
+export class Tabs<V> extends ModelView<OptionModelBase<V>> {
     markerLine: HTMLElement
     content: HTMLElement
 
     activeTab?: HTMLElement
     activePanel?: Tab
 
-    constructor(init?: ModelViewProps<OptionModelBase>) {
+    constructor(init?: ModelViewProps<OptionModelBase<V>>) {
         super(init)
 
         this.setTab = this.setTab.bind(this)
@@ -106,7 +106,8 @@ export class Tabs extends ModelView<OptionModelBase> {
         this.adjustLine()
 
         if (this.model && panel.value) {
-            this.model.stringValue = panel.value
+            throw Error("yikes")
+            // this.model.stringValue = panel.value
         }
     }
 

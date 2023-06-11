@@ -8,14 +8,15 @@ style.replaceSync(css`
     position: relative;
     vertical-align: top;
 }
-:host(.tx-combobox) > input {
+:host(.tx-combobox) > :first-child {
     box-sizing: border-box;
     width: 100%;
     height: 32px;
+    line-height: 30px; /* center text vertically */
+    overflow: hidden; /* children shall not overlap our border */
     margin: 0;
-    padding: 3px 32px 5px 11px;
+    padding: 0;
     vertical-align: top;
-    overflow: visible;
     outline: none;
     display: inline-block;
     border: 1px solid var(--tx-gray-400);
@@ -25,14 +26,18 @@ style.replaceSync(css`
     color: var(--tx-gray-900);  
     font-weight: var(--tx-edit-font-weight);
     font-size: var(--tx-edit-font-size);
-    line-height: 18px;
 }
-:host(.tx-combobox) > input::placeholder {
+:host(.tx-combobox) > input:first-child {
+    padding: 4px 32px 4px 11px;
+}
+:host(.tx-combobox) > :first-child > :first-child {
+    padding-left: 7px;
+}
+:host(.tx-combobox) > :first-child::placeholder {
     color: var(--tx-placeholder-fg-color);
     font-style: italic;
     font-weight: 300;
 }
-
 :host(.tx-combobox) > button {
     position: absolute;
     right: 0;
@@ -56,7 +61,7 @@ style.replaceSync(css`
     transform: rotate(90deg) translate(5px, 8px);
 }
 
-:host(.tx-combobox) > input:hover {
+:host(.tx-combobox) > :first-child:hover {
     border-color: var(--tx-gray-500);
 }
 :host(.tx-combobox) > button:hover {
@@ -67,10 +72,10 @@ style.replaceSync(css`
     fill: var(--tx-gray-900);
 }
 
-:host(.tx-combobox) > input:focus {
+:host(.tx-combobox) > :first-child:focus {
     border-color: var(--tx-outline-color);
 }
-:host(.tx-combobox) > input:focus + button {
+:host(.tx-combobox) > :first-child:focus + button {
     border-color: var(--tx-outline-color);
 }
 /* spectrum use a 1px focus ring when the focus was set by mouse
@@ -85,23 +90,23 @@ style.replaceSync(css`
     border-left: none;
 } */
 
-:host(.tx-combobox) > input:disabled {
+:host(.tx-combobox) > :first-child:disabled {
     color: var(--tx-gray-700);
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-:host(.tx-combobox) > input:disabled + button {
+:host(.tx-combobox) > :first-child:disabled + button {
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-:host(.tx-combobox) > input:disabled + button > svg {
+:host(.tx-combobox) > :first-child:disabled + button > svg {
     fill: var(--tx-gray-400);
 }
-:host(.tx-combobox) > input.tx-error {
+:host(.tx-combobox) > :first-child.tx-error {
     color: var(--tx-warning-color);
     border-color: var(--tx-warning-color)
 }
-:host(.tx-combobox) > input.tx-error + button {
+:host(.tx-combobox) > :first-child.tx-error + button {
     border-color: var(--tx-warning-color)
 }
 `)
