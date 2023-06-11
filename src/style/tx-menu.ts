@@ -35,7 +35,8 @@ style.replaceSync(css`
     border-color: var(--tx-gray-100);
 }
 .tx-menu > li.tx-hover {
-    background-color: var(--tx-gray-100);
+    filter: brightness(1.2);
+    backdrop-filter: brightness(1.2);
     border-color: var(--tx-gray-100);
 }
 .tx-menu > li:focus {
