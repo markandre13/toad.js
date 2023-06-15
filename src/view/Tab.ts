@@ -37,6 +37,8 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
     activeTab?: HTMLElement
     activePanel?: Tab<V>
 
+    labelMap = new Map<Tab<V>, HTMLElement>()
+
     constructor(init?: TabsProps<V>) {
         super(init)
 
@@ -57,21 +59,22 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
                 console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
                 continue
             }
-            const tab = child as Tab<V>
+            const panel = child as Tab<V>
             let tabLabel: HTMLElement
-            tabContainer.appendChild(li((tabLabel = span(text(tab.getAttribute("label")!) as any))))
+            tabContainer.appendChild(li((tabLabel = span(text(panel.getAttribute("label")!) as any))))
             tabLabel.onpointerdown = (ev: PointerEvent) => {
                 ev.stopPropagation()
                 ev.preventDefault()
                 ev.cancelBubble = true
-                this.activateTab(tabLabel, tab)
+                this.activateTab(tabLabel, panel)
             }
+            this.labelMap.set(panel, tabLabel)
 
-            if (this.activeTab === undefined && (this.model === undefined || this.model.value === tab.value)) {
+            if (this.activeTab === undefined && (this.model === undefined || this.model.value === panel.value)) {
                 this.activeTab = tabLabel
-                this.activePanel = tab
+                this.activePanel = panel
             } else {
-                tab.style.display = "none"
+                panel.style.display = "none"
             }
         }
 
@@ -90,14 +93,36 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.adjustLine()
     }
 
-    protected activateTab(tab: HTMLElement, panel: Tab<V>) {
+    override updateView(): void {
+        if (this.model) {
+            console.log(`<TAB> UPDATE VIEW ${this.model.value}`)
+            for (let i = 0; i < this.children.length; ++i) {
+                const child = this.children[i]
+                if (!(child instanceof Tab)) {
+                    console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
+                    continue
+                }
+                const tab = child as Tab<V>
+                if (this.model.value === tab.value) {
+                    this.activateTab(this.labelMap.get(tab)!, tab)
+                    break
+                }
+            }
+        }
+    }
+
+    protected activateTab(tabLabel: HTMLElement, panel: Tab<V>) {
+        if (this.activePanel === panel) {
+            return
+        }
+
         if (this.activeTab !== undefined && this.activePanel !== undefined) {
             this.activeTab.classList.remove("active")
             this.activePanel.style.display = "none"
             this.activePanel.close()
         }
 
-        this.activeTab = tab
+        this.activeTab = tabLabel
         this.activePanel = panel
 
         this.activePanel.open()
@@ -106,7 +131,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
         this.adjustLine()
 
-        if (this.model && panel.value) {
+        if (this.model && panel.value !== undefined) {
             this.model.value = panel.value
         }
     }

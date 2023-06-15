@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+import { EnumModel } from "@toad"
 import { Tabs, Tab } from "@toad/view/Tab"
 
 // import { TextModel } from "@toad/model/TextModel"
@@ -55,6 +56,64 @@ export function main(): void {
     // initializeStarSystem()
     // initializeTree()
 
+    // location
+    //   http://localhost:8000/docs/index.dev.html?a=1&b=2#hello
+    // hostname: localhost
+    // port: 8000
+    // host: localhost:8000
+    // search=?a=1&b=2
+    // hash=#hello
+    // reload()
+    // replace()
+    // valueOf()
+
+    // History API
+    // Navigation API: not safari & firefox
+
+    // console.log(window.location)
+    // console.log(window)
+
+    // http://localhost:8000/docs/index.dev.html?a=1&b=2#introduction
+    // http://localhost:8000/docs/index.dev.html?a=1&b=2#form
+
+    // const a = new URL("hello/you", "http://zick/api")
+    // const a = new URLSearchParams("a=1&b=2")
+    // a.forEach((value, key) => {
+    //     console.log(`${key}=${value}`)
+    // })
+    // console.log(a)
+
+    enum TAB {
+        INTRODUCTION,
+        FORM,
+        ACTION,
+    }
+
+    const tabModel = new EnumModel(TAB.INTRODUCTION, TAB)
+    if (location.hash.length > 1) {
+        tabModel.value = parseInt(location.hash.substring(1))
+    }
+
+    window.onpopstate = (ev: PopStateEvent) => {
+        if (location.hash.length > 1) {
+            console.log(`POPSTATE MODEL := ${location.hash}`)
+            tabModel.value = parseInt(location.hash.substring(1))
+        }
+    }
+
+    tabModel.modified.add((tab) => {
+        if (location.hash !== `#${tab}`) {
+            console.log(`MODEL CHANGE, PUSHSTATE = ${location.hash}`)
+            history.pushState(undefined, "", `#${tab}`)
+        }
+    })
+
+    // history.
+
+    // history.pushState({}, "foo", "#wombat")
+
+    // window.location.replace()
+
     document.body.replaceChildren(
         ...(
             <>
@@ -63,10 +122,10 @@ export function main(): void {
                     <br />
                     Web Edition
                 </p>
-                <Tabs orientation="vertical">
-                    <Tab label="Introduction" content={() => import("./00_introduction")} />
-                    <Tab label="Form" content={() => import("./01_form")} />
-                    <Tab label="Action" />
+                <Tabs orientation="vertical" model={tabModel}>
+                    <Tab value={TAB.INTRODUCTION} label="Introduction" content={() => import("./00_introduction")} />
+                    <Tab value={TAB.FORM} label="Form" content={() => import("./01_form")} />
+                    <Tab value={TAB.ACTION} label="Action" />
                     <Tab label="Text" />
                     <Tab label="Number" />
                     <Tab label="Boolean" />

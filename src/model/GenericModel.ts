@@ -32,7 +32,7 @@ export class GenericModel<T, O extends ModelOptions = ModelOptions> extends Mode
     }
 
     set value(value:  T) {
-        if (this._value == value)
+        if (this._value === value)
             return
         this._value = value
         this.modified.trigger(this._value)
