@@ -18,74 +18,84 @@
 
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
-import { input, span } from "../util/lsx"
+import { input, label, slot, span, text } from "../util/lsx"
 import { style as txRadio } from "../style/tx-radio"
 
 export interface RadioButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {
-    value: string,
-    img: string,
-    disabled?: boolean
+    value: V,
+    // img: string,
+    // disabled?: boolean
 }
 
 /**
  * @category View
  */
 export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
-    input: HTMLInputElement
+    protected input: HTMLInputElement
+    protected label: HTMLLabelElement
+    protected value?: V
 
     static radioGroupCounter = 0
     static radioGroups = new WeakMap<OptionModelBase<unknown>, number>()
 
     constructor(init?: RadioButtonProps<V>) {
         super(init)
+        this.value = init?.value
+
+        this.updateModel = this.updateModel.bind(this)
+        this.updateView = this.updateView.bind(this)
+
         this.classList.add("tx-radio")
 
         this.input = input()
         this.input.type = "radio"
+        this.input.onchange = this.updateModel
+        this.input.disabled = true
 
-        // need to set input's name & value from the user provided attributes
-        this.input.value = this.getAttribute("value")!
-        let view = this
-        this.input.onchange = () => {
-            view.updateModel()
-        }
+        this.label = label()
 
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: 'open', delegatesFocus: true })
         this.shadowRoot!.adoptedStyleSheets = [txRadio]
-        this.shadowRoot!.appendChild(this.input)
-        this.shadowRoot!.appendChild(span())
+        this.shadowRoot!.replaceChildren(
+            this.input,
+            span(),
+            this.label)
     }
 
     override updateModel() {
-        throw Error("yikes")
-        // if (this.model) {
-        //     this.model.stringValue = this.input.value
-        // }
+        if (this.input.checked && this.model !== undefined) {
+            this.model.value = this.value!
+        }
     }
 
     override updateView() {
-        if (this.model) {
+        if (this.model !== undefined) {
             let radioGroup = RadioButton.radioGroups.get(this.model)
             if (radioGroup === undefined) {
                 radioGroup = ++RadioButton.radioGroupCounter
                 RadioButton.radioGroups.set(this.model, radioGroup)
             }
-            this.input.name = `radioGroup${radioGroup}`
+            this.input.name = `tx-radio-group-${radioGroup}`
+            this.input.value = `${this.model.indexOf(this.value!)}`
+            if (this.childNodes.length > 0) {
+                this.label.replaceChildren(slot())
+            } else {
+                this.label.replaceChildren(this.model.labelOf(this.value!))
+            }
         } else {
             this.input.name = ""
         }
 
-        if (!this.model || !this.model.enabled) {
+        if (!this.model || !this.model.enabled || !this.model.isEnabledOf(this.value!)) {
             this.input.setAttribute("disabled", "")
         } else {
             this.input.removeAttribute("disabled")
         }
 
         if (this.model) {
-            throw Error("yikes")
-            // this.input.checked = this.model.stringValue === this.input.value
+            this.input.checked = this.model.value === this.value
         }
     }
 }
 
-RadioButton.define("tx-radiobutton", RadioButton)
+RadioButton.define("tx-radio", RadioButton)

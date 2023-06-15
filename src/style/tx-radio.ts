@@ -8,6 +8,7 @@ style.replaceSync(css`
     align-items: flex-start;
     position: relative;
     vertical-align: top;
+    padding: 2px;
 }
 /* an invisible radiobutton will overlay everything, handling input and state */
 :host(.tx-radio) > input {
@@ -29,7 +30,8 @@ style.replaceSync(css`
     display: block;
     position: relative;
     left: 0;
-    top: 0;
+    top: 2px;
+    margin-right: 3px;
     box-sizing: border-box;
     flex-grow: 0;
     flex-shrink: 0;
@@ -80,4 +82,8 @@ style.replaceSync(css`
 }
 :host(.tx-radio) > input:disabled + span {
     border-color: var(--tx-gray-500);
-}`)
+}
+:host(.tx-radio) > input:disabled + span + label {
+    color: var(--tx-gray-500);
+}
+`)

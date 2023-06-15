@@ -76,6 +76,7 @@ export const slot = (...children: Node[]) => element<HTMLSlotElement>("slot", ch
 export const form = (...children: Node[]) => element<HTMLFormElement>("form", children)
 export const input = (...children: Node[]) => element<HTMLInputElement>("input", children)
 export const button = (...children: Node[]) => element<HTMLButtonElement>("button", children)
+export const label = (...children: Node[]) => element<HTMLLabelElement>("label", children)
 export const ul = (...children: Node[]) => element<HTMLUListElement>("ul", children)
 export const ol = (...children: Node[]) => element<HTMLOListElement>("ol", children)
 export const li = (...children: (Node)[]) => element<HTMLLIElement>("li", children)

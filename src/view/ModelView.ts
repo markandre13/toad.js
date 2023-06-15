@@ -47,8 +47,9 @@ export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends V
 
         const view = this
 
-        if (this.model)
+        if (this.model) {
             this.model.modified.remove(view)
+        }
 
         if (model) {
             model.modified.add((data: T) => view.updateView(data), view)
@@ -62,7 +63,8 @@ export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends V
 
     override connectedCallback() {
         super.connectedCallback()
-        if (this.model)
+        if (this.model) {
             this.updateView(undefined)
+        }
     }
 }

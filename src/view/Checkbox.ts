@@ -35,17 +35,15 @@ export class Checkbox extends BooleanView {
 
         this.input = input()
         this.input.type = "checkbox"
-        this.input.onchange = () => {
-            this.updateModel()
-        }
+        this.updateModel = this.updateModel.bind(this)
+        this.input.onchange = this.updateModel
         const checkmark = svg(
             path("M3.5 9.5a.999.999 0 01-.774-.368l-2.45-3a1 1 0 111.548-1.264l1.657 2.028 4.68-6.01A1 1 0 019.74 2.114l-5.45 7a1 1 0 01-.777.386z")
         )
 
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: 'open', delegatesFocus: true })
         this.shadowRoot!.adoptedStyleSheets = [txCheckbox]
-        this.shadowRoot!.appendChild(this.input)
-        this.shadowRoot!.appendChild(checkmark)
+        this.shadowRoot!.replaceChildren(this.input, checkmark)
     }
 }
 

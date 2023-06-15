@@ -67,6 +67,33 @@ export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> 
         // fallback
         return span(text(`${l}`))
     }
+    indexOf(value: V) {
+        let idx: number | undefined
+        this.forEach( (aValue, key, label, index) => {
+            if (value === aValue) {
+                idx = index
+            }
+        })
+        return idx
+    }
+    labelOf(value: V) {
+        let lab: any
+        this.forEach( (aValue, key, label, index) => {
+            if (value === aValue) {
+                lab = label
+            }
+        })
+        return lab
+    }
+    isEnabledOf(value: V) {
+        let enabled = false
+        this.forEach( (aValue, key, label, index) => {
+            if (value === aValue) {
+                enabled = true
+            }
+        })
+        return enabled
+    }
     set index(idx: number | undefined) {
         this.forEach( (value, key, label, index) => {
             if (index === idx) {
