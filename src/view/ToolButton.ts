@@ -47,42 +47,34 @@ toolbuttonStyle.replaceSync(css`
 :host([disabled]) img {
     opacity: 0.5;
 }
-
-:host([checked][disabled]) {
-}`)
+`)
 
 export interface ToolButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {
-    value: string,
+    value: V,
     img: string,
-    disabled?: boolean
 }
 
 /**
  * @category View
  */
 export class ToolButton<V> extends ModelView<OptionModelBase<V>> {
+    protected value?: V
     constructor(init?: ToolButtonProps<V>) {
         super(init)
 
         // FIXME: this is what lit could take care of, but what we might not need anyway in toad.js
         if (!init) {
             init = {
-                value: this.getAttribute("value")!,
+                value: this.getAttribute("value")! as any,
                 img: this.getAttribute("img")!,
-                disabled: this.hasAttribute("disabled")
             }
         } else {
-            this.setAttribute("value", init.value)
+            this.setAttribute("value", `${init.value}`)
             this.setAttribute("img", init.img)
-            if (init.disabled === true)
-                this.setAttribute("disabled", "disabled")
         }
 
-        // if (init.model)
-        //     this.setModel(init.model)
-        
-        // let button = document.createElement("div")
-        // button.setAttribute("tabindex", "0")
+        this.value = init?.value
+
         this.onmousedown = (event) => {
             if (this.hasAttribute("disabled")) {
                 return
@@ -90,8 +82,8 @@ export class ToolButton<V> extends ModelView<OptionModelBase<V>> {
             this.focus()
             event.preventDefault()
             if (this.model !== undefined) {
-                throw Error("yikes")
-                // this.model.stringValue = this.getValue()
+                // throw Error("yikes")
+                this.model.value = this.value!
             }
         }
 
@@ -99,42 +91,36 @@ export class ToolButton<V> extends ModelView<OptionModelBase<V>> {
         img.src = init.img
         // button.appendChild(img)
 
-        this.attachShadow({mode: 'open'})
+        this.attachShadow({mode: 'open', delegatesFocus: true})
         this.shadowRoot!.adoptedStyleSheets = [toolbuttonStyle]
         this.shadowRoot!.appendChild(img) // FIXME: use <slot> when no image was provided
     }
 
-    getValue(): string {
-        let value = this.getAttribute("value")
-        if (value === null)
-            throw Error("no value")
-        return value
-    }
-
     override connectedCallback() {
         super.connectedCallback()
-        if (this.model === undefined)
+        if (this.model === undefined) {
             this.setAttribute("disabled", "")
+        }
     }
    
     override updateView() {
-        throw Error("yikes")
-        // if (this.model === undefined) {
-        //     this.setAttribute("disabled", "")
-        //     this.removeAttribute("selected")
-        //     return
-        // }
-        // let value = this.getValue()
-        // if (this.model.isValidStringValue(value)) {
-        //     this.removeAttribute("disabled")
-        // } else {
-        //     this.setAttribute("disabled", "")
-        // }
-        // if (this.model.stringValue === value) {
-        //     this.setAttribute("selected", "")
-        // } else {
-        //     this.removeAttribute("selected")
-        // }
+        if (this.model === undefined) {
+            this.setAttribute("disabled", "")
+            this.removeAttribute("selected")
+            return
+        }
+
+        if (!this.model.enabled || !this.model.isEnabledOf(this.value!)) {
+            this.removeAttribute("disabled")
+        } else {
+            this.setAttribute("disabled", "")
+        }
+
+        if (this.model.value === this.value) {
+            this.setAttribute("selected", "")
+        } else {
+            this.removeAttribute("selected")
+        }
     }
 }
 
