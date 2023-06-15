@@ -41,6 +41,7 @@ import { initializeSodaMachine } from "./src/sodamachine"
 import { initializeStarSystem } from "./src/starsystem"
 import { EmailModel } from "@toad/model/EmailModel"
 import { RGBModel } from "@toad/model/RGBModel"
+import { OptionModel } from "@toad"
 
 loadComponents()
 
@@ -133,6 +134,34 @@ bind("onDisabled", onDisabled)
 //
 // EnumModel
 //
+
+enum IMAC {
+    BONDI,
+    BLUEBERRY,
+    GRAPE,
+    STRAYBERRY,
+    TANGERINE,
+    LIME
+}
+
+const macColor = new OptionModel(IMAC.BONDI, [
+    [IMAC.BONDI, <div style={{color: "#FFFFFF", background: "#0095b6"}}>Bondi</div>],
+    [IMAC.BLUEBERRY, <div style={{color: "#FFFFFF", background: "#4169E1"}}>Blueberry</div>],
+    [IMAC.GRAPE, <div style={{color: "#FFFFFF", background: "#421C52"}}>Grape</div>],
+    [IMAC.STRAYBERRY, <div style={{color: "#000000", background: "#fe2c54"}}>Strawberry</div>],
+    [IMAC.TANGERINE, <div style={{color: "#000000", background: "#f28500"}}>Tangerine</div>],
+    [IMAC.LIME, <div style={{color: "#000000", background: "#32cd32"}}>Lime</div>],
+])
+bind("mac", macColor)
+
+macColor.modified.add(() => {
+    const svg = document.getElementById("macimg")!
+    svg.querySelectorAll("[.mac-light]").forEach((e) => {
+        console.log("change");
+        // (e as SVGPathElement).style.fill = "#f00"
+    })
+})
+
 
 enum Color {
     BLUEBERRY = 0,

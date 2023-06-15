@@ -17,12 +17,13 @@ style.replaceSync(css`
     margin: 0;
     padding: 0;
     vertical-align: top;
+    text-align: left;
     outline: none;
     display: inline-block;
     border: 1px solid var(--tx-gray-400);
     border-radius: 4px;
     background-color: var(--tx-gray-50);
-
+    
     color: var(--tx-gray-900);  
     font-weight: var(--tx-edit-font-weight);
     font-size: var(--tx-edit-font-size);
