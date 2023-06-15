@@ -76,7 +76,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
     describe("forEach(callbackfn: (value, label) => void)", function () {
         it("enum Direction { UP, ... }", function () {
             enum A { UP, DOWN, LEFT, RIGHT }
-            const model = new EnumModel(A, A.UP)
+            const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
             model.forEach((value, key, label) => {
@@ -97,7 +97,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = 102,
                 RIGHT = 103
             }
-            const model = new EnumModel(A, A.UP)
+            const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
             model.forEach((value, key, label) => {
@@ -118,7 +118,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = "Left",
                 RIGHT = "Right"
             }
-            const model = new EnumModel(A, A.UP)
+            const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
             model.forEach((value, key, label) => {
@@ -139,7 +139,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = <i>Left</i>,
                 RIGHT = <i>Right</i>
             }
-            const model = new EnumModel(A, A.UP)
+            const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
             model.forEach((value, key, label) => {
@@ -162,7 +162,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = "Left",
                 RIGHT = "Right"
             }
-            const model = new EnumModel(A, A.UP)
+            const model = new EnumModel(A.UP, A)
 
             const out = model.map((value, key, label) => {
                 return <option value={key}>{label}</option>
@@ -184,7 +184,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = "Left",
                 RIGHT = "Right"
             }
-            const model = new EnumModel(A, A.LEFT)
+            const model = new EnumModel(A.LEFT, A)
 
             expect(model.index).equals(2)
         })
@@ -195,7 +195,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = "Left",
                 RIGHT = "Right"
             }
-            const model = new EnumModel(A, A.UP)
+            const model = new EnumModel(A.UP, A)
 
             model.index = 2
 
@@ -208,7 +208,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = "Left",
                 RIGHT = "Right"
             }
-            const model = new EnumModel(A, A.LEFT)
+            const model = new EnumModel(A.LEFT, A)
 
             model.next()
             expect(model.value).equals(A.RIGHT)
@@ -223,8 +223,7 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 LEFT = "Left",
                 RIGHT = "Right"
             }
-            const model = new EnumModel(A, A.DOWN)
-
+            const model = new EnumModel(A.DOWN, A)
             model.prev()
             expect(model.value).equals(A.UP)
 

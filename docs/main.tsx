@@ -172,10 +172,10 @@ enum Color {
     BONDIBLUE
 }
 
-const flavourEnabled = new EnumModel<Color>(Color, Color.GRAPE)
+const flavourEnabled = new EnumModel<Color>(Color.GRAPE, Color)
 bind("flavourEnabled", flavourEnabled)
 
-const flavourDisabled = new EnumModel<Color>(Color, Color.TANGERINE)
+const flavourDisabled = new EnumModel<Color>(Color.TANGERINE, Color)
 flavourDisabled.enabled = false
 bind("flavourDisabled", flavourDisabled)
 

@@ -30,7 +30,7 @@ export type EnumType<T> = {
 export class EnumModel<V, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, O>
 {
     protected enumType: EnumType<V>
-    constructor(enumType: EnumType<V>, value: V, options?: O) {
+    constructor(value: V, enumType: EnumType<V>, options?: O) {
         super(value, options)
         this.enumType = enumType
     }

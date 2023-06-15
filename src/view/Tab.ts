@@ -23,6 +23,8 @@ import { HTMLElementProps } from "toad.jsx"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 
+export interface TabsProps<V> extends ModelViewProps<OptionModelBase<V>> { }
+
 /**
  * @category View
  */
@@ -31,9 +33,9 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
     content: HTMLElement
 
     activeTab?: HTMLElement
-    activePanel?: Tab
+    activePanel?: Tab<V>
 
-    constructor(init?: ModelViewProps<OptionModelBase<V>>) {
+    constructor(init?: TabsProps<V>) {
         super(init)
 
         this.setTab = this.setTab.bind(this)
@@ -53,7 +55,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
                 console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
                 continue
             }
-            const tab = child as Tab
+            const tab = child as Tab<V>
             let tabLabel: HTMLElement
             tabContainer.appendChild(
                 li(
@@ -69,7 +71,9 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
                 this.setTab(tabLabel, tab)
             }
 
-            if (this.activeTab === undefined) {
+            if (this.activeTab === undefined
+                && (this.model === undefined || this.model.value === tab.value)
+            ) {
                 this.activeTab = tabLabel
                 this.activePanel = tab
             } else {
@@ -94,7 +98,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.adjustLine()
     }
 
-    protected setTab(tab: HTMLElement, panel: Tab) {
+    protected setTab(tab: HTMLElement, panel: Tab<V>) {
         this.activeTab!.classList.remove("active")
         this.activeTab = tab
         this.activeTab.classList.add("active")
@@ -106,8 +110,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.adjustLine()
 
         if (this.model && panel.value) {
-            throw Error("yikes")
-            // this.model.stringValue = panel.value
+            this.model.value = panel.value
         }
     }
 
@@ -128,15 +131,15 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 }
 Tabs.define("tx-tabs", Tabs)
 
-export interface TabProps extends HTMLElementProps {
+export interface TabProps<V> extends HTMLElementProps {
     label?: string
-    value?: string
+    value?: V
 }
 
-export class Tab extends View {
+export class Tab<V> extends View {
     label?: string
-    value?: string
-    constructor(init?: TabProps) {
+    value?: V
+    constructor(init?: TabProps<V>) {
         super(init)
         this.label = init?.label
         this.value = init?.value
