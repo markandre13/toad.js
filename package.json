@@ -44,7 +44,7 @@
         "dev:test": "if test -z \"$npm_config_file\" ; then wtr --watch 'lib/test/**/*.spec.js' ; else wtr --watch \"$npm_config_file\" ; fi",
         "dev:e2e": "",
         "dev:serve": "wds --node-resolve --watch --open --app-index docs/index.dev.html",
-        "build:docs": "hash=`date | shasum` ; hash=${hash%% *} ; rollup --bundleConfigAsCjs --config docs/rollup.config.js && sed \"s|../lib/docs/main.js|main.js?hash=${hash}|;s|../style/|style/|g;s|../polyfill/||\" docs/index.dev.html > docs/index.html && mkdir -p docs/style && cp style/* docs/style",
+        "build:docs": "mkdir -p dist/docs/style dist/docs/static ; hash=`date | shasum` ; hash=${hash%% *} ; rollup --bundleConfigAsCjs --config docs/rollup.config.js && sed \"s|../lib/docs/main.js|main.js?hash=${hash}|;s|../style/|style/|g;s|../polyfill/||\" docs/index.dev.html > dist/docs/index.html && cp style/* dist/docs/style && cp docs/static/* dist/docs/static",
         "build:html": "typedoc --categorizeByGroup --excludeInternal --out html src",
         "update": "npx npm-check-updates -u && npm install"
     },
@@ -75,6 +75,6 @@
     },
     "dependencies": {
         "@webcomponents/webcomponentsjs": "^2.8.0",
-        "toad.jsx": "^0.0.5"
+        "toad.jsx": "^0.0.6"
     }
 }

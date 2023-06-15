@@ -23,7 +23,9 @@ import { HTMLElementProps } from "toad.jsx"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 
-export interface TabsProps<V> extends ModelViewProps<OptionModelBase<V>> { }
+export interface TabsProps<V> extends ModelViewProps<OptionModelBase<V>> {
+    orientation?: "horizontal" | "vertical"
+}
 
 /**
  * @category View
@@ -38,10 +40,10 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
     constructor(init?: TabsProps<V>) {
         super(init)
 
-        this.setTab = this.setTab.bind(this)
+        this.activateTab = this.activateTab.bind(this)
 
         this.classList.add("tx-tabs")
-        if (this.hasAttribute("vertical")) {
+        if (this.hasAttribute("vertical") || init?.orientation === "vertical") {
             this.classList.add("tx-vertical")
         }
 
@@ -51,29 +53,21 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         const tabContainer = ul()
         for (let i = 0; i < this.children.length; ++i) {
             const child = this.children[i]
-            if (child.nodeName !== "TX-TAB") {
+            if (!(child instanceof Tab)) {
                 console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
                 continue
             }
             const tab = child as Tab<V>
             let tabLabel: HTMLElement
-            tabContainer.appendChild(
-                li(
-                    tabLabel = span(
-                        text(tab.getAttribute("label")!) as any
-                    )
-                )
-            )
+            tabContainer.appendChild(li((tabLabel = span(text(tab.getAttribute("label")!) as any))))
             tabLabel.onpointerdown = (ev: PointerEvent) => {
                 ev.stopPropagation()
                 ev.preventDefault()
                 ev.cancelBubble = true
-                this.setTab(tabLabel, tab)
+                this.activateTab(tabLabel, tab)
             }
 
-            if (this.activeTab === undefined
-                && (this.model === undefined || this.model.value === tab.value)
-            ) {
+            if (this.activeTab === undefined && (this.model === undefined || this.model.value === tab.value)) {
                 this.activeTab = tabLabel
                 this.activePanel = tab
             } else {
@@ -81,15 +75,13 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             }
         }
 
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: "open" })
         this.shadowRoot!.adoptedStyleSheets = [txTabs]
-        this.shadowRoot!.appendChild(tabContainer)
-        this.shadowRoot!.appendChild(this.markerLine = div())
-        this.shadowRoot!.appendChild(this.content)
+        this.shadowRoot!.replaceChildren(tabContainer, (this.markerLine = div()), this.content)
         this.markerLine.classList.add("line")
 
         if (this.activeTab) {
-            this.setTab(this.activeTab, this.activePanel!)
+            this.activateTab(this.activeTab, this.activePanel!)
         }
     }
 
@@ -98,13 +90,18 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.adjustLine()
     }
 
-    protected setTab(tab: HTMLElement, panel: Tab<V>) {
-        this.activeTab!.classList.remove("active")
-        this.activeTab = tab
-        this.activeTab.classList.add("active")
+    protected activateTab(tab: HTMLElement, panel: Tab<V>) {
+        if (this.activeTab !== undefined && this.activePanel !== undefined) {
+            this.activeTab.classList.remove("active")
+            this.activePanel.style.display = "none"
+            this.activePanel.close()
+        }
 
-        this.activePanel!.style.display = "none"
+        this.activeTab = tab
         this.activePanel = panel
+
+        this.activePanel.open()
+        this.activeTab.classList.add("active")
         this.activePanel.style.display = ""
 
         this.adjustLine()
@@ -132,17 +129,73 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 Tabs.define("tx-tabs", Tabs)
 
 export interface TabProps<V> extends HTMLElementProps {
-    label?: string
     value?: V
+    label?: string
+    content?: () => any
 }
 
 export class Tab<V> extends View {
-    label?: string
     value?: V
+    label?: string
+    content?: () => any
     constructor(init?: TabProps<V>) {
         super(init)
-        this.label = init?.label
         this.value = init?.value
+        this.label = init?.label
+        this.content = init?.content
     }
+
+    // we provide these as methods in case someone want's to override
+    // the behaviour, e.g. to create/delete the content
+    open() {
+        // TODO: total rewrite with tests'n stuff
+        if (this.childNodes.length === 0 && this.content !== undefined) {
+            const content = this.content()
+            if (content instanceof Promise) {
+                // console.log(content)
+                content.then((module) => {
+                    if (typeof module === "object" && "default" in module) {
+                        const v = module.default
+                        if (typeof v === "function") {
+                            const w = v()
+                            if (w instanceof Promise) {
+                                // console.log("yet another promise")
+                                w.then( s => {
+                                    // console.log(s)
+                                    appendChildren(this, s)
+                                })
+                            } else {
+                                appendChildren(this, v())
+                            }
+                        } else {
+                            appendChildren(this, v)
+                        }
+                    }
+                    // console.log(typeof module)
+                    // console.log(module)
+                    // console.log(module.default)
+                })
+            } else {
+                appendChildren(this, this.content())
+            }
+        }
+    }
+    close() {}
 }
 View.define("tx-tab", Tab)
+
+// copied from toad.jsx
+// improve by replacing element.appendChild() with element.replaceChildren()
+function appendChildren(element: HTMLElement | SVGElement, children: Array<any>) {
+    for (const child of children) {
+        if (child instanceof Array) {
+            appendChildren(element, child)
+            continue
+        }
+        if (typeof child === "string") {
+            element.appendChild(document.createTextNode(child))
+            continue
+        }
+        element.appendChild(child)
+    }
+}

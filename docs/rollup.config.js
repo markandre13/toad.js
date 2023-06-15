@@ -3,11 +3,11 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from "@rollup/plugin-terser";
  
 export default {
-    input: 'docs/main.ts',
+    input: 'docs/main.tsx',
     output: {
       name: 'example',
-      file: 'docs/main.js',
-      format: 'iife',
+      dir: 'dist/docs',
+      format: 'es',
       sourcemap: false
     },
     plugins: [
