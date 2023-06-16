@@ -90,29 +90,34 @@ export function main(): void {
     }
 
     const tabModel = new EnumModel(TAB.INTRODUCTION, TAB)
+    function makeUrl() {
+        return `${location.origin}${location.pathname}#${tabModel.value}`
+    }
     if (location.hash.length > 1) {
+        // adjust tabModel to existing hash
         tabModel.value = parseInt(location.hash.substring(1))
+    } else {
+        // set an initial hash so that we do not have to deal with an non-empty hash in the code
+        history.replaceState(undefined, "", makeUrl())
     }
 
+    // adjust state when moving back and forward
     window.onpopstate = (ev: PopStateEvent) => {
+        // console.log(`POPSTATE MODEL := ${location.hash}`)
         if (location.hash.length > 1) {
-            console.log(`POPSTATE MODEL := ${location.hash}`)
             tabModel.value = parseInt(location.hash.substring(1))
+        } else {
+            tabModel.value = 0
         }
     }
 
+    // push state when the user switches tabs
     tabModel.modified.add((tab) => {
+        // console.log(`MODEL CHANGE, PUSHSTATE = ${location.hash}`)
         if (location.hash !== `#${tab}`) {
-            console.log(`MODEL CHANGE, PUSHSTATE = ${location.hash}`)
-            history.pushState(undefined, "", `#${tab}`)
+            history.pushState(undefined, "", makeUrl())
         }
     })
-
-    // history.
-
-    // history.pushState({}, "foo", "#wombat")
-
-    // window.location.replace()
 
     document.body.replaceChildren(
         ...(

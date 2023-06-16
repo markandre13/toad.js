@@ -34,7 +34,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
     markerLine: HTMLElement
     content: HTMLElement
 
-    activeTab?: HTMLElement
+    activeLabel?: HTMLElement
     activePanel?: Tab<V>
 
     labelMap = new Map<Tab<V>, HTMLElement>()
@@ -51,6 +51,8 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
         this.content = div(slot())
         this.content.classList.add("content")
+
+        let activeLabel: HTMLElement | undefined, activePanel: Tab<V> | undefined
 
         const tabContainer = ul()
         for (let i = 0; i < this.children.length; ++i) {
@@ -70,9 +72,9 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             }
             this.labelMap.set(panel, tabLabel)
 
-            if (this.activeTab === undefined && (this.model === undefined || this.model.value === panel.value)) {
-                this.activeTab = tabLabel
-                this.activePanel = panel
+            if (this.activeLabel === undefined && (this.model === undefined || this.model.value === panel.value)) {
+                activeLabel = tabLabel
+                activePanel = panel
             } else {
                 panel.style.display = "none"
             }
@@ -83,8 +85,8 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.shadowRoot!.replaceChildren(tabContainer, (this.markerLine = div()), this.content)
         this.markerLine.classList.add("line")
 
-        if (this.activeTab) {
-            this.activateTab(this.activeTab, this.activePanel!)
+        if (activeLabel !== undefined) {
+            this.activateTab(activeLabel, activePanel!)
         }
     }
 
@@ -95,7 +97,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
     override updateView(): void {
         if (this.model) {
-            console.log(`<TAB> UPDATE VIEW ${this.model.value}`)
+            // console.log(`<TAB> UPDATE VIEW ${this.model.value}`)
             for (let i = 0; i < this.children.length; ++i) {
                 const child = this.children[i]
                 if (!(child instanceof Tab)) {
@@ -116,17 +118,17 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             return
         }
 
-        if (this.activeTab !== undefined && this.activePanel !== undefined) {
-            this.activeTab.classList.remove("active")
+        if (this.activeLabel !== undefined && this.activePanel !== undefined) {
+            this.activeLabel.classList.remove("active")
             this.activePanel.style.display = "none"
             this.activePanel.close()
         }
 
-        this.activeTab = tabLabel
+        this.activeLabel = tabLabel
         this.activePanel = panel
 
         this.activePanel.open()
-        this.activeTab.classList.add("active")
+        this.activeLabel.classList.add("active")
         this.activePanel.style.display = ""
 
         this.adjustLine()
@@ -138,7 +140,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
     protected adjustLine() {
         const line = this.markerLine
-        const tab = this.activeTab
+        const tab = this.activeLabel
         if (tab !== undefined) {
             if (this.hasAttribute("vertical")) {
                 line.style.top = `${tab.offsetTop}px`
