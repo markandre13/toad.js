@@ -1,6 +1,7 @@
 import { Select } from "@toad/view/Select"
 import { OptionModel } from "@toad/model/OptionModel"
 import { parseColor, rgb2hsl } from "@toad/util/color"
+import { code } from "./index.source"
 
 //
 // APPLICATION LAYER
@@ -67,8 +68,7 @@ export default () => (
             </object>
             <br />
             <Select model={macColor} />
-            <br />
-            Think.
         </div>
+        {code}
     </>
 )
