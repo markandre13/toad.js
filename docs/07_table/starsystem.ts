@@ -5,7 +5,6 @@ import { TableAdapter } from "@toad/table/adapter/TableAdapter"
 import { ArrayAdapter } from "@toad/table/adapter/ArrayAdapter"
 import { refs } from "toad.jsx/lib/jsx-runtime"
 import { text } from "@toad/util/lsx"
-import { bindModel as bind } from "@toad/controller/globalController"
 
 //
 // Elite
@@ -44,7 +43,8 @@ class FixedSystemModel extends TableModel {
     static get(col: number, row: number) {
         let h = this.hash(`${row}`)
         switch (col) {
-            case 0: { // species
+            case 0: {
+                // species
                 let name = ""
                 let l = (h % 6) + 1
                 for (let j = 0; j < l; ++j) {
@@ -53,10 +53,12 @@ class FixedSystemModel extends TableModel {
                 }
                 return name.charAt(0) + name.toLowerCase().substring(1)
             }
-            case 1: { // government
+            case 1: {
+                // government
                 return government[h % government.length]
             }
-            case 2: { // economy
+            case 2: {
+                // economy
                 h = h >>> 3
                 const h0 = h % prosperity.length
                 h = h >>> 2
@@ -71,7 +73,7 @@ class FixedSystemModel extends TableModel {
                 h = h >>> 3
                 const h2 = h % species2.length
                 h = h >>> 3
-                const h3 = (h % 4 + h2) % species3.length
+                const h3 = ((h % 4) + h2) % species3.length
                 return species0[h0] + species1[h1] + species2[h2] + species3[h3]
             }
         }
@@ -81,7 +83,8 @@ class FixedSystemModel extends TableModel {
 
     // cyrb53 from https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript/7616484#7616484
     static hash(str: string, seed = 0) {
-        let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed
+        let h1 = 0xdeadbeef ^ seed,
+            h2 = 0x41c6ce57 ^ seed
         for (let i = 0, ch; i < str.length; i++) {
             ch = str.charCodeAt(i)
             h1 = Math.imul(h1 ^ ch, 2654435761)
@@ -94,17 +97,20 @@ class FixedSystemModel extends TableModel {
 }
 
 class FixedSystemAdapter extends TableAdapter<FixedSystemModel> {
-
     constructor(model: FixedSystemModel) {
         super(model)
     }
 
     override getColumnHead(col: number): Node | undefined {
         switch (col) {
-            case 0: return text("Name")
-            case 1: return text("Government")
-            case 2: return text("Economy")
-            case 3: return text("Species")
+            case 0:
+                return text("Name")
+            case 1:
+                return text("Government")
+            case 2:
+                return text("Economy")
+            case 3:
+                return text("Species")
         }
     }
 
@@ -113,9 +119,7 @@ class FixedSystemAdapter extends TableAdapter<FixedSystemModel> {
     }
 
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
-        cell.replaceChildren(
-            text(this.model!.get(pos.col, pos.row))
-        )
+        cell.replaceChildren(text(this.model!.get(pos.col, pos.row)))
     }
 }
 
@@ -127,26 +131,26 @@ class System {
 }
 
 class DynamicSystemAdapter extends ArrayAdapter<ArrayModel<System>> {
-    override getColumnHeads() { return ["Name", "Government", "Economy", "Species"] }
-    override getRow(system: System) { return refs(system, "name", "government", "economy", "species") }
-}
-
-export function initializeStarSystem() {
-    TableAdapter.register(FixedSystemAdapter, FixedSystemModel)
-    const model = new FixedSystemModel()
-    bind("fixedSystem", model)
-
-    const systemList: System[] = Array(64)
-    for (let i = 0; i < 64; ++i) {
-        systemList[i] = {
-            name: FixedSystemModel.get(0, i),
-            government: FixedSystemModel.get(1, i),
-            economy: FixedSystemModel.get(2, i),
-            species: FixedSystemModel.get(3, i)
-        }
+    override getColumnHeads() {
+        return ["Name", "Government", "Economy", "Species"]
     }
-
-    TableAdapter.register(DynamicSystemAdapter, ArrayModel, System)
-    const dynamicModel = new ArrayModel<System>(systemList, System)
-    bind("dynamicSystem", dynamicModel)
+    override getRow(system: System) {
+        return refs(system, "name", "government", "economy", "species")
+    }
 }
+
+TableAdapter.register(FixedSystemAdapter, FixedSystemModel)
+export const fixedSystem = new FixedSystemModel()
+
+const systemList: System[] = Array(64)
+for (let i = 0; i < 64; ++i) {
+    systemList[i] = {
+        name: FixedSystemModel.get(0, i),
+        government: FixedSystemModel.get(1, i),
+        economy: FixedSystemModel.get(2, i),
+        species: FixedSystemModel.get(3, i),
+    }
+}
+
+TableAdapter.register(DynamicSystemAdapter, ArrayModel, System)
+export const dynamicSystem = new ArrayModel<System>(systemList, System)

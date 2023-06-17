@@ -6,7 +6,7 @@ import { Slider } from "./Slider"
 import { Text } from "./Text"
 import { style } from "@toad/style/tx-colorselector"
 import { RGBModel } from "@toad/model/RGBModel"
-import { ModelView } from "./ModelView"
+import { ModelView, ModelViewProps } from "./ModelView"
 
 // i know, this implementation is a mess. i just wanted to get it done.
 
@@ -24,7 +24,7 @@ export class ColorSelector extends ModelView<RGBModel> {
     oldColor = div()
     newColor = div()
 
-    constructor(init?: HTMLElementProps) {
+    constructor(init?: ModelViewProps<RGBModel>) {
         super(init)
         this.rgbChanged = this.rgbChanged.bind(this)
         this.hsvChanged = this.hsvChanged.bind(this)

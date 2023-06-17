@@ -19,10 +19,10 @@ window.onload = () => {
                     <Tab value={TAB.FORM} label="Form" content={() => import("./01_form")} />
                     <Tab value={TAB.ACTION} label="Action" content={() => import("./02_action")} />
                     <Tab value={TAB.TEXT} label="Text" content={() => import("./03_text")} />
-                    <Tab value={TAB.NUMBER} label="Number" />
-                    <Tab value={TAB.BOOLEAN} label="Boolean" />
-                    <Tab value={TAB.CHOICE} label="Choice" />
-                    <Tab value={TAB.TABLE} label="Table" />
+                    <Tab value={TAB.NUMBER} label="Number" content={() => import("./04_number")} />
+                    <Tab value={TAB.BOOLEAN} label="Boolean" content={() => import("./05_boolean")} />
+                    <Tab value={TAB.CHOICE} label="Choice" content={() => import("./06_choice")} />
+                    <Tab value={TAB.TABLE} label="Table" content={() => import("./07_table")} />
                 </Tabs>
             </>
         )

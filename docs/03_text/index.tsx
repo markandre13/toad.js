@@ -8,7 +8,7 @@ import { code } from "./index.source"
 
 const hello = new TextModel("hello")
 
-const markup = new HtmlModel("")
+const markup = new HtmlModel("Salt &amp; Pepper")
 markup.modified.add(() => {
     document.getElementById("rawhtml")!.innerText = markup.value
 })
@@ -19,7 +19,7 @@ markup.modified.add(() => {
 
 export default () => (
     <>
-        <h2>Text &amp HTML Model</h2>
+        <h2>TextModel &amp; HtmlModel</h2>
 
         <h3>&lt;Text&gt;</h3>
         <Text model={hello} />
