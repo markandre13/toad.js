@@ -36,6 +36,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
     activeLabel?: HTMLElement
     activePanel?: Tab<V>
+    vertical: boolean
 
     labelMap = new Map<Tab<V>, HTMLElement>()
 
@@ -45,7 +46,8 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.activateTab = this.activateTab.bind(this)
 
         this.classList.add("tx-tabs")
-        if (this.hasAttribute("vertical") || init?.orientation === "vertical") {
+        this.vertical = this.hasAttribute("vertical") || init?.orientation === "vertical"
+        if (this.vertical) {
             this.classList.add("tx-vertical")
         }
 
@@ -90,11 +92,6 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         }
     }
 
-    override connectedCallback() {
-        super.connectedCallback()
-        this.adjustLine()
-    }
-
     override updateView(): void {
         if (this.model) {
             // console.log(`<TAB> UPDATE VIEW ${this.model.value}`)
@@ -131,7 +128,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.activeLabel.classList.add("active")
         this.activePanel.style.display = ""
 
-        this.adjustLine()
+        setTimeout( () => this.adjustLine(), 0)
 
         if (this.model && panel.value !== undefined) {
             this.model.value = panel.value
@@ -140,15 +137,15 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
     protected adjustLine() {
         const line = this.markerLine
-        const tab = this.activeLabel
-        if (tab !== undefined) {
-            if (this.hasAttribute("vertical")) {
-                line.style.top = `${tab.offsetTop}px`
-                line.style.height = `${tab.clientHeight}px`
+        const label = this.activeLabel
+        if (label !== undefined) {
+            if (this.vertical) {
+                line.style.top = `${label.offsetTop}px`
+                line.style.height = `${label.clientHeight}px`
             } else {
                 line.style.top = `-2px`
-                line.style.left = `${tab.offsetLeft}px`
-                line.style.width = `${tab.clientWidth}px`
+                line.style.left = `${label.offsetLeft}px`
+                line.style.width = `${label.clientWidth}px`
             }
         }
     }

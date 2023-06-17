@@ -75,6 +75,11 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
     }
 
     finalize() {
+        // this.onblur = (ev: FocusEvent) => { // ?? but pointerdown moved the focus to the input...?
+        //     if (this.hover === undefined) { // tests...
+        //         this.close()
+        //     }
+        // }
         this.displayElement.onwheel = this.button.onwheel = this.wheel
         this.shadowRoot!.replaceChildren(this.displayElement, this.button)
     }
