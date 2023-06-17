@@ -1,5 +1,4 @@
-import { action, EnumModel, HtmlModel, RadioButton, Search, Select, Text, TextArea, TextModel, TextTool } from "@toad"
-import { Button, ButtonVariant } from "@toad/view/Button"
+import { EnumModel, RadioButton, Search, Select, TextModel } from "@toad"
 import { ComboBox } from "@toad/view/Select"
 import { code } from "./index.source"
 
@@ -8,12 +7,12 @@ import { code } from "./index.source"
 //
 
 enum Color {
-    BLUEBERRY = 0,
-    GRAPE,
-    TANGERINE,
-    LIME,
-    STRAWBERRY,
-    BONDIBLUE,
+    BONDIBLUE = "Bondiblue",
+    BLUEBERRY = "Blueberry",
+    GRAPE = "Grape",
+    STRAWBERRY = "Strawberry",
+    TANGERINE = "Tangerine",
+    LIME = "Lime",
 }
 
 const flavourEnabled = new EnumModel<Color>(Color.GRAPE, Color)
@@ -47,91 +46,63 @@ export default () => (
                 <tr>
                     <th rowspan={2}>RadioButton</th>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.BLUEBERRY} /> Blueberry
+                        <RadioButton model={flavourEnabled} value={Color.BLUEBERRY} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.GRAPE} /> Grape
+                        <RadioButton model={flavourEnabled} value={Color.GRAPE} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.TANGERINE} /> Tangerine
+                        <RadioButton model={flavourEnabled} value={Color.TANGERINE} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.LIME} /> Blueberry
+                        <RadioButton model={flavourDisabled} value={Color.BLUEBERRY} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.STRAWBERRY} /> Strawberry
+                        <RadioButton model={flavourDisabled} value={Color.GRAPE} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.BONDIBLUE} /> Bondiblue
+                        <RadioButton model={flavourDisabled} value={Color.TANGERINE} />
                     </td>
                     <td rowspan={2}>enough space to display all options</td>
                 </tr>
                 <tr>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.BLUEBERRY} /> Blueberry
+                        <RadioButton model={flavourEnabled} value={Color.LIME} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.GRAPE} /> Grape
+                        <RadioButton model={flavourEnabled} value={Color.STRAWBERRY} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.TANGERINE} /> Tangerine
+                        <RadioButton model={flavourEnabled} value={Color.BONDIBLUE} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.LIME} /> Blueberry
+                        <RadioButton model={flavourDisabled} value={Color.LIME} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.STRAWBERRY} /> Strawberry
+                        <RadioButton model={flavourDisabled} value={Color.STRAWBERRY} />
                     </td>
                     <td>
-                        <RadioButton model={flavourEnabled} value={Color.BONDIBLUE} /> Bondiblue
+                        <RadioButton model={flavourDisabled} value={Color.BONDIBLUE} />
                     </td>
                     <td rowspan={2}>enough space to display all options</td>
                 </tr>
                 <tr>
                     <th>Select</th>
                     <td colspan={3}>
-                        <Select model={flavourEnabled}>
-                            {/* <Option value="BLUEBERRY">Blueberry</Option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option> */}
-                        </Select>
+                        <Select model={flavourEnabled} />
                     </td>
                     <td colspan={3}>
-                        <Select model={flavourDisabled}>
-                            {/* <option value="BLUEBERRY">Blueberry</option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option> */}
-                        </Select>
+                        <Select model={flavourDisabled} />
                     </td>
                     <td>limited screen space, move through options with scroll wheel</td>
                 </tr>
                 <tr>
                     <th>ComboBox</th>
                     <td colspan={3}>
-                        <ComboBox model={flavourEnabled} text={customFlavour}>
-                            <option value="BLUEBERRY">Blueberry</option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option>
-                        </ComboBox>
+                        <ComboBox model={flavourEnabled} text={customFlavour} />
                     </td>
                     <td colspan={3}>
-                        <ComboBox model={flavourDisabled} text={customFlavourDisabled}>
-                            <option value="BLUEBERRY">Blueberry</option>
-                            <option value="GRAPE">Grape</option>
-                            <option value="TANGERINE">Tangerine</option>
-                            <option value="LIME">Lime</option>
-                            <option value="STRAWBERRY">Strawberry</option>
-                            <option value="BONDIBLUE">Bondi Blue</option>
-                        </ComboBox>
+                        <ComboBox model={flavourDisabled} text={customFlavourDisabled} />
                     </td>
                     <td>combination of select and text</td>
                 </tr>

@@ -8,17 +8,17 @@ import { code } from "./index.source"
 
 function dummy() {}
 
-let textModel = new TextModel("");
+let textModel = new TextModel("")
 
 // TODO: get rid of the 'action' function
 const hitMe = action("hitMe", () => {
-  textModel.value = "Hit me too!";
-  hitMeMore.enabled = true;
-});
+    textModel.value = "Hit me too!"
+    hitMeMore.enabled = true
+})
 const hitMeMore = action("hitMeMore", () => {
-  textModel.value = "You hit me!";
-  hitMeMore.enabled = false;
-});
+    textModel.value = "You hit me!"
+    hitMeMore.enabled = false
+})
 
 //
 // View Layer
@@ -38,18 +38,37 @@ export default () => (
                 An Action's <em>modfied</em> signal will be triggered on a user interaction, e.g. a push button being
                 pressed.
             </p>
+        </div>
 
-            <h3>Button</h3>
+        <h3>Button</h3>
 
-            <div class="section">
-                <Button action={dummy} variant={ButtonVariant.PRIMARY}>Primary</Button>
-                <Button action={dummy} variant={ButtonVariant.SECONDARY}>Secondary</Button>
-                <Button action={dummy} variant={ButtonVariant.ACCENT}>Accent</Button>
-                <Button action={dummy} variant={ButtonVariant.NEGATIVE}>Negative</Button>
+        <div class="section">
+            <Button action={dummy} variant={ButtonVariant.PRIMARY}>
+                Primary
+            </Button>
+            <Button action={dummy} variant={ButtonVariant.SECONDARY}>
+                Secondary
+            </Button>
+            <Button action={dummy} variant={ButtonVariant.ACCENT}>
+                Accent
+            </Button>
+            <Button action={dummy} variant={ButtonVariant.NEGATIVE}>
+                Negative
+            </Button>
 
-                <Button action={hitMe}>Hit me!</Button>
-                <Button action={hitMeMore}>TODO: get text from model</Button>
-            </div>
+            <br />
+            <br />
+
+            <Button variant={ButtonVariant.PRIMARY}>Primary</Button>
+            <Button variant={ButtonVariant.SECONDARY}>Secondary</Button>
+            <Button variant={ButtonVariant.ACCENT}>Accent</Button>
+            <Button variant={ButtonVariant.NEGATIVE}>Negative</Button>
+
+            <br />
+            <br />
+
+            <Button action={hitMe}>Hit me!</Button>
+            <Button action={hitMeMore}>TODO: get text from model</Button>
         </div>
         {code}
     </>

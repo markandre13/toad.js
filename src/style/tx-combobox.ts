@@ -91,16 +91,21 @@ style.replaceSync(css`
     border-left: none;
 } */
 
-:host(.tx-combobox) > :first-child:disabled {
+:host(.tx-combobox) > :first-child.tx-disabled {
     color: var(--tx-gray-700);
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-:host(.tx-combobox) > :first-child:disabled + button {
+:host(.tx-combobox) > :first-child.tx-disabled > * {
+    color: var(--tx-gray-500);
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-:host(.tx-combobox) > :first-child:disabled + button > svg {
+:host(.tx-combobox) > :first-child.tx-disabled + button {
+    background-color: var(--tx-gray-200);
+    border-color: var(--tx-gray-200);
+}
+:host(.tx-combobox) > :first-child.tx-disabled + button > svg {
     fill: var(--tx-gray-400);
 }
 :host(.tx-combobox) > :first-child.tx-error {

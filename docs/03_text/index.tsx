@@ -1,5 +1,4 @@
-import { action, HtmlModel, Text, TextArea, TextModel, TextTool } from "@toad"
-import { Button, ButtonVariant } from "@toad/view/Button"
+import { HtmlModel, Text, TextArea, TextModel, TextTool } from "@toad"
 import { code } from "./index.source"
 
 //

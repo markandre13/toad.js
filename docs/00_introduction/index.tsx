@@ -12,7 +12,7 @@ enum MacColor {
     BONDI = "#0095b6",
     BLUEBERRY = "#4169e1",
     GRAPE = "#421c52",
-    STRAYBERRY = "#fe2c54",
+    STRAWBERRY = "#fe2c54",
     TANGERINE = "#f28500",
     LIME = "#32cd32",
 }
@@ -21,7 +21,7 @@ const macColor = new OptionModel(MacColor.BONDI, [
     [MacColor.BONDI, <div style={{ color: "#ffffff", background: MacColor.BONDI }}>Bondi</div>],
     [MacColor.BLUEBERRY, <div style={{ color: "#ffffff", background: MacColor.BLUEBERRY }}>Blueberry</div>],
     [MacColor.GRAPE, <div style={{ color: "ffffff", background: MacColor.GRAPE }}>Grape</div>],
-    [MacColor.STRAYBERRY, <div style={{ color: "#000000", background: MacColor.STRAYBERRY }}>Strawberry</div>],
+    [MacColor.STRAWBERRY, <div style={{ color: "#000000", background: MacColor.STRAWBERRY }}>Strawberry</div>],
     [MacColor.TANGERINE, <div style={{ color: "#000000", background: MacColor.TANGERINE }}>Tangerine</div>],
     [MacColor.LIME, <div style={{ color: "#000000", background: MacColor.LIME }}>Lime</div>],
 ])

@@ -1,6 +1,6 @@
-import { action, HtmlModel, NumberModel, Slider, Text, TextArea, TextModel, TextTool } from "@toad"
+import { NumberModel, Slider, Text } from "@toad"
+import { FixedNumberModel } from "@toad/model/FixedNumberModel"
 import { RGBModel } from "@toad/model/RGBModel"
-import { Button, ButtonVariant } from "@toad/view/Button"
 import { ColorSelector } from "@toad/view/ColorSelector"
 import { code } from "./index.source"
 
@@ -8,15 +8,13 @@ import { code } from "./index.source"
 // Application Layer
 //
 
-const sliderMin = new NumberModel(0, { min: 0, max: 99 });
-const sliderMax = new NumberModel(99, { min: 0, max: 99 });
-const sliderMiddle = new NumberModel(42, { min: 0, max: 99 });
-const sliderDisabled = new NumberModel(83, { min: 0, max: 99 });
-sliderDisabled.enabled = false;
+let floatModel = new NumberModel(42, { min: 0, max: 99 })
+let integerModel = new FixedNumberModel(42, { min: 0, max: 99 })
 
-const colorModel = new RGBModel({r: 0, g: 0, b: 0})
+const sliderEnabled = new NumberModel(42, { min: 0, max: 99 })
+const sliderDisabled = new NumberModel(83, { min: 0, max: 99, enabled: false })
 
-let size = new NumberModel(42, { min: 0, max: 99 });
+const colorModel = new RGBModel({ r: 255, g: 128, b: 0 })
 
 //
 // View Layer
@@ -26,34 +24,37 @@ export default () => (
     <>
         <h1>Number</h1>
 
+        <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with NumberModel</h3>
+        <div class="section">
+            <Text model={floatModel} />
+            <Slider model={floatModel} />
+        </div>
+        <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with FixedNumberModel</h3>
+        <div class="section">
+            <Text model={integerModel} />
+            <Slider model={integerModel} />
+        </div>
+
         <h3>&lt;Slider&gt;</h3>
         <div class="section">
-            <div style={{width: "200px"}}>
-                <Slider model={sliderMiddle}/>
-                <Slider model={sliderMiddle} minColor="#00f" maxColor="#f00"/>
-                <Slider model={sliderDisabled}/>
+            <div style={{ width: "200px" }}>
+                <Slider model={sliderEnabled} />
+                <Slider model={sliderEnabled} minColor="#00f" maxColor="#f00" />
+                <Slider model={sliderDisabled} />
             </div>
         </div>
 
         <h3>&lt;Slider orientation="vertical"&gt;</h3>
-        <div class="section">
-            <div style={{height: "200px;"}}>
-                <Slider model={sliderMiddle} orientation="vertical"/>
-                <Slider model={sliderMiddle} minColor="#00f" maxColor="#f00" orientation="vertical"/>
-                <Slider model={sliderDisabled} orientation="vertical"/>
-            </div>
+        <div class="section" style={{ height: "200px" }}>
+            <Slider model={sliderEnabled} orientation="vertical" />
+            <Slider model={sliderEnabled} minColor="#00f" maxColor="#f00" orientation="vertical" />
+            <Slider model={sliderDisabled} orientation="vertical" />
         </div>
 
         <h3>&lt;ColorSelector&gt;</h3>
 
         <div class="section">
-            <ColorSelector model={colorModel}/>
-        </div>
-
-        <h3>&lt;Text&gt; &amp; &lt;Slider&gt;</h3>
-        <div class="section">
-            <Text model={size}/>
-            <Slider model={size}/>
+            <ColorSelector model={colorModel} />
         </div>
         {code}
     </>

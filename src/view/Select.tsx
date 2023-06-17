@@ -45,9 +45,11 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
 
         let s
         const b = button(
-            s = svg(
-                path("M3 9.95a.875.875 0 01-.615-1.498L5.88 5 2.385 1.547A.875.875 0 013.615.302L7.74 4.377a.876.876 0 010 1.246L3.615 9.698A.872.872 0 013 9.95z")
-            )
+            (s = svg(
+                path(
+                    "M3 9.95a.875.875 0 01-.615-1.498L5.88 5 2.385 1.547A.875.875 0 013.615.302L7.74 4.377a.876.876 0 010 1.246L3.615 9.698A.872.872 0 013 9.95z"
+                )
+            ))
         )
 
         // BUTTON
@@ -65,10 +67,10 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
 
         // SHADOW
         this.classList.add("tx-combobox") // TODO: drop this
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: "open" })
         this.shadowRoot!.adoptedStyleSheets = [
             txCombobox,
-            txMenu // menu & popover
+            txMenu, // menu & popover
         ]
     }
 
@@ -82,6 +84,7 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
     //
 
     keydown(ev: KeyboardEvent) {
+        ev.preventDefault()
         // TODO: open popup and navigate it with keys
         // if (this.displayElement.readOnly) {
         //     ev.preventDefault()
@@ -113,18 +116,19 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
 
     wheel(ev: WheelEvent) {
         ev.preventDefault()
+        if (this.model === undefined || !this.model.enabled) {
+            return
+        }
         this.displayElement.focus()
         // TODO:
         // wacom tablets may fire multiple wheel events to increase scroll speed
         // we do not want this because here we want to flip from one item to the next
         // hence we might wanna look at the timestamp
-        if (this.model) {
-            if (ev.deltaY > 0) {
-                this.model.next()
-            }
-            if (ev.deltaY < 0) {
-                this.model.prev()
-            }
+        if (ev.deltaY > 0) {
+            this.model.next()
+        }
+        if (ev.deltaY < 0) {
+            this.model.prev()
         }
     }
 
@@ -132,12 +136,14 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
     // POINTER EVENTS
     //
     protected pointerdown(ev: PointerEvent) {
-        if (this.popup) {
-            this.close()
-            ev.preventDefault()
+        ev.preventDefault()
+        if (this.model === undefined || !this.model.enabled) {
             return
         }
-        ev.preventDefault()
+        if (this.popup) {
+            this.close()
+            return
+        }
         this.displayElement.focus()
         this.open()
         this.button.setPointerCapture(ev.pointerId)
@@ -162,9 +168,10 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
     protected findMenuItem(ev: PointerEvent) {
         let e: Element | null | undefined = this.shadowRoot!.elementFromPoint(ev.clientX, ev.clientY)
         while (e) {
-            if (e.nodeName === "LI"
-                && e.parentElement?.classList.contains("tx-menu")
-                && e.parentElement?.parentElement?.classList.contains("tx-popover")
+            if (
+                e.nodeName === "LI" &&
+                e.parentElement?.classList.contains("tx-menu") &&
+                e.parentElement?.parentElement?.classList.contains("tx-popover")
             ) {
                 break
             }
@@ -203,9 +210,9 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
         let view = this
         this.popup = div()
         if (this.model) {
-            this.popup.replaceChildren(<ul class="tx-menu" aria-roledescription="listbox">
-                {
-                    this.model.map((value, key, label, idx) => {
+            this.popup.replaceChildren(
+                <ul class="tx-menu" aria-roledescription="listbox">
+                    {this.model.map((value, key, label, idx) => {
                         const l = li(label)
                         l.tabIndex = 0
                         l.ariaRoleDescription = "option"
@@ -219,9 +226,9 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
                         }
                         l.onkeydown = this.keydown
                         return l
-                    })
-                }
-            </ul>)
+                    })}
+                </ul>
+            )
         }
         this.popup.classList.add("tx-popover")
         this.popup.style.position = "fixed" // this does not scroll well
@@ -239,7 +246,7 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
         if (this.popup && this.model) {
             const index = this.model.index
             if (index !== undefined) {
-                (this.popup.children[0].children[this.model.index!] as HTMLElement).focus()
+                ;(this.popup.children[0].children[this.model.index!] as HTMLElement).focus()
             }
         }
     }
@@ -266,9 +273,13 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
 
     override updateView(): void {
         if (!this.model || !this.model.enabled) {
+            this.displayElement.classList.add("tx-disabled")
             this.displayElement.setAttribute("disabled", "")
+            this.button.setAttribute("disabled", "")
         } else {
+            this.displayElement.classList.remove("tx-disabled")
             this.displayElement.removeAttribute("disabled")
+            this.button.removeAttribute("disabled")
         }
 
         if (this.model?.error !== undefined) {
@@ -299,7 +310,6 @@ export class Select<V> extends SelectBase<V> {
         }
         this.focusToItem()
     }
-
 }
 
 interface ComboBoxProps<V> extends ModelViewProps<OptionModelBase<V>> {
@@ -398,4 +408,3 @@ ComboBox.define("tx-combobox", ComboBox)
 //         }
 //     }
 // }
-
