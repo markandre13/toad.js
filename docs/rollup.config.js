@@ -6,9 +6,11 @@ export default {
     input: 'docs/main.tsx',
     output: {
       name: 'example',
-      dir: 'dist/docs',
+    //   dir: 'dist/docs',
+      file: 'dist/docs/main.js',
+      inlineDynamicImports: true,
       format: 'es',
-      sourcemap: false
+      sourcemap: false,
     },
     plugins: [
         typescript({

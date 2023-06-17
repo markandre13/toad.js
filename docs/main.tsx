@@ -1,4 +1,4 @@
-import { EnumModel } from "@toad"
+import { EnumModel } from "@toad/model/EnumModel"
 import { Tabs, Tab } from "@toad/view/Tab"
 import { initHistoryManager, TAB } from "./history"
 

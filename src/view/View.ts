@@ -34,7 +34,7 @@ export class View extends HTMLElement {
             window.customElements.define(name, view, options)
         } else {
             if (element !== view) {
-                console.trace(`View::define(${name}, ...): attempt to redefine view with different constructor`)
+                console.log(`View::define(${name}, ...): attempt to redefine view with different constructor`)
             }
         }
     }

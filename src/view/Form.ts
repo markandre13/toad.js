@@ -22,8 +22,8 @@ export class Form extends View {
         this.shadowRoot!.appendChild(slot())
     }
 }
-export class FormLabel extends ModelView<Model> {
-    constructor(init?: ModelViewProps<Model>) {
+export class FormLabel<T> extends ModelView<Model<T>> {
+    constructor(init?: ModelViewProps<Model<T>>) {
         super(init)
     }
     override updateView(): void {
@@ -35,8 +35,9 @@ export class FormLabel extends ModelView<Model> {
     }
 }
 export class FormField extends View { }
-export class FormHelp extends ModelView<Model> {
-    constructor(init?: ModelViewProps<Model>) {
+
+export class FormHelp<T> extends ModelView<Model<T>> {
+    constructor(init?: ModelViewProps<Model<T>>) {
         super(init)
     }
     override updateView(): void {

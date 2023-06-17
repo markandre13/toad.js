@@ -1,6 +1,7 @@
-import { Select } from "@toad/view/Select"
 import { OptionModel } from "@toad/model/OptionModel"
 import { parseColor, rgb2hsl } from "@toad/util/color"
+
+import { Select } from "@toad/view/Select"
 import { code } from "./index.source"
 
 //
