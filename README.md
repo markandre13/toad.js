@@ -1,6 +1,6 @@
 <p align="center">
    <img src="https://markandre13.github.io/toad.js/toad.gif" alt="TOAD" /><br />
-   .JS
+   Web Edition
 </p>
 
 <p align="center">
