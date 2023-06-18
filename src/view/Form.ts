@@ -61,6 +61,13 @@ export class FormHelp<T> extends ModelView<Model<T>> {
 }
 
 View.define("tx-form", Form)
-View.define("tx-formlabel", FormLabel, { extends: "label" })
-View.define("tx-formfield", FormField, { extends: "div" })
-View.define("tx-formhelp", FormHelp, { extends: "div" })
+
+// while this works in Safari, it fails in Chrome because they do not
+// inherit from HTMLLabelElement, HTMLDivElement
+
+// View.define("tx-formlabel", FormLabel, { extends: "label" })
+// View.define("tx-formfield", FormField, { extends: "div" })
+// View.define("tx-formhelp", FormHelp, { extends: "div" })
+View.define("tx-formlabel", FormLabel)
+View.define("tx-formfield", FormField)
+View.define("tx-formhelp", FormHelp)
