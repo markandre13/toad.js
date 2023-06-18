@@ -30,7 +30,7 @@
         "url": "git+https://github.com/markandre13/toad.js.git"
     },
     "scripts": {
-        "build": "npm run build:docs:source && ttsc",
+        "build": "npm run build:docs:source && tspc",
         "test": "wtr \"lib/test/**/*.spec.js\"",
         "e2e": "npm run e2e-once:build && concurrently -k \"npm:e2e:*\" # ",
         "e2e-once:build": "rollup --bundleConfigAsCjs --config e2e/rollup.config.js",
@@ -39,8 +39,8 @@
         "e2e:mocha": "if test -z \"$npm_config_file\" ; then npm_config_file='e2e/**/*.spec.ts'; fi ; TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' mocha --slow 5000 ---timeout 10000 -r ts-node/register --watch --watch-files \"$npm_config_file\",e2e/**/*.html \"$npm_config_file\"",
         "serve": "concurrently -k \"npm:dev:build\" \"npm:dev:serve\"",
         "dev": "concurrently -k \"npm:dev:build\" \"npm:dev:test\"",
-        "dev:build": "npm run build:docs:source && ttsc --watch",
-        "dev:build:trace-warnings": "node --trace-warnings ./node_modules/.bin/ttsc --watch",
+        "dev:build": "npm run build:docs:source && tspc --watch",
+        "dev:build:trace-warnings": "node --trace-warnings ./node_modules/.bin/tspc --watch",
         "dev:test": "if test -z \"$npm_config_file\" ; then wtr --watch 'lib/test/**/*.spec.js' ; else wtr --watch \"$npm_config_file\" ; fi",
         "dev:e2e": "",
         "dev:serve": "wds --node-resolve --watch --open --app-index docs/index.dev.html",
@@ -55,34 +55,34 @@
     },
     "devDependencies": {
         "@esm-bundle/chai": "^4.3.4-fix.0",
-        "@rollup/plugin-node-resolve": "^15.0.2",
+        "@rollup/plugin-node-resolve": "^15.1.0",
         "@rollup/plugin-terser": "^0.4.3",
         "@types/chai": "^4.3.5",
         "@types/chai-subset": "^1.3.3",
         "@types/mocha": "^10.0.1",
-        "@types/node": "^20.2.5",
+        "@types/node": "^20.3.1",
         "@types/pixelmatch": "^5.2.4",
         "@types/pngjs": "^6.0.1",
         "@types/prismjs": "^1.26.0",
-        "@web/dev-server": "^0.2.1",
+        "@web/dev-server": "^0.2.3",
         "@web/test-runner": "^0.16.1",
         "chai": "^4.3.7",
-        "concurrently": "^8.0.1",
+        "concurrently": "^8.2.0",
         "http-server": "^14.1.1",
         "mocha": "^10.2.0",
         "pixelmatch": "^5.3.0",
         "pngjs": "^7.0.0",
         "prismjs": "^1.29.0",
-        "puppeteer": "^20.4.0",
+        "puppeteer": "^20.7.2",
         "rollup": "^3.25.1",
         "rollup-plugin-typescript2": "^0.34.1",
         "ts-node": "^10.9.1",
-        "ttypescript": "^1.5.15",
-        "typedoc": "^0.24.7",
-        "typescript": "^4.9.5"
+        "ts-patch": "^3.0.0",
+        "typedoc": "^0.24.8",
+        "typescript": "^5.1.3"
     },
     "dependencies": {
         "@webcomponents/webcomponentsjs": "^2.8.0",
-        "toad.jsx": "^0.0.6"
+        "toad.jsx": "^0.0.7"
     }
 }
