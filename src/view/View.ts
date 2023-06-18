@@ -34,7 +34,15 @@ export class View extends HTMLElement {
             window.customElements.define(name, view, options)
         } else {
             if (element !== view) {
-                console.log(`View::define(${name}, ...): attempt to redefine view with different constructor`)
+                for(let i = 0; i<255; ++i) {
+                    const dname = `${name}-duplicate-${i}`
+                    if (window.customElements.get(dname) === undefined) {
+                        console.log(`View::define(${name}, ...) with different constructor, using ${dname} instead (known issue on Safari and Edge)`)
+                        window.customElements.define(dname, view, options)
+                        return
+                    }
+                }
+                console.error(`View::define(${name}, ...): attempt to redefine view with different constructor (known issue on Safari and Edge), giving up after 255 times`)
             }
         }
     }
