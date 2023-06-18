@@ -35,10 +35,16 @@ export default () => (
 
         <h3>&lt;RadioButton&gt;, &lt;Select&gt; &amp; &lt;ComboBox&gt;</h3>
 
+        <style>{`
+            th {
+                background-color: var(--tx-gray-300);
+            }
+        `}</style>
+
         <div class="section">
             <table>
                 <tr>
-                    <th></th>
+                    <td></td>
                     <th colspan={3}>enabled</th>
                     <th colspan={3}>disabled</th>
                     <th>when to use</th>
@@ -84,7 +90,6 @@ export default () => (
                     <td>
                         <RadioButton model={flavourDisabled} value={Color.BONDIBLUE} />
                     </td>
-                    <td rowspan={2}>enough space to display all options</td>
                 </tr>
                 <tr>
                     <th>Select</th>
@@ -107,15 +112,17 @@ export default () => (
                     <td>combination of select and text</td>
                 </tr>
                 <tr>
-                    <th>search</th>
+                    <th>Search</th>
                     <td colspan={3}>
                         <Search />
                     </td>
                     <td colspan={3}></td>
-                    <td>(not ready yet for use)</td>
+                    <td>(not yet, not fully implemented)</td>
                 </tr>
                 <tr>
-                    <th>search within</th>
+                    <th>SearchWithin</th>
+                    <td colspan={6}></td>
+                    <td>(not yet, not implemented)</td>
                 </tr>
             </table>
         </div>

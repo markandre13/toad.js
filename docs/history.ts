@@ -2,6 +2,7 @@ import { EnumModel } from "@toad"
 
 export enum TAB {
     INTRODUCTION = "introduction",
+    DEMO = "demo",
     FORM = "form",
     ACTION = "action",
     TEXT = "text",

@@ -41,6 +41,7 @@ const birthModel = new NumberModel(1970, {
 
 export default () => (
     <>
+        <h1>Form</h1>
         <div class="section">
             <p>
                 Forms arrange larger groups of input fields and also make use of the additional label and description
