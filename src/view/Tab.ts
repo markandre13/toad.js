@@ -54,7 +54,8 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.content = div(slot())
         this.content.classList.add("content")
 
-        let activeLabel: HTMLElement | undefined, activePanel: Tab<V> | undefined
+        let activeLabel: HTMLElement | undefined = this.activeLabel,
+            activePanel: Tab<V> | undefined = this.activePanel
 
         const tabContainer = ul()
         for (let i = 0; i < this.children.length; ++i) {
@@ -74,7 +75,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             }
             this.labelMap.set(panel, tabLabel)
 
-            if (this.activeLabel === undefined && (this.model === undefined || this.model.value === panel.value)) {
+            if (activeLabel === undefined && (this.model === undefined || this.model.value === panel.value)) {
                 activeLabel = tabLabel
                 activePanel = panel
             } else {
@@ -128,7 +129,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.activeLabel.classList.add("active")
         this.activePanel.style.display = ""
 
-        setTimeout( () => this.adjustLine(), 0)
+        setTimeout(() => this.adjustLine(), 0)
 
         if (this.model && panel.value !== undefined) {
             this.model.value = panel.value
@@ -184,7 +185,7 @@ export class Tab<V> extends View {
                             const w = v()
                             if (w instanceof Promise) {
                                 // console.log("yet another promise")
-                                w.then( s => {
+                                w.then((s) => {
                                     // console.log(s)
                                     appendChildren(this, s)
                                 })

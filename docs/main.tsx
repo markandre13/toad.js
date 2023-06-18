@@ -23,6 +23,7 @@ window.onload = () => {
                     <Tab value={TAB.BOOLEAN} label="Boolean" content={() => import("./05_boolean")} />
                     <Tab value={TAB.CHOICE} label="Choice" content={() => import("./06_choice")} />
                     <Tab value={TAB.TABLE} label="Table" content={() => import("./07_table")} />
+                    <Tab value={TAB.TABS} label="Tabs" content={() => import("./08_tabs")} />
                 </Tabs>
             </>
         )

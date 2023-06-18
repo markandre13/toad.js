@@ -8,7 +8,8 @@ export enum TAB {
     NUMBER = "number",
     BOOLEAN = "boolean",
     CHOICE = "choice",
-    TABLE = "table"
+    TABLE = "table",
+    TABS = "tabs",
 }
 
 function makeUrl(tabModel: EnumModel<TAB>) {
