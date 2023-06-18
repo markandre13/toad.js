@@ -1,4 +1,6 @@
-import { Switch, Checkbox, ToadIf, BooleanModel } from "@toad"
+
+
+import { BooleanModel, Checkbox, Switch, ToadIf } from "@toad"
 import { code } from "./index.source"
 
 //

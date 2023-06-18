@@ -1,10 +1,8 @@
-import { NumberModel } from "@toad/model/NumberModel"
-import { TextModel } from "@toad/model/TextModel"
-import { EmailModel } from "@toad/model/EmailModel"
 
-import { Form, FormField, FormHelp, FormLabel } from "@toad/view/Form"
-import { Text } from "@toad/view/Text"
+import { NumberModel, Text, TextModel } from "@toad"
 import { code } from "./index.source"
+import { EmailModel } from "@toad/model/EmailModel"
+import { Form, FormField, FormHelp, FormLabel } from "@toad/view/Form"
 
 //
 // APPLICATION LAYER

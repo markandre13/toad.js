@@ -1,10 +1,11 @@
+
+
+import { dynamicSystem } from "./starsystem"
+import { code } from "./index.source"
+import { SpreadsheetModel } from "@toad/table/model/SpreadsheetModel"
 import { Table, TableAdapter, TablePos, TableTool, TreeAdapter, TreeNode, TreeNodeModel } from "@toad"
 import { SpreadsheetAdapter } from "@toad/table/adapter/SpreadsheetAdapter"
 import { SpreadsheetCell } from "@toad/table/model/SpreadsheetCell"
-import { SpreadsheetModel } from "@toad/table/model/SpreadsheetModel"
-import { fixedSystem, dynamicSystem } from "./starsystem"
-
-import { code } from "./index.source"
 
 //
 // Application Layer

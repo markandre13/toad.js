@@ -1,8 +1,9 @@
+
 import { NumberModel, Slider, Text } from "@toad"
+import { code } from "./index.source"
 import { FixedNumberModel } from "@toad/model/FixedNumberModel"
 import { RGBModel } from "@toad/model/RGBModel"
 import { ColorSelector } from "@toad/view/ColorSelector"
-import { code } from "./index.source"
 
 //
 // Application Layer
