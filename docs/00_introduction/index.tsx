@@ -6,17 +6,24 @@ export default () => (
     <>
         <style>{`dt { font-weight: bold}`}</style>
         <h1>Introduction</h1>
+        <div style={{ textAlign: "center" }}>
+            <img
+                srcset="static/ui-architecture-2x.webp 2x"
+                src="static/ui-architecture-1x.webp"
+                style={{
+                    objectFit: "scale-down",
+                    width: "100%",
+                    height: "auto",
+                    maxHeight: "552px",
+                }}
+            />
+        </div>
         <div class="section">
             <p>
                 toad.js is build around the idea of horizontal layers (which does not exclude the use of vertical
-                layers, e.g. like sales, procurement, ...). For two of those layers toad.js provides separate collections of
-                components.
+                layers, e.g. like sales, procurement, ...). For two of those layers toad.js provides separate
+                collections of components.
             </p>
-        </div>
-        <div style={{ textAlign: "center" }}>
-            <img srcset="static/ui-architecture-2x.webp 2x" src="static/ui-architecture-1x.webp" />
-        </div>
-        <div class="section">
             <dl>
                 <dt>View Layer (Look &amp; Structure)</dt>
                 <dd>
@@ -79,17 +86,15 @@ export default () => (
                 <dd>
                     <p>toad.js doesn't provide anything on this layer yet.</p>
                     <p>
-                        The plan is to provide a middleware to hide the gap between web browser and web server.
-                        E.g. to
-                        </p>
-                        <ul>
-                            <li>have one shared ruleset between frontend and backend to validate user input</li>
-                            <li>handle paged lists or arbitrary large tables</li>
-                        </ul>
-                        <p>
-                         Also,
-                        when handling data which hasn't been loaded from the network yet, the goal is to display the
-                        view and enable each input element on it's own once it's data is available.
+                        The plan is to provide a middleware to hide the gap between web browser and web server. E.g. to
+                    </p>
+                    <ul>
+                        <li>have one shared ruleset between frontend and backend to validate user input</li>
+                        <li>handle paged lists or arbitrary large tables</li>
+                    </ul>
+                    <p>
+                        Also, when handling data which hasn't been loaded from the network yet, the goal is to display
+                        the view and enable each input element on it's own once it's data is available.
                     </p>
                 </dd>
             </dl>
