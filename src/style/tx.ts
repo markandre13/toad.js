@@ -21,7 +21,7 @@ style.textContent = css`
 
   /* Edit */
   --tx-edit-font-size: calc((12/16) * 1rem);
-  --tx-edit-font-weight: 400;
+  --tx-edit-font-weight: normal;
 
   --tx-edit-fg-color: var(--tx-gray-800);
   --tx-edit-fg-color-disabled: var(--tx-gray-500);
@@ -50,8 +50,8 @@ body {
 p {
     margin: calc((6/16) * 1rem) 0;
 }
-b      { font-weight: 500; }
-strong { font-weight: 500; }
+b      { font-weight: bold }
+strong { font-weight: bold }
 h1 {
   font-size: calc((24/16) * 1rem);
   font-weight: 600;
@@ -71,7 +71,7 @@ h4 {
 pre {
   font-family: "IBM Plex Mono", Courier, monospaced;
   font-size: calc((12/16) * 1rem);
-  font-weight: 400;
+  font-weight: normal;
   line-height: 1.1; /* 1.5625rem 25px */
 }
 
@@ -98,6 +98,22 @@ a:visited {
 }
 a:link:active, a:visited:active { 
      color: var(--tx-gray-900);
+}
+body::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+body::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+}
+body::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+body::-webkit-scrollbar-corner {
+    background: #1e1e1e;
+}
+body::-webkit-scrollbar-thumb {
+    background: var(--tx-gray-500);
 }
 /* a:link::before {
   content: "→";

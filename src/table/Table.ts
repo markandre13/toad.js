@@ -36,6 +36,7 @@ import { HTMLElementProps, setInitialProperties } from 'toad.jsx'
 import { span, div, text } from '../util/lsx'
 import { scrollIntoView } from '@toad/util/scrollIntoView'
 import { style as txTable } from './style/tx-table'
+import { style as txScrollbar } from '../style/tx-scrollbar'
 import { hasFocus } from '@toad/util/dom'
 
 // TABLE ANIMATION
@@ -204,7 +205,7 @@ export class Table extends View {
         this.body.onpointerdown = this.pointerDown
 
         this.attachShadow({ mode: 'open', delegatesFocus: true })
-        this.shadowRoot!.adoptedStyleSheets = [txTable]
+        this.shadowRoot!.adoptedStyleSheets = [txTable, txScrollbar]
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
 

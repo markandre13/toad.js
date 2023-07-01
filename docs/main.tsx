@@ -1,10 +1,14 @@
 import { EnumModel } from "@toad/model/EnumModel"
 import { Tabs, Tab } from "@toad/view/Tab"
 import { initHistoryManager, TAB } from "./history"
+import { loadFont } from "@toad/util/loadFont"
+import { loadStyle } from "@toad/util/loadStyle"
 
 window.onload = () => {
     const tabModel = new EnumModel(TAB.INTRODUCTION, TAB)
     initHistoryManager(tabModel)
+    loadFont()
+    loadStyle()
 
     document.body.replaceChildren(
         ...(

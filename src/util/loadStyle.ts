@@ -1,4 +1,3 @@
-import { style as styleFont } from "../style/tx-font"
 import { style as styleStatic } from "../style/tx-static"
 import { style as styleDark } from "../style/tx-dark"
 import { style as styleBase } from "../style/tx"
@@ -16,7 +15,6 @@ import { style as styleBase } from "../style/tx"
  * <link rel="stylesheet" type="text/css" href="/style/tx.css" /> 
  */
 export function loadStyle() {
-    document.head.appendChild(styleFont)
     document.head.appendChild(styleStatic)
     document.head.appendChild(styleDark)
     document.head.appendChild(styleBase)

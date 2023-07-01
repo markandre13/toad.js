@@ -19,6 +19,7 @@
 import { View } from "../view/View"
 import { ul, li, span, text, div, slot } from "../util/lsx"
 import { style as txTabs } from "../style/tx-tabs"
+import { style as txScrollbar } from "../style/tx-scrollbar"
 import { HTMLElementProps } from "toad.jsx"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
@@ -84,7 +85,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         }
 
         this.attachShadow({ mode: "open" })
-        this.shadowRoot!.adoptedStyleSheets = [txTabs]
+        this.shadowRoot!.adoptedStyleSheets = [txTabs, txScrollbar]
         this.shadowRoot!.replaceChildren(tabContainer, (this.markerLine = div()), this.content)
         this.markerLine.classList.add("line")
 
