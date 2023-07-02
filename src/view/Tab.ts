@@ -52,13 +52,22 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             this.classList.add("tx-vertical")
         }
 
-        this.content = div(slot())
+        let lineContainer, tabContainer
+
+        const children = [
+            lineContainer = span(
+                this.markerLine = div()
+            ),
+            tabContainer = ul(),
+            this.content = div(slot())
+        ]
+        lineContainer.classList.add("line-container")
+        this.markerLine.classList.add("line")
         this.content.classList.add("content")
 
         let activeLabel: HTMLElement | undefined = this.activeLabel,
             activePanel: Tab<V> | undefined = this.activePanel
 
-        const tabContainer = ul()
         for (let i = 0; i < this.children.length; ++i) {
             const child = this.children[i]
             if (!(child instanceof Tab)) {
@@ -71,7 +80,6 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             tabLabel.onpointerdown = (ev: PointerEvent) => {
                 ev.stopPropagation()
                 ev.preventDefault()
-                ev.cancelBubble = true
                 this.activateTab(tabLabel, panel)
             }
             this.labelMap.set(panel, tabLabel)
@@ -86,9 +94,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
         this.attachShadow({ mode: "open" })
         this.shadowRoot!.adoptedStyleSheets = [txTabs, txScrollbar]
-        this.shadowRoot!.replaceChildren(tabContainer, (this.markerLine = div()), this.content)
-        this.markerLine.classList.add("line")
-
+        this.shadowRoot!.replaceChildren(...children)
         if (activeLabel !== undefined) {
             this.activateTab(activeLabel, activePanel!)
         }
@@ -142,11 +148,11 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         const label = this.activeLabel
         if (label !== undefined) {
             if (this.vertical) {
-                line.style.top = `${label.offsetTop}px`
+                line.style.top = `${label.offsetTop - this.offsetTop}px`
                 line.style.height = `${label.clientHeight}px`
             } else {
                 line.style.top = `-2px`
-                line.style.left = `${label.offsetLeft}px`
+                line.style.left = `${label.offsetLeft - this.offsetLeft}px`
                 line.style.width = `${label.clientWidth}px`
             }
         }
