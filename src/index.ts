@@ -31,7 +31,7 @@ export { Model } from "./model/Model"
 import type { InferModelParameter } from "./model/Model"
 export { InferModelParameter }
 export { Action } from "./model/Action"
-export { GenericModel } from "./model/GenericModel"
+export { ValueModel as GenericModel } from "./model/ValueModel"
 export { TextModel } from "./model/TextModel"
 export { HtmlModel } from "./model/HtmlModel"
 export { NumberModel } from "./model/NumberModel"

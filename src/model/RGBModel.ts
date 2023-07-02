@@ -1,8 +1,8 @@
 import { parseColor, RGB } from "@toad/util/color"
-import { GenericModel } from "./GenericModel"
+import { ValueModel } from "./ValueModel"
 import { ModelOptions } from "./Model"
 
-export class RGBModel extends GenericModel<RGB, ModelOptions> {
+export class RGBModel extends ValueModel<RGB, ModelOptions> {
     constructor(value: RGB | string, options?: ModelOptions) {
         if (typeof value === "string") {
             let v = parseColor(value)

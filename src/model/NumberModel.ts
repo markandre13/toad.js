@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GenericModel } from "./GenericModel"
+import { ValueModel } from "./ValueModel"
 import { ModelOptions } from "./Model"
 
 export interface NumberModelOptions extends ModelOptions {
@@ -29,7 +29,7 @@ export interface NumberModelOptions extends ModelOptions {
 /**
  * @category Application Model
  */
-export class NumberModel extends GenericModel<number, NumberModelOptions> {
+export class NumberModel extends ValueModel<number, NumberModelOptions> {
 
     constructor(value: number, options?: NumberModelOptions) {
         super(value, options)

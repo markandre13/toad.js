@@ -17,13 +17,13 @@
  */
 
 import { span, text } from "@toad/util/lsx"
-import { GenericModel } from "./GenericModel"
+import { ValueModel } from "./ValueModel"
 import { ModelOptions } from "./Model"
 
 /**
  * @category Application Model
  */
-export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> extends GenericModel<V, O> {
+export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> extends ValueModel<V, O> {
     abstract forEach(callback: (value: V, key: string, label: any, index: number) => void): void
     map<R>(callback: (value: V, key: string, label: any, idx: number) => R): R[] {
         const out: R[] = []

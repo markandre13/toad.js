@@ -16,12 +16,12 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { GenericModel } from "./GenericModel"
+import { ValueModel } from "./ValueModel"
 
 /**
  * @category Application Model
  */
-export class BooleanModel extends GenericModel<boolean> {
+export class BooleanModel extends ValueModel<boolean> {
   constructor(value: boolean) {
     super(value)
   }

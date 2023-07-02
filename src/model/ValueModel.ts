@@ -23,7 +23,7 @@ import { Model, ModelOptions } from "./Model"
  * 
  * a better name would be ValueModel
  */
-export class GenericModel<T, O extends ModelOptions = ModelOptions> extends Model<T, O> {
+export class ValueModel<T, O extends ModelOptions = ModelOptions> extends Model<T, O> {
     protected _value: T
 
     constructor(value: T, options?: O) {
