@@ -25,7 +25,10 @@ import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 
 export interface TabsProps<V> extends ModelViewProps<OptionModelBase<V>> {
-    orientation?: "horizontal" | "vertical"
+    orientation?: "horizontal" | "vertical",
+    // the approach implemented here doesn't really work, instead something like this is needed:
+    // https://stackoverflow.com/questions/44475309/how-do-i-restrict-the-type-of-react-children-in-typescript-using-the-newly-adde
+    children?: Tab<V>
 }
 
 /**
@@ -71,10 +74,19 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         for (let i = 0; i < this.children.length; ++i) {
             const child = this.children[i]
             if (!(child instanceof Tab)) {
-                console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
+                console.log(`unexpected <${child.nodeName.toLowerCase()}> within <Tabs>`)
                 continue
             }
             const panel = child as Tab<V>
+
+            if (typeof panel.value !== typeof this.model?.value) {
+                console.log(`Type error: Tab<${typeof panel.value}>({label="${panel.label}", value=${panel.value}}) differs from Tabs<${typeof this.model?.value}>({model.value=${this.model?.value}})` )
+            // } else {
+            //     if (typeof panel.value === "object") {
+            //         // TODO: add check
+            //     }
+            }
+
             let tabLabel: HTMLElement
             tabContainer.appendChild(li((tabLabel = span(text(panel.getAttribute("label")!) as any))))
             tabLabel.onpointerdown = (ev: PointerEvent) => {
@@ -106,7 +118,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             for (let i = 0; i < this.children.length; ++i) {
                 const child = this.children[i]
                 if (!(child instanceof Tab)) {
-                    console.log(`unexpected <${child.nodeName.toLowerCase()}> within <tabs>`)
+                    console.log(`unexpected <${child.nodeName.toLowerCase()}> within <Tabs>`)
                     continue
                 }
                 const tab = child as Tab<V>
