@@ -36,7 +36,7 @@ export class OptionModel<V, O extends ModelOptions = ModelOptions> extends Optio
     forEach(callback: (value: V, key: string, label: any, index: number) => void): void {
         let idx = 0
         this._mapping.forEach((label, value) => {
-            callback(value, `${value}`, this.asHtml(label), idx++)
+            callback(value, label, this.asHtml(label), idx++) // FIXME: there is a reason Map has no index!!!
         })
     }
 }

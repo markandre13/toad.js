@@ -27,17 +27,19 @@ toolbuttonStyle.replaceSync(css`
     display: inline-block;
     overflow: hidden;
     box-sizing: border-box;
-    border: 1px solid #e3dbdb;
+    border: 1px solid var(--tx-gray-400);
     border-radius: 3px;
-    background: #e3dbdb;
-    width: 32px;
-    height: 32px;
+    background: var(--tx-gray-400);
+    color: var(--tx-gray-900);
+    width: 24px;
+    height: 22px;
     margin: 0;
     padding: 0;
 }
 
 :host([selected]) {
-    background: #ac9393;
+    background-color: var(--tx-gray-100);
+    border: 1px solid var(--tx-gray-100);
 }
 
 :host([disabled]) {
@@ -50,8 +52,7 @@ toolbuttonStyle.replaceSync(css`
 `)
 
 export interface ToolButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {
-    value: V,
-    img: string,
+    value: V
 }
 
 /**
@@ -66,16 +67,14 @@ export class ToolButton<V> extends ModelView<OptionModelBase<V>> {
         if (!init) {
             init = {
                 value: this.getAttribute("value")! as any,
-                img: this.getAttribute("img")!,
             }
         } else {
             this.setAttribute("value", `${init.value}`)
-            this.setAttribute("img", init.img)
         }
 
         this.value = init?.value
 
-        this.onmousedown = (event) => {
+        this.onpointerdown = (event) => {
             if (this.hasAttribute("disabled")) {
                 return
             }
@@ -87,19 +86,16 @@ export class ToolButton<V> extends ModelView<OptionModelBase<V>> {
             }
         }
 
-        let img = document.createElement("img")
-        img.src = init.img
-        // button.appendChild(img)
-
         this.attachShadow({mode: 'open', delegatesFocus: true})
         this.shadowRoot!.adoptedStyleSheets = [toolbuttonStyle]
-        this.shadowRoot!.appendChild(img) // FIXME: use <slot> when no image was provided
+        this.shadowRoot!.appendChild(document.createElement("slot"))
     }
 
     override connectedCallback() {
         super.connectedCallback()
         if (this.model === undefined) {
             this.setAttribute("disabled", "")
+            // console.log(`connectedCallback ${this.value} no model -> disabled`)
         }
     }
    
@@ -110,9 +106,12 @@ export class ToolButton<V> extends ModelView<OptionModelBase<V>> {
             return
         }
 
-        if (!this.model.enabled || !this.model.isEnabledOf(this.value!)) {
+        if (this.model.enabled && this.model.isEnabledOf(this.value!)) {
             this.removeAttribute("disabled")
         } else {
+            // console.log(`disabled ${this.model.enabled} ${this.model.isEnabledOf(this.value!)}`)
+            // console.log(this.model.value)
+            // console.log(this.value)
             this.setAttribute("disabled", "")
         }
 

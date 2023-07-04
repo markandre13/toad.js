@@ -1,8 +1,13 @@
 import { css } from './lsx'
 
+let fontHasBeenAddedToDocumentHead = false
 export function loadFont(path: string | undefined = undefined) {
+    if (fontHasBeenAddedToDocumentHead) {
+        return
+    }
     let style = path === undefined ? googleFont() : localFont(path)
     style.forEach( node => document.head.appendChild(node))
+    fontHasBeenAddedToDocumentHead = true
 }
 
 export function googleFont() {

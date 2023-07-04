@@ -34,13 +34,13 @@ export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> 
         return out
     }
     get html(): any | undefined {
-        let l: any
+        let foundLabel: any
         this.forEach( (value, key, label, index) => {
             if (this.value === value) {
-                l = label
+                foundLabel = label
             }
         })
-        return this.asHtml(l)
+        return this.asHtml(foundLabel)
     }
     // FIXME: move into SelectBase
     // * we wrap plain text into a span because for the layout for work we need
