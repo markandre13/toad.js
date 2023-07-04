@@ -64,7 +64,7 @@
         "@types/pixelmatch": "^5.2.4",
         "@types/pngjs": "^6.0.1",
         "@types/prismjs": "^1.26.0",
-        "@web/dev-server": "^0.2.3",
+        "@web/dev-server": "^0.2.4",
         "@web/test-runner": "^0.16.1",
         "chai": "^4.3.7",
         "concurrently": "^8.2.0",
