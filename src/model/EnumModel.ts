@@ -34,7 +34,7 @@ export class EnumModel<V, O extends ModelOptions = ModelOptions> extends OptionM
         super(value, options)
         this.enumType = enumType
     }
-    forEach(callback: (value: V, key: string, label: any, index: number) => void): void {
+    forEach(callback: (value: V, key: string | number | HTMLElement, index: number) => void): void {
         let type = "string"
         const entries = Object.entries(this.enumType)
         for (const v0 of entries) {
@@ -53,21 +53,21 @@ export class EnumModel<V, O extends ModelOptions = ModelOptions> extends OptionM
             case "object":
                 for (const v of entries) {
                     if (typeof v[1] === "object") {
-                        callback(v[1] as any, v[0], this.asHtml(v[1]), idx++)
+                        callback(v[1] as any, v[1] as any, idx++)
                     }
                 }
                 break
             case "number":
                 for (const v of entries) {
                     if (typeof v[1] === "number") {
-                        callback(v[1] as any, v[0], this.asHtml(v[0]), idx++)
+                        callback(v[1] as any, v[0], idx++)
                     }
                 }
                 break
             default:
                 for (const v of entries) {
                     if (typeof v[0] === "string") {
-                        callback(v[1] as any, v[0], this.asHtml(v[1]), idx++)
+                        callback(v[1] as any, v[1] as any, idx++)
                     }
                 }
         }

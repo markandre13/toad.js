@@ -212,13 +212,12 @@ export abstract class SelectBase<V> extends ModelView<OptionModelBase<V>> {
 
     open() {
         // console.log("OPEN")
-        let view = this
         this.popup = div()
         if (this.model) {
             this.popup.replaceChildren(
                 <ul class="tx-menu" aria-roledescription="listbox">
-                    {this.model.map((value, key, label, idx) => {
-                        const l = li(label)
+                    {this.model.map((value, key, idx) => {
+                        const l = li(this.model!.asHtml(key))
                         l.tabIndex = 0
                         l.ariaRoleDescription = "option"
                         l.dataset["idx"] = `${idx}`

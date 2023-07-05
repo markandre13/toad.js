@@ -23,20 +23,20 @@ import { OptionModelBase } from "./OptionModelBase"
  * @category Application Model
  */
 export class OptionModel<V, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, O> {
-    _mapping: Map<V, string>
-    constructor(value: V, mapping: readonly (readonly [V, string] | string)[], options?: O) {
+    _mapping: readonly (readonly [V, string])[]
+    constructor(value: V, mapping: readonly (readonly [V, string | number | HTMLElement] | string)[], options?: O) {
         super(value, options)
         if (mapping[0] instanceof Array) {
-            this._mapping = new Map(mapping as [])
+            this._mapping = mapping as readonly (readonly [V, string])[]
         } else {
-            this._mapping = new Map()
-            mapping.forEach( v => this._mapping.set(v as V, `${v}`))
+            const a: [V, string | number | HTMLElement][] = []
+            mapping.forEach((v) => a.push([v as V, `${v}`]))
+            this._mapping = a as readonly (readonly [V, string])[]
         }
     }
-    forEach(callback: (value: V, key: string, label: any, index: number) => void): void {
-        let idx = 0
-        this._mapping.forEach((label, value) => {
-            callback(value, label, this.asHtml(label), idx++) // FIXME: there is a reason Map has no index!!!
+    forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void {
+        this._mapping.forEach(([value, label], index) => {
+            callback(value, label, index)
         })
     }
 }

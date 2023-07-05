@@ -4,21 +4,21 @@ import { EnumModel } from "@toad/model/EnumModel"
 import { OptionModel } from "@toad/model/OptionModel"
 
 describe("OptionModel", function () {
-    describe("forEach(callback: (value: V, key: string, label: any) => void): void", function () {
+    describe("forEach(callback: (value: V, label: number | string | HtmlElement, label: any) => void): void", function () {
         it(`[ "Up", ...]`, function () {
             const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
             expect(model.value).equals("Down")
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
 
             expect(out).to.deep.equal([
-                ["Up", "Up", span(text("Up"))],
-                ["Down", "Down", span(text("Down"))],
-                ["Left", "Left", span(text("Left"))],
-                ["Right", "Right", span(text("Right"))],
+                ["Up", "Up", 0],
+                ["Down", "Down", 1],
+                ["Left", "Left", 2],
+                ["Right", "Right", 3],
             ])
         })
         it(`[ [0, "Up"], ...]`, function () {
@@ -37,15 +37,15 @@ describe("OptionModel", function () {
             expect(model.value).equals(A.DOWN)
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
 
             expect(out).to.deep.equal([
-                [A.UP, "Up", span(text("Up"))],
-                [A.DOWN, "Down", span(text("Down"))],
-                [A.LEFT, "Left", span(text("Left"))],
-                [A.RIGHT, "Right", span(text("Right"))],
+                [A.UP, "Up", 0],
+                [A.DOWN, "Down", 1],
+                [A.LEFT, "Left", 2],
+                [A.RIGHT, "Right", 3],
             ])
         })
         it("[ [0, <>Up</>], ...]", function () {
@@ -64,20 +64,21 @@ describe("OptionModel", function () {
             expect(model.value).equals(A.DOWN)
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
 
             expect(out).to.deep.equal([
-                [A.UP, <i>Up</i>, <i style={{ height: "100%", width: "100%" }}>Up</i>],
-                [A.DOWN, <i>Down</i>, <i style={{ height: "100%", width: "100%" }}>Down</i>],
-                [A.LEFT, <i>Left</i>, <i style={{ height: "100%", width: "100%" }}>Left</i>],
-                [A.RIGHT, <i>Right</i>, <i style={{ height: "100%", width: "100%" }}>Right</i>],
+                [A.UP, <i>Up</i>, 0],
+                [A.DOWN, <i>Down</i>, 1],
+                [A.LEFT, <i>Left</i>, 2],
+                [A.RIGHT, <i>Right</i>, 3],
             ])
         })
     })
 })
 
+// FIXME: separate file
 describe("EnumModel automatically maps all the value in an enum to the UI", function () {
     describe("forEach(callbackfn: (value, label) => void)", function () {
         it("enum Direction { UP, ... }", function () {
@@ -90,15 +91,15 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
             const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
 
             expect(out).to.deep.equal([
-                [A.UP, "UP", <span>UP</span>],
-                [A.DOWN, "DOWN", <span>DOWN</span>],
-                [A.LEFT, "LEFT", <span>LEFT</span>],
-                [A.RIGHT, "RIGHT", <span>RIGHT</span>],
+                [A.UP, "UP", 0],
+                [A.DOWN, "DOWN", 1],
+                [A.LEFT, "LEFT", 2],
+                [A.RIGHT, "RIGHT", 3],
             ])
         })
         it("enum Direction { UP = 100, ... }", function () {
@@ -111,15 +112,15 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
             const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
 
             expect(out).to.deep.equal([
-                [A.UP, "UP", <span>UP</span>],
-                [A.DOWN, "DOWN", <span>DOWN</span>],
-                [A.LEFT, "LEFT", <span>LEFT</span>],
-                [A.RIGHT, "RIGHT", <span>RIGHT</span>],
+                [A.UP, "UP", 0],
+                [A.DOWN, "DOWN", 1],
+                [A.LEFT, "LEFT", 2],
+                [A.RIGHT, "RIGHT", 3],
             ])
         })
         it('enum Direction { UP = "Up", ... }', function () {
@@ -132,17 +133,14 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
             const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
-
-            console.log(out)
-
             expect(out).to.deep.equal([
-                [A.UP, "UP", <span>Up</span>],
-                [A.DOWN, "DOWN", <span>Down</span>],
-                [A.LEFT, "LEFT", <span>Left</span>],
-                [A.RIGHT, "RIGHT", <span>Right</span>],
+                [A.UP, "Up", 0],
+                [A.DOWN, "Down", 1],
+                [A.LEFT, "Left", 2],
+                [A.RIGHT, "Right", 3],
             ])
         })
         it("enum Direction { UP = <>Up</>, ... }", function () {
@@ -155,15 +153,15 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
             const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
 
             expect(out).to.deep.equal([
-                [A.UP, "UP", <i style={{ height: "100%", width: "100%" }}>Up</i>],
-                [A.DOWN, "DOWN", <i style={{ height: "100%", width: "100%" }}>Down</i>],
-                [A.LEFT, "LEFT", <i style={{ height: "100%", width: "100%" }}>Left</i>],
-                [A.RIGHT, "RIGHT", <i style={{ height: "100%", width: "100%" }}>Right</i>],
+                [A.UP, <i>Up</i>, 0],
+                [A.DOWN, <i>Down</i>, 1],
+                [A.LEFT, <i>Left</i>, 2],
+                [A.RIGHT, <i>Right</i>, 3],
             ])
         })
     })
@@ -178,15 +176,15 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
             const model = new EnumModel(A.UP, A)
 
             const out: any[][] = []
-            model.forEach((value, key, label) => {
-                out.push([value, key, label])
+            model.forEach((value, label, index) => {
+                out.push([value, label, index])
             })
 
             expect(out).to.deep.equal([
-                [A.UP, "UP", <span>Up</span>],
-                [A.DOWN, "DOWN", <span>Down</span>],
-                [A.LEFT, "LEFT", <span>Left</span>],
-                [A.RIGHT, "RIGHT", <span>Right</span>],
+                [A.UP, "Up", 0],
+                [A.DOWN, "Down", 1],
+                [A.LEFT, "Left", 2],
+                [A.RIGHT, "Right", 3],
             ])
         })
     })

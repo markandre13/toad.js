@@ -24,18 +24,17 @@ import { ModelOptions } from "./Model"
  * @category Application Model
  */
 export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> extends ValueModel<V, O> {
-    abstract forEach(callback: (value: V, key: string, label: any, index: number) => void): void
-    map<R>(callback: (value: V, key: string, label: any, idx: number) => R): R[] {
+    abstract forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void
+    map<R>(callback: (value: V, label: string | number | HTMLElement, index: number) => R): R[] {
         const out: R[] = []
-        let idx = 0
-        this.forEach((value, key, label, index) => {
-            out.push(callback(value, key, label, idx++))
+        this.forEach((value, label, index) => {
+            out.push(callback(value, label, index))
         })
         return out
     }
     get html(): any | undefined {
         let foundLabel: any
-        this.forEach( (value, key, label, index) => {
+        this.forEach((value, label, index) => {
             if (this.value === value) {
                 foundLabel = label
             }
@@ -45,7 +44,7 @@ export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> 
     // FIXME: move into SelectBase
     // * we wrap plain text into a span because for the layout for work we need
     //   to have a HTMLElement there which can display a margin
-    asHtml(l: any) {
+    asHtml(l: string | number | HTMLElement) {
         if (typeof l === "string") {
             return span(text(l))
         }
@@ -69,7 +68,7 @@ export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> 
     }
     indexOf(value: V) {
         let idx: number | undefined
-        this.forEach( (aValue, key, label, index) => {
+        this.forEach((aValue, label, index) => {
             if (value === aValue) {
                 idx = index
             }
@@ -78,16 +77,16 @@ export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> 
     }
     labelOf(value: V) {
         let lab: any
-        this.forEach( (aValue, key, label, index) => {
+        this.forEach((aValue, label, index) => {
             if (value === aValue) {
                 lab = label
             }
         })
-        return lab
+        return this.asHtml(lab)
     }
     isEnabledOf(value: V) {
         let enabled = false
-        this.forEach( (aValue, key, label, index) => {
+        this.forEach((aValue, label, index) => {
             if (value === aValue) {
                 enabled = true
             }
@@ -95,7 +94,7 @@ export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> 
         return enabled
     }
     set index(idx: number | undefined) {
-        this.forEach( (value, key, label, index) => {
+        this.forEach((value, label, index) => {
             if (index === idx) {
                 this.value = value
             }
@@ -103,7 +102,7 @@ export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> 
     }
     get index(): number | undefined {
         let idx: number | undefined
-        this.forEach( (value, key, label, index) => {
+        this.forEach((value, label, index) => {
             if (this.value === value) {
                 idx = index
             }
