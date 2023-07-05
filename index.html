@@ -9,19 +9,22 @@
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400,500,600&subset=latin" />
-    <link rel="stylesheet" type="text/css"
-        href="https://fonts.googleapis.com/css?family=IBM+Plex+Mono:400&subset=latin" />
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Titan+One">
-    <link rel="stylesheet" type="text/css" href="style/tx-static.css" />
-    <link rel="stylesheet" type="text/css" href="style/tx-dark.css" />
-    <link rel="stylesheet" type="text/css" href="style/tx.css" />
     <link rel="stylesheet" type="text/css" href="./static/prism-darcula.min.css" />
-
-    <script type="module" src="main.js?hash=8f56b5f3ff3aa618cac09e57591ca20e03827106"></script>
+    <script type="module" src="main.js?hash=17a4df206ed2cbeb5bdb94d76134e0192330634e"></script>
 
     <style>
+        body {
+            display: grid;
+            grid-template-columns: 1;
+            grid-template-rows: min-content auto;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
         a:link {
             text-decoration: underline;
             text-decoration-style: dashed;
@@ -44,6 +47,17 @@
             margin: 4px;
             padding: 16px;
             border-radius: 4px;
+        }
+
+        .section>p,
+        .section dd {
+            columns: 60ch;
+            orphans: 3;
+            column-gap: 5px;
+        }
+
+        dd {
+            padding-bottom: 10pt;
         }
 
         .code {
