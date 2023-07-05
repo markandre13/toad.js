@@ -6,6 +6,48 @@ export default () => (
     <>
         <style>{`dt { font-weight: bold}`}</style>
         <h1>Introduction</h1>
+
+        <div style={{ display: "grid", gridTemplateColumns: "auto auto", gridTemplateRows: "1" }}>
+            <div class="section">
+                <h3>Foundations</h3>
+                <dl>
+                    <dt>Web Components &amp; ESM</dt>
+                    <dd>
+                        “Modern browsers are a powerful platform for building websites and applications. We try to work
+                        with what's available in the browser first before reaching for custom solutions.”
+                        <br />
+                        <a href="https://modern-web.dev/discover/about/">https://modern-web.dev/discover/about/</a>
+                    </dd>
+                    <dt>TypeScript</dt>
+                    <dd>Allows to catch a variety of errors at compile time.</dd>
+                    <dt>JSX</dt>
+                    <dd>
+                        Leverages TypeScript's type-safety into HTML. No Virtual DOM, JSX is directly translated into DOM
+                        nodes. While using code and style attributes is possible, it should be avoided.
+                    </dd>
+                </dl>
+            </div>
+            <div class="section">
+                <h3>Look</h3>
+                <dl>
+                    <dt>
+                        <a href="https://spectrum.adobe.com">Adobe's Spectrum design system</a>
+                    </dt>
+                    <dd>
+                        Choosen for it's spartan look and platform agnostic appearance. (Adobe has three different
+                        implementations and naturally toad.js also has it's own implementation.)
+                    </dd>
+                    <dt>
+                        <a href="https://www.ibm.com/plex/">IBM's Plex typeface</a>
+                    </dt>
+                    <dd>
+                        Choosen for it's coverage of sans, sans-serif and monospaced fonts, it's broad variety of
+                        weights and languages and being provided under the
+                        <a href="https://scripts.sil.org/OFL">SIL Open Font License 1.1</a>.
+                    </dd>
+                </dl>
+            </div>
+        </div>
         <div style={{ textAlign: "center" }}>
             <img
                 srcset="static/ui-architecture-2x.webp 2x"
@@ -19,6 +61,7 @@ export default () => (
             />
         </div>
         <div class="section">
+            <h3>Architecture</h3>
             <p>
                 toad.js is build around the idea of horizontal layers (which does not exclude the use of vertical
                 layers, e.g. like sales, procurement, ...). For two of those layers toad.js provides separate
