@@ -27,14 +27,14 @@ export type EnumType<T> = {
     [nu: number]: string
 }
 
-export class EnumModel<V, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, O>
+export class EnumModel<T, V extends T = T, O extends ModelOptions = ModelOptions> extends OptionModelBase<T, O>
 {
-    protected enumType: EnumType<V>
-    constructor(value: V, enumType: EnumType<V>, options?: O) {
+    protected enumType: EnumType<T>
+    constructor(value: V, enumType: EnumType<T>, options?: O) {
         super(value, options)
         this.enumType = enumType
     }
-    forEach(callback: (value: V, key: string | number | HTMLElement, index: number) => void): void {
+    forEach(callback: (value: T, key: string | number | HTMLElement, index: number) => void): void {
         let type = "string"
         const entries = Object.entries(this.enumType)
         for (const v0 of entries) {
