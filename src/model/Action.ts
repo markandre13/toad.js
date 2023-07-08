@@ -23,16 +23,14 @@ import { Signal } from "../Signal"
  * @category Application Model
  */
 export class Action extends Model {
-    signal: Signal
-    title: string
+    signal = new Signal()
 
-    constructor(parent: HTMLElement | undefined, title: string) {
+    constructor(callback: () => void) {
         super()
-        this.signal = new Signal()
-        this.title = title
+        this.signal.add(callback)
     }
 
-    set value(placeHolder: any) {
+    set value(_: any) {
         throw Error("Action.value can not be assigned a value")
     }
 

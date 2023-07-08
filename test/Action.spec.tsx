@@ -33,8 +33,7 @@ describe("action", function () {
     it("single action directly using JSX", async function () {
         let flag = false
 
-        let logon = new Action(undefined, "")
-        logon.signal.add(() => {
+        let logon = new Action(() => {
             flag = true
         })
 

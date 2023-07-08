@@ -100,9 +100,7 @@ export abstract class ActionView extends ModelView<TextModel> {
 
   setAction(value: Function|Action) {
     if (value instanceof Function) {
-        const action = new Action(undefined, "");                   
-        action.signal.add(value as ()=>void);
-        this.setModel(action)
+        this.setModel(new Action(value as ()=>void))
     } else {
         this.setModel(value)
     }
