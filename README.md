@@ -176,6 +176,14 @@ years. So let's set the record straight:
 
 <hr/>
 
+### Development
+
+How to run single test files:
+
+    npm run dev:build
+
+    npm run dev:test --file=./lib/test/view/ToolButton.spec.js
+
 ### References
 
 <ul>
