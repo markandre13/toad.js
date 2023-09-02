@@ -1,12 +1,12 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from "@esm-bundle/chai"
 import { Fragment, Text, TextModel, NumberModel, bindModel, unbind } from "@toad"
 
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
+import { sleep } from "e2e/testlib"
 
 describe("view", function () {
-
     beforeEach(async function () {
         unbind()
         document.body.replaceChildren()
@@ -14,13 +14,10 @@ describe("view", function () {
     })
 
     describe("Text", function () {
-
         describe("layout", function () {
-            it.only("style.width", async function () {
+            it("style.width", async function () {
                 const model = new TextModel("A")
-                document.body.replaceChildren(
-                    <Text model={model} style={{width: '16px'}}/>
-                )
+                document.body.replaceChildren(<Text model={model} style={{ width: "16px" }} />)
             })
         })
 
@@ -28,7 +25,11 @@ describe("view", function () {
             it("view and model are in sync", function () {
                 const model = new NumberModel(42, { min: 0, max: 100, step: 1 })
 
-                const content = <><Text model={model} /></> as Fragment
+                const content = (
+                    <>
+                        <Text model={model} />
+                    </>
+                ) as Fragment
                 content.replaceIn(document.body)
                 const view = content[0] as Text
 
@@ -40,14 +41,47 @@ describe("view", function () {
                 view.value = "81"
                 expect(view.value).to.equal(`${model.value}`)
             })
-            it("works when using JSX", async function () {
+            it("works when using JSX", function () {
                 const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
 
-                document.body.innerHTML = ""
                 document.body.appendChild(<Text model={model} />)
 
                 let view = document.body.children[0]
                 expect(view.getAttribute("value")).to.equal("0.5")
+            })
+            describe("scrollwheel", function () {
+                it("down", function () {
+                    const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
+
+                    document.body.appendChild(<Text model={model} />)
+                    let view = document.body.children[0]
+                    let input = view.shadowRoot!.children[0]
+
+                    input.dispatchEvent(
+                        new WheelEvent("wheel", {
+                            deltaY: 1,
+                        })
+                    )
+
+                    expect(view.getAttribute("value")).to.equal("0.4")
+                })
+
+                it("up", function () {
+                    const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
+
+                    document.body.appendChild(<Text model={model} />)
+                    let view = document.body.children[0]
+                    let input = view.shadowRoot!.children[0]
+
+                    input.dispatchEvent(
+                        new WheelEvent("wheel", {
+                            deltaY: -1,
+                        })
+                    )
+
+                    expect(view.getAttribute("value")).to.equal("0.6")
+                })
+
             })
             // range
             // scroll wheel
@@ -78,7 +112,6 @@ describe("view", function () {
                     // const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
                     const model = new TextModel("alpha")
 
-                    document.body.innerHTML = ""
                     document.body.appendChild(<Text model={model} />)
 
                     let view = document.body.children[0]

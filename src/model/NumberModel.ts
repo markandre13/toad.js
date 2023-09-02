@@ -18,6 +18,7 @@
 
 import { ValueModel } from "./ValueModel"
 import { ModelOptions } from "./Model"
+import { BigDecimal } from "@toad/util/BigDecimal"
 
 export interface NumberModelOptions extends ModelOptions {
     min?: number
@@ -36,33 +37,38 @@ export class NumberModel extends ValueModel<number, NumberModelOptions> {
     }
     increment() {
         if (this.step !== undefined) {
-            this.value += this.step
+            const value = new BigDecimal(this.value)
+            const step = new BigDecimal(this.step)
+            this.value = parseFloat( value.add(step).toString())
         }
     }
     decrement() {
         if (this.step !== undefined) {
-            this.value -= this.step
+            const value = new BigDecimal(this.value)
+            const step = new BigDecimal(this.step)
+            this.value = parseFloat( value.sub(step).toString())
         }
     }
 
-    override set value(value: number) {
+    override set value(value: number | string) {
+        let number = typeof value === "string" ? parseFloat(value) : value
         this.modified.withLock(() => {
             let error: string | undefined = undefined
-            if (this.min !== undefined && value < this.min) {
+            if (this.min !== undefined && number < this.min) {
                 if (this.autocorrect) {
                     value = this.min
                 } else {
                     error = `The value must not be below ${this.min}.`
                 }
             }
-            if (this.max !== undefined && value > this.max) {
+            if (this.max !== undefined && number > this.max) {
                 if (this.autocorrect) {
                     value = this.max
                 } else {
                     error = `The value must not be above ${this.max}.`
                 }
             }
-            super.value = value
+            super.value = number
             this.error = error
         })
 

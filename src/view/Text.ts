@@ -45,13 +45,12 @@ export class Text extends ModelView<TextModel | NumberModel> {
 
     protected wheel(e: WheelEvent) {
         if (this.model instanceof NumberModel) {
+            e.preventDefault()
             if (e.deltaY > 0) {
                 this.model.decrement()
-                e.preventDefault()
             }
             if (e.deltaY < 0) {
                 this.model.increment()
-                e.preventDefault()
             }
         }
     }
