@@ -31,7 +31,7 @@ export interface ModelOptions {
 /**
  * @category Application Model
  */
-export abstract class Model<T = void, O extends ModelOptions = ModelOptions> {
+export class Model<T = void, O extends ModelOptions = ModelOptions> {
     modified = new Signal<T>()
     options?: O
 

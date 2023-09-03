@@ -1,14 +1,13 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from "@esm-bundle/chai"
 
-import { SelectionModel } from '@toad/table/model/SelectionModel'
-import { Table } from '@toad/table/Table'
-import { TableModel } from "@toad/table/model/TableModel"
+import { SelectionModel } from "@toad/table/model/SelectionModel"
+import { Table } from "@toad/table/Table"
 import { TableAdapter } from "@toad/table/adapter/TableAdapter"
-import { TablePos } from '@toad/table/TablePos'
-import { text } from '@toad/util/lsx'
-import { TableEditMode } from '@toad/table/TableEditMode'
+import { TableEditMode } from "@toad/table/TableEditMode"
+import { StringArrayModel } from "@toad/table/model/StringArrayModel"
+import { StringArrayAdapter } from "@toad/table/adapter/StringArrayAdapter"
 
-describe("table (more)", () => {
+describe("StringArrayModel", () => {
     before(() => {
         document.head.innerHTML = `<link rel="stylesheet" type="text/css" href="../style/tx-static.css" />
         <link rel="stylesheet" type="text/css" href="../style/tx-dark.css" />
@@ -30,31 +29,10 @@ describe("table (more)", () => {
         })
         // fields can not be edited
         // cursor moves up and down
-        it.only("render", () => {
+        it("render", () => {
             const model = new StringArrayModel(data)
             const selection = new SelectionModel(TableEditMode.SELECT_CELL)
             document.body.replaceChildren(<Table model={model} style={{ width: "320px", height: "200px" }} />)
         })
     })
 })
-
-class StringArrayModel extends TableModel {
-    protected data: string[]
-    constructor(data: string[]) {
-        super()
-        this.data = data
-    }
-    override get colCount() { return 1 }
-    override get rowCount() { return this.data.length }
-    get(row: number) {
-        return this.data[row]
-    }
-}
-
-class StringArrayAdapter extends TableAdapter<StringArrayModel> {
-    override showCell(pos: TablePos, cell: HTMLSpanElement): void {
-        cell.replaceChildren(
-            text(this.model!.get(pos.row))
-        )
-    }
-}

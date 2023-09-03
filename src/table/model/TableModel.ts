@@ -23,9 +23,9 @@ import { TableEvent } from "../TableEvent"
  * @category Application Model
  */
 export abstract class TableModel extends Model<TableEvent> {
-  abstract get colCount(): number
-  abstract get rowCount(): number
-  isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
+    abstract get colCount(): number
+    abstract get rowCount(): number
+    isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
 }
 
 /**
