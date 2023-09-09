@@ -1,6 +1,6 @@
 import { expect } from '@esm-bundle/chai'
 import { Lexer } from 'src/util/expressions/Lexer'
-import { expression } from 'src/util/expressions/expression'
+import { assignmentExpression } from 'src/util/expressions/expression'
 
 describe("expressions", function () {
     describe("lexer", function () {
@@ -90,26 +90,26 @@ describe("expressions", function () {
     describe("parser", function () {
         it("1", function () {
             const lexer = new Lexer("=1")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal(1)
         })
         it("1+2", function () {
             const lexer = new Lexer("=1+2")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('+')
             expect(tree?.down?.value).to.equal(1)
             expect(tree?.down?.next?.value).to.equal(2)
         })
         it("1*2", function () {
             const lexer = new Lexer("=1*2")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('*')
             expect(tree?.down?.value).to.equal(1)
             expect(tree?.down?.next?.value).to.equal(2)
         })
         it("1+2*3", function () {
             const lexer = new Lexer("=1+2*3")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('+')
             expect(tree?.down?.value).to.equal(1)
             expect(tree?.down?.next?.value).to.equal('*')
@@ -118,7 +118,7 @@ describe("expressions", function () {
         })
         it("1*2+3", function () {
             const lexer = new Lexer("=1*2+3")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('+')
             expect(tree?.down?.value).to.equal('*')
             expect(tree?.down?.down?.value).to.equal(1)
@@ -127,26 +127,26 @@ describe("expressions", function () {
         })
         it("(1)", function () {
             const lexer = new Lexer("=(1)")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal(1)
         })
         it("(1+2)", function () {
             const lexer = new Lexer("=(1+2)")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('+')
             expect(tree?.down?.value).to.equal(1)
             expect(tree?.down?.next?.value).to.equal(2)
         })
         it("((1+2))", function () {
             const lexer = new Lexer("=((1+2))")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('+')
             expect(tree?.down?.value).to.equal(1)
             expect(tree?.down?.next?.value).to.equal(2)
         })
         it("(1+2)*3", function () {
             const lexer = new Lexer("=(1+2)*3")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('*')
             expect(tree?.down?.value).to.equal('+')
             expect(tree?.down?.down?.value).to.equal(1)
@@ -155,13 +155,13 @@ describe("expressions", function () {
         })
         it("-1", function () {
             const lexer = new Lexer("=-1")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('-')
             expect(tree?.down?.value).to.equal(1)
         })
         it("-1", function () {
             const lexer = new Lexer("=1+-2")
-            const tree = expression(lexer)
+            const tree = assignmentExpression(lexer)
             expect(tree?.value).to.equal('+')
             expect(tree?.down?.value).to.equal(1)
             expect(tree?.down?.next?.value).to.equal('-')
@@ -170,30 +170,30 @@ describe("expressions", function () {
     })
     describe("eval", function () {
         it("1+2", function () {
-            expect(expression(new Lexer("=1+2"))?.eval()).to.equal(3)
+            expect(assignmentExpression(new Lexer("=1+2"))?.eval()).to.equal(3)
         })
         it("3-2", function () {
-            expect(expression(new Lexer("=3-2"))?.eval()).to.equal(1)
+            expect(assignmentExpression(new Lexer("=3-2"))?.eval()).to.equal(1)
         })
         it("2*3", function () {
-            expect(expression(new Lexer("=2*3"))?.eval()).to.equal(6)
+            expect(assignmentExpression(new Lexer("=2*3"))?.eval()).to.equal(6)
         })
         it("6/2", function () {
-            expect(expression(new Lexer("=6/2"))?.eval()).to.equal(3)
+            expect(assignmentExpression(new Lexer("=6/2"))?.eval()).to.equal(3)
         })
         it("-1", function () {
-            expect(expression(new Lexer("=-1"))!.eval()).to.equal(-1)
+            expect(assignmentExpression(new Lexer("=-1"))!.eval()).to.equal(-1)
         })
         it("1+-4", function () {
-            expect(expression(new Lexer("=1+-4"))!.eval()).to.equal(-3)
+            expect(assignmentExpression(new Lexer("=1+-4"))!.eval()).to.equal(-3)
         })
         it("6*2+14/7-3", function () {
-            expect(expression(new Lexer("=6*2+14/7-3"))?.eval()).to.equal(11)
+            expect(assignmentExpression(new Lexer("=6*2+14/7-3"))?.eval()).to.equal(11)
         })
     })
     describe("dependencies", function () {
         it("A2 + 2 * C4", function () {
-            const t = expression(new Lexer("=A2+2*C4"))
+            const t = assignmentExpression(new Lexer("=A2+2*C4"))
             expect(t?.dependencies()).to.deep.equal([[0, 1], [2, 3]])
         })
     })

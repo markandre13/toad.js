@@ -19,6 +19,8 @@
 import { ValueModel } from "./ValueModel"
 import { ModelOptions } from "./Model"
 import { BigDecimal } from "@toad/util/BigDecimal"
+import { Lexer } from "@toad/util/expressions/Lexer"
+import { expression } from "@toad/util/expressions/expression"
 
 export interface NumberModelOptions extends ModelOptions {
     /**
@@ -63,7 +65,15 @@ export class NumberModel extends ValueModel<number, NumberModelOptions> {
     }
 
     override set value(value: number | string) {
-        let number = typeof value === "string" ? parseFloat(value) : value
+        let number: number
+        if (typeof value === "string") {
+            // const lexer = new Lexer(value)
+            const ex = expression(new Lexer(value))
+            number = ex!.eval()
+        } else {
+            number = value
+        }
+        // let number = typeof value === "string" ? parseFloat(value) : value
         this.modified.withLock(() => {
             if (this.autocorrect) {
                 super.value = this.clip(number)

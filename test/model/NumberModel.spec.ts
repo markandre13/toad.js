@@ -2,6 +2,15 @@ import { expect } from "@esm-bundle/chai"
 import { NumberModel } from "@toad/model/NumberModel"
 
 describe("NumberModel", function () {
+    describe("value = expression", function() {
+        it("6 * 7 -> 42", function() {
+            const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
+            model.value = "6 * 7"
+            expect(model.value).to.equal(42)
+        })
+        // TODO: in expression code: use BigDecimal
+        // TODO: error cases
+    })
     describe("value", function() {
         it("set and read", function() {
             const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
