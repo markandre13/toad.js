@@ -19,7 +19,6 @@
 import { ValueModel } from "./ValueModel"
 import { ModelOptions } from "./Model"
 import { BigDecimal } from "@toad/util/BigDecimal"
-import { Lexer } from "@toad/util/expressions/Lexer"
 import { expression } from "@toad/util/expressions/expression"
 
 export interface NumberModelOptions extends ModelOptions {
@@ -68,7 +67,7 @@ export class NumberModel extends ValueModel<number, NumberModelOptions> {
         let number: number
         if (typeof value === "string") {
             // const lexer = new Lexer(value)
-            const ex = expression(new Lexer(value))
+            const ex = expression(value)
             number = ex!.eval()
         } else {
             number = value

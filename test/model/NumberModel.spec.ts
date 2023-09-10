@@ -6,9 +6,12 @@ describe("NumberModel", function () {
         it("6 * 7 -> 42", function() {
             const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
             model.value = "6 * 7"
-            expect(model.value).to.equal(42)
+            expect(model.value).to.equal(42) //
         })
+        // TODO: expressions don't honor about min/max???
+        // TODO: text field expressions should only be evaluated on enter key or focus lost
         // TODO: in expression code: use BigDecimal
+        // TODO: in expression code: reject table cell in lexer
         // TODO: error cases
     })
     describe("value", function() {

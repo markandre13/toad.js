@@ -17,7 +17,6 @@
  */
 
 import { ExpressionNode } from '../../util/expressions/ExpressionNode'
-import { Lexer } from '../../util/expressions/Lexer'
 import { assignmentExpression } from '../../util/expressions/expression'
 import { SpreadsheetModel } from './SpreadsheetModel'
 
@@ -43,7 +42,7 @@ export class SpreadsheetCell {
     }
     set value(value: string) {
         // console.log(`SpreadsheetCell.value('${value}')`)
-        this._node = assignmentExpression(new Lexer(value))
+        this._node = assignmentExpression(value)
         this._inputValue = value
     }
     get value(): string {

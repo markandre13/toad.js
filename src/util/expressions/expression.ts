@@ -1,14 +1,16 @@
 import { ExpressionNode } from './ExpressionNode'
 import { Lexer } from './Lexer'
 
-export function assignmentExpression(lexer: Lexer): ExpressionNode | undefined {
+export function assignmentExpression(expr: string): ExpressionNode | undefined {
+    const lexer = new Lexer(expr)
     const n0 = lexer.lex()
     if (n0 === undefined || n0.value !== '=') {
         return undefined
     }
     return additive_expression(lexer)
 }
-export function expression(lexer: Lexer): ExpressionNode | undefined {
+export function expression(expr: string): ExpressionNode | undefined {
+    const lexer = new Lexer(expr)
     return additive_expression(lexer)
 }
 function additive_expression(lexer: Lexer): ExpressionNode | undefined {
