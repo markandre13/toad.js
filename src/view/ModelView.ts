@@ -28,7 +28,7 @@ export interface ModelViewProps<M> extends HTMLElementProps {
  * @category View
  */
 export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
-    model?: M
+    model?: M = undefined
 
     constructor(init?: ModelViewProps<M>) {
         super(init)

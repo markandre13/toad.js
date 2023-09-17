@@ -21,8 +21,8 @@ describe("button", function () {
 
     beforeEach(async function () {
         page = await browser.newPage()!
-        page.setCacheEnabled(false)
-        page.setViewport({ width: 640, height: 480, deviceScaleFactor: 1 })
+        await page.setCacheEnabled(false)
+        await page.setViewport({ width: 640, height: 480, deviceScaleFactor: 1 })
     })
 
     afterEach(async function () {

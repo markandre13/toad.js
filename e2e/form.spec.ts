@@ -25,25 +25,27 @@ describe("form", function () {
 
     beforeEach(async function () {
         page = await browser.newPage()!
-        page.setCacheEnabled(false)
-        page.setViewport({ width: 640, height: 480, deviceScaleFactor: 1 })
+        await page.setCacheEnabled(false)
+        await page.setViewport({ width: 640, height: 480, deviceScaleFactor: 1 })
     })
 
     afterEach(async function () {
         if (this.currentTest?.state !== "failed") {
-            // page.close()
+            page.close()
         }
     })
 
     describe("display", async function () {
         it("wide", async function () {
-            page.goto("http://localhost:8080/e2e/form.wide.html", { waitUntil: 'domcontentloaded' })
+            await page.goto("http://localhost:8080/e2e/form.wide.html", { waitUntil: 'domcontentloaded' })
+            // await page.setViewport({ width: 640, height: 480, deviceScaleFactor: 1 })
             await sleep(500)
             const image = await page.screenshot()
             expect(image).toMatchImageSnapshot(this)
         })
         it("narrow", async function () {
-            page.goto("http://localhost:8080/e2e/form.narrow.html", { waitUntil: 'domcontentloaded' })
+            await page.goto("http://localhost:8080/e2e/form.narrow.html", { waitUntil: 'domcontentloaded' })
+            await page.setViewport({ width: 640, height: 480, deviceScaleFactor: 1 })
             await sleep(500)
             const image = await page.screenshot()
             expect(image).toMatchImageSnapshot(this)

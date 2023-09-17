@@ -6,7 +6,7 @@ import {chaiMatchImageSnapshot}  from "./chaiMatchImageSnapshot"
 import { getBrowser, sleep } from "./testlib"
 use(chaiMatchImageSnapshot)
 
-describe("button", function () {
+describe("text", function () {
     let browser: Browser
     let page: Page
 
@@ -32,8 +32,8 @@ describe("button", function () {
     })
 
     it("display", async function () {
-        page.goto("http://localhost:8080/e2e/slider.display.html", { waitUntil: 'domcontentloaded' })
-        await sleep(500)
+        page.goto("http://localhost:8080/e2e/text.display.html", { waitUntil: 'domcontentloaded' })
+        await sleep(500)  
         const image = await page.screenshot()
         expect(image).toMatchImageSnapshot(this)
     })

@@ -34,13 +34,10 @@ export class Text extends ModelView<TextModel | NumberModel> {
         this.input.oninput = () => { this.updateModel() }
         this.wheel = this.wheel.bind(this)
         this.input.onwheel = this.wheel
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: 'open', delegatesFocus: true })
         this.shadowRoot!.adoptedStyleSheets = [txText]
         this.shadowRoot!.appendChild(this.input)
-
-        // this.input.onclick = () => {
-        //     console.log(`<Text> onClick`)
-        // }
+        this.updateView()
     }
 
     protected wheel(e: WheelEvent) {
@@ -84,8 +81,18 @@ export class Text extends ModelView<TextModel | NumberModel> {
     }
 
     override updateView() {
-        if (!this.model)
+        if (!this.model) {
+            this.setAttribute("disabled", "disabled")
+            this.input.setAttribute("disabled", "disabled")
             return
+        }
+        if (this.model.enabled) {
+            this.removeAttribute("disabled")
+            this.input.removeAttribute("disabled")
+        } else {
+            this.setAttribute("disabled", "disabled")
+            this.input.setAttribute("disabled", "disabled")
+        }
         const strValue = `${this.model.value}`
         if (this.input.value !== strValue) {
             this.input.value = strValue

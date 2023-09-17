@@ -83,8 +83,6 @@ style.replaceSync(css`
     :host([disabled]) .tx-thumb {
         border-color: var(--tx-gray-500);
     }
-
-
     .tx-track {
         background-color: var(--tx-gray-700);
         position: absolute;

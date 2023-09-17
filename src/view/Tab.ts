@@ -113,19 +113,20 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
     }
 
     override updateView(): void {
-        if (this.model) {
-            // console.log(`<TAB> UPDATE VIEW ${this.model.value}`)
-            for (let i = 0; i < this.children.length; ++i) {
-                const child = this.children[i]
-                if (!(child instanceof Tab)) {
-                    console.log(`unexpected <${child.nodeName.toLowerCase()}> within <Tabs>`)
-                    continue
-                }
-                const tab = child as Tab<V>
-                if (this.model.value === tab.value) {
-                    this.activateTab(this.labelMap.get(tab)!, tab)
-                    break
-                }
+        if (!this.model) {
+            return
+        }
+        // console.log(`<TAB> UPDATE VIEW ${this.model.value}`)
+        for (let i = 0; i < this.children.length; ++i) {
+            const child = this.children[i]
+            if (!(child instanceof Tab)) {
+                console.log(`unexpected <${child.nodeName.toLowerCase()}> within <Tabs>`)
+                continue
+            }
+            const tab = child as Tab<V>
+            if (this.model.value === tab.value) {
+                this.activateTab(this.labelMap.get(tab)!, tab)
+                break
             }
         }
     }
