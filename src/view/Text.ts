@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2023 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -31,10 +31,26 @@ export class Text extends ModelView<TextModel | NumberModel> {
         super(init)
         this.input = document.createElement("input")
         this.input.classList.add("tx-text")
-        this.input.oninput = () => { this.updateModel() }
+
+        this.input.onkeydown = (e: KeyboardEvent) => {
+            if (e.key === "Enter" && this.model instanceof NumberModel) {
+                this.updateModel()
+            }
+        }
+        this.input.onblur = (e: FocusEvent) => {
+            if (this.model instanceof NumberModel) {
+                this.updateModel()
+            }
+        }
+        this.input.oninput = (e) => {
+            if (!(this.model instanceof NumberModel)) {
+                this.updateModel()
+            }
+        }
+
         this.wheel = this.wheel.bind(this)
         this.input.onwheel = this.wheel
-        this.attachShadow({ mode: 'open', delegatesFocus: true })
+        this.attachShadow({ mode: "open", delegatesFocus: true })
         this.shadowRoot!.adoptedStyleSheets = [txText]
         this.shadowRoot!.appendChild(this.input)
         this.updateView()
