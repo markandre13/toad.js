@@ -20,6 +20,7 @@ import { TextModel } from "../model/TextModel"
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
+import { parseColor } from "@toad/util/color"
 
 /**
  * @category View
@@ -108,6 +109,24 @@ export class Text extends ModelView<TextModel | NumberModel> {
         } else {
             this.setAttribute("disabled", "disabled")
             this.input.setAttribute("disabled", "disabled")
+        }
+        if (this.model.color !== undefined) {
+            this.input.style.fontStyle = ""
+            this.input.style.fontWeight = ""
+            this.input.style.color = ""
+            switch(this.model.color) {
+                case "italic":
+                    this.input.style.fontStyle = "italic"
+                    break
+                case "bold":
+                    this.input.style.fontWeight = "bold"
+                    break
+                default:
+                    this.input.style.color = this.model.color
+            }
+            
+        } else {
+            this.input.style.color = ""
         }
         const strValue = `${this.model.value}`
         if (this.input.value !== strValue) {
