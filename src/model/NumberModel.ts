@@ -23,6 +23,13 @@ import { expression } from "@toad/util/expressions/expression"
 
 export interface NumberModelOptions extends ModelOptions {
     /**
+     * a default value
+     * 
+     * might be used give an indication when number equals the default value,
+     * or to reset the value to the default value, e.g. with a double click
+     */
+    default?: number
+    /**
      * when set, value will not go below min
      */
     min?: number
