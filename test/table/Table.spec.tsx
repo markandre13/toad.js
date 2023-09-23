@@ -21,7 +21,7 @@ import { TableFriend } from '@toad/table/private/TableFriend'
 
 import { TextModel } from "@toad/model/TextModel"
 import { NumberModel } from "@toad/model/NumberModel"
-import { Text } from "@toad/view/Text"
+import { TextField } from "@toad/view/TextField"
 import { Slider } from "@toad/view/Slider"
 
 import { span, input, text } from "@toad/util/lsx"
@@ -404,9 +404,9 @@ describe("table", function () {
                 override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
                 override showCell(pos: TablePos, cell: HTMLSpanElement) {
                     cell.replaceChildren(
-                        <Text model={model.data[pos.row].title} style={{ width: "100px" }} />,
-                        <Text model={model.data[pos.row].author} style={{ width: "100px" }} />,
-                        <Text model={model.data[pos.row].year} style={{ width: "50px" }}/>
+                        <TextField model={model.data[pos.row].title} style={{ width: "100px" }} />,
+                        <TextField model={model.data[pos.row].author} style={{ width: "100px" }} />,
+                        <TextField model={model.data[pos.row].year} style={{ width: "50px" }}/>
                     )
                 }
             }
@@ -535,9 +535,9 @@ describe("table", function () {
                             break
                         case 1:
                             const x = <>
-                                <Text model={node.x} style={{ width: '50px' }} />
-                                <Text model={node.y} style={{ width: '50px' }} />
-                                <Text model={node.z} style={{ width: '50px' }} />
+                                <TextField model={node.x} style={{ width: '50px' }} />
+                                <TextField model={node.y} style={{ width: '50px' }} />
+                                <TextField model={node.z} style={{ width: '50px' }} />
                             </>
                             cell.replaceChildren(...x)
                             break
@@ -1261,7 +1261,7 @@ class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
             case 1:
                 if (node.model && node.down === undefined) {
                     const x = <>
-                        <Text model={node.model} style={{ width: '50px', margin: '10px' }} />
+                        <TextField model={node.model} style={{ width: '50px', margin: '10px' }} />
                         <Slider model={node.model} style={{ margin: '10px' }} />
                     </>
                     cell.replaceChildren(...x)

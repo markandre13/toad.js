@@ -1,5 +1,5 @@
 
-import { HtmlModel, Text, TextArea, TextModel, TextTool } from "@toad"
+import { HtmlModel, TextField, TextArea, TextModel, TextTool } from "@toad"
 import { code } from "./index.source"
 
 //
@@ -22,8 +22,8 @@ export default () => (
         <h2>TextModel &amp; HtmlModel</h2>
 
         <h3>&lt;Text&gt;</h3>
-        <Text model={hello} />
-        <Text model={hello} />
+        <TextField model={hello} />
+        <TextField model={hello} />
 
         <h3>&lt;TextTool&gt; &amp; &lt;TextArea&gt;</h3>
         <TextTool />

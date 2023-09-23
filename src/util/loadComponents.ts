@@ -9,7 +9,7 @@ import { Switch } from "@toad/view/Switch"
 import { Tab } from "@toad/view/Tab"
 import { Table } from "@toad/table/Table"
 import { TableTool } from "@toad/table/TableTool"
-import { Text } from "@toad/view/Text"
+import { TextField } from "@toad/view/TextField"
 import { TextArea } from "@toad/view/TextArea"
 import { TextTool } from "@toad/view/TextTool"
 import { ToadIf } from "@toad/view/ToadIf"
@@ -26,7 +26,7 @@ import { ColorSelector } from "@toad/view/ColorSelector"
 export function loadComponents() {
     ColorSelector
     Select
-    Text
+    TextField
     Menu
     TextArea
     TextTool

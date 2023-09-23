@@ -605,7 +605,7 @@ export class Table extends View {
                 this.animator.run(new RemoveColumnAnimation(this, event))
                 break
             default:
-                console.log(`Table.modelChanged(): ${event} is not implemented`)
+                // console.log(`Table.modelChanged(): ${event} is not implemented`)
         }
     }
 

@@ -20,12 +20,11 @@ import { TextModel } from "../model/TextModel"
 import { NumberModel } from "../model/NumberModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
-import { parseColor } from "@toad/util/color"
 
 /**
  * @category View
  */
-export class Text extends ModelView<TextModel | NumberModel> {
+export class TextField extends ModelView<TextModel | NumberModel> {
     input: HTMLInputElement
 
     constructor(init?: ModelViewProps<TextModel | NumberModel>) {
@@ -149,4 +148,4 @@ export class Text extends ModelView<TextModel | NumberModel> {
     }
 }
 
-Text.define("tx-text", Text)
+TextField.define("tx-text", TextField)

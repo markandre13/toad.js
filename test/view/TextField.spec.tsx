@@ -1,10 +1,9 @@
 import { expect } from "@esm-bundle/chai"
-import { Fragment, Text, TextModel, NumberModel, bindModel, unbind } from "@toad"
+import { Fragment, TextField, TextModel, NumberModel, bindModel, unbind } from "@toad"
 
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { sleep } from "e2e/testlib"
 
 describe("view", function () {
     beforeEach(async function () {
@@ -17,7 +16,7 @@ describe("view", function () {
         describe("layout", function () {
             it("style.width", async function () {
                 const model = new TextModel("A")
-                document.body.replaceChildren(<Text model={model} style={{ width: "16px" }} />)
+                document.body.replaceChildren(<TextField model={model} style={{ width: "16px" }} />)
             })
         })
 
@@ -27,11 +26,11 @@ describe("view", function () {
 
                 const content = (
                     <>
-                        <Text model={model} />
+                        <TextField model={model} />
                     </>
                 ) as Fragment
                 content.replaceIn(document.body)
-                const view = content[0] as Text
+                const view = content[0] as TextField
 
                 expect(view.value).to.equal(`${model.value}`)
 
@@ -44,7 +43,7 @@ describe("view", function () {
             it("works when using JSX", function () {
                 const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
 
-                document.body.appendChild(<Text model={model} />)
+                document.body.appendChild(<TextField model={model} />)
 
                 let view = document.body.children[0]
                 expect(view.getAttribute("value")).to.equal("0.5")
@@ -53,7 +52,7 @@ describe("view", function () {
                 it("down", function () {
                     const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
 
-                    document.body.appendChild(<Text model={model} />)
+                    document.body.appendChild(<TextField model={model} />)
                     let view = document.body.children[0]
                     let input = view.shadowRoot!.children[0]
 
@@ -69,7 +68,7 @@ describe("view", function () {
                 it("up", function () {
                     const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
 
-                    document.body.appendChild(<Text model={model} />)
+                    document.body.appendChild(<TextField model={model} />)
                     let view = document.body.children[0]
                     let input = view.shadowRoot!.children[0]
 
@@ -112,7 +111,7 @@ describe("view", function () {
                     // const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
                     const model = new TextModel("alpha")
 
-                    document.body.appendChild(<Text model={model} />)
+                    document.body.appendChild(<TextField model={model} />)
 
                     let view = document.body.children[0]
                     expect(view.getAttribute("value")).to.equal("alpha")
@@ -134,7 +133,7 @@ describe("view", function () {
                     let model = new TextModel("alpha")
                     bindModel("model", model)
                     document.body.innerHTML = "<tx-text model='model'></tx-text>"
-                    let view = document.body.children[0] as Text
+                    let view = document.body.children[0] as TextField
                     expect(model.value).to.equal("alpha")
                     view.setAttribute("value", "bravo")
                     expect(model.value).to.equal("bravo")

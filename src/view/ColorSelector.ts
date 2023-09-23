@@ -3,7 +3,7 @@ import { div, span, text } from "@toad/util/lsx"
 import { hsv2rgb, rgb2hsv } from "@toad/util/color"
 import { HTMLElementProps } from "toad.jsx/lib/jsx-runtime"
 import { Slider } from "./Slider"
-import { Text } from "./Text"
+import { TextField } from "./TextField"
 import { style } from "@toad/style/tx-colorselector"
 import { RGBModel } from "@toad/model/RGBModel"
 import { ModelView, ModelViewProps } from "./ModelView"
@@ -106,12 +106,12 @@ export class ColorSelector extends ModelView<RGBModel> {
         labelG.id = "lg"
         labelB.id = "lb"
 
-        const textH = new Text({ model: this.h, id: "th" })
-        const textS = new Text({ model: this.s, id: "ts" })
-        const textV = new Text({ model: this.v, id: "tv" })
-        const textR = new Text({ model: this.r, id: "tr" })
-        const textG = new Text({ model: this.g, id: "tg" })
-        const textB = new Text({ model: this.b, id: "tb" })
+        const textH = new TextField({ model: this.h, id: "th" })
+        const textS = new TextField({ model: this.s, id: "ts" })
+        const textV = new TextField({ model: this.v, id: "tv" })
+        const textR = new TextField({ model: this.r, id: "tr" })
+        const textG = new TextField({ model: this.g, id: "tg" })
+        const textB = new TextField({ model: this.b, id: "tb" })
 
         const sliderV = new Slider({ orientation: "vertical", minColor: "#000", maxColor: "#fff", id: "sv", model: this.v })
         const sliderR = new Slider({ orientation: "vertical", minColor: "#000", maxColor: "#f00", id: "sr", model: this.r })

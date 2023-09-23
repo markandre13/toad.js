@@ -1,5 +1,5 @@
 
-import { NumberModel, Slider, Text } from "@toad"
+import { NumberModel, Slider, TextField } from "@toad"
 import { code } from "./index.source"
 import { FixedNumberModel } from "@toad/model/FixedNumberModel"
 import { RGBModel } from "@toad/model/RGBModel"
@@ -27,12 +27,12 @@ export default () => (
 
         <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with NumberModel</h3>
         <div class="section">
-            <Text model={floatModel} />
+            <TextField model={floatModel} />
             <Slider model={floatModel} />
         </div>
         <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with FixedNumberModel</h3>
         <div class="section">
-            <Text model={integerModel} />
+            <TextField model={integerModel} />
             <Slider model={integerModel} />
         </div>
 

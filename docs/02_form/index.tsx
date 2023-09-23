@@ -1,5 +1,5 @@
 
-import { NumberModel, Text, TextModel } from "@toad"
+import { NumberModel, TextField, TextModel } from "@toad"
 import { code } from "./index.source"
 import { EmailModel } from "@toad/model/EmailModel"
 import { Form, FormField, FormHelp, FormLabel } from "@toad/view/Form"
@@ -52,19 +52,19 @@ export default () => (
         <Form>
             <FormLabel model={nameModel} />
             <FormField>
-                <Text model={nameModel} />
+                <TextField model={nameModel} />
             </FormField>
             <FormHelp model={nameModel} />
 
             <FormLabel model={mailModel} />
             <FormField>
-                <Text model={mailModel} />
+                <TextField model={mailModel} />
             </FormField>
             <FormHelp model={mailModel} />
 
             <FormLabel model={birthModel} />
             <FormField>
-                <Text model={birthModel} />
+                <TextField model={birthModel} />
             </FormField>
             <FormHelp model={birthModel} />
         </Form>
@@ -74,19 +74,19 @@ export default () => (
         <Form variant="narrow">
             <FormLabel model={nameModel} />
             <FormField>
-                <Text model={nameModel} />
+                <TextField model={nameModel} />
             </FormField>
             <FormHelp model={nameModel} />
 
             <FormLabel model={mailModel} />
             <FormField>
-                <Text model={mailModel} />
+                <TextField model={mailModel} />
             </FormField>
             <FormHelp model={mailModel} />
 
             <FormLabel model={birthModel} />
             <FormField>
-                <Text model={birthModel} />
+                <TextField model={birthModel} />
             </FormField>
             <FormHelp model={birthModel} />
         </Form>
