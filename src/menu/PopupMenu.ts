@@ -22,101 +22,105 @@ import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuHelper"
 
 /**
- * @internal 
+ * @internal
  */
 export class PopupMenu extends MenuButtonContainer {
-  root: MenuNode
-  // vertical: boolean
-  // parentButton: MenuButton
-  popup: HTMLElement
+    root: MenuNode
+    // vertical: boolean
+    // parentButton: MenuButton
+    popup: HTMLElement
 
-  constructor(root: MenuNode, parent: MenuButton) {
-    super()
-    this.vertical = true
-    this.root = root
-    this.parentButton = parent
+    constructor(root: MenuNode, parent: MenuButton) {
+        super()
+        this.vertical = true
+        this.root = root
+        this.parentButton = parent
 
-    this.popup = document.createElement("div")
-    this.popup.classList.add("menu-popup")
+        this.popup = document.createElement("div")
+        this.popup.classList.add("menu-popup")
 
-    let node = root.down
-    while (node) {
-      if (node.isAvailable()) {
-        node.createWindowAt(this, this.popup)
-      } else {
-        node.deleteWindow()
-      }
-      node = node.next
+        let node = root.down
+        while (node) {
+            if (node.isAvailable()) {
+                node.createWindowAt(this, this.popup)
+            } else {
+                node.deleteWindow()
+            }
+            node = node.next
+        }
+        this.appendChild(this.popup)
+        this.show()
     }
-    this.appendChild(this.popup)
-    this.show()
-  }
 
+    show() {
+        if (!this.parentButton!.master!.vertical) placePopupVertical(this.parentButton!, this.popup)
+        else placePopupHorizontal(this.parentButton!, this.popup)
+        this.style.display = ""
+    }
 
-  show() {
-    if (!this.parentButton!.master!.vertical)
-      placePopupVertical(this.parentButton!, this.popup)
-
-    else
-      placePopupHorizontal(this.parentButton!, this.popup)
-    this.style.display = ""
-  }
-
-  hide() {
-    this.style.display = "none"
-  }
+    hide() {
+        this.style.display = "none"
+    }
 }
 
 export function placePopupVertical(parent: HTMLElement, popup: HTMLElement): void {
-  let parentBoundary = parent.getBoundingClientRect()
+    let parentBoundary = parent.getBoundingClientRect()
 
-  // FIXME: need to handle scrollLeft, scrollTop?
+    // FIXME: need to handle scrollLeft, scrollTop?
 
-  popup.style.opacity = "0"
-  popup.style.left = parentBoundary.left+"px"
-  popup.style.top = (parentBoundary.top+parentBoundary.height)+"px"
+    popup.style.opacity = "0"
+    popup.style.left = parentBoundary.left + "px"
+    popup.style.top = parentBoundary.top + parentBoundary.height + "px"
 
-  setTimeout(function() {
-    // FIXME: there might still not be enough space, might want to scroll and/or overlap parent
-    let popupBoundary = popup.getBoundingClientRect()
-    let popupBottom = parentBoundary.top + parentBoundary.height + popupBoundary.height
-    if (popupBottom > window.innerHeight) {
-      popup.style.top = (parentBoundary.top - popupBoundary.height)+"px"
-    }
-    let popupRight = parentBoundary.left + popupBoundary.width
-    if (popupRight > window.innerWidth) {
-       popup.style.left = (parentBoundary.left + parentBoundary.width - popupBoundary.width)+"px"
-    }
-    popup.style.opacity = "1"
-  }, 0)
+    setTimeout(function () {
+        // FIXME: there might still not be enough space, might want to scroll and/or overlap parent
+        let popupBoundary = popup.getBoundingClientRect()
+        let popupBottom = parentBoundary.top + parentBoundary.height + popupBoundary.height
 
-//  window.addEventListener("mouseup", new PopupListener(popup), true)
+        // if popup exceeds bottom...
+        if (popupBottom > window.innerHeight) {
+            // ...and there's more space on top
+            const top = parentBoundary.top - popupBoundary.height
+            if (top > 0 || -top <  popupBottom - window.innerHeight) {
+                // place popup on top
+                popup.style.top = `${top}px` 
+            }
+        }
+
+        let popupRight = parentBoundary.left + popupBoundary.width
+        if (popupRight > window.innerWidth) {
+            popup.style.left = parentBoundary.left + parentBoundary.width - popupBoundary.width + "px"
+        }
+        popup.style.opacity = "1"
+    }, 0)
+
+    //  window.addEventListener("mouseup", new PopupListener(popup), true)
 }
 
 export function placePopupHorizontal(parent: HTMLElement, popup: HTMLElement): void {
-  let parentBoundary = parent.getBoundingClientRect()
+    let parentBoundary = parent.getBoundingClientRect()
 
-  // FIXME: need to handle scrollLeft, scrollTop?
+    // FIXME: need to handle scrollLeft, scrollTop?
 
-  popup.style.opacity = "0"
-  popup.style.left = (parentBoundary.left+parentBoundary.width)+"px"
-  popup.style.top = parentBoundary.top+"px"
+    popup.style.opacity = "0"
+    popup.style.left = parentBoundary.left + parentBoundary.width + "px"
+    popup.style.top = parentBoundary.top + "px"
 
-  setTimeout(function() {
-    // FIXME: there might still not be enough space, might want to scroll and/or overlap parent
-    let popupBoundary = popup.getBoundingClientRect()
-    let popupBottom = parentBoundary.top + popupBoundary.height
-    if (popupBottom > window.innerHeight) {
-      popup.style.top = (parentBoundary.top + parentBoundary.height - popupBoundary.height)+"px"
-    }
-    let popupRight = parentBoundary.left + parentBoundary.width + popupBoundary.width
-    if (popupRight > window.innerWidth) {
-       popup.style.left = (parentBoundary.left - popupBoundary.width)+"px"
-    }
-    popup.style.opacity = "1"
-  }, 0)
+    setTimeout(function () {
+        // FIXME: there might still not be enough space, might want to scroll and/or overlap parent
+        let popupBoundary = popup.getBoundingClientRect()
+        let popupBottom = parentBoundary.top + popupBoundary.height
+        if (popupBottom > window.innerHeight) {
+            popup.style.top = parentBoundary.top + parentBoundary.height - popupBoundary.height + "px"
+        }
+        let popupRight = parentBoundary.left + parentBoundary.width + popupBoundary.width
+        if (popupRight > window.innerWidth) {
+            popup.style.left = parentBoundary.left - popupBoundary.width + "px"
+        }
+        popup.style.opacity = "1"
+    }, 0)
 
-//  window.addEventListener("mouseup", new PopupListener(popup), true)
+    //  window.addEventListener("mouseup", new PopupListener(popup), true)
 }
 
 View.define("tx-popupmenu", PopupMenu)
