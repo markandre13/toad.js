@@ -1,6 +1,6 @@
 {
     "name": "toad.js",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "description": "The TOAD JavaScript/TypeScript GUI Library",
     "author": "Mark-André Hopf <mhopf@mark13.org>",
     "license": "AGPL-3.0",
