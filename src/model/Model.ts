@@ -24,7 +24,15 @@ export enum ModelReason {
     /** 
      * Either everything in the model has changed or the model itself had been replaced with another model.
      */
-    ALL, 
+    ALL,
+
+    /**
+     * The value represented by the model has changed.
+     * 
+     * While Model itself does not have a value, it's subclasses always represent a value, hence
+     * this reason is part of ModelReason.
+     */
+    VALUE,
 
     ENABLED,
     COLOR,

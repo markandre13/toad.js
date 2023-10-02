@@ -19,15 +19,14 @@
 import { Model, ModelOptions, ModelReason } from "./Model"
 
 export enum ValueModelReason {
-    VALUE = ModelReason.MAX_REASON,
-    DEFAULT,
-    MAX_REASON
+    DEFAULT = ModelReason.MAX_REASON,
+    MAX_REASON,
 }
 
 export interface ValueModelOptions<V> extends ModelOptions {
     /**
      * a default value
-     * 
+     *
      * might be used give an indication when number equals the default value,
      * or to reset the value to the default value, e.g. with a double click
      */
@@ -39,8 +38,10 @@ export interface ValueModelOptions<V> extends ModelOptions {
  *
  * a better name would be ValueModel
  */
-export class ValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> 
-extends Model<ValueModelReason | R, O> {
+export class ValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> extends Model<
+    ValueModelReason | R,
+    O
+> {
     protected _value: V
 
     constructor(value: V, options?: O) {
@@ -51,20 +52,21 @@ extends Model<ValueModelReason | R, O> {
     set value(value: V) {
         if (this._value === value) return
         this._value = value
-        this.modified.trigger(ValueModelReason.VALUE)
+        this.modified.trigger(ModelReason.VALUE)
     }
     get value(): V {
         return this._value
     }
 
     set default(aDefault: V | undefined) {
-        if (this.options?.default === aDefault)
-            return
+        if (this.options?.default === aDefault) return
         if (this.options === undefined) {
             this.options = {}
         }
         this.options.default = aDefault
         this.modified.trigger(ValueModelReason.DEFAULT)
     }
-    get default(): V | undefined { return this.options?.default }
+    get default(): V | undefined {
+        return this.options?.default
+    }
 }
