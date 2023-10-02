@@ -53,8 +53,11 @@ describe("view", function() {
                     this.log.push({method: "updateModel()", model: this.model})
                 }
                 override updateView(reason: MyMessage | ModelReason): void {
+                    console.log(`MyView::updateView(${reason})`)
                     if (typeof reason === "object" && "message" in reason) {
                         this.log.push({method: `updateView(${reason?.message})`, model: this.model})
+                    } else {
+                        this.log.push({method: `updateView(${ModelReason[reason]})`, model: this.model})
                     }
                 }
             }
@@ -69,7 +72,7 @@ describe("view", function() {
             view.setModel(model)
             expect(model.modified.callbacks?.length).equals(1)
             expect(view.log.length).equals(1)
-            expect(view.log[0].method).equals("updateView(undefined)")
+            expect(view.log[0].method).equals("updateView(ALL)")
             expect(view.log[0].model).equals(model)
 
             model.modified.trigger({message: "message"})
@@ -80,7 +83,7 @@ describe("view", function() {
             view.setModel(undefined)
             expect(model.modified.callbacks?.length).equals(0)
             expect(view.log.length).equals(3)
-            expect(view.log[2].method).equals("updateView(undefined)")
+            expect(view.log[2].method).equals("updateView(ALL)")
             expect(view.log[2].model).equals(undefined)
         })
     })

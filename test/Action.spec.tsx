@@ -94,22 +94,21 @@ describe("action", function () {
         expect(button.disabled).to.equal(true)
     })
 
-    it("disable/enable button depending on action state", function () {
+    it("disable/enable button depending on action state", async function () {
         let logon = action("logon", () => {
             console.log("LOGON")
         })
 
         document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
 
-        let button = getHTMLButtonElement()
-
-        expect(button.disabled).to.equal(false)
+        const button = document.body.children[0] as Button
+        expect(button.hasAttribute("disabled")).to.equal(false)
 
         logon.enabled = false
-        expect(button.disabled).to.equal(true)
+        expect(button.hasAttribute("disabled")).to.equal(true)
 
         logon.enabled = true
-        expect(button.disabled).to.equal(false)
+        expect(button.hasAttribute("disabled")).to.equal(false)
     })
 
     it.skip("disable/enable button depending on two action states", function () {

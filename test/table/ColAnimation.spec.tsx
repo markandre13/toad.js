@@ -39,6 +39,7 @@ describe("table", function () {
                     const model = await prepareByColumns([])
 
                     const table = getTable()
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -107,8 +108,9 @@ describe("table", function () {
                     ])
 
                     const table = getTable()
+                    await sleep()
                     const spacing = table.table.WIDTH_ADJUST - 1
-
+                    
                     expect(bodyColInfo(0)).to.equal(`#3:0,0,32,18`)
                     expect(bodyColInfo(1)).to.equal(`#4:${32 + spacing},0,64,18`)
 
@@ -190,6 +192,7 @@ describe("table", function () {
                     ])
 
                     const table = getTable()
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -261,6 +264,7 @@ describe("table", function () {
                     ])
 
                     const table = getTable()
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -334,6 +338,7 @@ describe("table", function () {
                         new Measure(4, 64)
                     ], { seamless: true })
                     const table = getTable()
+                    await sleep()
 
                     const spacing = table.table.WIDTH_ADJUST - 2
 
@@ -398,6 +403,7 @@ describe("table", function () {
                     const model = await prepareByColumns([], { columnHeaders: true, rowHeaders: true })
 
                     const table = getTable()
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -482,6 +488,7 @@ describe("table", function () {
                     const model = await prepareByColumns([], { columnHeaders: true })
 
                     const table = getTable()
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -556,6 +563,7 @@ describe("table", function () {
                     ], { columnHeaders: true })
 
                     const table = getTable()
+                    await sleep()
                     const spacing = table.table.WIDTH_ADJUST - 1
 
                     expect(headColInfo(0)).to.equal(`#3:0,0,32,18`)
@@ -632,6 +640,7 @@ describe("table", function () {
                     ], { columnHeaders: true })
 
                     const table = getTable()
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap // 5
 
@@ -715,6 +724,7 @@ describe("table", function () {
                     ], { columnHeaders: true })
 
                     const table = getTable()
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -802,7 +812,7 @@ describe("table", function () {
                         new Measure(4, 64)
                     ], { seamless: true })
                     const table = getTable()
-
+                    await sleep()
                     const spacing = table.table.WIDTH_ADJUST - 2
 
                     expect(bodyColInfo(0)).to.equal(`#1:0,0,32,18`)
@@ -870,7 +880,7 @@ describe("table", function () {
                         new Measure(2, 64)
                     ])
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -924,7 +934,7 @@ describe("table", function () {
                     ])
 
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -986,7 +996,7 @@ describe("table", function () {
                         new Measure(4, 64)
                     ])
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -1049,7 +1059,7 @@ describe("table", function () {
                         new Measure(4, 72)
                     ])
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -1108,6 +1118,7 @@ describe("table", function () {
                         new Measure(4, 64)
                     ], { seamless: true })
                     const table = getTable()
+                    await sleep()
                     const spacing = table.table.WIDTH_ADJUST - 2
 
                     expect(table.body.children).to.have.lengthOf(8)
@@ -1176,7 +1187,7 @@ describe("table", function () {
                         new Measure(2, 64)
                     ], { columnHeaders: true })
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -1242,7 +1253,7 @@ describe("table", function () {
                     ], { columnHeaders: true })
 
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -1325,7 +1336,7 @@ describe("table", function () {
                         new Measure(4, 64)
                     ], { columnHeaders: true })
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -1404,7 +1415,7 @@ describe("table", function () {
                         new Measure(4, 72)
                     ], { columnHeaders: true })
                     const table = getTable()
-
+                    await sleep()
                     const overlap = 1
                     const spacing = table.table.WIDTH_ADJUST - overlap
 
@@ -1477,6 +1488,7 @@ describe("table", function () {
                         new Measure(4, 64)
                     ], { columnHeaders: true, seamless: true })
                     const table = getTable()
+                    await sleep()
                     const spacing = table.table.WIDTH_ADJUST - 2
 
                     expect(table.body.children).to.have.lengthOf(8)

@@ -164,6 +164,7 @@ async function prepareCore(data: Measure[], props: PrepareProps | undefined, mod
         height: `${props?.height ?? 350}px`
     }} model={model} />)
     await sleep()
+    await sleep()
     return model
 }
 
