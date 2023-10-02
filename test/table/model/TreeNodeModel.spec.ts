@@ -64,8 +64,10 @@ describe("model", function () {
                 counter = 0
                 event = undefined
                 tree = new MyTreeModel(Node)
-                tree.modified.add((data) => {
-                    event = data
+                tree.modified.add((e) => {
+                    if (e instanceof TableEvent) {
+                        event = e
+                    }
                 })
             })
 

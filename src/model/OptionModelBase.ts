@@ -23,7 +23,7 @@ import { ModelOptions } from "./Model"
 /**
  * @category Application Model
  */
-export abstract class OptionModelBase<V, O extends ModelOptions = ModelOptions> extends ValueModel<V, O> {
+export abstract class OptionModelBase<V, R = void, O extends ModelOptions = ModelOptions> extends ValueModel<V, R, O> {
     abstract forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void
     map<R>(callback: (value: V, label: string | number | HTMLElement, index: number) => R): R[] {
         const out: R[] = []

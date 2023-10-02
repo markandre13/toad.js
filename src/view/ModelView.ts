@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, InferModelParameter } from "../model/Model"
+import { Model, InferModelParameter, ModelReason } from "../model/Model"
 import { View } from "./View"
 import { HTMLElementProps } from "toad.jsx"
 
@@ -27,7 +27,7 @@ export interface ModelViewProps<M> extends HTMLElementProps {
 /**
  * @category View
  */
-export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends View {
+export class ModelView<M extends Model<R>, R = InferModelParameter<M>> extends View {
     model?: M = undefined
 
     constructor(init?: ModelViewProps<M>) {
@@ -39,7 +39,7 @@ export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends V
 
     // NOTE: these were 'abstract' but then the 'override' did not work
     updateModel(): void { }
-    updateView(data?: T): void { }
+    updateView(reason: R | ModelReason): void { }
 
     override setModel(model?: M): void {
         if (model === this.model)
@@ -52,19 +52,19 @@ export class ModelView<M extends Model<T>, T = InferModelParameter<M>> extends V
         }
 
         if (model) {
-            model.modified.add((data: T) => view.updateView(data), view)
+            model.modified.add((reason: R | ModelReason) => view.updateView(reason), view)
         }
 
         this.model = model
         if (this.isConnected) {
-            this.updateView(undefined)
+            this.updateView(ModelReason.ALL)
         }
     }
 
     override connectedCallback() {
         super.connectedCallback()
         if (this.model) {
-            this.updateView(undefined)
+            this.updateView(ModelReason.ALL)
         }
     }
 }

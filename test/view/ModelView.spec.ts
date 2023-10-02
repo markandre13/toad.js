@@ -1,5 +1,6 @@
 import { expect } from '@esm-bundle/chai'
 import { Model, View, ModelView } from "@toad"
+import { ModelReason } from '@toad/model/Model'
 
 describe("view", function() {
     describe("ModelView<Model<MSG>>", function() {
@@ -51,8 +52,10 @@ describe("view", function() {
                 override updateModel() {
                     this.log.push({method: "updateModel()", model: this.model})
                 }
-                override updateView(data?: MyMessage) {
-                    this.log.push({method: `updateView(${data?.message})`, model: this.model})
+                override updateView(reason: MyMessage | ModelReason): void {
+                    if (typeof reason === "object" && "message" in reason) {
+                        this.log.push({method: `updateView(${reason?.message})`, model: this.model})
+                    }
                 }
             }
             View.define("test-modelview002", MyView)

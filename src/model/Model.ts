@@ -20,6 +20,20 @@ import { Signal } from "../Signal"
 
 export type InferModelParameter<M> = M extends Model<infer T> ? T : never
 
+export enum ModelReason {
+    /** 
+     * Either everything in the model has changed or the model itself had been replaced with another model.
+     */
+    ALL, 
+
+    ENABLED,
+    COLOR,
+    LABEL,
+    DESCRIPTION,
+    ERROR,
+    MAX_REASON
+}
+
 export interface ModelOptions {
     enabled?: boolean
     color?: string
@@ -30,10 +44,17 @@ export interface ModelOptions {
 
 /**
  * @category Application Model
+ * 
+ * R: The model's signal takes the reason for it being triggered as an argument.
+ * The reasoning for this is that when we add a closure to the signal, we will
+ * have a reference to the model available to access the model's state/value.
+ * The R will then indicate why the signal has been triggered.
+ * 
+ * O: A list of optional values.
  */
-export class Model<T = void, O extends ModelOptions = ModelOptions> {
-    modified = new Signal<T>()
-    options?: O
+export class Model<R = void, O extends ModelOptions = ModelOptions> {
+    modified = new Signal<ModelReason | R>()
+    options?: Partial<O>
 
     constructor(options?: O) {
         this.options = options
@@ -43,10 +64,10 @@ export class Model<T = void, O extends ModelOptions = ModelOptions> {
         if (this.options?.enabled === enabled)
             return
         if (this.options === undefined) {
-            this.options = {} as O
+            this.options = {}
         }
         this.options.enabled = enabled
-        this.modified.trigger(undefined as any)
+        this.modified.trigger(ModelReason.ENABLED)
     }
     get enabled(): boolean { return this.options?.enabled !== false }
 
@@ -54,10 +75,10 @@ export class Model<T = void, O extends ModelOptions = ModelOptions> {
         if (this.options?.color === color)
             return
         if (this.options === undefined) {
-            this.options = {} as O
+            this.options = {}
         }
         this.options.color = color
-        this.modified.trigger(undefined as any)
+        this.modified.trigger(ModelReason.COLOR)
     }
     get color(): string | undefined { return this.options?.color }
 
@@ -65,10 +86,10 @@ export class Model<T = void, O extends ModelOptions = ModelOptions> {
         if (this.options?.label === label)
             return
         if (this.options === undefined) {
-            this.options = {} as O
+            this.options = {}
         }
         this.options.label = label
-        this.modified.trigger(undefined as any)
+        this.modified.trigger(ModelReason.LABEL)
     }
     get label(): string | undefined { return this.options?.label }
 
@@ -76,10 +97,10 @@ export class Model<T = void, O extends ModelOptions = ModelOptions> {
         if (this.options?.description === description)
             return
         if (this.options === undefined) {
-            this.options = {} as O
+            this.options = {}
         }
         this.options.description = description
-        this.modified.trigger(undefined as any)
+        this.modified.trigger(ModelReason.DESCRIPTION)
     }
     get description(): string | undefined { return this.options?.description }
 
@@ -87,10 +108,10 @@ export class Model<T = void, O extends ModelOptions = ModelOptions> {
         if (this.options?.error === error)
             return
         if (this.options === undefined) {
-            this.options = {} as O
+            this.options = {}
         }
         this.options.error = error
-        this.modified.trigger(undefined as any)
+        this.modified.trigger(ModelReason.ERROR)
     }
     get error(): string | undefined { return this.options?.error }
 }

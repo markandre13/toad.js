@@ -27,7 +27,7 @@ export type EnumType<T> = {
     [nu: number]: string
 }
 
-export class EnumModel<T, V extends T = T, O extends ModelOptions = ModelOptions> extends OptionModelBase<T, O>
+export class EnumModel<T, V extends T = T, R = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<T, R, O>
 {
     protected enumType: EnumType<T>
     constructor(value: V, enumType: EnumType<T>, options?: O) {

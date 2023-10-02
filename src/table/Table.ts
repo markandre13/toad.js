@@ -16,28 +16,29 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { View } from '../view/View'
-import { TableModel } from './model/TableModel'
-import { SelectionModel } from './model/SelectionModel'
-import { EditMode, TableAdapter } from './adapter/TableAdapter'
-import { TableEvent } from './TableEvent'
-import { TablePos } from './TablePos'
-import { TableEditMode } from './TableEditMode'
-import { TableEventType } from './TableEventType'
-import { Animator } from '../util/animation'
-import { TableAnimation } from './private/TableAnimation'
-import { InsertRowAnimation } from './private/InsertRowAnimation'
-import { RemoveRowAnimation } from './private/RemoveRowAnimation'
-import { InsertColumnAnimation } from './private/InsertColumnAnimation'
-import { RemoveColumnAnimation } from './private/RemoveColumnAnimation'
+import { View } from "../view/View"
+import { TableModel } from "./model/TableModel"
+import { SelectionModel } from "./model/SelectionModel"
+import { EditMode, TableAdapter } from "./adapter/TableAdapter"
+import { TableEvent } from "./TableEvent"
+import { TablePos } from "./TablePos"
+import { TableEditMode } from "./TableEditMode"
+import { TableEventType } from "./TableEventType"
+import { Animator } from "../util/animation"
+import { TableAnimation } from "./private/TableAnimation"
+import { InsertRowAnimation } from "./private/InsertRowAnimation"
+import { RemoveRowAnimation } from "./private/RemoveRowAnimation"
+import { InsertColumnAnimation } from "./private/InsertColumnAnimation"
+import { RemoveColumnAnimation } from "./private/RemoveColumnAnimation"
 
-import { HTMLElementProps, setInitialProperties } from 'toad.jsx'
+import { HTMLElementProps, setInitialProperties } from "toad.jsx"
 
-import { span, div, text } from '../util/lsx'
-import { scrollIntoView } from '@toad/util/scrollIntoView'
-import { style as txTable } from './style/tx-table'
-import { style as txScrollbar } from '../style/tx-scrollbar'
-import { hasFocus } from '@toad/util/dom'
+import { span, div, text } from "../util/lsx"
+import { scrollIntoView } from "../util/scrollIntoView"
+import { style as txTable } from "./style/tx-table"
+import { style as txScrollbar } from "../style/tx-scrollbar"
+import { hasFocus } from "../util/dom"
+import { ModelReason } from "../model/Model"
 
 // TABLE ANIMATION
 //
@@ -83,21 +84,20 @@ interface TableProps extends HTMLElementProps {
 }
 
 /**
- * Table can be used to render 
+ * Table can be used to render
  * * lists (one column/row has width 1)
  * * tables (any column and row size) and
  * * trees (the first column visualizes the tree structure and allows to open/close subtrees)
- * 
+ *
  * TableModel objects wrap your application's data representation and may include support to
  *   add/remove entries.
- * 
+ *
  * TableAdapter objects are centrally registered and looked up by Table to render the cells
  *   of specific TableModels.
- * 
+ *
  * @category View
  */
 export class Table extends View {
-
     static maskColor = `#1e1e1e`
     static splitColor = `#1e1e1e`
 
@@ -174,9 +174,7 @@ export class Table extends View {
         this.selectionChanged = this.selectionChanged.bind(this)
         this.modelChanged = this.modelChanged.bind(this)
 
-        this.root = div(
-            this.body = div()
-        )
+        this.root = div((this.body = div()))
         this.root.className = "root"
         this.body.className = "body"
         this.measure = div()
@@ -204,7 +202,7 @@ export class Table extends View {
         }
         this.body.onpointerdown = this.pointerDown
 
-        this.attachShadow({ mode: 'open', delegatesFocus: true })
+        this.attachShadow({ mode: "open", delegatesFocus: true })
         this.shadowRoot!.adoptedStyleSheets = [txTable, txScrollbar]
         this.shadowRoot!.appendChild(this.root)
         this.shadowRoot!.appendChild(this.measure)
@@ -218,7 +216,7 @@ export class Table extends View {
 
         if (Table.observer === undefined) {
             Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
-                Table.allTables.forEach(table => {
+                Table.allTables.forEach((table) => {
                     if (isVisible(table)) {
                         Table.allTables.delete(table)
                         table.prepareCells()
@@ -227,7 +225,7 @@ export class Table extends View {
             })
             Table.observer.observe(document.body, {
                 attributes: true,
-                subtree: true
+                subtree: true,
             })
         }
     }
@@ -279,105 +277,106 @@ export class Table extends View {
     hostKeyDown(ev: KeyboardEvent) {
         // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
         // console.log(ev)
-        if (!this.selection)
-            return
+        if (!this.selection) return
         // FIXME: based on the selection model we could plug in a behaviour class
         switch (this.selection.mode) {
-            case TableEditMode.SELECT_ROW: {
-                let row = this.selection.value.row
-                switch (ev.key) {
-                    case "ArrowDown":
-                        if (row + 1 < this.adapter!.rowCount)
-                            ++row
-                        break
-                    case "ArrowUp":
-                        if (row > 0)
-                            --row
-                        break
+            case TableEditMode.SELECT_ROW:
+                {
+                    let row = this.selection.value.row
+                    switch (ev.key) {
+                        case "ArrowDown":
+                            if (row + 1 < this.adapter!.rowCount) ++row
+                            break
+                        case "ArrowUp":
+                            if (row > 0) --row
+                            break
+                    }
+                    this.selection.row = row
                 }
-                this.selection.row = row
-            } break
-            case TableEditMode.SELECT_CELL: {
-                let pos = { col: this.selection.col, row: this.selection.row }
-                switch (ev.key) {
-                    case "ArrowRight":
-                        if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
-                            ++pos.col
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    case "ArrowLeft":
-                        if (this.editing === undefined && pos.col > 0) {
-                            --pos.col
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    case "ArrowDown":
-                        if (pos.row + 1 < this.adapter!.rowCount) {
-                            ++pos.row
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    case "ArrowUp":
-                        if (pos.row > 0) {
-                            --pos.row
-                            ev.preventDefault()
-                            ev.stopPropagation()
-                        }
-                        break
-                    // case "Tab":
-                    //     if (ev.shiftKey) {
-                    //         if (pos.col > 0) {
-                    //             --pos.col
-                    //             ev.preventDefault()
-                    //             ev.stopPropagation()
-                    //         } else {
-                    //             if (pos.row > 0) {
-                    //                 pos.col = this.adapter!.colCount - 1
-                    //                 --pos.row
-                    //                 ev.preventDefault()
-                    //                 ev.stopPropagation()
-                    //             }
-                    //         }
-                    //     } else {
-                    //         if (pos.col + 1 < this.adapter!.colCount) {
-                    //             ++pos.col
-                    //             ev.preventDefault()
-                    //             ev.stopPropagation()
-                    //         } else {
-                    //             if (pos.row + 1 < this.adapter!.rowCount) {
-                    //                 pos.col = 0
-                    //                 ++pos.row
-                    //                 ev.preventDefault()
-                    //                 ev.stopPropagation()
-                    //             }
-                    //         }
-                    //     }
-                    //     break
-                    case "Enter":
-                        if (this.editing === undefined) {
-                            if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
-                                this.editCell()
+                break
+            case TableEditMode.SELECT_CELL:
+                {
+                    let pos = { col: this.selection.col, row: this.selection.row }
+                    switch (ev.key) {
+                        case "ArrowRight":
+                            if (this.editing === undefined && pos.col + 1 < this.adapter!.colCount) {
+                                ++pos.col
+                                ev.preventDefault()
+                                ev.stopPropagation()
                             }
-                        } else {
-                            this.saveCell()
+                            break
+                        case "ArrowLeft":
+                            if (this.editing === undefined && pos.col > 0) {
+                                --pos.col
+                                ev.preventDefault()
+                                ev.stopPropagation()
+                            }
+                            break
+                        case "ArrowDown":
                             if (pos.row + 1 < this.adapter!.rowCount) {
                                 ++pos.row
-                                this.selection.value = pos
-                                this.editCell()
+                                ev.preventDefault()
+                                ev.stopPropagation()
                             }
-                        }
-                        ev.preventDefault()
-                        ev.stopPropagation()
-                        break
-                    // default:
-                    //     console.log(ev)
+                            break
+                        case "ArrowUp":
+                            if (pos.row > 0) {
+                                --pos.row
+                                ev.preventDefault()
+                                ev.stopPropagation()
+                            }
+                            break
+                        // case "Tab":
+                        //     if (ev.shiftKey) {
+                        //         if (pos.col > 0) {
+                        //             --pos.col
+                        //             ev.preventDefault()
+                        //             ev.stopPropagation()
+                        //         } else {
+                        //             if (pos.row > 0) {
+                        //                 pos.col = this.adapter!.colCount - 1
+                        //                 --pos.row
+                        //                 ev.preventDefault()
+                        //                 ev.stopPropagation()
+                        //             }
+                        //         }
+                        //     } else {
+                        //         if (pos.col + 1 < this.adapter!.colCount) {
+                        //             ++pos.col
+                        //             ev.preventDefault()
+                        //             ev.stopPropagation()
+                        //         } else {
+                        //             if (pos.row + 1 < this.adapter!.rowCount) {
+                        //                 pos.col = 0
+                        //                 ++pos.row
+                        //                 ev.preventDefault()
+                        //                 ev.stopPropagation()
+                        //             }
+                        //         }
+                        //     }
+                        //     break
+                        case "Enter":
+                            if (this.editing === undefined) {
+                                if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
+                                    this.editCell()
+                                }
+                            } else {
+                                this.saveCell()
+                                if (pos.row + 1 < this.adapter!.rowCount) {
+                                    ++pos.row
+                                    this.selection.value = pos
+                                    this.editCell()
+                                }
+                            }
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                            break
+                        // default:
+                        //     console.log(ev)
+                    }
+                    this.selection.value = pos
                 }
-                this.selection.value = pos
-            } break
+                break
             // case TableEditMode.EDIT_CELL:
             //     break
         }
@@ -454,8 +453,7 @@ export class Table extends View {
 
     editCell() {
         if (this.editing !== undefined) {
-            if (this.editing.col === this.selection!.value.col &&
-                this.editing.row === this.selection!.value.row) {
+            if (this.editing.col === this.selection!.value.col && this.editing.row === this.selection!.value.row) {
                 return
             } else {
                 console.log(`WARN: Table.editCell(): already editing ANOTHER cell`)
@@ -491,7 +489,6 @@ export class Table extends View {
         // console.log("Table.pointerDown()")
         // ev.preventDefault()
         // // this.focus()
-
         // const pos = this.clientPosToTablePos(ev.clientX, ev.clientY)
         // if (pos === undefined) {
         //     return
@@ -532,8 +529,7 @@ export class Table extends View {
             const adapter = TableAdapter.lookup(model) as new (model: TableModel) => TableAdapter<any>
             try {
                 this.adapter = new adapter(model)
-            }
-            catch (e) {
+            } catch (e) {
                 console.log(`Table.setModel(): failed to instantiate table adapter: ${e}`)
                 console.log(`setting TypeScript's target to 'es6' might help`)
                 throw e
@@ -556,28 +552,36 @@ export class Table extends View {
         }
         this.saveCell()
         switch (this.selection.mode) {
-            case TableEditMode.EDIT_CELL: {
-                if (document.activeElement === this) {
-                    const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                    // TODO: don't focus on cell in case controll inside the cell was clicked
-                    if (!hasFocus(cell)) {
-                        cell.focus()
-                    }
-                    scrollIntoView(cell)
-                    if (this.adapter?.config.editMode === EditMode.EDIT_ON_FOCUS) {
-                        this.editCell()
+            case TableEditMode.EDIT_CELL:
+                {
+                    if (document.activeElement === this) {
+                        const cell = this.body.children[
+                            this.selection!.col + this.selection!.row * this.adapter!.colCount
+                        ] as HTMLSpanElement
+                        // TODO: don't focus on cell in case controll inside the cell was clicked
+                        if (!hasFocus(cell)) {
+                            cell.focus()
+                        }
+                        scrollIntoView(cell)
+                        if (this.adapter?.config.editMode === EditMode.EDIT_ON_FOCUS) {
+                            this.editCell()
+                        }
                     }
                 }
-            } break
+                break
             case TableEditMode.SELECT_CELL:
-            case TableEditMode.SELECT_ROW: {
-                // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-                if (document.activeElement === this) {
-                    const cell = this.body.children[this.selection!.col + this.selection!.row * this.adapter!.colCount] as HTMLSpanElement
-                    cell.focus()
-                    scrollIntoView(cell)
+            case TableEditMode.SELECT_ROW:
+                {
+                    // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                    if (document.activeElement === this) {
+                        const cell = this.body.children[
+                            this.selection!.col + this.selection!.row * this.adapter!.colCount
+                        ] as HTMLSpanElement
+                        cell.focus()
+                        scrollIntoView(cell)
+                    }
                 }
-            } break
+                break
             // case TableEditMode.SELECT_ROW: {
             //     // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
             //     // this.toggleRowSelection(this.selectionModel.value.row, true)
@@ -586,26 +590,32 @@ export class Table extends View {
         }
     }
 
-    modelChanged(event: TableEvent) {
-        switch (event.type) {
-            case TableEventType.CELL_CHANGED: {
-                const cell = this.body.children[event.col + event.row * this.adapter!.colCount] as HTMLSpanElement
-                this.showCell(event, cell)
-            } break
-            case TableEventType.INSERT_ROW:
-                this.animator.run(new InsertRowAnimation(this, event))
-                break
-            case TableEventType.REMOVE_ROW:
-                this.animator.run(new RemoveRowAnimation(this, event))
-                break
-            case TableEventType.INSERT_COL:
-                this.animator.run(new InsertColumnAnimation(this, event))
-                break
-            case TableEventType.REMOVE_COL:
-                this.animator.run(new RemoveColumnAnimation(this, event))
-                break
-            default:
+    modelChanged(event: TableEvent | ModelReason) {
+        if (event instanceof TableEvent) {
+            switch (event.type) {
+                case TableEventType.CELL_CHANGED:
+                    {
+                        const cell = this.body.children[
+                            event.col + event.row * this.adapter!.colCount
+                        ] as HTMLSpanElement
+                        this.showCell(event, cell)
+                    }
+                    break
+                case TableEventType.INSERT_ROW:
+                    this.animator.run(new InsertRowAnimation(this, event))
+                    break
+                case TableEventType.REMOVE_ROW:
+                    this.animator.run(new RemoveRowAnimation(this, event))
+                    break
+                case TableEventType.INSERT_COL:
+                    this.animator.run(new InsertColumnAnimation(this, event))
+                    break
+                case TableEventType.REMOVE_COL:
+                    this.animator.run(new RemoveColumnAnimation(this, event))
+                    break
+                default:
                 // console.log(`Table.modelChanged(): ${event} is not implemented`)
+            }
         }
     }
 
@@ -671,7 +681,8 @@ export class Table extends View {
         const columnHeaders = new Array(this.adapter!.colCount)
         for (let col = 0; col < this.adapter!.colCount; ++col) {
             const content = this.adapter!.getColumnHead(col)
-            if (this.colHeads === undefined && content !== undefined) { // FIXME: move out of loop
+            if (this.colHeads === undefined && content !== undefined) {
+                // FIXME: move out of loop
                 this.colHeads = div()
                 this.colHeads.className = "cols"
                 this.root.appendChild(this.colHeads)
@@ -746,7 +757,7 @@ export class Table extends View {
 
         // in case there are children, we may not edit inline and the children may need a non-transparent caret
         if (cell.children.length !== 0) {
-            cell.style.caretColor = 'currentcolor'
+            cell.style.caretColor = "currentcolor"
         }
     }
 
@@ -1022,12 +1033,14 @@ export class Table extends View {
             this.handle!.style.left = `${clientX - this.deltaHandle!}px`
             this.splitHead!.style.left = `${clientX - this.deltaSplitHead!}px`
             this.splitBody!.style.left = `${clientX - this.deltaSplitBody!}px`
-            const h = this.handleIndex!;
+            const h = this.handleIndex!
             // adjust col head width
-            (this.colHeads!.children[h - 1] as HTMLSpanElement).style.width = `${clientX - this.deltaColumn!}px`
+            ;(this.colHeads!.children[h - 1] as HTMLSpanElement).style.width = `${clientX - this.deltaColumn!}px`
             // adjust row cells width
             for (let row = 0; row < this.adapter!.rowCount; ++row) {
-                (this.body.children[h - 1 + row * h] as HTMLSpanElement).style.width = `${clientX - this.deltaColumn!}px`
+                ;(this.body.children[h - 1 + row * h] as HTMLSpanElement).style.width = `${
+                    clientX - this.deltaColumn!
+                }px`
             }
         } else {
             let clientY = ev.clientY
@@ -1038,13 +1051,13 @@ export class Table extends View {
             this.handle!.style.top = `${clientY - this.deltaHandle!}px`
             this.splitHead!.style.top = `${clientY - this.deltaSplitHead!}px`
             this.splitBody!.style.top = `${clientY - this.deltaSplitBody!}px`
-            const h = this.handleIndex!;
+            const h = this.handleIndex!
             // adjust row head height
-            (this.rowHeads!.children[h - 1] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
+            ;(this.rowHeads!.children[h - 1] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
             // adjust row cells height
             let idx = (h - 1) * this.adapter!.colCount
             for (let col = 0; col < this.adapter!.colCount; ++col) {
-                (this.body.children[idx + col] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
+                ;(this.body.children[idx + col] as HTMLSpanElement).style.height = `${clientY - this.deltaColumn!}px`
             }
         }
     }
@@ -1112,7 +1125,8 @@ export class Table extends View {
                     cell.style.left = `${x - left}px`
                     this.splitHead.appendChild(cell)
                 }
-                if (this.adapter!.config.seamless) { // FIXME: Why do I do this??? And only for the head?
+                if (this.adapter!.config.seamless) {
+                    // FIXME: Why do I do this??? And only for the head?
                     width += overlap
                 }
                 this.splitHead.style.left = `${left}px`
@@ -1152,7 +1166,6 @@ export class Table extends View {
 
             // move cells into splitBody and align them to the left
             if (splitCol < previousColCount) {
-
                 let cell = this.body.children[splitCol] as HTMLSpanElement
                 const left = px2float(cell.style.left)
                 let width = 0
@@ -1357,7 +1370,8 @@ export class Table extends View {
                     cell.style.top = `${y - top}px`
                     this.splitHead.appendChild(cell)
                 }
-                if (this.adapter!.config.seamless) { // FIXME: Why do I do this??? And only for the head?
+                if (this.adapter!.config.seamless) {
+                    // FIXME: Why do I do this??? And only for the head?
                     height += overlap
                 }
                 this.splitHead.style.top = `${top}px`
@@ -1436,7 +1450,7 @@ export class Table extends View {
         // initialize splitBody
         this.splitBody = div()
         this.splitBody.className = "splitBody"
-        this.splitBody.style.backgroundColor = 'rgba(255,128,0,0.5)'
+        this.splitBody.style.backgroundColor = "rgba(255,128,0,0.5)"
 
         const b = this.body.getBoundingClientRect()
         this.splitBody.style.width = `${b.width}px`
@@ -1473,43 +1487,40 @@ export class Table extends View {
                 const y = px2int(c.style.top)
                 c.style.top = `${y - top}px`
             }
-            this.splitBody.style.backgroundColor = '#f80' // #1e1e1e
+            this.splitBody.style.backgroundColor = "#f80" // #1e1e1e
             this.splitBody.style.top = `${top}px`
             this.splitBody.style.height = `${b.height - top}px`
-        } else
-            if (event !== undefined && this.body.children.length > 0) {
-                // console.log("[1]")
-                idx = event.index * this.adapter!.colCount
-                const last = this.body.children[idx] as HTMLElement
-                const top = px2int(last.style.top)
-                this.splitBody.style.top = `${top}px`
-                this.splitBody.style.height = `${b.height - top}px`
-            } else
-                if (this.body.children.length > 0) {
-                    // console.log("[2]")
-                    const filler = span()
-                    idx = this.body.children.length - 2
-                    const last = this.body.children[idx] as HTMLElement
-                    const bf = this.body.children[idx].getBoundingClientRect()
-                    filler.style.border = 'none'
-                    filler.style.backgroundColor = '#1e1e1e'
-                    // filler.style.backgroundColor = '#f80'
-                    const top = px2int(last.style.top) + bf.height
-                    // console.log(last)
-                    filler.style.top = `${top}px`
-                    filler.style.left = `0px`
-                    filler.style.width = `${b.width - 2}px`
-                    filler.style.height = `${b.height - top}px`
-                    this.splitBody.appendChild(filler)
-                } else {
-                    // FIXME: handle case when that are no children, then top is 0
-                    // console.log("[3]")
-                }
+        } else if (event !== undefined && this.body.children.length > 0) {
+            // console.log("[1]")
+            idx = event.index * this.adapter!.colCount
+            const last = this.body.children[idx] as HTMLElement
+            const top = px2int(last.style.top)
+            this.splitBody.style.top = `${top}px`
+            this.splitBody.style.height = `${b.height - top}px`
+        } else if (this.body.children.length > 0) {
+            // console.log("[2]")
+            const filler = span()
+            idx = this.body.children.length - 2
+            const last = this.body.children[idx] as HTMLElement
+            const bf = this.body.children[idx].getBoundingClientRect()
+            filler.style.border = "none"
+            filler.style.backgroundColor = "#1e1e1e"
+            // filler.style.backgroundColor = '#f80'
+            const top = px2int(last.style.top) + bf.height
+            // console.log(last)
+            filler.style.top = `${top}px`
+            filler.style.left = `0px`
+            filler.style.width = `${b.width - 2}px`
+            filler.style.height = `${b.height - top}px`
+            this.splitBody.appendChild(filler)
+        } else {
+            // FIXME: handle case when that are no children, then top is 0
+            // console.log("[3]")
+        }
     }
 
     // move 'splitBody' back into 'body' to end animation
     joinHorizontal(splitRow: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
-
         if (colCount === undefined) {
             colCount = this.adapter!.colCount
         }
@@ -1562,13 +1573,13 @@ export class Table extends View {
     setHeadingFillerSizeToScrollbarSize() {
         const bounds = this.body.getBoundingClientRect()
         if (this.colHeads !== undefined) {
-            const w = Math.ceil(bounds.width - this.body.clientWidth);
-            (this.colHeads.children[this.colHeads.children.length - 1] as HTMLSpanElement).style.width = `${w}px`
+            const w = Math.ceil(bounds.width - this.body.clientWidth)
+            ;(this.colHeads.children[this.colHeads.children.length - 1] as HTMLSpanElement).style.width = `${w}px`
             this.colHeads.style.right = `${w}px`
         }
         if (this.rowHeads !== undefined) {
-            const h = Math.ceil(bounds.height - this.body.clientHeight);
-            (this.rowHeads.children[this.rowHeads.children.length - 1] as HTMLSpanElement).style.height = `${h}px`
+            const h = Math.ceil(bounds.height - this.body.clientHeight)
+            ;(this.rowHeads.children[this.rowHeads.children.length - 1] as HTMLSpanElement).style.height = `${h}px`
             this.rowHeads.style.bottom = `${h}px`
         }
     }
@@ -1577,8 +1588,7 @@ export class Table extends View {
         let col, row
         for (col = 0; col < this.adapter!.colCount; ++col) {
             const b = this.body.children[col]!.getBoundingClientRect()
-            if (b.x <= x && x < b.x + b.width)
-                break
+            if (b.x <= x && x < b.x + b.width) break
         }
         if (col >= this.adapter!.colCount) {
             return undefined
@@ -1586,8 +1596,7 @@ export class Table extends View {
         let idx = 0
         for (row = 0; row < this.adapter!.rowCount; ++row) {
             const b = this.body.children[idx]!.getBoundingClientRect()
-            if (b.y <= y && y < b.y + b.height)
-                break
+            if (b.y <= y && y < b.y + b.height) break
             idx += this.adapter!.colCount
         }
         if (row >= this.adapter!.rowCount) {

@@ -1,8 +1,8 @@
 import { parseColor, RGB } from "@toad/util/color"
-import { ValueModel } from "./ValueModel"
+import { ValueModel, ValueModelOptions, ValueModelReason } from "./ValueModel"
 import { ModelOptions } from "./Model"
 
-export class RGBModel extends ValueModel<RGB, ModelOptions> {
+export class RGBModel extends ValueModel<RGB, void, ValueModelOptions<RGB>> {
     constructor(value: RGB | string, options?: ModelOptions) {
         if (typeof value === "string") {
             let v = parseColor(value)
@@ -26,7 +26,7 @@ export class RGBModel extends ValueModel<RGB, ModelOptions> {
         this._value.r = value.r
         this._value.g = value.g
         this._value.b = value.b
-        this.modified.trigger(this._value)
+        this.modified.trigger(ValueModelReason.VALUE)
     }
 
     override get value(): RGB {

@@ -16,29 +16,55 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, ModelOptions } from "./Model"
+import { Model, ModelOptions, ModelReason } from "./Model"
+
+export enum ValueModelReason {
+    VALUE = ModelReason.MAX_REASON,
+    DEFAULT,
+    MAX_REASON
+}
+
+export interface ValueModelOptions<V> extends ModelOptions {
+    /**
+     * a default value
+     * 
+     * might be used give an indication when number equals the default value,
+     * or to reset the value to the default value, e.g. with a double click
+     */
+    default?: V
+}
 
 /**
  * @category Application Model
- * 
+ *
  * a better name would be ValueModel
  */
-export class ValueModel<T, O extends ModelOptions = ModelOptions> extends Model<T, O> {
-    protected _value: T
+export class ValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> 
+extends Model<ValueModelReason | R, O> {
+    protected _value: V
 
-    constructor(value: T, options?: O) {
+    constructor(value: V, options?: O) {
         super(options)
         this._value = value
     }
 
-    set value(value:  T) {
-        if (this._value === value)
-            return
+    set value(value: V) {
+        if (this._value === value) return
         this._value = value
-        this.modified.trigger(this._value)
+        this.modified.trigger(ValueModelReason.VALUE)
     }
-
-    get value(): T {
+    get value(): V {
         return this._value
     }
+
+    set default(aDefault: V | undefined) {
+        if (this.options?.default === aDefault)
+            return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.default = aDefault
+        this.modified.trigger(ValueModelReason.DEFAULT)
+    }
+    get default(): V | undefined { return this.options?.default }
 }

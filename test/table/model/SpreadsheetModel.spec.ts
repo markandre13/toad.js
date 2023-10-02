@@ -28,7 +28,11 @@ describe.only("spreadsheetmodel", function () {
         it("insert row", function () {
             const m = createModel4x4()
             let event!: TableEvent
-            m.modified.add((e) => event = e)
+            m.modified.add((e) => {
+                if (e instanceof TableEvent) {
+                    event = e
+                }
+            })
 
             m.insertRow(2)
             
@@ -58,7 +62,11 @@ describe.only("spreadsheetmodel", function () {
         it("remove row", function () {
             const m = createModel4x4()
             let event!: TableEvent
-            m.modified.add((e) => event = e)
+            m.modified.add((e) => {
+                if (e instanceof TableEvent) {
+                    event = e
+                }
+            })
 
             m.removeRow(2)
             
@@ -84,7 +92,11 @@ describe.only("spreadsheetmodel", function () {
         it("insert column", function() {
             const m = createModel4x4()
             let event!: TableEvent
-            m.modified.add((e) => event = e)
+            m.modified.add((e) => {
+                if (e instanceof TableEvent) {
+                    event = e
+                }
+            })
 
             m.insertColumn(2)
 
@@ -113,7 +125,11 @@ describe.only("spreadsheetmodel", function () {
         it("remove column", function () {
             const m = createModel4x4()
             let event!: TableEvent
-            m.modified.add((e) => event = e)
+            m.modified.add((e) => {
+                if (e instanceof TableEvent) {
+                    event = e
+                }
+            })
 
             m.removeColumn(2)
 

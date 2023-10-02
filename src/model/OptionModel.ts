@@ -22,7 +22,7 @@ import { OptionModelBase } from "./OptionModelBase"
 /**
  * @category Application Model
  */
-export class OptionModel<V, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, O> {
+export class OptionModel<V, R = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, R, O> {
     _mapping: readonly (readonly [V, string])[]
     constructor(value: V, mapping: readonly (readonly [V, string | number | HTMLElement] | string)[], options?: O) {
         super(value, options)

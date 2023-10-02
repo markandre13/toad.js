@@ -24,7 +24,7 @@ const macColor = new OptionModel(MacColor.BONDI, [
     [MacColor.TANGERINE, <div style={{ color: "#000000", background: MacColor.TANGERINE }}>Tangerine</div>],
     [MacColor.LIME, <div style={{ color: "#000000", background: MacColor.LIME }}>Lime</div>],
 ])
-macColor.modified.add((color) => applyMacColor(color))
+macColor.modified.add(() => applyMacColor(macColor.value))
 
 function applyMacColor(value: MacColor) {
     const rgb = parseColor(value)!
