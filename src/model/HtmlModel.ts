@@ -16,13 +16,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { ModelOptions } from "./Model"
 import { TextModel } from "./TextModel"
 
 /**
  * @category Application Model
  */
 export class HtmlModel extends TextModel {
-  constructor(value: string) {
-    super(value)
+  constructor(value: string, options?: ModelOptions) {
+    super(value, options)
   }
 }

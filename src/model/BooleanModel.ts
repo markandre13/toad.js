@@ -16,13 +16,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ValueModel } from "./ValueModel"
+import { ValueModel, ValueModelOptions } from "./ValueModel"
 
 /**
  * @category Application Model
  */
 export class BooleanModel extends ValueModel<boolean> {
-  constructor(value: boolean) {
-    super(value)
+  constructor(value: boolean, options?: ValueModelOptions<boolean>) {
+    super(value, options)
   }
 }
