@@ -50,6 +50,11 @@ export class TextField extends ModelView<TextModel | NumberModel> {
 
         this.wheel = this.wheel.bind(this)
         this.input.onwheel = this.wheel
+
+        this.input.ondblclick = () => {
+            this.model?.resetToDefault()
+        }
+
         this.attachShadow({ mode: "open", delegatesFocus: true })
         this.shadowRoot!.adoptedStyleSheets = [txText]
         this.shadowRoot!.appendChild(this.input)
