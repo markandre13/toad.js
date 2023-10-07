@@ -33,80 +33,72 @@ export interface ActionViewProps extends HTMLElementProps {
  * @category View
  */
 export abstract class ActionView extends ModelView<TextModel> {
-  action?: Action
+    action?: Action
 
-  constructor(init?: ActionViewProps) {
-    super(init)
-  }
-
-  override connectedCallback() {
-    if (this.controller) {
-      this.updateView()
-      return
+    constructor(init?: ActionViewProps) {
+        super(init)
     }
 
-    try {
-      globalController.registerView(this.getActionId(), this) // FIXME: don't register always on globalController
-    }
-    catch (e) {
-    }
+    override connectedCallback() {
+        if (this.controller) {
+            this.updateView()
+            return
+        }
 
-    try {
-      globalController.registerView(this.getModelId(), this) // FIXME: don't register always on globalController
-    }
-    catch (e) {
-    }
+        try {
+            globalController.registerView(this.getActionId(), this) // FIXME: don't register always on globalController
+        } catch (e) {}
 
-    this.updateView()
-  }
+        try {
+            globalController.registerView(this.getModelId(), this) // FIXME: don't register always on globalController
+        } catch (e) {}
 
-  override disconnectedCallback() {
-    super.disconnectedCallback()
-    if (this.controller)
-      this.controller.unregisterView(this)
-  }
-
-  override setModel(model?: Model): void {
-    if (!model) {
-      if (this.model)
-        this.model.modified.remove(this)
-      if (this.action)
-        this.action.modified.remove(this)
-      this.model = undefined
-      this.action = undefined
-      this.updateView()
-      return
-    }
-
-    if (model instanceof Action) {
-      // FIXME: what if this.action is already set?
-      this.action = model
-      this.action.modified.add(() => {
         this.updateView()
-      }, this)
     }
-    else if (model instanceof TextModel) {
-      // FIXME: what if this.model is already set?
-      this.model = model
-      this.model.modified.add(() => {
+
+    override disconnectedCallback() {
+        super.disconnectedCallback()
+        if (this.controller) this.controller.unregisterView(this)
+    }
+
+    override setModel(model?: Model): void {
+        if (!model) {
+            if (this.model) this.model.modified.remove(this)
+            if (this.action) this.action.modified.remove(this)
+            this.model = undefined
+            this.action = undefined
+            this.updateView()
+            return
+        }
+
+        if (model instanceof Action) {
+            // FIXME: what if this.action is already set?
+            this.action = model
+            this.action.modified.add(() => {
+                this.updateView()
+            }, this)
+        } else if (model instanceof TextModel) {
+            // FIXME: what if this.model is already set?
+            this.model = model
+            this.model.modified.add(() => {
+                this.updateView()
+            }, this)
+        } else {
+            throw Error("unexpected model of type " + model.constructor.name)
+        }
+
         this.updateView()
-      }, this)
-    } else {
-      throw Error("unexpected model of type " + model.constructor.name)
     }
 
-    this.updateView()
-  }
-
-  setAction(value: Function|Action) {
-    if (value instanceof Function) {
-        this.setModel(new Action(value as ()=>void))
-    } else {
-        this.setModel(value)
+    setAction(value: Function | Action) {
+        if (value instanceof Function) {
+            this.setModel(new Action(value as () => void))
+        } else {
+            this.setModel(value)
+        }
     }
-  }
 
-  isEnabled(): boolean {
-    return this.action !== undefined && this.action.enabled
-  }
+    isEnabled(): boolean {
+        return this.action !== undefined && this.action.enabled
+    }
 }
