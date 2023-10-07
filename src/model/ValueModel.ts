@@ -36,27 +36,12 @@ export interface ValueModelOptions<V> extends ModelOptions {
 /**
  * @category Application Model
  *
- * a better name would be ValueModel
  */
-export class ValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> extends Model<
-    ValueModelReason | R,
-    O
-> {
-    protected _value: V
+export abstract class AbstractValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> 
+extends Model<ValueModelReason | R, O> {
 
-    constructor(value: V, options?: O) {
-        super(options)
-        this._value = value
-    }
-
-    set value(value: V) {
-        if (this._value === value) return
-        this._value = value
-        this.modified.trigger(ModelReason.VALUE)
-    }
-    get value(): V {
-        return this._value
-    }
+    abstract set value(value: V)
+    abstract get value(): V
 
     set default(aDefault: V | undefined) {
         if (this.options?.default === aDefault) return
@@ -68,5 +53,36 @@ export class ValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModel
     }
     get default(): V | undefined {
         return this.options?.default
+    }
+
+    resetToDefault() {
+        const d = this.default
+        if (d !== undefined) {
+            this.value = d
+        }
+    }
+}
+
+/**
+ * @category Application Model
+ *
+ */
+export class ValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
+extends AbstractValueModel<V, R, O>
+{
+    protected _value: V
+
+    constructor(value: V, options?: O) {
+        super(options)
+        this._value = value
+    }
+
+    override set value(value: V) {
+        if (this._value === value) return
+        this._value = value
+        this.modified.trigger(ModelReason.VALUE)
+    }
+    override get value(): V {
+        return this._value
     }
 }

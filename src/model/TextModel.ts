@@ -16,17 +16,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, ModelOptions } from "./Model"
+import { Model, ModelOptions, ModelReason } from "./Model"
+import { AbstractValueModel, ValueModelOptions } from "./ValueModel"
 
 export type StringFunction = () => string
 
 /**
  * @category Application Model
  */
-export class TextModel extends Model {
+export class TextModel extends AbstractValueModel<string, ValueModelOptions<string>> {
     protected _value!: string | StringFunction
 
-    constructor(value: string = "", options?: ModelOptions) {
+    constructor(value: string = "", options?: ValueModelOptions<string>) {
         super(options)
         this.value = value
     }
@@ -41,7 +42,7 @@ export class TextModel extends Model {
      */
     set promise(promise: () => string) {
         this._value = promise
-        this.modified.trigger()
+        this.modified.trigger(ModelReason.VALUE)
     }
 
     get promise(): StringFunction {
@@ -54,7 +55,7 @@ export class TextModel extends Model {
         return this._value
     }
 
-    set value(value: string) {
+    override set value(value: string) {
         if (this._value === value) {
             return
         }
@@ -65,11 +66,11 @@ export class TextModel extends Model {
         this.modified.withLock(() => {
             this.error = undefined
             this._value = value
-            this.modified.trigger()   
+            this.modified.trigger(ModelReason.VALUE)   
         })
     }
 
-    get value(): string {
+    override get value(): string {
         switch (typeof this._value) {
             case "number": // ????
             case "string":

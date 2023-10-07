@@ -17,7 +17,7 @@
  */
 
 import { TextModel } from "../model/TextModel"
-import { Model } from "../model/Model"
+import { ModelReason } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Action } from "../model/Action"
 import { ModelView } from "./ModelView"
@@ -41,7 +41,7 @@ export abstract class ActionView extends ModelView<TextModel> {
 
     override connectedCallback() {
         if (this.controller) {
-            this.updateView()
+            this.updateView(ModelReason.ALL)
             return
         }
 
@@ -53,7 +53,7 @@ export abstract class ActionView extends ModelView<TextModel> {
             globalController.registerView(this.getModelId(), this) // FIXME: don't register always on globalController
         } catch (e) {}
 
-        this.updateView()
+        this.updateView(ModelReason.ALL)
     }
 
     override disconnectedCallback() {
@@ -61,38 +61,41 @@ export abstract class ActionView extends ModelView<TextModel> {
         if (this.controller) this.controller.unregisterView(this)
     }
 
-    override setModel(model?: Model): void {
-        if (!model) {
+    override setModel(model?: TextModel | Action): void {
+        if (model === undefined) {
             if (this.model) this.model.modified.remove(this)
             if (this.action) this.action.modified.remove(this)
             this.model = undefined
             this.action = undefined
-            this.updateView()
+            this.updateView(ModelReason.ALL)
             return
         }
-
         if (model instanceof Action) {
             // FIXME: what if this.action is already set?
             this.action = model
             this.action.modified.add(() => {
-                this.updateView()
+                this.updateView(ModelReason.ALL)
             }, this)
         } else if (model instanceof TextModel) {
             // FIXME: what if this.model is already set?
             this.model = model
             this.model.modified.add(() => {
-                this.updateView()
+                this.updateView(ModelReason.ALL)
             }, this)
         } else {
-            throw Error("unexpected model of type " + model.constructor.name)
+            if (typeof model === "object") {
+                throw Error(`unexpected model of type ${(model as Object).constructor.name}`)
+            } else {
+                throw Error(`unexpected model of type ${typeof model}`)
+            }
         }
 
-        this.updateView()
+        this.updateView(ModelReason.ALL)
     }
 
-    setAction(value: Function | Action) {
+    setAction(value: (() => void) | Action) {
         if (value instanceof Function) {
-            this.setModel(new Action(value as () => void))
+            this.setModel(new Action(value))
         } else {
             this.setModel(value)
         }

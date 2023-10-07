@@ -215,7 +215,7 @@ export class MenuButton extends ModelView<TextModel> {
                 let modelId = "M:" + this.node.modelId
                 globalController.registerView(modelId, this)
             } else {
-                this.setModel(this.node.modelId)
+                this.setModel(this.node.modelId as TextModel)
             }
         }
     }
@@ -224,7 +224,7 @@ export class MenuButton extends ModelView<TextModel> {
         if (this.controller) this.controller.unregisterView(this)
     }
 
-    override setModel(model?: Model): void {
+    override setModel(model?: TextModel): void {
         if (!model) {
             if (this.action) this.action.modified.remove(this)
             this.model = undefined
@@ -241,7 +241,11 @@ export class MenuButton extends ModelView<TextModel> {
         } else if (model instanceof TextModel) {
             this.model = model
         } else {
-            throw Error("unexpected model of type " + model.constructor.name)
+            if (typeof model === "object") {
+                throw Error(`unexpected model of type ${(model as Object).constructor.name}`)
+            } else {
+                throw Error(`unexpected model of type ${typeof model}`)
+            }
         }
         this.updateView()
     }
