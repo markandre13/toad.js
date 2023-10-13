@@ -377,8 +377,47 @@ export class Table extends View {
                     this.selection.value = pos
                 }
                 break
-            // case TableEditMode.EDIT_CELL:
-            //     break
+            case TableEditMode.EDIT_CELL:
+                let pos = { col: this.selection.col, row: this.selection.row }
+                // FIXME: make up/down key optional, we might have multirow cells
+                switch (ev.key) {
+                    case "ArrowDown":
+                        if (pos.row + 1 < this.adapter!.rowCount) {
+                            ++pos.row
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                        }
+                        break
+                    case "ArrowUp":
+                        if (pos.row > 0) {
+                            --pos.row
+                            ev.preventDefault()
+                            ev.stopPropagation()
+                        }
+                        break
+                    case "Enter":
+                        if (this.editing === undefined) {
+                            if (this.adapter?.config.editMode === EditMode.EDIT_ON_ENTER) {
+                                this.editCell()
+                            }
+                        } else {
+                            this.saveCell()
+
+                            this.editCell()
+
+                            // FIXME: make this optional
+                            // if (pos.row + 1 < this.adapter!.rowCount) {
+                            //     ++pos.row
+                            //     this.selection.value = pos
+                            //     this.editCell()
+                            // }
+                        }
+                        ev.preventDefault()
+                        ev.stopPropagation()
+                        break
+                }
+                this.selection.value = pos
+                break
         }
     }
 
@@ -546,7 +585,11 @@ export class Table extends View {
     }
 
     selectionChanged() {
-        // console.log(`Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}, mode=${this.selection ? TableEditMode[this.selection!.mode] : 'undefined'}`)
+        // console.log(
+        //     `Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}, mode=${
+        //         this.selection ? TableEditMode[this.selection!.mode] : "undefined"
+        //     }`
+        // )
         if (this.selection === undefined) {
             return
         }
