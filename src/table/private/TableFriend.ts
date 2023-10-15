@@ -1,6 +1,6 @@
 import { Animator } from '@toad/util/animation'
 import { TableAdapter } from '../adapter/TableAdapter'
-import { Table } from '../Table'
+import { Logger, Table } from '../Table'
 import { TableAnimation } from './TableAnimation'
 
 // workaround for missing 'friend' declarator in typescript
@@ -9,6 +9,9 @@ export class TableFriend {
     table: Table
     constructor(table: Table) {
         this.table = table
+    }
+    get logger(): Logger {
+        return this.table.logger
     }
     get adapter() {
         return (this.table as any).adapter as TableAdapter<any>

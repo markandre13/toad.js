@@ -57,6 +57,27 @@ import { ModelReason } from "../model/Model"
 // --spectrum-alias-highlight-selected
 // --spectrum-alias-highlight-selected: rgba(20,115,230,0.1); // --tx-global-blue-500 with alias 0.1
 
+export interface Logger {
+    log(msg: string): void
+    print(): void
+}
+
+export class NullLogger implements Logger {
+    log(_: string) {}
+    print() {}
+}
+
+export class MemoryLogger implements Logger {
+    logs: string[] = []
+    log(msg: string) {
+        this.logs.push(msg)
+    }
+    print() {
+        console.log(`MemoryLogger collected ${this.logs.length} logs`)
+        this.logs.forEach(msg => console.log(msg))
+    }
+}
+
 export function px2int(s: string) {
     return parseInt(s.substring(0, s.length - 2))
 }
@@ -121,6 +142,9 @@ export class Table extends View {
     static allTables = new Set<Table>()
     visible = false
 
+    static loggerType: new () => Logger = NullLogger
+    logger: Logger
+
     // test api
     animationDone?: () => void
 
@@ -157,8 +181,9 @@ export class Table extends View {
 
     constructor(props?: TableProps) {
         super()
+        this.logger = new Table.loggerType()
         // super(props) // FIXME: this breaks toggling the trees in the treeview.
-        // console.log("Table::constructor()")
+        this.logger.log("Table::constructor()")
 
         this.arrangeAllMeasuredInGrid = this.arrangeAllMeasuredInGrid.bind(this)
         this.hostKeyDown = this.hostKeyDown.bind(this)
@@ -218,6 +243,7 @@ export class Table extends View {
             Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
                 Table.allTables.forEach((table) => {
                     if (isVisible(table)) {
+                        this.logger.log(`Table.observer => table became visible => prepareCells()`)
                         Table.allTables.delete(table)
                         table.prepareCells()
                     }
@@ -231,16 +257,16 @@ export class Table extends View {
     }
 
     override connectedCallback(): void {
-        // console.log(`Table::connectedCallback()`)
+        this.logger.log(`Table::connectedCallback()`)
 
         // when defined as HTML, isVisible() for the parents does not work as they are
         // HTMLElements waiting to be upgraded to our custom elements.
         setTimeout(() => {
             if (isVisible(this)) {
-                // console.log(`Table::connectedCallback2(): visible ${this.parentElement?.children.length}`)
+                this.logger.log(`Table::connectedCallback() => is visible => prepareCells()`)
                 this.prepareCells()
             } else {
-                // console.log(`Table::connectedCallback2(): not visible`)
+                this.logger.log(`Table::connectedCallback() => is not visible => track in Table.allTables`)
                 Table.allTables.add(this)
             }
         }, 0)
@@ -253,6 +279,7 @@ export class Table extends View {
     }
 
     override disconnectedCallback(): void {
+        this.logger.log(`Table::disconnectedCallback()`)
         Table.allTables.delete(this)
     }
 
@@ -275,7 +302,11 @@ export class Table extends View {
     }
 
     hostKeyDown(ev: KeyboardEvent) {
-        // console.log(`Table.hostKeyDown: ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}`)
+        this.logger.log(
+            `Table::hostKeyDown(ev): ${ev.key}, mode: ${TableEditMode[this.selection!.mode]}, adapter edit mode ${
+                EditMode[this.adapter!.config.editMode]
+            }, editing=${this.editing}`
+        )
         // console.log(ev)
         if (!this.selection) return
         // FIXME: based on the selection model we could plug in a behaviour class
@@ -422,7 +453,7 @@ export class Table extends View {
     }
 
     cellKeyDown(ev: KeyboardEvent) {
-        // console.log(`Table.cellKeyDown()`)
+        this.logger.log(`Table::cellKeyDown()`)
         const cell = ev.target as HTMLElement
         // console.log(`### CELL KEYDOWN ${ev.key}, edit=${cell.classList.contains("edit")}, editing=${this.editing !== undefined}`)
         // console.log(cell)
@@ -471,7 +502,7 @@ export class Table extends View {
     }
 
     cellFocus(event: FocusEvent) {
-        // console.log("Table.cellFocus()")
+        this.logger.log("Table::cellFocus(event)")
         const cell = event.target
         if (cell instanceof HTMLElement) {
             const b = cell.getBoundingClientRect()
@@ -491,16 +522,14 @@ export class Table extends View {
     }
 
     editCell() {
+        const col = this.selection!.value.col
+        const row = this.selection!.value.row
+        this.logger.log(`Table.editCell(): cell[${col}, ${row}]`)
         if (this.editing !== undefined) {
             if (this.editing.col === this.selection!.value.col && this.editing.row === this.selection!.value.row) {
                 return
-            } else {
-                console.log(`WARN: Table.editCell(): already editing ANOTHER cell`)
             }
         }
-        console.log(`Table.editCell()`)
-        const col = this.selection!.value.col
-        const row = this.selection!.value.row
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
         this.editing = new TablePos(col, row)
         cell.classList.add("edit")
@@ -512,9 +541,9 @@ export class Table extends View {
         if (this.editing === undefined) {
             return
         }
-        console.log(`Table.saveCell()`)
         const col = this.editing.col
         const row = this.editing.row
+        this.logger.log(`Table::saveCell(): cell[${col}, ${row}]`)
         const cell = this.body.children[col + row * this.adapter!.colCount] as HTMLSpanElement
         // console.log(`save cell ${this.editing.col}, ${this.editing.row}`)
         // cell.onkeydown = null
@@ -541,6 +570,7 @@ export class Table extends View {
 
     override setModel(model?: TableModel | SelectionModel): void {
         if (model === undefined) {
+            this.logger.log(`Table::setModel(undefined) => remove all models`)
             if (this.selection) {
                 this.selection.modified.remove(this)
             }
@@ -552,6 +582,7 @@ export class Table extends View {
         }
 
         if (model instanceof SelectionModel) {
+            this.logger.log(`Table::setModel(SelectionModel) => set selection model`)
             if (this.selection) {
                 this.selection.modified.remove(this)
             }
@@ -562,7 +593,7 @@ export class Table extends View {
         }
 
         if (model instanceof TableModel) {
-            // console.log(`Table.setModel(TableModel)`)
+            this.logger.log(`Table::setModel(TableModel) => set table model`)
             this.model = model
             this.model.modified.add(this.modelChanged, this)
             const adapter = TableAdapter.lookup(model) as new (model: TableModel) => TableAdapter<any>
@@ -580,16 +611,17 @@ export class Table extends View {
             return
         }
         if ((model as any) instanceof Object) {
-            throw Error("Table.setModel(): unexpected model of type " + (model as Object).constructor.name)
+            this.logger.log(`Table::setModel(TableModel) => unexpected model of type ${(model as Object).constructor.name}`)
+            throw Error(`Table.setModel(): unexpected model of type ${(model as Object).constructor.name}`)
         }
     }
 
     selectionChanged() {
-        // console.log(
-        //     `Table.selectionChanged: ${this.selection?.col}, ${this.selection?.row}, mode=${
-        //         this.selection ? TableEditMode[this.selection!.mode] : "undefined"
-        //     }`
-        // )
+        this.logger.log(
+            `Table::selectionChanged(): ${this.selection?.col}, ${this.selection?.row}, mode=${
+                this.selection ? TableEditMode[this.selection!.mode] : "undefined"
+            }`
+        )
         if (this.selection === undefined) {
             return
         }
@@ -634,6 +666,7 @@ export class Table extends View {
     }
 
     modelChanged(event: TableEvent | ModelReason) {
+        this.logger.log(`Table::modelChanged(${event})`)
         if (event instanceof TableEvent) {
             switch (event.type) {
                 case TableEventType.CELL_CHANGED:
@@ -674,6 +707,8 @@ export class Table extends View {
             return
         }
 
+        this.logger.log(`Table::prepareCells()`)
+
         if (this.adapter!.config.seamless) {
             this.root.classList.add("seamless")
         }
@@ -688,6 +723,8 @@ export class Table extends View {
 
     // this method is called once during the initial setup
     arrangeAllMeasuredInGrid() {
+        this.logger.log(`Table::arrangeAllMeasuredInGrid()`)
+
         this.calculateMinCellSize()
 
         let { colWidths, colHeadHeight } = this.calculateColumnWidths()
@@ -702,6 +739,7 @@ export class Table extends View {
     }
 
     prepareMinCellSize() {
+        this.logger.log(`Table::prepareMinCellSize()`)
         if (this.minCellHeight !== undefined) {
             return
         }
@@ -710,6 +748,7 @@ export class Table extends View {
     }
 
     calculateMinCellSize() {
+        this.logger.log(`Table::calculateMinCellSize()`)
         if (this.minCellHeight !== undefined) {
             return
         }
@@ -721,6 +760,7 @@ export class Table extends View {
     }
 
     prepareColumnHeads() {
+        this.logger.log(`Table::prepareColumnHeads()`)
         const columnHeaders = new Array(this.adapter!.colCount)
         for (let col = 0; col < this.adapter!.colCount; ++col) {
             const content = this.adapter!.getColumnHead(col)
@@ -745,6 +785,7 @@ export class Table extends View {
     }
 
     prepareRowHeads() {
+        this.logger.log(`Table::prepareRowHeads()`)
         let rowHeaders = new Array(this.adapter!.rowCount)
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             const content = this.adapter!.getRowHead(row)
@@ -768,6 +809,7 @@ export class Table extends View {
     }
 
     prepareBody() {
+        this.logger.log(`Table::prepareBody()`)
         for (let row = 0; row < this.adapter!.rowCount; ++row) {
             for (let col = 0; col < this.adapter!.colCount; ++col) {
                 const cell = this.createCell()
@@ -805,6 +847,7 @@ export class Table extends View {
     }
 
     calculateRowHeights() {
+        this.logger.log(`Table::calculateRowHeights()`)
         let idx = this.colHeads ? this.adapter!.colCount : 0
         let rowHeadWidth = 0
         const rowHeights = Array<number>(this.adapter!.rowCount)
@@ -837,7 +880,7 @@ export class Table extends View {
     }
 
     calculateColumnWidths(withinBody = false) {
-        // console.log(`calculateColumnWidths(withinBody = ${withinBody})`)
+        this.logger.log(`Table::calculateColumnWidths(withinBody = ${withinBody})`)
         // header
         let colHeadHeight = 0
         const colWidths = Array<number>(this.adapter!.colCount)
@@ -879,6 +922,7 @@ export class Table extends View {
     }
 
     placeColumnHeads(colWidths: number[], colHeadHeight: number, rowHeadWidth: number) {
+        this.logger.log(`Table::placeColumnHeads(...)`)
         // move and place column heads
         if (this.colHeads === undefined) {
             return
@@ -923,6 +967,7 @@ export class Table extends View {
     }
 
     placeRowHeads(rowHeights: number[], colHeadHeight: number, rowHeadWidth: number) {
+        this.logger.log(`Table::placeRowHeads(...)`)
         if (this.rowHeads === undefined) {
             return
         }
@@ -966,6 +1011,7 @@ export class Table extends View {
     }
 
     private placeBody(rowHeadWidth: number, colHeadHeight: number) {
+        this.logger.log(`Table::placeBody(...)`)
         if (this.colHeads !== undefined) {
             if (this.adapter?.config.seamless) {
                 this.colHeads.style.height = `${colHeadHeight - 2}px`
@@ -1004,6 +1050,7 @@ export class Table extends View {
     }
 
     placeBodyCells(colWidths: number[], rowHeights: number[], colHeadHeight: number, rowHeadWidth: number) {
+        this.logger.log(`Table::placeBodyCells(...)`)
         const seam = this.adapter!.config.seamless ? 0 : 1
 
         let y = 0
@@ -1132,12 +1179,13 @@ export class Table extends View {
     // move all rows in body into splitBody, starting with row splitRow
     // splitRow refers to the actual display, not to the model
     splitVerticalNew(splitCol: number) {
+        this.logger.log(`Table.splitVerticalNew(splitCol = ${splitCol})`)
         this.splitHeadVertical(splitCol)
         this.splitBodyVertical(splitCol)
     }
 
     splitHeadVertical(splitCol: number) {
-        // console.log(`splitHeadHorizontal(${splitRow})`)
+        this.logger.log(`Table.splitHeadVertical(splitCol = ${splitCol})`)
         if (this.colHeads === undefined) {
             return
         }
@@ -1186,7 +1234,7 @@ export class Table extends View {
     }
 
     splitBodyVertical(splitCol: number) {
-        // console.log(`Table.splitVerticalNew(splitCol=${splitCol})`)
+        this.logger.log(`Table.splitBodyVertical(splitCol=${splitCol})`)
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()
         this.splitBody.className = "splitBody"
@@ -1277,6 +1325,7 @@ export class Table extends View {
     // create 'splitBody' and move the right half of 'body' into it to begin animation
     // TODO: split/join only the visible area
     splitVertical(splitColumn: number, extra: number = 0) {
+        this.logger.log(`Table::splitVertical(splitColumn=${splitColumn}, extra=${extra})`)
         // initialize splitHead
         if (this.colHeads !== undefined) {
             this.splitHead = div()
@@ -1324,6 +1373,7 @@ export class Table extends View {
 
     // move 'splitBody' back into 'body' to end animation
     joinVertical(splitCol: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
+        this.logger.log(`Table::joinVertical(splitCol=${splitCol}, delta=${delta}, extra=${extra}, colCount = ${colCount}, rowCount = ${rowCount})`)
         if (colCount === undefined) {
             colCount = this.adapter!.colCount
         }
@@ -1377,12 +1427,13 @@ export class Table extends View {
     // move all rows in body into splitBody, starting with row splitRow
     // splitRow refers to the actual display, not to the model
     splitHorizontalNew(splitRow: number) {
+        this.logger.log(`Table.splitHorizontalNew(splitRow = ${splitRow})`)
         this.splitHeadHorizontal(splitRow)
         this.splitBodyHorizontal(splitRow)
     }
 
     splitHeadHorizontal(splitRow: number) {
-        // console.log(`splitHeadHorizontal(${splitRow})`)
+        this.logger.log(`Table.splitHeadHorizontal(splitRow = ${splitRow})`)
         if (this.rowHeads === undefined) {
             return
         }
@@ -1431,7 +1482,7 @@ export class Table extends View {
     }
 
     splitBodyHorizontal(splitRow: number) {
-        // console.log(`Table.splitHorizontalNew(splitRow=${splitRow})`)
+        this.logger.log(`Table.splitBodyHorizontal(splitRow = ${splitRow})`)
         const overlap = this.adapter!.config.seamless ? 0 : 1
         this.splitBody = div()
         this.splitBody.className = "splitBody"
@@ -1477,6 +1528,7 @@ export class Table extends View {
     }
 
     splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
+        this.logger.log(`Table.splitHorizontal(splitRow = ${splitRow}, extra = ${extra}, event = ...)`)
         // initialize splitHead
         if (this.rowHeads !== undefined) {
             this.splitHead = div()
@@ -1564,6 +1616,7 @@ export class Table extends View {
 
     // move 'splitBody' back into 'body' to end animation
     joinHorizontal(splitRow: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
+        this.logger.log(`Table. joinHorizontal(splitRow = ${splitRow}, delta = ${delta}, extra = ${extra}, colCount = ${colCount}, rowCount = ${rowCount}`)
         if (colCount === undefined) {
             colCount = this.adapter!.colCount
         }
@@ -1614,6 +1667,7 @@ export class Table extends View {
     }
 
     setHeadingFillerSizeToScrollbarSize() {
+        this.logger.log(`Table.setHeadingFillerSizeToScrollbarSize()`)
         const bounds = this.body.getBoundingClientRect()
         if (this.colHeads !== undefined) {
             const w = Math.ceil(bounds.width - this.body.clientWidth)
