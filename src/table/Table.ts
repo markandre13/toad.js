@@ -679,10 +679,15 @@ export class Table extends View {
             switch (event.type) {
                 case TableEventType.CELL_CHANGED:
                     {
-                        const cell = this.body.children[
-                            event.col + event.row * this.adapter!.colCount
-                        ] as HTMLSpanElement
-                        this.showCell(event, cell)
+                        const index = event.col + event.row * this.adapter!.colCount
+                        const cell = this.body.children[index]
+                        if (cell === undefined) {
+                            console.log(`Table::modelChanged(): failed to find cell ${event.col}, ${event.row} (${index}) (body has ${this.body.children.length} children and table has parent ${this.parentElement})`)
+                            return
+                        }
+                        if (cell instanceof HTMLSpanElement) {
+                            this.showCell(event, cell)
+                        }
                     }
                     break
                 case TableEventType.INSERT_ROW:

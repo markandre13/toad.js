@@ -197,28 +197,22 @@ export class Tab<V> extends View {
         if (this.childNodes.length === 0 && this.content !== undefined) {
             const content = this.content()
             if (content instanceof Promise) {
-                // console.log(content)
                 content.then((module) => {
                     if (typeof module === "object" && "default" in module) {
-                        const v = module.default
-                        if (typeof v === "function") {
-                            const w = v()
-                            if (w instanceof Promise) {
-                                // console.log("yet another promise")
-                                w.then((s) => {
-                                    // console.log(s)
+                        const viewOrViewFunction = module.default
+                        if (typeof viewOrViewFunction === "function") {
+                            const viewOrPromise = viewOrViewFunction()
+                            if (viewOrPromise instanceof Promise) {
+                                viewOrPromise.then((s) => {
                                     appendChildren(this, s)
                                 })
                             } else {
-                                appendChildren(this, v())
+                                appendChildren(this, viewOrPromise)
                             }
                         } else {
-                            appendChildren(this, v)
+                            appendChildren(this, viewOrViewFunction)
                         }
                     }
-                    // console.log(typeof module)
-                    // console.log(module)
-                    // console.log(module.default)
                 })
             } else {
                 appendChildren(this, this.content())

@@ -35,6 +35,9 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
         if (!this.model) {
             return undefined
         }
+        if (cell === undefined) {
+            throw Error(`showCell(undefined)`)
+        }
 
         const data = this.model!.getCell(pos.col, pos.row)
         
@@ -79,6 +82,7 @@ export class SpreadsheetAdapter<T extends SpreadsheetModel> extends GridAdapter<
         }
         catch (e) {
             console.log(`saveCell caught error`)
+            console.log(e)
         }
         // cell.blur()
     }
