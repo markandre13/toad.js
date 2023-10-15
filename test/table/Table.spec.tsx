@@ -1,23 +1,23 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from "@esm-bundle/chai"
 
 import { bindModel, unbind, refs, TableEditMode } from "@toad"
 
-import { Table } from '@toad/table/Table'
+import { Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"
 
 import { TreeNode } from "@toad/table/model/TreeNode"
 import { TreeModel } from "@toad/table/model/TreeModel"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
-import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
-import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
+import { SpreadsheetModel } from "@toad/table/model/SpreadsheetModel"
+import { SpreadsheetCell } from "@toad/table/model/SpreadsheetCell"
 
-import { ArrayModel } from '@toad/table/model/ArrayModel'
-import { TableAdapter, EditMode } from '@toad/table/adapter/TableAdapter'
+import { ArrayModel } from "@toad/table/model/ArrayModel"
+import { TableAdapter, EditMode } from "@toad/table/adapter/TableAdapter"
 import { ArrayAdapter } from "@toad/table/adapter/ArrayAdapter"
-import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
+import { SpreadsheetAdapter } from "@toad/table/adapter/SpreadsheetAdapter"
 
-import { TableFriend } from '@toad/table/private/TableFriend'
+import { TableFriend } from "@toad/table/private/TableFriend"
 
 import { TextModel } from "@toad/model/TextModel"
 import { NumberModel } from "@toad/model/NumberModel"
@@ -30,16 +30,35 @@ import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 
-import { sleep, tabForward, tabBackward, getById, getByText, click, type, keyboard, activeElement, px2float } from "../testlib"
 import {
-    validateRender, TestModel, getTable,
-    prepareByRows, flatMapRows, prepareByColumns, flatMapColumns, Measure, bodyRowInfo, testTableLayout
+    sleep,
+    tabForward,
+    tabBackward,
+    getById,
+    getByText,
+    click,
+    type,
+    keyboard,
+    activeElement,
+    px2float,
+} from "../testlib"
+import {
+    validateRender,
+    TestModel,
+    getTable,
+    prepareByRows,
+    flatMapRows,
+    prepareByColumns,
+    flatMapColumns,
+    Measure,
+    bodyRowInfo,
+    testTableLayout,
 } from "./util"
-import { Animator, AnimationBase } from '@toad/util/animation'
+import { Animator, AnimationBase } from "@toad/util/animation"
 
-import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
-import { SelectionModel } from '@toad/table/model/SelectionModel'
-import { hasFocus } from '@toad/util/dom'
+import { InsertRowAnimation } from "@toad/table/private/InsertRowAnimation"
+import { SelectionModel } from "@toad/table/model/SelectionModel"
+import { hasFocus } from "@toad/util/dom"
 
 // TODO:
 // [X] send modified-events
@@ -128,8 +147,12 @@ describe("table", function () {
             // Application Layer
             const model = new ArrayModel<Book>(bookList, Book)
             class BookAdapter extends ArrayAdapter<ArrayModel<Book>> {
-                override getColumnHeads() { return ["Title", "Author", "Year"] }
-                override getRow(book: Book) { return refs(book, "title", "author", "year") }
+                override getColumnHeads() {
+                    return ["Title", "Author", "Year"]
+                }
+                override getRow(book: Book) {
+                    return refs(book, "title", "author", "year")
+                }
             }
             TableAdapter.register(BookAdapter, ArrayModel, Book)
 
@@ -160,16 +183,25 @@ describe("table", function () {
             // Application Layer
             const model = new ArrayModel<Book>(bookList, Book)
             class BookAdapter extends TableAdapter<ArrayModel<Book>> {
-                constructor(model: ArrayModel<Book>) { super(model) }
-                override get colCount(): number { return 3 }
+                constructor(model: ArrayModel<Book>) {
+                    super(model)
+                }
+                override get colCount(): number {
+                    return 3
+                }
                 override getColumnHead(col: number): Node | undefined {
                     switch (col) {
-                        case 0: return text("Title")
-                        case 1: return text("Author")
-                        case 2: return text("Year")
+                        case 0:
+                            return text("Title")
+                        case 1:
+                            return text("Author")
+                        case 2:
+                            return text("Year")
                     }
                 }
-                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override getRowHead(row: number): Node | undefined {
+                    return text(`${row + 1}`)
+                }
                 override showCell(pos: TablePos, cell: HTMLSpanElement) {
                     switch (pos.col) {
                         case 0:
@@ -217,15 +249,22 @@ describe("table", function () {
                     super(model)
                     this.config.editMode = EditMode.EDIT_ON_ENTER
                 }
-                override get colCount(): number { return 3 }
+                override get colCount(): number {
+                    return 3
+                }
                 override getColumnHead(col: number): Node | undefined {
                     switch (col) {
-                        case 0: return text("Title")
-                        case 1: return text("Author")
-                        case 2: return text("Year")
+                        case 0:
+                            return text("Title")
+                        case 1:
+                            return text("Author")
+                        case 2:
+                            return text("Year")
                     }
                 }
-                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override getRowHead(row: number): Node | undefined {
+                    return text(`${row + 1}`)
+                }
                 override showCell(pos: TablePos, cell: HTMLSpanElement) {
                     switch (pos.col) {
                         case 0:
@@ -242,9 +281,15 @@ describe("table", function () {
                 override saveCell(pos: TablePos, cell: HTMLSpanElement) {
                     const row = this.model!.data[pos.row]
                     switch (pos.col) {
-                        case 0: row.title = cell.innerText; break
-                        case 1: row.author = cell.innerText; break
-                        case 2: row.year = parseInt(cell.innerText); break
+                        case 0:
+                            row.title = cell.innerText
+                            break
+                        case 1:
+                            row.author = cell.innerText
+                            break
+                        case 2:
+                            row.year = parseInt(cell.innerText)
+                            break
                     }
                 }
             }
@@ -255,11 +300,7 @@ describe("table", function () {
 
             // View Layer
             document.body.replaceChildren(
-                <Table
-                    style={{ width: `720px`, height: `350px` }}
-                    model={model}
-                    selectionModel={selectionModel}
-                />
+                <Table style={{ width: `720px`, height: `350px` }} model={model} selectionModel={selectionModel} />
             )
 
             // Test
@@ -306,15 +347,22 @@ describe("table", function () {
                     super(model)
                     this.config.editMode = EditMode.EDIT_ON_FOCUS
                 }
-                override get colCount(): number { return 3 }
+                override get colCount(): number {
+                    return 3
+                }
                 override getColumnHead(col: number): Node | undefined {
                     switch (col) {
-                        case 0: return text("Title")
-                        case 1: return text("Author")
-                        case 2: return text("Year")
+                        case 0:
+                            return text("Title")
+                        case 1:
+                            return text("Author")
+                        case 2:
+                            return text("Year")
                     }
                 }
-                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override getRowHead(row: number): Node | undefined {
+                    return text(`${row + 1}`)
+                }
                 override showCell(pos: TablePos, cell: HTMLSpanElement) {
                     switch (pos.col) {
                         case 0:
@@ -331,9 +379,15 @@ describe("table", function () {
                 override saveCell(pos: TablePos, cell: HTMLSpanElement) {
                     const row = this.model!.data[pos.row]
                     switch (pos.col) {
-                        case 0: row.title = cell.innerText; break
-                        case 1: row.author = cell.innerText; break
-                        case 2: row.year = parseInt(cell.innerText); break
+                        case 0:
+                            row.title = cell.innerText
+                            break
+                        case 1:
+                            row.author = cell.innerText
+                            break
+                        case 2:
+                            row.year = parseInt(cell.innerText)
+                            break
                     }
                 }
             }
@@ -344,11 +398,7 @@ describe("table", function () {
 
             // View Layer
             document.body.replaceChildren(
-                <Table
-                    style={{ width: `720px`, height: `350px` }}
-                    model={model}
-                    selectionModel={selectionModel}
-                />
+                <Table style={{ width: `720px`, height: `350px` }} model={model} selectionModel={selectionModel} />
             )
 
             // Test
@@ -391,7 +441,7 @@ describe("table", function () {
                 { title: "Do Androids Dream of Electric Sheep?", author: "Philip K. Dick", year: 1968 },
                 { title: "A Scanner Darkly", author: "Philip K. Dick", year: 1977 },
                 { title: "Second Variety", author: "Philip K. Dick", year: 1953 },
-            ].map(book => new Book(book.title, book.author, book.year))
+            ].map((book) => new Book(book.title, book.author, book.year))
 
             // Application Layer
             const model = new ArrayModel<Book>(bookList, Book)
@@ -400,13 +450,17 @@ describe("table", function () {
                     super(model)
                     this.config.editMode = EditMode.EDIT_ON_FOCUS
                 }
-                override get colCount(): number { return 1 }
-                override getRowHead(row: number): Node | undefined { return text(`${row + 1}`) }
+                override get colCount(): number {
+                    return 1
+                }
+                override getRowHead(row: number): Node | undefined {
+                    return text(`${row + 1}`)
+                }
                 override showCell(pos: TablePos, cell: HTMLSpanElement) {
                     cell.replaceChildren(
                         <TextField model={model.data[pos.row].title} style={{ width: "100px" }} />,
                         <TextField model={model.data[pos.row].author} style={{ width: "100px" }} />,
-                        <TextField model={model.data[pos.row].year} style={{ width: "50px" }}/>
+                        <TextField model={model.data[pos.row].year} style={{ width: "50px" }} />
                     )
                 }
             }
@@ -417,11 +471,7 @@ describe("table", function () {
 
             // View Layer
             document.body.replaceChildren(
-                <Table
-                    style={{ width: `720px`, height: `350px` }}
-                    model={model}
-                    selectionModel={selectionModel}
-                />
+                <Table style={{ width: `720px`, height: `350px` }} model={model} selectionModel={selectionModel} />
             )
 
             // Test
@@ -450,7 +500,16 @@ describe("table", function () {
             await sleep()
             for (let i = 0; i < 3; ++i) {
                 const element = input()
-                for (let type of ["focusin", "focusout", "focus", "blur", "pointerdown", "pointerup", "keydown", "keyup"]) {
+                for (let type of [
+                    "focusin",
+                    "focusout",
+                    "focus",
+                    "blur",
+                    "pointerdown",
+                    "pointerup",
+                    "keydown",
+                    "keyup",
+                ]) {
                     element.addEventListener(type as any, (ev: FocusEvent) => {
                         console.log(`========== i${i} ${ev.type} ===========`)
                         console.log(ev)
@@ -494,7 +553,7 @@ describe("table", function () {
                 z: NumberModel
 
                 constructor(bone: Bone | undefined = undefined) {
-                    this.x = new NumberModel(0, { min: -180, max: 180, step: 5})
+                    this.x = new NumberModel(0, { min: -180, max: 180, step: 5 })
                     this.y = new NumberModel(0, { min: -180, max: 180, step: 5 })
                     this.z = new NumberModel(0, { min: -180, max: 180, step: 5 })
 
@@ -502,7 +561,7 @@ describe("table", function () {
                         return
                     }
                     this.bone = bone
-                    bone.children.forEach(childBone => {
+                    bone.children.forEach((childBone) => {
                         if (this.down === undefined) {
                             this.down = new PoseNode(childBone)
                         } else {
@@ -534,11 +593,13 @@ describe("table", function () {
                             this.treeCell(pos, cell, node.bone.name)
                             break
                         case 1:
-                            const x = <>
-                                <TextField model={node.x} style={{ width: '50px' }} />
-                                <TextField model={node.y} style={{ width: '50px' }} />
-                                <TextField model={node.z} style={{ width: '50px' }} />
-                            </>
+                            const x = (
+                                <>
+                                    <TextField model={node.x} style={{ width: "50px" }} />
+                                    <TextField model={node.y} style={{ width: "50px" }} />
+                                    <TextField model={node.z} style={{ width: "50px" }} />
+                                </>
+                            )
                             cell.replaceChildren(...x)
                             break
                     }
@@ -546,15 +607,9 @@ describe("table", function () {
             }
 
             const bones = new Bone("root", [
-                new Bone("pelvis.R", [
-                    new Bone("upperleg01.R", [])
-                ]),
-                new Bone("pelvis.L", [
-                    new Bone("upperleg01.L", [])
-                ]),
-                new Bone("spine05", [
-                    new Bone("spine04", [])
-                ])
+                new Bone("pelvis.R", [new Bone("upperleg01.R", [])]),
+                new Bone("pelvis.L", [new Bone("upperleg01.L", [])]),
+                new Bone("spine05", [new Bone("spine04", [])]),
             ])
             const poseNodes = new PoseNode(bones)
 
@@ -568,10 +623,13 @@ describe("table", function () {
                 // <Tabs>
                 //     <Tab label="Morph" value="MORPH">WIP</Tab>
                 //     <Tab label="Pose" value="POSE">
-                        <Table style={{
-                            width: `720px`,
-                            height: `350px`
-                        }} model={poseControls} />
+                <Table
+                    style={{
+                        width: `720px`,
+                        height: `350px`,
+                    }}
+                    model={poseControls}
+                />
                 //     </Tab>
                 // </Tabs>
             )
@@ -590,16 +648,14 @@ describe("table", function () {
         it("insert row into table which already has row and column headers", async function () {
             // AnimationBase.animationFrameCount = 2000
             Animator.halt = false
-            const model = await prepareByRows([
-                new Measure(1, 32),
-                new Measure(4, 64)
-            ], { rowHeaders: true, columnHeaders: true })
+            const model = await prepareByRows([new Measure(1, 32), new Measure(4, 64)], {
+                rowHeaders: true,
+                columnHeaders: true,
+            })
             await sleep(150)
             // return
 
-            model.insertRow(1, flatMapRows([
-                new Measure(2, 48)
-            ]))
+            model.insertRow(1, flatMapRows([new Measure(2, 48)]))
 
             // let animation = InsertRowAnimation.current!
             // animation.prepare()
@@ -614,14 +670,12 @@ describe("table", function () {
         it("insert column into table which already has row and column headers", async function () {
             // AnimationBase.animationFrameCount = 2000
             // Animator.halt = false
-            const model = await prepareByColumns([
-                new Measure(1, 32),
-                new Measure(4, 64)
-            ], { rowHeaders: true, columnHeaders: true })
+            const model = await prepareByColumns([new Measure(1, 32), new Measure(4, 64)], {
+                rowHeaders: true,
+                columnHeaders: true,
+            })
             await sleep(150)
-            model.insertColumn(1, flatMapColumns([
-                new Measure(2, 48)
-            ]))
+            model.insertColumn(1, flatMapColumns([new Measure(2, 48)]))
             // let animation = InsertColumnAnimation.current!
             // animation.prepare()
             await sleep(150)
@@ -637,26 +691,20 @@ describe("table", function () {
             // AnimationBase.animationFrameCount = 1
             // Animator.halt = false
 
-            const model = await prepareByRows([
-                new Measure(1, 32),
-                new Measure(4, 64)
-            ], { rowHeaders: true, columnHeaders: true })
+            const model = await prepareByRows([new Measure(1, 32), new Measure(4, 64)], {
+                rowHeaders: true,
+                columnHeaders: true,
+            })
 
-            model.insertRow(1, flatMapRows([
-                new Measure(2, 48)
-            ]))
+            model.insertRow(1, flatMapRows([new Measure(2, 48)]))
 
             await sleep(10)
 
-            model.insertRow(2, flatMapRows([
-                new Measure(3, 72),
-            ]))
+            model.insertRow(2, flatMapRows([new Measure(3, 72)]))
 
             await sleep(100)
 
-            model.insertRow(2, flatMapRows([
-                new Measure(3, 72),
-            ]))
+            model.insertRow(2, flatMapRows([new Measure(3, 72)]))
 
             testTableLayout()
         })
@@ -758,8 +806,8 @@ describe("table", function () {
         it("tab forward into table", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
-            await sleep();
-            (document.body.children[0] as HTMLElement).focus()
+            await sleep()
+            ;(document.body.children[0] as HTMLElement).focus()
 
             tabForward()
 
@@ -772,8 +820,8 @@ describe("table", function () {
         it("tab backward into table", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
-            await sleep();
-            (document.body.children[2] as HTMLElement).focus()
+            await sleep()
+            ;(document.body.children[2] as HTMLElement).focus()
 
             tabBackward()
 
@@ -911,7 +959,13 @@ describe("table", function () {
         })
 
         function dumpCell(id: string, cell: SpreadsheetCell) {
-            console.log(`${id}: _inputValue=${cell._inputValue} (${typeof cell._inputValue}), _calculatedValue=${cell._calculatedValue} (${typeof cell._calculatedValue}), _error=${cell._error} (${typeof cell._error}), _node=${cell._node} (${typeof cell._node})`)
+            console.log(
+                `${id}: _inputValue=${cell._inputValue} (${typeof cell._inputValue}), _calculatedValue=${
+                    cell._calculatedValue
+                } (${typeof cell._calculatedValue}), _error=${cell._error} (${typeof cell._error}), _node=${
+                    cell._node
+                } (${typeof cell._node})`
+            )
         }
 
         // different edit modes: normal, spreadsheet
@@ -1028,10 +1082,12 @@ describe("table", function () {
     describe("jsx", function () {
         it("table accepts 'model' and 'style' attributes", async function () {
             const model = createModel(4, 4)
-            const x = (<>
-                <style>{"body{background: #888;}"}</style>
-                <Table model={model} style={{ width: '42%' }} />
-            </>)
+            const x = (
+                <>
+                    <style>{"body{background: #888;}"}</style>
+                    <Table model={model} style={{ width: "42%" }} />
+                </>
+            )
             document.body.replaceChildren(...x)
             await sleep()
 
@@ -1045,7 +1101,7 @@ describe("table", function () {
     describe("layout", function () {
         it("expand", async function () {
             // Table.transitionDuration = "500ms"
-            const model = createWidgetTree();
+            const model = createWidgetTree()
             // TODO
             // * while when a TreeNodeModel is initialized from a populated tree,
             //   all nodes are closed.
@@ -1053,13 +1109,16 @@ describe("table", function () {
             //   methods, all nodes are open
             //   => this should be consistent
             // * the leaf nodes don't render correctly
-            (model as TreeModel<any>).collapse()
+            ;(model as TreeModel<any>).collapse()
 
             document.body.replaceChildren(
-                <Table model={model} style={{
-                    position: 'absolute',
-                    inset: 0,
-                }} />
+                <Table
+                    model={model}
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                    }}
+                />
             )
             await sleep()
             const table = getTable().table
@@ -1070,7 +1129,6 @@ describe("table", function () {
     })
 
     describe("tree", function () {
-
         // basically, modelChanged() delegates all the work
         // this.animation = new InsertRowAnimation(this, event)
         // this.animation.run()
@@ -1090,9 +1148,7 @@ describe("table", function () {
             // InsertRowAnimation.halt = true
 
             const model = createTreeModelFromTree()
-            document.body.replaceChildren(
-                <Table model={model} style={{ position: 'absolute', inset: 0 }} />
-            )
+            document.body.replaceChildren(<Table model={model} style={{ position: "absolute", inset: 0 }} />)
             await sleep()
             const table = getTable()
 
@@ -1144,9 +1200,7 @@ describe("table", function () {
 
             // GIVEN an initial tree view
             const model = createTreeModelFromTree()
-            document.body.replaceChildren(
-                <Table model={model} style={{ position: 'absolute', inset: 0 }} />
-            )
+            document.body.replaceChildren(<Table model={model} style={{ position: "absolute", inset: 0 }} />)
             await sleep()
             const table = getTable()
             table.adapter.config.expandColumn = true
@@ -1162,7 +1216,6 @@ describe("table", function () {
 
             // await table.animation()
         })
-
     })
 })
 
@@ -1197,8 +1250,7 @@ class TestSpreadsheetModel extends SpreadsheetModel implements TestModel {
     }
 }
 
-class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> {
-}
+class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> {}
 
 // ---------------------
 
@@ -1260,10 +1312,12 @@ class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
                 break
             case 1:
                 if (node.model && node.down === undefined) {
-                    const x = <>
-                        <TextField model={node.model} style={{ width: '50px', margin: '10px' }} />
-                        <Slider model={node.model} style={{ margin: '10px' }} />
-                    </>
+                    const x = (
+                        <>
+                            <TextField model={node.model} style={{ width: "50px", margin: "10px" }} />
+                            <Slider model={node.model} style={{ margin: "10px" }} />
+                        </>
+                    )
                     cell.replaceChildren(...x)
                 }
                 break
@@ -1323,16 +1377,12 @@ class WidgetNode implements TreeNode {
 
 function createTreeModelFromTree(): TestTreeNodeModel {
     TreeAdapter.register(WidgetTreeAdapter, TreeNodeModel, WidgetNode)
-    return new TestTreeNodeModel(WidgetNode,
-        new WidgetNode("",
-            new WidgetNode("#0",
-                new WidgetNode("#1"),
-                new WidgetNode("#2")
-            ),
-            new WidgetNode("#3",
-                new WidgetNode("#4"),
-                new WidgetNode("#5")
-            )
+    return new TestTreeNodeModel(
+        WidgetNode,
+        new WidgetNode(
+            "",
+            new WidgetNode("#0", new WidgetNode("#1"), new WidgetNode("#2")),
+            new WidgetNode("#3", new WidgetNode("#4"), new WidgetNode("#5"))
         ).down
     )
 }
