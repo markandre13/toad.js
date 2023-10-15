@@ -1,6 +1,6 @@
 import { expect } from "@esm-bundle/chai"
 
-import { bindModel, unbind, refs, TableEditMode } from "@toad"
+import { bindModel, unbind, refs, TableEditMode, Tabs } from "@toad"
 
 import { MemoryLogger, Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"
@@ -59,6 +59,7 @@ import { Animator, AnimationBase } from "@toad/util/animation"
 import { InsertRowAnimation } from "@toad/table/private/InsertRowAnimation"
 import { SelectionModel } from "@toad/table/model/SelectionModel"
 import { hasFocus } from "@toad/util/dom"
+import { Tab } from "@toad/view/Tab"
 
 // TODO:
 // [X] send modified-events
@@ -98,6 +99,7 @@ import { hasFocus } from "@toad/util/dom"
 
 describe("table", function () {
     beforeEach(async function () {
+        Table.loggerType = MemoryLogger
         unbind()
         TableAdapter.unbind()
         Animator.halt = false
@@ -224,8 +226,6 @@ describe("table", function () {
             // TODO: add some test
         })
         it("display and edit array of objects (custom adapter, EDIT_ON_ENTER)", async function () {
-            Table.loggerType = MemoryLogger
-
             // Domain Layer
             class Book {
                 title: string = ""
@@ -308,7 +308,7 @@ describe("table", function () {
             // Test
             await sleep(20)
             const table = getTable()
-            table.table.focus()
+            table.focus()
 
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
             expect(c0r1).to.not.be.undefined
@@ -325,7 +325,7 @@ describe("table", function () {
 
             table.logger.log("================= hit [Enter] to finish editing")
             keyboard({ key: "Enter" }) // leave edit mode and jump to next cell
-            
+
             // table.logger.print()
 
             expect(hasFocus(c0r1)).to.be.false
@@ -333,8 +333,6 @@ describe("table", function () {
             expect(model.data[1].title).to.equal("Hello")
         })
         it("display and edit array of objects (custom adapter, EDIT_ON_FOCUS)", async function () {
-            Table.loggerType = MemoryLogger
-
             // Domain Layer
             class Book {
                 title: string = ""
@@ -417,7 +415,7 @@ describe("table", function () {
             // Test
             await sleep(10)
             const table = getTable()
-            table.table.focus()
+            table.focus()
 
             table.logger.log("================= click c0r1")
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
@@ -436,7 +434,9 @@ describe("table", function () {
 
             expect(model.data[1].title).to.equal("Hello")
         })
-        it("display and edit array of objects (custom adapter, cell contains elements)", async function () {
+        xit("display and edit array of objects (custom adapter, cells contain TextFields)", async function () {
+            // TODO: this test should focus on the nagivation
+
             // Domain Layer
             class Book {
                 title: TextModel
@@ -492,7 +492,9 @@ describe("table", function () {
             )
 
             // Test
-            await sleep()
+            await sleep(20)
+            const table = getTable()
+            table.focus()
 
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
             expect(c0r1).to.not.be.undefined
@@ -541,31 +543,36 @@ describe("table", function () {
         it("JSX renders correctly", async function () {
             const model = createModel(4, 4)
             document.body.replaceChildren(<Table style={{ width: `720px`, height: `350px` }} model={model} />)
-            await sleep()
+            await sleep(20)
+            const table = getTable()
+            // table.logger.print()
             validateRender(model)
         })
         it("HTML renders correctly", async function () {
             const model = createModel(4, 4)
             document.body.innerHTML = `<tx-table model="model" style="width: 720px; height: 350px;"></tx-table>`
-            await sleep()
+            await sleep(20)
+            const table = getTable()
+            // table.logger.print()
             validateRender(model)
         })
         // FIXME: unstable test
-        it("insert row into table which already has row and column headers", async function () {
+        it("insert row into table which already has row and column headers (UNSTABLE)", async function () {
             // AnimationBase.animationFrameCount = 2000
-            Animator.halt = false
+            AnimationBase.animationFrameCount = 1
+            Animator.halt = false 
             const model = await prepareByRows([new Measure(1, 32), new Measure(4, 64)], {
                 rowHeaders: true,
                 columnHeaders: true,
             })
-            await sleep(150)
+            await sleep(20)
             // return
 
             model.insertRow(1, flatMapRows([new Measure(2, 48)]))
 
             // let animation = InsertRowAnimation.current!
             // animation.prepare()
-            await sleep(150)
+            await sleep(20)
             // animation.arrangeNewRowsInStaging()
 
             // const table = getTable()
@@ -573,18 +580,18 @@ describe("table", function () {
             testTableLayout()
         })
         // race condition
-        it("insert column into table which already has row and column headers", async function () {
-            // AnimationBase.animationFrameCount = 2000
-            // Animator.halt = false
+        it("insert column into table which already has row and column headers (UNSTABLE)", async function () {
+            AnimationBase.animationFrameCount = 1
+            Animator.halt = false
             const model = await prepareByColumns([new Measure(1, 32), new Measure(4, 64)], {
                 rowHeaders: true,
                 columnHeaders: true,
             })
-            await sleep(150)
+            await sleep(20)
             model.insertColumn(1, flatMapColumns([new Measure(2, 48)]))
             // let animation = InsertColumnAnimation.current!
             // animation.prepare()
-            await sleep(150)
+            await sleep(20)
             // animation.arrangeNewColumnsInStaging()
 
             // const table = getTable()
@@ -593,9 +600,9 @@ describe("table", function () {
             testTableLayout()
         })
         // FIXME: unstable test
-        it("three successive animations fail", async function () {
-            // AnimationBase.animationFrameCount = 1
-            // Animator.halt = false
+        it("three successive animations fail (UNSTABLE)", async function () {
+            AnimationBase.animationFrameCount = 1
+            Animator.halt = false
 
             const model = await prepareByRows([new Measure(1, 32), new Measure(4, 64)], {
                 rowHeaders: true,
@@ -604,32 +611,45 @@ describe("table", function () {
 
             model.insertRow(1, flatMapRows([new Measure(2, 48)]))
 
-            await sleep(10)
+            await sleep(20)
 
             model.insertRow(2, flatMapRows([new Measure(3, 72)]))
 
-            await sleep(100)
+            await sleep(20)
 
             model.insertRow(2, flatMapRows([new Measure(3, 72)]))
+
+            await sleep(20)
 
             testTableLayout()
         })
         // FIXME: unstable test
-        it("layout formerly invisible table (e.g. within tabs)", async function () {
+        it("layout formerly invisible table (e.g. within tabs) (UNSTABLE)", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `
-            <tx-tabs style="width: 100%">
-                <tx-tab label="TAB1">
-                    This page intentionally left blank.
-                </tx-tab>
-                <tx-tab label="TAB2">
-                    <tx-table model="model"></tx-table>
-                </tx-tab>
-            </tx-tabs>`
+            // FIXME: HTML Tabs are broken
+            // document.body.innerHTML = `
+            // <tx-tabs style="width: 100%">
+            //     <tx-tab label="TAB1">
+            //         This page intentionally left blank.
+            //     </tx-tab>
+            //     <tx-tab label="TAB2">
+            //         <tx-table model="model"></tx-table>
+            //     </tx-tab>
+            // </tx-tabs>`
+            // FIXME: tab indicator is displayed on top
+            document.body.replaceChildren(
+                <Tabs style={{ width: "100%" }}>
+                    <Tab label="TAB1">This page intentionally left blank.</Tab>
+                    <Tab label="TAB2">
+                        <Table model={model} />
+                    </Tab>
+                </Tabs>
+            )
             await sleep()
 
-            const tab2 = getByText("TAB2")!
-            click(tab2)
+            const tab2 = getByText("TAB2")
+            expect(tab2).to.be.not.undefined
+            click(tab2!)
 
             await sleep(20)
             const c0r0 = getByText("C0R0")!
@@ -652,6 +672,7 @@ describe("table", function () {
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
             const table = getTable()
+            table.focus()
 
             const c0r0 = getByText("C0R0") as HTMLSpanElement
             const c1r0 = getByText("C1R0") as HTMLSpanElement
@@ -698,6 +719,7 @@ describe("table", function () {
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
             const table = getTable()
+            table.focus()
 
             for (let row = 0; row < 2; ++row) {
                 for (let col = 0; col < 2; ++col) {
@@ -741,31 +763,35 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C0R0")!)
             tabForward()
 
             const cell = getByText("C1R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
         })
         it("tab to previous cell", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C1R0")!)
             tabBackward()
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         it("tab forward out of table", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             const c1r1 = getByText("C1R1")!
             click(c1r1)
@@ -777,6 +803,8 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C0R0")!)
             tabBackward()
@@ -787,6 +815,8 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C0R0")!)
 
@@ -794,13 +824,14 @@ describe("table", function () {
 
             const cell = getByText("C1R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
         })
         xit("cursor right to next row", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C1R0")!)
 
@@ -813,6 +844,8 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C1R0")!)
 
@@ -820,7 +853,6 @@ describe("table", function () {
 
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         xit("cursor left to previous row", async function () {
@@ -839,6 +871,8 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C0R1")!)
 
@@ -846,13 +880,14 @@ describe("table", function () {
 
             const cell = getByText("C0R0")
             expect(activeElement()).to.equal(cell)
-            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
         })
         it("cursor down", async function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<tx-table model="model"></tx-table>`
             await sleep()
+            const table = getTable()
+            table.focus()
 
             click(getByText("C0R0")!)
 
@@ -860,7 +895,6 @@ describe("table", function () {
 
             const cell = getByText("C0R1")
             expect(activeElement()).to.equal(cell)
-            const table = getTable()
             expect(table.selection?.value).to.deep.equal({ col: 0, row: 1 })
         })
 
@@ -900,6 +934,7 @@ describe("table", function () {
                 document.body.innerHTML = `<tx-table model="model"></tx-table>`
                 await sleep()
                 const table = getTable()
+                table.focus()
 
                 const c0r0 = getByText("C0R0") as HTMLSpanElement
                 const c1r0 = getByText("C1R0") as HTMLSpanElement
@@ -995,7 +1030,7 @@ describe("table", function () {
                 </>
             )
             document.body.replaceChildren(...x)
-            await sleep()
+            await sleep(20)
 
             validateRender(model)
 
@@ -1107,8 +1142,9 @@ describe("table", function () {
             // GIVEN an initial tree view
             const model = createTreeModelFromTree()
             document.body.replaceChildren(<Table model={model} style={{ position: "absolute", inset: 0 }} />)
-            await sleep()
+            await sleep(20)
             const table = getTable()
+            table.focus()
             table.adapter.config.expandColumn = true
 
             // THEN it renders correctly

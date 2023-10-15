@@ -1,6 +1,6 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from "@esm-bundle/chai"
 
-import { EditMode } from '@toad/table/adapter/TableAdapter'
+import { EditMode } from "@toad/table/adapter/TableAdapter"
 import { TableModel } from "@toad/table/model/TableModel"
 import { Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"
@@ -12,7 +12,8 @@ import { px2int, px2float, sleep } from "../testlib"
 import { GridTableModel } from "@toad/table/model/GridTableModel"
 
 export enum Orientation {
-    HORIZONTAL, VERTICAL
+    HORIZONTAL,
+    VERTICAL,
 }
 
 export class Cell {
@@ -48,10 +49,7 @@ export class Measure {
         this.size = size !== undefined ? size : 0
     }
     toCells(orientation: Orientation) {
-        return [
-            new Cell(orientation, this.id, 0, this.size),
-            new Cell(orientation, this.id, 1, undefined)
-        ]
+        return [new Cell(orientation, this.id, 0, this.size), new Cell(orientation, this.id, 1, undefined)]
     }
 }
 
@@ -73,8 +71,7 @@ export class MeasureAdapter extends GridAdapter<MeasureModel> {
         this.config = model.config
     }
     override getRowHead(row: number): Node | undefined {
-        if (this.model?.rowHeaders !== true)
-            return undefined
+        if (this.model?.rowHeaders !== true) return undefined
         const data = this.model!!.getCell(0, row)
         if (this.model.orientation === Orientation.HORIZONTAL) {
             return document.createTextNode(`R${data.id}`)
@@ -83,8 +80,7 @@ export class MeasureAdapter extends GridAdapter<MeasureModel> {
         }
     }
     override getColumnHead(col: number): Node | undefined {
-        if (this.model?.columnHeaders !== true)
-            return undefined
+        if (this.model?.columnHeaders !== true) return undefined
         const data = this.model!!.getCell(col, 0)
         if (this.model.orientation === Orientation.VERTICAL) {
             return document.createTextNode(`C${data.id}`)
@@ -155,39 +151,42 @@ export async function prepareByColumns(data: Measure[], props?: PrepareProps) {
     return await prepareCore(data, props, model)
 }
 async function prepareCore(data: Measure[], props: PrepareProps | undefined, model: MeasureModel) {
-    model.config.seamless = (props?.seamless) === true
-    model.config.expandColumn = (props?.expandColumn) === true
-    model.rowHeaders = (props?.rowHeaders) === true
-    model.columnHeaders = (props?.columnHeaders) === true
-    document.body.replaceChildren(<Table style={{
-        width: `${props?.width ?? 720}px`,
-        height: `${props?.height ?? 350}px`
-    }} model={model} />)
+    model.config.seamless = props?.seamless === true
+    model.config.expandColumn = props?.expandColumn === true
+    model.rowHeaders = props?.rowHeaders === true
+    model.columnHeaders = props?.columnHeaders === true
+    document.body.replaceChildren(
+        <Table
+            style={{
+                width: `${props?.width ?? 720}px`,
+                height: `${props?.height ?? 350}px`,
+            }}
+            model={model}
+        />
+    )
     await sleep()
     await sleep()
+    ;(document.body.children[0] as HTMLElement).focus()
     return model
 }
 
 export function flatMapRows(data: Measure[]) {
-    return data.flatMap(it => it.toCells(Orientation.HORIZONTAL))
+    return data.flatMap((it) => it.toCells(Orientation.HORIZONTAL))
 }
 
 export function flatMapColumns(dataIn: Measure[]) {
-    const data = dataIn.map(it => it.toCells(Orientation.VERTICAL))
+    const data = dataIn.map((it) => it.toCells(Orientation.VERTICAL))
     let result: Cell[] = []
-    if (data.length === 0)
-        return result
+    if (data.length === 0) return result
     const rows = data[0].length
     for (let i = 0; i < rows; ++i) {
-        result = result.concat(data.flatMap(it => it[i]))
+        result = result.concat(data.flatMap((it) => it[i]))
     }
     return result
 }
 
 export function getTable() {
-    return new TableFriend(
-        document.querySelector("tx-table") as Table
-    )
+    return new TableFriend(document.querySelector("tx-table") as Table)
 }
 export function bodyRowInfo(row: number) {
     const table = getTable()
@@ -320,7 +319,7 @@ export function bodyRowInfoCore(row: number, table: TableFriend, body: HTMLDivEl
         expect(otherCellInRow.style.height).to.equal(firstCellOfRow.style.height)
     }
     let id = firstCellOfRow.innerText
-    id = id.substring(0, id.indexOf('C'))
+    id = id.substring(0, id.indexOf("C"))
     return `${id}:${x},${y},${w},${h}`
 }
 
@@ -355,7 +354,8 @@ export function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivEl
 
     let extraNodesInBody = 0
     for (let child of body.children) {
-        if (child === table.getStaging() || (child as HTMLElement).style.backgroundColor === 'rgba(0, 0, 128, 0.3)') { // last is mask
+        if (child === table.getStaging() || (child as HTMLElement).style.backgroundColor === "rgba(0, 0, 128, 0.3)") {
+            // last is mask
             ++extraNodesInBody
             break
         }
@@ -381,18 +381,21 @@ export function bodyColInfoCore(col: number, table: TableFriend, body: HTMLDivEl
         expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
     }
     let id = firstCellOfCol.innerText
-    id = id.substring(0, id.indexOf('R'))
+    id = id.substring(0, id.indexOf("R"))
     return `${id}:${x},${y},${w},${h}`
 }
 // 1 3 5 7
 // 2 4 6 8
 export function insertColInfoCore(col: number, table: TableFriend, body: HTMLDivElement) {
-
     const indexRow0 = col * table.adapter.rowCount
     const indexRow1 = indexRow0 + 1
 
     if (indexRow1 >= body.children.length) {
-        throw Error(`Column ${col} does not exist in measure/staging. There are only ${body.children.length / table.adapter.colCount} columns.`)
+        throw Error(
+            `Column ${col} does not exist in measure/staging. There are only ${
+                body.children.length / table.adapter.colCount
+            } columns.`
+        )
     }
 
     const firstCellOfCol = body.children[indexRow0] as HTMLElement
@@ -415,7 +418,7 @@ export function insertColInfoCore(col: number, table: TableFriend, body: HTMLDiv
         expect(otherCellInRow.style.width, `width of ${what}`).to.equal(firstCellOfCol.style.width)
     }
     let id = firstCellOfCol.innerText
-    id = id.substring(0, id.indexOf('R'))
+    id = id.substring(0, id.indexOf("R"))
     return `${id}:${x},${y},${w},${h}`
 }
 export function testTableLayout() {
@@ -434,8 +437,7 @@ export function testTableLayout() {
     const cellDeltaInnerToOuterWidth = 2 * (horizontalCellPadding + cellBorder)
     const cellDeltaInnerToOuterHeight = 2 * (verticalCellPadding + cellBorder)
 
-    const rowHeadCellOuterWidth =
-        table.rowHeads === undefined ? 0 : rowHeadCellInnerWidth + cellDeltaInnerToOuterWidth
+    const rowHeadCellOuterWidth = table.rowHeads === undefined ? 0 : rowHeadCellInnerWidth + cellDeltaInnerToOuterWidth
     const colHeadCellOuterHeight =
         table.colHeads === undefined ? 0 : colHeadCellInnerHeight + cellDeltaInnerToOuterHeight
 
@@ -443,7 +445,7 @@ export function testTableLayout() {
         let expectTop = 0
         for (let rowHead of table.rowHeads.children) {
             const cell = rowHead as HTMLElement
-            expect(expectTop).to.equal(px2float(cell.style.top))
+            expect(expectTop, `row head ${cell.innerText} top (${expectTop}, ${cell.style.top}, ${cell.style.height})`).to.equal(px2int(cell.style.top))
             const height = px2float(cell.style.height) + cellDeltaInnerToOuterHeight
             expectTop += height - overlap
         }
@@ -453,7 +455,7 @@ export function testTableLayout() {
         let expectLeft = 0
         for (let colHead of table.colHeads.children) {
             const cell = colHead as HTMLElement
-            expect(expectLeft, `column head ${cell.innerText} left`).to.equal(px2float(cell.style.left))
+            expect(expectLeft, `column head ${cell.innerText} left (${expectLeft}, ${cell.style.left}, ${cell.style.width})`).to.equal(px2int(cell.style.left))
             const width = px2float(cell.style.width) + cellDeltaInnerToOuterWidth
             expectLeft += width - overlap
         }
@@ -462,17 +464,17 @@ export function testTableLayout() {
     // TODO: check header cell size
     // TODO: check body cell position and size
 
-    const rowHeadContainerWidth =
-        table.rowHeads === undefined ? 0 : px2float(table.rowHeads.style.width)
+    const rowHeadContainerWidth = table.rowHeads === undefined ? 0 : px2float(table.rowHeads.style.width)
     expect(rowHeadContainerWidth, `row header container width`).to.equal(rowHeadCellOuterWidth)
 
-    const colHeadContainerHeight =
-        table.colHeads === undefined ? 0 : px2float(table.colHeads.style.height)
+    const colHeadContainerHeight = table.colHeads === undefined ? 0 : px2float(table.colHeads.style.height)
     expect(colHeadContainerHeight, `col header container height`).to.equal(colHeadCellOuterHeight)
 
     if (table.rowHeads) {
         if (table.colHeads) {
-            expect(px2float(table.rowHeads.style.top), `row header container top`).to.equal(colHeadContainerHeight - overlap)
+            expect(px2float(table.rowHeads.style.top), `row header container top`).to.equal(
+                colHeadContainerHeight - overlap
+            )
         } else {
             expect(px2float(table.rowHeads.style.top), `row header container top`).to.equal(0)
         }
@@ -481,7 +483,9 @@ export function testTableLayout() {
 
     if (table.colHeads) {
         if (table.rowHeads) {
-            expect(px2float(table.colHeads.style.left), `column header container left`).to.equal(rowHeadContainerWidth - overlap)
+            expect(px2float(table.colHeads.style.left), `column header container left`).to.equal(
+                rowHeadContainerWidth - overlap
+            )
         } else {
             expect(px2float(table.colHeads.style.left), `column header container left`).to.equal(0)
         }
@@ -518,7 +522,6 @@ export interface TestModel extends TableModel {
 // this method checks if the layout of the table cells fits the expectations,
 // especially after various insert/remove row/column operations
 export function validateRender(model: TestModel, print: boolean = false) {
-
     // console.log(`validateRender: size ${adapter.colCount} x ${adapter.rowCount} = ${adapter.colCount * adapter.rowCount}`)
 
     const table = getTable()
@@ -526,7 +529,7 @@ export function validateRender(model: TestModel, print: boolean = false) {
     const body = table.body
     // console.log(`  body has length ${body.children.length}`)
 
-    const expectCol: { x: number, w: number }[] = []
+    const expectCol: { x: number; w: number }[] = []
     let x = 0
     for (let col = 0; col < adapter.colCount; ++col) {
         const cell = body.children[col] as HTMLSpanElement
@@ -539,7 +542,7 @@ export function validateRender(model: TestModel, print: boolean = false) {
         }
     }
 
-    const expectRow: { y: number, h: number }[] = []
+    const expectRow: { y: number; h: number }[] = []
     let y = 0
     for (let row = 0; row < adapter.rowCount; ++row) {
         const cell = body.children[row * adapter.colCount] as HTMLSpanElement
@@ -570,7 +573,11 @@ export function validateRender(model: TestModel, print: boolean = false) {
         for (let row = 0; row < adapter.rowCount; ++row) {
             for (let col = 0; col < adapter.colCount; ++col) {
                 const cell = body.children[idx0++] as HTMLSpanElement
-                txt = `${txt}[${col},${row}]='${cell.textContent}' (${px2float(cell.style.left)},${px2float(cell.style.top)},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${expectRow[row].y},${expectCol[col].w},${expectRow[row].h} )  `
+                txt = `${txt}[${col},${row}]='${cell.textContent}' (${px2float(cell.style.left)},${px2float(
+                    cell.style.top
+                )},${px2float(cell.style.width)},${px2float(cell.style.height)}):(${expectCol[col].x},${
+                    expectRow[row].y
+                },${expectCol[col].w},${expectRow[row].h} )  `
             }
             console.log(txt)
             txt = ""
@@ -585,7 +592,9 @@ export function validateRender(model: TestModel, print: boolean = false) {
         const height = px2int((colHeads.children[0] as HTMLSpanElement).style.height)
         for (let col = 0; col < adapter.colCount; ++col) {
             const rowHeader = colHeads.children[col] as HTMLSpanElement
-            expect(rowHeader.innerText, `column header ${col}`).to.equal((table.adapter.getColumnHead(col) as Text).data)
+            expect(rowHeader.innerText, `column header ${col}`).to.equal(
+                (table.adapter.getColumnHead(col) as Text).data
+            )
             expect(px2int(rowHeader.style.left), `column header ${col} left`).to.equal(expectCol[col].x)
             expect(px2int(rowHeader.style.width), `column header ${col} width`).to.equal(expectCol[col].w)
             expect(px2int(rowHeader.style.top), `column header ${col} top`).to.equal(0)
@@ -596,7 +605,9 @@ export function validateRender(model: TestModel, print: boolean = false) {
             if (col + 1 < adapter.colCount) {
                 expect(px2int(rowHandle.style.left), `row handle ${col} left`).to.equal(expectCol[col + 1].x - 3)
             } else {
-                expect(px2int(rowHandle.style.left), `row handle last left`).to.equal(expectCol[col].x + expectCol[col].w + 5 - 3)
+                expect(px2int(rowHandle.style.left), `row handle last left`).to.equal(
+                    expectCol[col].x + expectCol[col].w + 5 - 3
+                )
             }
             expect(px2int(rowHandle.style.width), `row handle ${col} width`).to.equal(5)
             expect(px2int(rowHandle.style.top), `row handle ${col} top`).to.equal(0)
@@ -625,7 +636,9 @@ export function validateRender(model: TestModel, print: boolean = false) {
             if (row + 1 < adapter.rowCount) {
                 expect(px2int(colHandle.style.top), `column handle ${row} top`).to.equal(expectRow[row + 1].y - 3)
             } else {
-                expect(px2int(colHandle.style.top), `column handle last top`).to.equal(expectRow[row].y + expectRow[row].h - 2)
+                expect(px2int(colHandle.style.top), `column handle last top`).to.equal(
+                    expectRow[row].y + expectRow[row].h - 2
+                )
             }
             expect(px2int(colHandle.style.height), `column handle ${row} height`).to.equal(5)
         }
@@ -644,10 +657,10 @@ export function validateRender(model: TestModel, print: boolean = false) {
             // console.log(cell)
 
             expect(model.getCellValueOf(table, col, row)).to.equal(model.getModelValueOf(col, row))
-            expect(px2int(cell.style.left), `[${col},${row}] left`).to.equal((expectCol[col].x))
-            expect(px2int(cell.style.width), `[${col},${row}] width`).to.equal((expectCol[col].w))
-            expect(px2int(cell.style.top), `[${col},${row}] top`).to.equal((expectRow[row].y))
-            expect(px2int(cell.style.height), `[${col},${row}] height`).to.equal((expectRow[row].h))
+            expect(px2int(cell.style.left), `[${col},${row}] left`).to.equal(expectCol[col].x)
+            expect(px2int(cell.style.width), `[${col},${row}] width`).to.equal(expectCol[col].w)
+            expect(px2int(cell.style.top), `[${col},${row}] top`).to.equal(expectRow[row].y)
+            expect(px2int(cell.style.height), `[${col},${row}] height`).to.equal(expectRow[row].h)
         }
     }
 }

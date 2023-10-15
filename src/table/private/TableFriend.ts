@@ -22,6 +22,9 @@ export class TableFriend {
     get measure() {
         return (this.table as any).measure as HTMLDivElement
     }
+    focus() {
+        this.table.focus()
+    }
     getStaging() {
         const animator = (this.table as any).animator as Animator
         if (animator.current === undefined)

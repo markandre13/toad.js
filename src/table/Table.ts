@@ -141,7 +141,8 @@ export class Table extends View {
     // * don't observe the whole tree
     static observer: MutationObserver
     static allTables = new Set<Table>()
-    visible = false
+    protected visible = false
+    protected prepareInProgress = false
 
     static loggerType: new () => Logger = NullLogger
     logger: Logger
@@ -703,18 +704,29 @@ export class Table extends View {
     }
 
     prepareCells() {
-        if (!this.adapter) {
-            return
-        }
-        this.visible = isVisible(this)
-        if (!this.visible) {
+
+        if (this.adapter === undefined) {
+            this.logger.log(`Table::prepareCells(): no adapter => abort`)
             return
         }
         if (this.adapter.colCount === 0 || this.adapter.rowCount === 0) {
+            this.logger.log(`Table::prepareCells(): col and/or row count is zero => abort`)
             return
         }
 
-        this.logger.log(`Table::prepareCells()`)
+        this.visible = isVisible(this)
+        if (!this.visible) {
+            this.logger.log(`Table::prepareCells(): not visible, can not calculate layout => abort`)
+            return
+        }
+
+        if (this.prepareInProgress) {
+            this.logger.log(`Table::prepareCells(): prepareInProgress => abort`)
+            return
+        }
+        this.prepareInProgress = true
+
+        this.logger.log(`Table::prepareCells(): start`)
 
         if (this.adapter!.config.seamless) {
             this.root.classList.add("seamless")
@@ -725,12 +737,13 @@ export class Table extends View {
         this.prepareRowHeads()
         this.prepareBody()
 
+        this.logger.log(`Table::prepareCells(): finish, schedule arrangeAllMeasuredInGrid()`)
         setTimeout(this.arrangeAllMeasuredInGrid, 0)
     }
 
     // this method is called once during the initial setup
     arrangeAllMeasuredInGrid() {
-        this.logger.log(`Table::arrangeAllMeasuredInGrid()`)
+        this.logger.log(`Table::arrangeAllMeasuredInGrid(): begin`)
 
         this.calculateMinCellSize()
 
@@ -743,6 +756,9 @@ export class Table extends View {
         this.placeBodyCells(colWidths, rowHeights, colHeadHeight, rowHeadWidth)
 
         this.setHeadingFillerSizeToScrollbarSize()
+
+        this.prepareInProgress = false
+        this.logger.log(`Table::arrangeAllMeasuredInGrid(): finish`)
     }
 
     prepareMinCellSize() {
