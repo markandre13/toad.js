@@ -164,32 +164,32 @@ export function click(node: Element) {
             clientY
         })
     )
-    if (node instanceof HTMLElement) {
-        node.focus()
-    }
-    // old?.dispatchEvent(
-    //     new FocusEvent("blur", {
-    //         bubbles: true,
-    //         relatedTarget: node
-    //     })
-    // )
-    // old?.dispatchEvent(
-    //     new FocusEvent("focusout", {
-    //         bubbles: true,
-    //         relatedTarget: node
-    //     })
-    // )
-    // node?.dispatchEvent(
-    //     new FocusEvent("focus", {
-    //         bubbles: true,
-    //     })
-    // )
-    // node?.dispatchEvent(
-    //     new FocusEvent("focusin", {
-    //         bubbles: true,
-    //         relatedTarget: old
-    //     })
-    // )
+    // if (node instanceof HTMLElement) {
+    //     node.focus()
+    // }
+    old?.dispatchEvent(
+        new FocusEvent("blur", {
+            bubbles: true,
+            relatedTarget: node
+        })
+    )
+    old?.dispatchEvent(
+        new FocusEvent("focusout", {
+            bubbles: true,
+            relatedTarget: node
+        })
+    )
+    node?.dispatchEvent(
+        new FocusEvent("focus", {
+            bubbles: true,
+        })
+    )
+    node?.dispatchEvent(
+        new FocusEvent("focusin", {
+            bubbles: true,
+            relatedTarget: old
+        })
+    )
 
     // POINTER UP
     node.dispatchEvent(

@@ -70,6 +70,7 @@ export class NullLogger implements Logger {
 export class MemoryLogger implements Logger {
     logs: string[] = []
     log(msg: string) {
+        // console.log(msg)
         this.logs.push(msg)
     }
     print() {
@@ -509,6 +510,12 @@ export class Table extends View {
             const p = this.clientPosToTablePos(b.x + b.width / 2, b.y + b.height / 2)
             if (p !== undefined) {
                 this.selection!.value = p
+            }
+            if (
+                this.selection?.mode === TableEditMode.SELECT_CELL &&
+                this.adapter?.config.editMode === EditMode.EDIT_ON_FOCUS
+            ) {
+                this.editCell()
             }
         }
     }

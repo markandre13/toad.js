@@ -2,7 +2,7 @@ import { expect } from "@esm-bundle/chai"
 
 import { bindModel, unbind, refs, TableEditMode } from "@toad"
 
-import { Table } from "@toad/table/Table"
+import { MemoryLogger, Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"
 
 import { TreeNode } from "@toad/table/model/TreeNode"
@@ -224,6 +224,8 @@ describe("table", function () {
             // TODO: add some test
         })
         it("display and edit array of objects (custom adapter, EDIT_ON_ENTER)", async function () {
+            Table.loggerType = MemoryLogger
+
             // Domain Layer
             class Book {
                 title: string = ""
@@ -304,24 +306,35 @@ describe("table", function () {
             )
 
             // Test
-            await sleep()
+            await sleep(20)
+            const table = getTable()
+            table.table.focus()
 
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
             expect(c0r1).to.not.be.undefined
 
+            table.logger.log("================= click c0r1")
             click(c0r1)
             expect(hasFocus(c0r1)).to.be.true
 
+            table.logger.log("================= hit [Enter] to start editing")
             keyboard({ key: "Enter" }) // enter edit mode
 
+            table.logger.log("================= type 'Hello'")
             type("Hello", true)
 
+            table.logger.log("================= hit [Enter] to finish editing")
             keyboard({ key: "Enter" }) // leave edit mode and jump to next cell
+            
+            // table.logger.print()
+
             expect(hasFocus(c0r1)).to.be.false
 
             expect(model.data[1].title).to.equal("Hello")
         })
         it("display and edit array of objects (custom adapter, EDIT_ON_FOCUS)", async function () {
+            Table.loggerType = MemoryLogger
+
             // Domain Layer
             class Book {
                 title: string = ""
@@ -402,20 +415,24 @@ describe("table", function () {
             )
 
             // Test
-            await sleep()
+            await sleep(10)
+            const table = getTable()
+            table.table.focus()
 
+            table.logger.log("================= click c0r1")
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
             expect(c0r1).to.not.be.undefined
-
             click(c0r1)
-            // expect(hasFocus(c0r1)).to.be.true
+            expect(hasFocus(c0r1)).to.be.true
 
-            // keyboard({ key: "Enter" }) // enter edit mode
-
+            table.logger.log("================= type 'Hello'")
             type("Hello", true)
 
+            table.logger.log("================= hit [Enter] to finish editing")
             keyboard({ key: "Enter" }) // leave edit mode and jump to next cell
-            // // expect(hasFocus(c0r1)).to.be.false
+            expect(hasFocus(c0r1)).to.be.false
+
+            // table.logger.print()
 
             expect(model.data[1].title).to.equal("Hello")
         })

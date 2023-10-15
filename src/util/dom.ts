@@ -68,7 +68,7 @@ export function erase(n: Element): void {
 }
 
 export function hasFocus(element: Element): boolean {
-    if (!document.hasFocus()) return false
+    // if (!document.hasFocus()) return false
     let active = document.activeElement
     while (active !== null) {
         if (active === element) {
