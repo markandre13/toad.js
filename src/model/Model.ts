@@ -122,4 +122,36 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
         this.modified.trigger(ModelReason.ERROR)
     }
     get error(): string | undefined { return this.options?.error }
+
+    applyStyle(element: HTMLElement) {
+        if (this.enabled) {
+            element.removeAttribute("disabled")
+        } else {
+            element.setAttribute("disabled", "disabled")
+        }
+        if (this.color !== undefined) {
+            element.style.fontStyle = ""
+            element.style.fontWeight = ""
+            element.style.color = ""
+            switch(this.color) {
+                case "italic":
+                    element.style.fontStyle = "italic"
+                    break
+                case "bold":
+                    element.style.fontWeight = "bold"
+                    break
+                default:
+                    element.style.color = this.color
+            }
+        } else {
+            element.style.color = ""
+            element.style.fontStyle = ""
+            element.style.fontWeight = ""
+        }
+        if (this.error !== undefined) {
+            element.classList.add("tx-error")
+        } else {
+            element.classList.remove("tx-error")
+        }
+    }
 }

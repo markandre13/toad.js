@@ -109,38 +109,14 @@ export class TextField extends ModelView<TextModel | NumberModel> {
         }
         if (this.model.enabled) {
             this.removeAttribute("disabled")
-            this.input.removeAttribute("disabled")
         } else {
             this.setAttribute("disabled", "disabled")
-            this.input.setAttribute("disabled", "disabled")
         }
-        if (this.model.color !== undefined) {
-            this.input.style.fontStyle = ""
-            this.input.style.fontWeight = ""
-            this.input.style.color = ""
-            switch(this.model.color) {
-                case "italic":
-                    this.input.style.fontStyle = "italic"
-                    break
-                case "bold":
-                    this.input.style.fontWeight = "bold"
-                    break
-                default:
-                    this.input.style.color = this.model.color
-            }
-            
-        } else {
-            this.input.style.color = ""
-        }
+        this.model.applyStyle(this.input)
         const strValue = `${this.model.value}`
         if (this.input.value !== strValue) {
             this.input.value = strValue
             this.setAttribute("value", strValue)
-        }
-        if (this.model.error !== undefined) {
-            this.input.classList.add("tx-error")
-        } else {
-            this.input.classList.remove("tx-error")
         }
     }
 
