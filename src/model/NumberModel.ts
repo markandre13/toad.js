@@ -59,14 +59,14 @@ export class NumberModel extends ValueModel<number, NumberModelReason, NumberMod
         if (this.step !== undefined) {
             const value = new BigDecimal(this.value)
             const step = new BigDecimal(this.step)
-            super.value = this.clip(parseFloat(value.add(step).toString()))
+            this.value = this.clip(parseFloat(value.add(step).toString()))
         }
     }
     decrement() {
         if (this.step !== undefined) {
             const value = new BigDecimal(this.value)
             const step = new BigDecimal(this.step)
-            super.value = this.clip(parseFloat(value.sub(step).toString()))
+            this.value = this.clip(parseFloat(value.sub(step).toString()))
         }
     }
 
