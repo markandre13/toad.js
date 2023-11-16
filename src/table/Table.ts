@@ -675,6 +675,9 @@ export class Table extends View {
 
     modelChanged(event: TableEvent | ModelReason) {
         this.logger.log(`Table::modelChanged(${event})`)
+        if (!this.visible && this.body.children.length === 0) {
+            return
+        }
         if (event instanceof TableEvent) {
             switch (event.type) {
                 case TableEventType.CELL_CHANGED:
