@@ -1,8 +1,8 @@
-
-import { NumberModel, TextField, TextModel } from "@toad"
+import { NumberModel, TextModel } from "@toad"
 import { code } from "./index.source"
 import { EmailModel } from "@toad/model/EmailModel"
-import { Form, FormField, FormHelp, FormLabel } from "@toad/view/Form"
+import { Form } from "@toad/view/Form"
+import { FormText } from "@toad/view/FormText"
 
 //
 // APPLICATION LAYER
@@ -50,45 +50,17 @@ export default () => (
         <h3>Wide</h3>
 
         <Form>
-            <FormLabel model={nameModel} />
-            <FormField>
-                <TextField model={nameModel} />
-            </FormField>
-            <FormHelp model={nameModel} />
-
-            <FormLabel model={mailModel} />
-            <FormField>
-                <TextField model={mailModel} />
-            </FormField>
-            <FormHelp model={mailModel} />
-
-            <FormLabel model={birthModel} />
-            <FormField>
-                <TextField model={birthModel} />
-            </FormField>
-            <FormHelp model={birthModel} />
+            <FormText model={nameModel} />
+            <FormText model={mailModel} />
+            <FormText model={birthModel} />
         </Form>
 
         <h3>Narrow</h3>
 
         <Form variant="narrow">
-            <FormLabel model={nameModel} />
-            <FormField>
-                <TextField model={nameModel} />
-            </FormField>
-            <FormHelp model={nameModel} />
-
-            <FormLabel model={mailModel} />
-            <FormField>
-                <TextField model={mailModel} />
-            </FormField>
-            <FormHelp model={mailModel} />
-
-            <FormLabel model={birthModel} />
-            <FormField>
-                <TextField model={birthModel} />
-            </FormField>
-            <FormHelp model={birthModel} />
+            <FormText model={nameModel} />
+            <FormText model={mailModel} />
+            <FormText model={birthModel} />
         </Form>
 
         {code}
