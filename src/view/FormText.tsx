@@ -1,6 +1,6 @@
 import { Model } from "../model/Model"
-import { TextModel } from "@toad/model/TextModel"
-import { NumberModel } from "@toad/model/NumberModel"
+import { TextModel } from "../model/TextModel"
+import { NumberModel } from "../model/NumberModel"
 import { FormLabel, FormField, FormHelp } from "./Form"
 import { TextField } from "./TextField"
 
