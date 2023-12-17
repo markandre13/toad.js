@@ -16,6 +16,21 @@ describe("view", function () {
         document.body.replaceChildren()
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
+    describe("visibility events", function() {
+        document.addEventListener("visibilitychange", (e) => {
+            // console.log(document.visibilityState === DocumentVisibilityState) // ""
+            console.log(document.visibilityState) // hidden,visible
+        })
+        it.only("the is such an event", function() {
+            document.body.replaceChildren(
+                <Tabs>
+                    <Tab label="Uno">T1</Tab>
+                    <Tab label="Duo">T2</Tab>
+                    <Tab label="Tres">T3</Tab>
+                </Tabs>
+            )
+        })
+    })
 
     describe("Tab", function () {
         describe("JSX", function () {

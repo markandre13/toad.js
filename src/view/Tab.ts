@@ -25,7 +25,7 @@ import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 
 export interface TabsProps<V> extends ModelViewProps<OptionModelBase<V>> {
-    orientation?: "horizontal" | "vertical",
+    orientation?: "horizontal" | "vertical"
     // the approach implemented here doesn't really work, instead something like this is needed:
     // https://stackoverflow.com/questions/44475309/how-do-i-restrict-the-type-of-react-children-in-typescript-using-the-newly-adde
     children?: Tab<V>
@@ -47,7 +47,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
     constructor(init?: TabsProps<V>) {
         super(init)
 
-        this.activateTab = this.activateTab.bind(this)
+        this.setActivateTab = this.setActivateTab.bind(this)
 
         this.classList.add("tx-tabs")
         this.vertical = this.hasAttribute("vertical") || init?.orientation === "vertical"
@@ -58,11 +58,9 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         let lineContainer, tabContainer
 
         const children = [
-            lineContainer = span(
-                this.markerLine = div()
-            ),
-            tabContainer = ul(),
-            this.content = div(slot())
+            (lineContainer = span((this.markerLine = div()))),
+            (tabContainer = ul()),
+            (this.content = div(slot())),
         ]
         lineContainer.classList.add("line-container")
         this.markerLine.classList.add("line")
@@ -80,11 +78,15 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             const panel = child as Tab<V>
 
             if (typeof panel.value !== typeof this.model?.value) {
-                console.log(`Type error: Tab<${typeof panel.value}>({label="${panel.label}", value=${panel.value}}) differs from Tabs<${typeof this.model?.value}>({model.value=${this.model?.value}})` )
-            // } else {
-            //     if (typeof panel.value === "object") {
-            //         // TODO: add check
-            //     }
+                console.log(
+                    `Type error: Tab<${typeof panel.value}>({label="${panel.label}", value=${
+                        panel.value
+                    }}) differs from Tabs<${typeof this.model?.value}>({model.value=${this.model?.value}})`
+                )
+                // } else {
+                //     if (typeof panel.value === "object") {
+                //         // TODO: add check
+                //     }
             }
 
             let tabLabel: HTMLElement
@@ -92,7 +94,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             tabLabel.onpointerdown = (ev: PointerEvent) => {
                 ev.stopPropagation()
                 ev.preventDefault()
-                this.activateTab(tabLabel, panel)
+                this.setActivateTab(tabLabel, panel)
             }
             this.labelMap.set(panel, tabLabel)
 
@@ -108,7 +110,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.shadowRoot!.adoptedStyleSheets = [txTabs, txScrollbar]
         this.shadowRoot!.replaceChildren(...children)
         if (activeLabel !== undefined) {
-            this.activateTab(activeLabel, activePanel!)
+            this.setActivateTab(activeLabel, activePanel!)
         }
     }
 
@@ -125,13 +127,13 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             }
             const tab = child as Tab<V>
             if (this.model.value === tab.value) {
-                this.activateTab(this.labelMap.get(tab)!, tab)
+                this.setActivateTab(this.labelMap.get(tab)!, tab)
                 break
             }
         }
     }
 
-    protected activateTab(tabLabel: HTMLElement, panel: Tab<V>) {
+    protected setActivateTab(tabLabel: HTMLElement, panel: Tab<V>) {
         if (this.activePanel === panel) {
             return
         }
@@ -140,6 +142,9 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
             this.activeLabel.classList.remove("active")
             this.activePanel.style.display = "none"
             this.activePanel.close()
+            if (this.activePanel.visibilityChange) {
+                this.activePanel.visibilityChange("hidden")
+            }
         }
 
         this.activeLabel = tabLabel
@@ -148,6 +153,10 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
         this.activePanel.open()
         this.activeLabel.classList.add("active")
         this.activePanel.style.display = ""
+
+        if (this.activePanel.visibilityChange) {
+            this.activePanel.visibilityChange("visible")
+        }
 
         setTimeout(() => this.adjustLine(), 0)
 
@@ -176,47 +185,57 @@ Tabs.define("tx-tabs", Tabs)
 export interface TabProps<V> extends HTMLElementProps {
     value?: V
     label?: string
+    visibilityChange?: (state: "visible" | "hidden") => void
     content?: () => any
 }
 
 export class Tab<V> extends View {
     value?: V
     label?: string
+    visibilityChange?: (state: "visible" | "hidden") => void
+    /**
+     * A Tab's content can either be provided as it's children, or when there are no children
+     * by calling the provided content() function.
+     */
     content?: () => any
     constructor(init?: TabProps<V>) {
         super(init)
         this.value = init?.value
         this.label = init?.label
         this.content = init?.content
+        this.visibilityChange = init?.visibilityChange
     }
 
     // we provide these as methods in case someone want's to override
     // the behaviour, e.g. to create/delete the content
     open() {
         // TODO: total rewrite with tests'n stuff
-        if (this.childNodes.length === 0 && this.content !== undefined) {
-            const content = this.content()
-            if (content instanceof Promise) {
-                content.then((module) => {
-                    if (typeof module === "object" && "default" in module) {
-                        const viewOrViewFunction = module.default
-                        if (typeof viewOrViewFunction === "function") {
-                            const viewOrPromise = viewOrViewFunction()
-                            if (viewOrPromise instanceof Promise) {
-                                viewOrPromise.then((s) => {
-                                    appendChildren(this, s)
-                                })
-                            } else {
-                                appendChildren(this, viewOrPromise)
-                            }
+        if (this.childNodes.length !== 0 || this.content === undefined) {
+            return
+        }
+        const content = this.content()
+        if (content instanceof Promise) {
+            content.then((module) => {
+                if (typeof module === "object" && "default" in module) {
+                    // assume module being a module
+                    const domOrFunction = module.default
+                    if (typeof domOrFunction === "function") {
+                        const domOrPromise = domOrFunction()
+                        if (domOrPromise instanceof Promise) {
+                            domOrPromise.then((dom) => {
+                                appendChildren(this, dom)
+                            })
                         } else {
-                            appendChildren(this, viewOrViewFunction)
+                            appendChildren(this, domOrPromise)
                         }
+                    } else {
+                        appendChildren(this, domOrFunction)
                     }
-                })
-            } else {
-                appendChildren(this, this.content())
-            }
+                }
+            })
+        } else {
+            // it't not a promise, assume content being DOM elements
+            appendChildren(this, this.content())
         }
     }
     close() {}
