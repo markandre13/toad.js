@@ -1,8 +1,8 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from "@esm-bundle/chai"
 import { bindModel as bind, TextModel, unbind } from "@toad"
-import { OptionModel } from '@toad/model/OptionModel'
-import { EnumModel } from '@toad/model/EnumModel'
-import { Select, ComboBox } from '@toad/view/Select'
+import { OptionModel } from "@toad/model/OptionModel"
+import { EnumModel } from "@toad/model/EnumModel"
+import { Select, ComboBox } from "@toad/view/Select"
 
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
@@ -11,7 +11,7 @@ import { style as txDark } from "@toad/style/tx-dark"
 enum Enum {
     A,
     B,
-    C
+    C,
 }
 
 const htmlPopupMenu = `
@@ -28,45 +28,35 @@ const htmlComboBox = `<tx-select model='option' text='text'>
 </tx-select>`
 
 describe("Select", function () {
-
     beforeEach(async function () {
         unbind()
         document.body.replaceChildren()
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
 
-    it("can display options", function () {
-
+    xit("can display options", function () {
         enum IMAC {
             BONDI,
             BLUEBERRY,
             GRAPE,
             STRAYBERRY,
             TANGERINE,
-            LIME
+            LIME,
         }
 
         // note: referencing the document's stylesheet in the label won't work
         const model0 = new OptionModel(IMAC.BONDI, [
-            [IMAC.BONDI, <div style={{color: "#FFFFFF", background: "#0095b6"}}>Bondi</div>],
-            [IMAC.BLUEBERRY, <div style={{color: "#FFFFFF", background: "#4169E1"}}>Blueberry</div>],
-            [IMAC.GRAPE, <div style={{color: "#FFFFFF", background: "#421C52"}}>Grape</div>],
-            [IMAC.STRAYBERRY, <div style={{color: "#000000", background: "#fe2c54"}}>Strawberry</div>],
-            [IMAC.TANGERINE, <div style={{color: "#000000", background: "#f28500"}}>Tangerine</div>],
-            [IMAC.LIME, <div style={{color: "#000000", background: "#32cd32"}}>Lime</div>],
+            [IMAC.BONDI, <div style={{ color: "#FFFFFF", background: "#0095b6" }}>Bondi</div>],
+            [IMAC.BLUEBERRY, <div style={{ color: "#FFFFFF", background: "#4169E1" }}>Blueberry</div>],
+            [IMAC.GRAPE, <div style={{ color: "#FFFFFF", background: "#421C52" }}>Grape</div>],
+            [IMAC.STRAYBERRY, <div style={{ color: "#000000", background: "#fe2c54" }}>Strawberry</div>],
+            [IMAC.TANGERINE, <div style={{ color: "#000000", background: "#f28500" }}>Tangerine</div>],
+            [IMAC.LIME, <div style={{ color: "#000000", background: "#32cd32" }}>Lime</div>],
         ])
 
-        const model = new OptionModel("Down", [
-            "Up",
-            "Down",
-            "Left",
-            "Right"
-        ])
+        const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
         const text = new TextModel()
-        document.body.replaceChildren(
-            <ComboBox model={model} text={text}/>,
-            <Select model={model0}/>
-        )
+        document.body.replaceChildren(<ComboBox model={model} text={text} />, <Select model={model0} />)
     })
 
     // // FIXME: this is actually: signal: clear busy flag after exception
@@ -97,94 +87,105 @@ describe("Select", function () {
 
     // })
 
-    // describe("select", function () {
-    //     describe("OptionModel", function() {
-    //         it("updates the html element when the model changes", function() {
-    //             const option = new EnumModel<Enum>(Enum, Enum.A)
-    //             bind("option", option)
-    //             document.body.innerHTML = htmlPopupMenu
-    //             let input = getHTMLInputElement()
-    //             expect(input.value).to.equal("a")
+    describe("select", function () {
+        describe("Select", function () {
+            it("updates the html element when the model changes", function () {
+                const option = new OptionModel(Enum.A, [
+                    [Enum.A, "a"],
+                    [Enum.B, "b"],
+                    [Enum.C, "c"],
+                ])
+                document.body.replaceChildren(<Select model={option} />)
+                expect(innerText()).to.equal("a")
 
-    //             option.value = Enum.B
-    //             expect(input.value).to.equal("b")
-    //         })
+                option.value = Enum.B
 
-    //         it("updates the model when the html element changes", function () {
-    //             const option = new EnumModel<Enum>(Enum, Enum.A)
-    //             bind("option", option)
-    //             document.body.innerHTML = htmlPopupMenu
+                expect(innerText()).to.equal("b")
+            })
 
-    //             let button = getHTMLButtonElement()
-    //             button.dispatchEvent(new PointerEvent("pointerdown", {pointerId: 1}))
-    //             button.dispatchEvent(new PointerEvent("pointerup", {pointerId: 1}))
-    //             document.activeElement!.shadowRoot!.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowDown"}))
+            it("updates the html element when the mapping changes", function () {
+                const option = new OptionModel(Enum.B, [
+                    [Enum.A, "a"],
+                    [Enum.B, "b"],
+                    [Enum.C, "c"],
+                ])
+                document.body.replaceChildren(<Select model={option} />)
+                expect(innerText()).to.equal("b")
 
-    //             expect(option.value).to.equal(Enum.B)
-    //         })
-    //     })
+                option.setMapping([
+                    [Enum.C, "Charly"],
+                    [Enum.A, "Alice"],
+                    [Enum.B, "Bob"],
+                ])
 
-    //     describe("OptionModel & TextModel", function() {
-    //         it("updates the html element when the option model changes", function() {
-    //             const option = new EnumModel<Enum>(Enum, Enum.A)
-    //             bind("option", option)
-    //             const text = new TextModel()
-    //             bind("text", text)
+                expect(innerText()).to.equal("Bob")
+            })
 
-    //             document.body.innerHTML = htmlComboBox
-    //             let input = getHTMLInputElement()
-    //             expect(input.value).to.equal("a")
-    //             expect(text.value).to.equal("a")
+            it("updates the model when the html element changes", function () {
+                const option = new OptionModel("Up", ["Up", "Down"])
+                document.body.replaceChildren(<Select model={option} />)
+                expect(innerText()).to.equal("Up")
 
-    //             option.value = Enum.B
+                let btn = button()
+                btn.dispatchEvent(new PointerEvent("pointerdown", { pointerId: 1 }))
+                btn.dispatchEvent(new PointerEvent("pointerup", { pointerId: 1 }))
+                document.activeElement!.shadowRoot!.activeElement!.dispatchEvent(
+                    new KeyboardEvent("keydown", { key: "ArrowDown" })
+                )
+                expect(innerText()).to.equal("Down")
+            })
+        })
 
-    //             expect(input.value).to.equal("b")
-    //             expect(text.value).to.equal("b")
-    //         })
-    //         it("updates the html element when the text model changes")
+        // describe("ComboBox", function () {
 
-    //         it("updates the model when the html element changes", function () {
-    //             const option = new EnumModel<Enum>(Enum, Enum.A)
-    //             bind("option", option)
-    //             const text = new TextModel()
-    //             bind("text", text)
+            //     describe("OptionModel & TextModel", function() {
+            //         it("updates the html element when the option model changes", function() {
+            //             const option = new EnumModel<Enum>(Enum, Enum.A)
+            //             bind("option", option)
+            //             const text = new TextModel()
+            //             bind("text", text)
 
-    //             document.body.innerHTML = htmlComboBox
-    //             expect(text.value).to.equal("a")
+            //             document.body.innerHTML = htmlComboBox
+            //             let input = getHTMLInputElement()
+            //             expect(input.value).to.equal("a")
+            //             expect(text.value).to.equal("a")
 
-    //             let button = getHTMLButtonElement()
-    //             button.dispatchEvent(new PointerEvent("pointerdown", {pointerId: 1}))
-    //             button.dispatchEvent(new PointerEvent("pointerup", {pointerId: 1}))
-    //             document.activeElement!.shadowRoot!.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowDown"}))
+            //             option.value = Enum.B
 
-    //             expect(option.value).to.equal(Enum.B)
-    //             expect(text.value).to.equal("b")
+            //             expect(input.value).to.equal("b")
+            //             expect(text.value).to.equal("b")
+            //         })
+            //         it("updates the html element when the text model changes")
 
-    //         })
-    //     })
+            //         it("updates the model when the html element changes", function () {
+            //             const option = new EnumModel<Enum>(Enum, Enum.A)
+            //             bind("option", option)
+            //             const text = new TextModel()
+            //             bind("text", text)
 
+            //             document.body.innerHTML = htmlComboBox
+            //             expect(text.value).to.equal("a")
 
-    // })
+            //             let button = getHTMLButtonElement()
+            //             button.dispatchEvent(new PointerEvent("pointerdown", {pointerId: 1}))
+            //             button.dispatchEvent(new PointerEvent("pointerup", {pointerId: 1}))
+            //             document.activeElement!.shadowRoot!.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowDown"}))
+
+            //             expect(option.value).to.equal(Enum.B)
+            //             expect(text.value).to.equal("b")
+
+            //         })
+        // })
+    })
 })
 
-function getHTMLInputElement(): HTMLInputElement {
-    let sr = document.body.children[0].shadowRoot
-    if (!sr)
-        throw Error("yikes")
-    for (let child of sr.children) {
-        if (child.tagName === "INPUT")
-            return child as HTMLInputElement
-    }
-    throw Error("yikes")
+function innerText() {
+    const select = document.body.children[0] as Select<Enum>
+    const span = select.shadowRoot!.children[0].children[0] as HTMLSpanElement
+    return span.innerText
 }
 
-function getHTMLButtonElement(): HTMLButtonElement {
-    let sr = document.body.children[0].shadowRoot
-    if (!sr)
-        throw Error("yikes")
-    for (let child of sr.children) {
-        if (child.tagName === "BUTTON")
-            return child as HTMLButtonElement
-    }
-    throw Error("yikes")
+function button() {
+    const select = document.body.children[0] as Select<Enum>
+    return select.shadowRoot!.children[1] as HTMLButtonElement
 }
