@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "./Model"
+import { Model, ModelOptions } from "./Model"
 import { Signal } from "../Signal"
 
 /**
@@ -25,8 +25,8 @@ import { Signal } from "../Signal"
 export class Action extends Model {
     signal = new Signal()
 
-    constructor(callback: () => void) {
-        super()
+    constructor(callback: () => void, options?: ModelOptions) {
+        super(options)
         this.signal.add(callback)
     }
 
