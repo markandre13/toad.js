@@ -26,7 +26,7 @@ describe("OptionModel", function () {
                 LEFT,
                 RIGHT,
             }
-            const model = new OptionModel<A>(A.DOWN, [
+            const model = new OptionModel(A.DOWN, [
                 [A.UP, "Up"],
                 [A.DOWN, "Down"],
                 [A.LEFT, "Left"],

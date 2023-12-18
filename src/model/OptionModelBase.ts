@@ -22,9 +22,20 @@ import { ModelOptions } from "./Model"
 
 /**
  * @category Application Model
+ * 
+ * Stores a current value and a list of all values to select from along with their
+ * respective DOM representations.
  */
 export abstract class OptionModelBase<V, R = void, O extends ModelOptions = ModelOptions> extends ValueModel<V, R, O> {
+    /**
+     * OptionModelBase does not hold 'list of all values to select from along with their
+     * respective DOM representations'. Instead the sub-classes need to implement the
+     * forEach() function to iterate over all values.
+     * 
+     * @param callback 
+     */
     abstract forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void
+
     map<R>(callback: (value: V, label: string | number | HTMLElement, index: number) => R): R[] {
         const out: R[] = []
         this.forEach((value, label, index) => {
@@ -32,6 +43,9 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
         })
         return out
     }
+    /**
+     * For the current value, return an HTMLElement suitable to be used in <Select>/<ComboBox>
+     */
     get html(): any | undefined {
         let foundLabel: any
         this.forEach((value, label, index) => {
@@ -41,22 +55,26 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
         })
         return this.asHtml(foundLabel)
     }
-    // FIXME: move into SelectBase
-    // * we wrap plain text into a span because for the layout for work we need
-    //   to have a HTMLElement there which can display a margin
-    asHtml(l: string | number | HTMLElement) {
-        if (typeof l === "string") {
-            return span(text(l))
+    /**
+     * Convert the label into an HTMLElement suitable to be used in <Select>/<ComboBox>
+     * 
+     * * FIXME: move into SelectBase
+     * * we wrap plain text into a span because for the layout for work we need
+     *   to have a HTMLElement which can display a margin
+     */
+    asHtml(label: string | number | HTMLElement) {
+        if (typeof label === "string") {
+            return span(text(label))
         }
-        if (typeof l === "number") {
-            return span(text(`${l}`))
+        if (typeof label === "number") {
+            return span(text(`${label}`))
         }
-        if (typeof l === "object") {
-            if (l instanceof Node) {
-                let h = l.cloneNode(true) as HTMLElement
+        if (typeof label === "object") {
+            if (label instanceof Node) {
+                let h = label.cloneNode(true) as HTMLElement
                 const NODE_TYPE_TEXT = 3
-                if (l.nodeType === NODE_TYPE_TEXT) {
-                    l = span(l)
+                if (label.nodeType === NODE_TYPE_TEXT) {
+                    label = span(label)
                 }
                 h.style.height = "100%"
                 h.style.width = "100%"
@@ -64,8 +82,11 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
             }
         }
         // fallback
-        return span(text(`${l}`))
+        return span(text(`${label}`))
     }
+    /**
+     * Get index of element of value 'value'
+     */
     indexOf(value: V) {
         let idx: number | undefined
         this.forEach((aValue, label, index) => {
@@ -75,7 +96,10 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
         })
         return idx
     }
-    labelOf(value: V) {
+    /**
+     * Get label for element of value 'value'.
+     */
+    labelOf(value: V): HTMLElement {
         let lab: any
         this.forEach((aValue, label, index) => {
             if (value === aValue) {
@@ -84,7 +108,10 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
         })
         return this.asHtml(lab)
     }
-    isEnabledOf(value: V) {
+    /**
+     * 'true' when element of value 'value' is enabled (can be selected)
+     */
+    isEnabledOf(value: V): boolean {
         let enabled = false
         this.forEach((aValue, label, index) => {
             if (value === aValue) {
@@ -93,6 +120,11 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
         })
         return enabled
     }
+    /**
+     * select value at 'index'
+     * 
+     * if the index is not valid, it will be ignored.
+     */
     set index(idx: number | undefined) {
         this.forEach((value, label, index) => {
             if (index === idx) {
@@ -100,6 +132,9 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
             }
         })
     }
+    /**
+     * get index of currently selected value
+     */
     get index(): number | undefined {
         let idx: number | undefined
         this.forEach((value, label, index) => {
@@ -109,6 +144,9 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
         })
         return idx
     }
+    /**
+     * select next value
+     */
     next() {
         const idx = this.index
         if (idx === undefined) {
@@ -117,6 +155,9 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
             this.index = idx + 1
         }
     }
+    /**
+     * select previous value
+     */
     prev() {
         const idx = this.index
         if (idx === undefined) {

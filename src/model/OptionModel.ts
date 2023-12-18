@@ -24,6 +24,27 @@ import { OptionModelBase } from "./OptionModelBase"
  */
 export class OptionModel<V, R = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, R, O> {
     _mapping: readonly (readonly [V, string])[]
+    /**
+     * Examples:
+     *
+     * Value is a string and options an array of strings:
+     * 
+     *     const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
+     * 
+     * Value is an enum and options a list of enum to label mappings:
+     * 
+     *     enum A { UP, DOWN, LEFT, RIGHT }
+     *     const model = new OptionModel(A.DOWN, [
+     *       [A.UP, "Up"],
+     *       [A.DOWN, "Down"],
+     *       [A.LEFT, "Left"],
+     *       [A.RIGHT, "Right"],
+     *     ])
+     * 
+     * @param value current value
+     * @param mapping 
+     * @param options 
+     */
     constructor(value: V, mapping: readonly (readonly [V, string | number | HTMLElement] | string)[], options?: O) {
         super(value, options)
         if (mapping[0] instanceof Array) {
