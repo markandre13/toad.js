@@ -109,7 +109,7 @@ export abstract class OptionModelBase<V, R = void, O extends ModelOptions = Mode
         return this.asHtml(lab)
     }
     /**
-     * 'true' when element of value 'value' is enabled (can be selected)
+     * 'true' when element of value 'value' can be selected
      */
     isEnabledOf(value: V): boolean {
         let enabled = false

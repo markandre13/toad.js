@@ -16,23 +16,24 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelOptions } from "./Model"
+import { deepEqual } from "@toad/util/deepEqual"
+import { ModelOptions, ModelReason } from "./Model"
 import { OptionModelBase } from "./OptionModelBase"
 
 /**
  * @category Application Model
  */
 export class OptionModel<V, R = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, R, O> {
-    _mapping: readonly (readonly [V, string])[]
+    protected _mapping!: readonly (readonly [V, string])[]
     /**
      * Examples:
      *
      * Value is a string and options an array of strings:
-     * 
+     *
      *     const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
-     * 
+     *
      * Value is an enum and options a list of enum to label mappings:
-     * 
+     *
      *     enum A { UP, DOWN, LEFT, RIGHT }
      *     const model = new OptionModel(A.DOWN, [
      *       [A.UP, "Up"],
@@ -40,20 +41,39 @@ export class OptionModel<V, R = void, O extends ModelOptions = ModelOptions> ext
      *       [A.LEFT, "Left"],
      *       [A.RIGHT, "Right"],
      *     ])
-     * 
+     *
      * @param value current value
-     * @param mapping 
-     * @param options 
+     * @param mapping
+     * @param options
      */
     constructor(value: V, mapping: readonly (readonly [V, string | number | HTMLElement] | string)[], options?: O) {
         super(value, options)
-        if (mapping[0] instanceof Array) {
-            this._mapping = mapping as readonly (readonly [V, string])[]
-        } else {
-            const a: [V, string | number | HTMLElement][] = []
-            mapping.forEach((v) => a.push([v as V, `${v}`]))
-            this._mapping = a as readonly (readonly [V, string])[]
+        this.setMapping(mapping)
+    }
+    setMapping(mapping: readonly (readonly [V, string | number | HTMLElement] | string)[]) {
+        if (mapping === this._mapping) {
+            return
         }
+
+        let newMapping
+        if (mapping[0] instanceof Array) {
+            newMapping = mapping as readonly (readonly [V, string])[]
+        } else {
+            const array: [V, string | number | HTMLElement][] = []
+            mapping.forEach((v) => {
+                array.push([v as V, `${v}`])
+            })
+            newMapping = array as readonly (readonly [V, string])[]
+        }
+        if (this._mapping !== undefined) {
+            if (deepEqual(this._mapping, newMapping)) {
+                this._mapping = newMapping
+                return
+            }
+        }
+
+        this._mapping = newMapping
+        this.modified.trigger(ModelReason.ALL)
     }
     forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void {
         this._mapping.forEach(([value, label], index) => {
