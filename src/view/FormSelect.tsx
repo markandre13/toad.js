@@ -1,4 +1,4 @@
-import { OptionModelBase } from "@toad/model/OptionModelBase"
+import { OptionModelBase } from "../model/OptionModelBase"
 import { FormField, FormHelp, FormLabel } from "./Form"
 import { Select } from "./Select"
 
