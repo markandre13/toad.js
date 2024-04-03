@@ -2,7 +2,7 @@ import { input } from "../util/lsx"
 import { TextModel } from "../model/TextModel"
 import { OptionBase } from "./OptionBase"
 import { ModelViewProps } from "./ModelView"
-import { OptionModelBase } from "@toad/model/OptionModelBase"
+import { OptionModelBase } from "../model/OptionModelBase"
 
 export interface ComboBoxProps<V> extends ModelViewProps<OptionModelBase<V>> {
     text?: TextModel
