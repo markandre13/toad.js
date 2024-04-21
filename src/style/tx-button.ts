@@ -92,4 +92,9 @@ style.replaceSync(css`
     color: var(--tx-fg-color-disabled);
     background-color: var(--tx-gray-200);
 }
+
+.tx-error, .tx-error:hover {
+    background-color: var(--tx-warning-color);
+}
+
 `)

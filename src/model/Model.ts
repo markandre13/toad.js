@@ -113,8 +113,9 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
     get description(): string | undefined { return this.options?.description }
 
     set error(error: string | undefined) {
-        if (this.options?.error === error)
+        if (this.options?.error === error) {
             return
+        }
         if (this.options === undefined) {
             this.options = {}
         }

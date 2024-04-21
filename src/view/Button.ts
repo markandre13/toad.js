@@ -20,13 +20,13 @@ import { HtmlModel } from "../model/HtmlModel"
 import { ActionView, ActionViewProps } from "./ActionView"
 
 import { button, span } from "../util/lsx"
-import { style as txButton } from  "../style/tx-button"
+import { style as txButton } from "../style/tx-button"
 
 export enum ButtonVariant {
     PRIMARY,
     SECONDARY,
     ACCENT,
-    NEGATIVE
+    NEGATIVE,
 }
 
 export interface ButtonProps extends ActionViewProps {
@@ -45,17 +45,14 @@ export class Button extends ActionView {
     constructor(init?: ButtonProps) {
         super(init)
 
-        this.button = button(
-            this.label = span()
-        )
+        this.button = button((this.label = span()))
         this.button.classList.add("tx-button")
         this.label.classList.add("tx-label")
         this.button.onclick = () => {
-            if (this.action)
-                this.action.trigger()
+            if (this.action) this.action.trigger()
         }
 
-        switch(this.getAttribute("variant")) {
+        switch (this.getAttribute("variant")) {
             case "primary":
                 this.button.classList.add("tx-default")
                 break
@@ -66,9 +63,9 @@ export class Button extends ActionView {
                 break
             case "negative":
                 this.button.classList.add("tx-negative")
-                break    
+                break
         }
-        switch(init?.variant) {
+        switch (init?.variant) {
             case ButtonVariant.PRIMARY:
                 this.button.classList.add("tx-default")
                 break
@@ -82,7 +79,7 @@ export class Button extends ActionView {
                 break
         }
 
-        this.attachShadow({ mode: 'open' })
+        this.attachShadow({ mode: "open" })
         this.shadowRoot!.adoptedStyleSheets = [txButton]
         this.shadowRoot!.appendChild(this.button)
     }
@@ -94,8 +91,7 @@ export class Button extends ActionView {
         }
         // Chrome, Opera invoke connectedCallback() before the children are connected
         this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
-            if (this._timer !== undefined)
-                clearTimeout(this._timer)
+            if (this._timer !== undefined) clearTimeout(this._timer)
             this._timer = window.setTimeout(() => {
                 this._timer = undefined
                 this.updateView()
@@ -104,27 +100,37 @@ export class Button extends ActionView {
         this._observer.observe(this, {
             childList: true,
             subtree: true,
-            characterData: true
+            characterData: true,
         })
     }
 
     override updateView() {
-        if (!this.isConnected)
+        console.log(`button updateView`)
+        if (!this.isConnected) {
             return
-        if (this.model && this.model.value) { // FIXME: use updateView only for Model stuff
-            if (this.model instanceof HtmlModel)
-                this.label.innerHTML = this.model.value
-            else
-                this.label.innerText = this.model.value
-        } else {
-            this.label.innerHTML = this.innerHTML
         }
 
+        // label
+        if (this.model && this.model.value) {
+            // FIXME: use updateView only for Model stuff
+            if (this.model instanceof HtmlModel) this.label.innerHTML = this.model.value
+            else this.label.innerText = this.model.value
+        } else {
+            if (this.action && this.action.label) {
+                this.label.innerText = this.action.label
+            } else {
+                this.label.innerHTML = this.innerHTML
+            }
+        }
+
+        // enabled/disabled
         if (this.isEnabled()) {
             this.removeAttribute("disabled")
         } else {
             this.setAttribute("disabled", "disabled")
         }
+
+        this.action?.applyStyle(this.button)
     }
 }
 
