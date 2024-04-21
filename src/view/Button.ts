@@ -105,7 +105,6 @@ export class Button extends ActionView {
     }
 
     override updateView() {
-        console.log(`button updateView`)
         if (!this.isConnected) {
             return
         }
