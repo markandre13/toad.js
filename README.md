@@ -182,7 +182,7 @@ How to run single test files:
 
     npm run dev:build
 
-    npm run dev:test --file=./lib/test/view/ToolButton.spec.js
+    npm run dev:test --file=lib/test/view/ToolButton.spec.js
 
 ### References
 
