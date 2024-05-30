@@ -20,7 +20,7 @@ import { View } from "../view/View"
 import { ul, li, span, text, div, slot } from "../util/lsx"
 import { style as txTabs } from "../style/tx-tabs"
 import { style as txScrollbar } from "../style/tx-scrollbar"
-import { HTMLElementProps } from "toad.jsx"
+import { HTMLElementProps, JSX } from "toad.jsx"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 
@@ -44,7 +44,7 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
     labelMap = new Map<Tab<V>, HTMLElement>()
 
-    constructor(init?: TabsProps<V>) {
+    constructor(init?: TabsProps<V>) { 
         super(init)
 
         this.setActivateTab = this.setActivateTab.bind(this)
@@ -152,7 +152,11 @@ export class Tabs<V> extends ModelView<OptionModelBase<V>> {
 
         this.activePanel.open()
         this.activeLabel.classList.add("active")
-        this.activePanel.style.display = ""
+        if (this.activePanel.jsxstyle?.display) {
+            this.activePanel.style.display = this.activePanel.jsxstyle?.display
+        } else {
+            this.activePanel.style.display = ""
+        }
 
         if (this.activePanel.visibilityChange) {
             this.activePanel.visibilityChange("visible")
@@ -192,6 +196,7 @@ export interface TabProps<V> extends HTMLElementProps {
 export class Tab<V> extends View {
     value?: V
     label?: string
+    jsxstyle?: JSX.CSSProperties
     visibilityChange?: (state: "visible" | "hidden") => void
     /**
      * A Tab's content can either be provided as it's children, or when there are no children
@@ -204,6 +209,7 @@ export class Tab<V> extends View {
         this.label = init?.label
         this.content = init?.content
         this.visibilityChange = init?.visibilityChange
+        this.jsxstyle = init?.style
     }
 
     // we provide these as methods in case someone want's to override
