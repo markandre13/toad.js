@@ -33,8 +33,19 @@ export class BigDecimal {
         return BigDecimal._divRound(this._n * BigDecimal.SHIFT, new BigDecimal(num)._n)
     }
     toString() {
-        const s = this._n.toString().padStart(BigDecimal.DECIMALS + 1, "0")
-        return s.slice(0, -BigDecimal.DECIMALS) + "." + s.slice(-BigDecimal.DECIMALS)
+        let minus = ""
+        let n
+        if (this._n < 0n) {
+            minus = "-"
+            n = -this._n
+        } else {
+            n = this._n
+        }
+        const s = n.toString().padStart(BigDecimal.DECIMALS + 1, "0")
+        return minus + s.slice(0, -BigDecimal.DECIMALS) + "." + s.slice(-BigDecimal.DECIMALS)
             .replace(/\.?0+$/, "")
+    }
+    toFloat() {
+        return parseFloat(this.toString())
     }
 }

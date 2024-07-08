@@ -25,7 +25,7 @@ export enum NumberModelReason {
     MAX,
     STEP,
     AUTOCORRECT,
-    MAX_REASON
+    MAX_REASON,
 }
 
 export interface NumberModelOptions extends ValueModelOptions<number> {
