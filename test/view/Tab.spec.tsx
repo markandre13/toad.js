@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import { unbind } from "@toad/controller/globalController"
 import { Tabs, Tab } from "@toad/view/Tab"
 import { EnumModel } from '@toad/model/EnumModel'

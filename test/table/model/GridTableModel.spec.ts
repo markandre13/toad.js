@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 
 import { GridTableModel } from "src/table/model/GridTableModel"
 import { TableEvent } from "src/table/TableEvent"

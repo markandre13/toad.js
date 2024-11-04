@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import { AnimationBase } from '@toad/util/animation'
 
 class TestAnimation extends AnimationBase {

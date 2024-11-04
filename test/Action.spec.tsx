@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 import { action, Action, Button } from "@toad"
 
 describe("action", function () {

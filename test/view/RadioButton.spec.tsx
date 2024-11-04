@@ -1,5 +1,5 @@
-import { expect } from '@esm-bundle/chai'
-import { bindModel as bind, RadioButton, TextModel, unbind } from "@toad"
+import { expect } from 'chai'
+import { RadioButton, TextModel, unbind } from "@toad"
 import { OptionModel } from '@toad/model/OptionModel'
 
 import { style as txBase } from "@toad/style/tx"

@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import { Model, View, ModelView } from "@toad"
 import { ModelReason } from '@toad/model/Model'
 

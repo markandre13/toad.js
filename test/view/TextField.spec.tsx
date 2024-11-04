@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 import { Fragment, TextField, TextModel, NumberModel, bindModel, unbind } from "@toad"
 
 import { style as txBase } from "@toad/style/tx"

@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 import { ModelReason } from "@toad/model/Model"
 import { OptionModel } from "@toad/model/OptionModel"
 import { ValueModelReason } from "@toad/model/ValueModel"

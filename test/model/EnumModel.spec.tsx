@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 import { EnumModel } from "@toad/model/EnumModel"
 
 // FIXME: separate file

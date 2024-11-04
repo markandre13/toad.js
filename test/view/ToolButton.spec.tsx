@@ -1,6 +1,6 @@
 // npm run dev:test --file=./lib/test/view/ToolButton.spec.js
 
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 import { OptionModel, ToolButton } from "@toad"
 import { loadFont } from "@toad/util/loadFont"
 import { loadStyle } from "@toad/util/loadStyle"

@@ -1,7 +1,6 @@
-import { expect } from "@esm-bundle/chai"
-import { bindModel as bind, TextModel, unbind } from "@toad"
+import { expect } from "chai"
+import { TextModel, unbind } from "@toad"
 import { OptionModel } from "@toad/model/OptionModel"
-import { EnumModel } from "@toad/model/EnumModel"
 import { Select } from "@toad/view/Select"
 import { ComboBox } from "@toad/view/ComboBox"
 

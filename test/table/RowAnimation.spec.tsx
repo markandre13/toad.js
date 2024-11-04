@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import { bindModel, unbind } from "@toad"
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"

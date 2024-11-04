@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import { Animator, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'

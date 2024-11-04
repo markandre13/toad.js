@@ -1,5 +1,5 @@
 process.env.NODE_ENV = 'test'
-const WTRSpecReporter = require('./test/WTRSpecReporter.js')
+// const WTRSpecReporter = require('./test/WTRSpecReporter.js')
 
 module.exports = {
     nodeResolve: true,
@@ -7,8 +7,8 @@ module.exports = {
     ],
     coverage: false,
     coverageConfig: {},
-    reporters: [
-        WTRSpecReporter({ reportTestResults: true, reportTestProgress: true }),
-    ],
+    // reporters: [
+    //     WTRSpecReporter({ reportTestResults: true, reportTestProgress: true }),
+    // ],
     files: 'lib/test/**/*.spec.js'
 }

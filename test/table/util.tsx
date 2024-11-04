@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 
 import { EditMode } from "@toad/table/adapter/TableAdapter"
 import { TableModel } from "@toad/table/model/TableModel"

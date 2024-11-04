@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import { Lexer } from 'src/util/expressions/Lexer'
 import { assignmentExpression } from 'src/util/expressions/expression'
 

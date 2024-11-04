@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 import { Slider, NumberModel, TextModel, bindModel as bind } from "@toad"
 import { sleep } from "test/testlib"
 

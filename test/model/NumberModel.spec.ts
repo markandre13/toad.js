@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 import { NumberModel } from "@toad/model/NumberModel"
 
 describe("NumberModel", function () {

@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 
 import { SpreadsheetModel } from 'src/table/model/SpreadsheetModel'
 import { TableEvent } from 'src/table/TableEvent'

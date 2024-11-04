@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import { Checkbox, BooleanModel, bindModel, unbind } from "@toad"
 
 describe("view", function () {

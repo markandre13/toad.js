@@ -1,4 +1,4 @@
-import { expect } from '@esm-bundle/chai'
+import { expect } from 'chai'
 import * as toadJSX from 'toad.jsx/lib/jsx-runtime'
 
 describe("jsx", function() {

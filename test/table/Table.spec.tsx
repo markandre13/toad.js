@@ -1,4 +1,4 @@
-import { expect } from "@esm-bundle/chai"
+import { expect } from "chai"
 
 import { bindModel, unbind, refs, TableEditMode, Tabs } from "@toad"
 
