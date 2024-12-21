@@ -42,7 +42,7 @@ function collectSuitesAndTests(sessions) {
 }
 
 function collectSuitesAndTestsHelper(testResults, suiteInfo) {
-    testResults.suites.forEach(suite => {
+    testResults?.suites?.forEach(suite => {
         // name: string, suites[], tests: []
         let childSuiteInfo = suiteInfo.allSuites.get(suite.name)
         if (childSuiteInfo === undefined) {
@@ -54,7 +54,7 @@ function collectSuitesAndTestsHelper(testResults, suiteInfo) {
         }
         collectSuitesAndTestsHelper(suite, childSuiteInfo)
     })
-    testResults.tests.forEach(test => {
+    testResults?.tests?.forEach(test => {
         // name: string, duration: number, passed: boolean
         suiteInfo.allTests.set(test.name, test)
     })
