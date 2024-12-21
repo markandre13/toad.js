@@ -17,13 +17,17 @@
  */
 
 import { deepEqual } from "@toad/util/deepEqual"
-import { ModelOptions, ModelReason } from "./Model"
+import { ALL, ModelEvent, ModelOptions } from "./Model"
 import { OptionModelBase } from "./OptionModelBase"
 
 /**
  * @category Application Model
  */
-export class OptionModel<V, R = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<V, R, O> {
+export class OptionModel<
+    V,
+    R extends ModelEvent = ModelEvent,
+    O extends ModelOptions = ModelOptions
+> extends OptionModelBase<V, ModelEvent, O> {
     protected _mapping!: readonly (readonly [V, string])[]
     /**
      * Examples:
@@ -73,7 +77,7 @@ export class OptionModel<V, R = void, O extends ModelOptions = ModelOptions> ext
         }
 
         this._mapping = newMapping
-        this.modified.trigger(ModelReason.ALL)
+        this.modified.trigger({ type: ALL })
     }
     forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void {
         this._mapping.forEach(([value, label], index) => {

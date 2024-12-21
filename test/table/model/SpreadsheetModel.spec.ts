@@ -2,7 +2,7 @@ import { expect } from 'chai'
 
 import { SpreadsheetModel } from 'src/table/model/SpreadsheetModel'
 import { TableEvent } from 'src/table/TableEvent'
-import { TableEventType } from 'src/table/TableEventType'
+import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEventType } from 'src/table/TableEventType'
 
 describe.only("spreadsheetmodel", function () {
     function createModel4x4() {
@@ -37,7 +37,7 @@ describe.only("spreadsheetmodel", function () {
             m.insertRow(2)
             
             expect(event).to.deep.equal({
-                type: TableEventType.INSERT_ROW,
+                type: INSERT_ROW,
                 index: 2,
                 size: 1
             })
@@ -71,7 +71,7 @@ describe.only("spreadsheetmodel", function () {
             m.removeRow(2)
             
             expect(event).to.deep.equal({
-                type: TableEventType.REMOVE_ROW,
+                type: REMOVE_ROW,
                 index: 2,
                 size: 1
             })
@@ -101,7 +101,7 @@ describe.only("spreadsheetmodel", function () {
             m.insertColumn(2)
 
             expect(event).to.deep.equal({
-                type: TableEventType.INSERT_COL,
+                type: INSERT_COL,
                 index: 2,
                 size: 1
             })
@@ -134,7 +134,7 @@ describe.only("spreadsheetmodel", function () {
             m.removeColumn(2)
 
             expect(event).to.deep.equal({
-                type: TableEventType.REMOVE_COL,
+                type: REMOVE_COL,
                 index: 2,
                 size: 1
             })

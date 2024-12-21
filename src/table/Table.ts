@@ -23,7 +23,7 @@ import { EditMode, TableAdapter } from "./adapter/TableAdapter"
 import { TableEvent } from "./TableEvent"
 import { TablePos } from "./TablePos"
 import { TableEditMode } from "./TableEditMode"
-import { TableEventType } from "./TableEventType"
+import { CELL_CHANGED, INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEventType } from "./TableEventType"
 import { Animator } from "../util/animation"
 import { TableAnimation } from "./private/TableAnimation"
 import { InsertRowAnimation } from "./private/InsertRowAnimation"
@@ -38,7 +38,7 @@ import { scrollIntoView } from "../util/scrollIntoView"
 import { style as txTable } from "./style/tx-table"
 import { style as txScrollbar } from "../style/tx-scrollbar"
 import { hasFocus } from "../util/dom"
-import { ModelReason } from "../model/Model"
+import { ModelEvent } from "../model/Model"
 
 // TABLE ANIMATION
 //
@@ -673,14 +673,14 @@ export class Table extends View {
         }
     }
 
-    modelChanged(event: TableEvent | ModelReason) {
+    modelChanged(event: TableEvent | ModelEvent) {
         this.logger.log(`Table::modelChanged(${event})`)
         if (!this.visible && this.body.children.length === 0) {
             return
         }
         if (event instanceof TableEvent) {
             switch (event.type) {
-                case TableEventType.CELL_CHANGED:
+                case CELL_CHANGED:
                     {
                         const index = event.col + event.row * this.adapter!.colCount
                         const cell = this.body.children[index]
@@ -693,16 +693,16 @@ export class Table extends View {
                         }
                     }
                     break
-                case TableEventType.INSERT_ROW:
+                case INSERT_ROW:
                     this.animator.run(new InsertRowAnimation(this, event))
                     break
-                case TableEventType.REMOVE_ROW:
+                case REMOVE_ROW:
                     this.animator.run(new RemoveRowAnimation(this, event))
                     break
-                case TableEventType.INSERT_COL:
+                case INSERT_COL:
                     this.animator.run(new InsertColumnAnimation(this, event))
                     break
-                case TableEventType.REMOVE_COL:
+                case REMOVE_COL:
                     this.animator.run(new RemoveColumnAnimation(this, event))
                     break
                 default:

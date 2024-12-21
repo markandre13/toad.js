@@ -17,7 +17,7 @@
  */
 
 import { TextModel } from "../model/TextModel"
-import { ModelReason } from "../model/Model"
+import { ALL, ModelEvent } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Action } from "../model/Action"
 import { ModelView } from "./ModelView"
@@ -41,7 +41,7 @@ export abstract class ActionView extends ModelView<TextModel> {
 
     override connectedCallback() {
         if (this.controller) {
-            this.updateView(ModelReason.ALL)
+            this.updateView({type:ALL})
             return
         }
 
@@ -53,7 +53,7 @@ export abstract class ActionView extends ModelView<TextModel> {
             globalController.registerView(this.getModelId(), this) // FIXME: don't register always on globalController
         } catch (e) {}
 
-        this.updateView(ModelReason.ALL)
+        this.updateView({type:ALL})
     }
 
     override disconnectedCallback() {
@@ -67,20 +67,20 @@ export abstract class ActionView extends ModelView<TextModel> {
             if (this.action) this.action.modified.remove(this)
             this.model = undefined
             this.action = undefined
-            this.updateView(ModelReason.ALL)
+            this.updateView(ALL)
             return
         }
         if (model instanceof Action) {
             // FIXME: what if this.action is already set?
             this.action = model
             this.action.modified.add(() => {
-                this.updateView(ModelReason.ALL)
+                this.updateView(ALL)
             }, this)
         } else if (model instanceof TextModel) {
             // FIXME: what if this.model is already set?
             this.model = model
             this.model.modified.add(() => {
-                this.updateView(ModelReason.ALL)
+                this.updateView(ALL)
             }, this)
         } else {
             if (typeof model === "object") {
@@ -90,7 +90,7 @@ export abstract class ActionView extends ModelView<TextModel> {
             }
         }
 
-        this.updateView(ModelReason.ALL)
+        this.updateView(ALL)
     }
 
     setAction(value: (() => void) | Action) {

@@ -19,7 +19,7 @@
 import { ArrayModel } from "../model/ArrayModel"
 import { TypedTableAdapter, InferTypedTableModelParameter } from "./TypedTableAdapter"
 import { TableEvent } from "../TableEvent"
-import { TableEventType } from "../TableEventType"
+import { CELL_CHANGED, TableEventType } from "../TableEventType"
 
 import { Reference } from "toad.jsx"
 import { TablePos } from "../TablePos"
@@ -82,6 +82,6 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
         if (!this.model)
             return
         this.getRow(this.model.data[row])[col].fromString(text)
-        this.model.modified.trigger(new TableEvent(TableEventType.CELL_CHANGED, col, row))
+        this.model.modified.trigger(new TableEvent(CELL_CHANGED, col, row))
     }
 }

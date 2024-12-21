@@ -5,6 +5,7 @@ use(chaiSubset)
 import {
     TextModel, TreeNodeModel, TableEvent, TableEventType
 } from "@toad"
+import { INSERT_ROW, REMOVE_ROW } from "@toad/table/TableEventType"
 
 describe("model", function () {
     describe("table", function () {
@@ -91,7 +92,7 @@ describe("model", function () {
                     tree.addSiblingBefore(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -110,7 +111,7 @@ describe("model", function () {
                     tree.addSiblingBefore(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -134,7 +135,7 @@ describe("model", function () {
                     tree.addSiblingBefore(1)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -159,7 +160,7 @@ describe("model", function () {
                     tree.addSiblingBefore(1)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -181,7 +182,7 @@ describe("model", function () {
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -200,7 +201,7 @@ describe("model", function () {
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -222,7 +223,7 @@ describe("model", function () {
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -249,7 +250,7 @@ describe("model", function () {
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 4, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 4, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -278,7 +279,7 @@ describe("model", function () {
                     tree.addChildAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -299,7 +300,7 @@ describe("model", function () {
                     // dump(this, "AFTER")
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -321,7 +322,7 @@ describe("model", function () {
                     tree.addChildAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -342,7 +343,7 @@ describe("model", function () {
                     tree.addParentBefore(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -363,7 +364,7 @@ describe("model", function () {
                     // dump(this, "AFTER")
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -385,7 +386,7 @@ describe("model", function () {
                     tree.addParentBefore(1)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -412,7 +413,7 @@ describe("model", function () {
                     // dump(this, "AFTER")
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(TableEventType.INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -442,7 +443,7 @@ describe("model", function () {
                         tree.deleteAt(0)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 0, 1))
+                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 0, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -470,7 +471,7 @@ describe("model", function () {
                         // dump(this, "after")
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 1, 1))
+                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 1, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -495,7 +496,7 @@ describe("model", function () {
                         tree.deleteAt(0)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 0, 1))
+                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 0, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -517,7 +518,7 @@ describe("model", function () {
                         tree.deleteAt(1)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 1, 1))
+                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 1, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -540,7 +541,7 @@ describe("model", function () {
                         tree.deleteAt(1)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(TableEventType.REMOVE_ROW, 1, 1))
+                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 1, 1))
 
                         // check tree
                         expect(tree.root).to.deep.equal(

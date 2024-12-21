@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2023 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -20,27 +20,23 @@ import { Signal } from "../Signal"
 
 export type InferModelParameter<M> = M extends Model<infer T> ? T : never
 
-export enum ModelReason {
-    /** 
-     * Either everything in the model has changed or the model itself had been replaced with another model.
-     */
-    ALL,
+/** 
+ * Either everything in the model has changed or the model itself had been replaced with another model.
+ */
+export const ALL = Symbol("ALL")
+export const ENABLED = Symbol("ENABLED")
+export const LABEL = Symbol("LABEL")
+export const DESCRIPTION = Symbol("DESCRIPTION")
+export const COLOR = Symbol("COLOR")
+export const ERROR = Symbol("ERROR")
 
-    /**
-     * The value represented by the model has changed.
-     * 
-     * While Model itself does not have a value, it's subclasses always represent a value, hence
-     * this reason is part of ModelReason.
-     */
-    VALUE,
-
-    ENABLED,
-    COLOR,
-    LABEL,
-    DESCRIPTION,
-    ERROR,
-    MAX_REASON
-}
+export type AllChangedEvent = { type: typeof ALL }
+export type EnabledEvent = { type: typeof ENABLED }
+export type LabelEvent = { type: typeof LABEL }
+export type DescriptionEvent = { type: typeof DESCRIPTION }
+export type ColorEvent = { type: typeof COLOR }
+export type ErrorEvent = { type: typeof ERROR }
+export type ModelEvent = AllChangedEvent | EnabledEvent | LabelEvent | DescriptionEvent | ColorEvent | ErrorEvent
 
 export interface ModelOptions {
     enabled?: boolean
@@ -61,7 +57,7 @@ export interface ModelOptions {
  * O: A list of optional values.
  */
 export class Model<R = void, O extends ModelOptions = ModelOptions> {
-    modified = new Signal<ModelReason | R>()
+    modified = new Signal<ModelEvent | R>()
     options?: Partial<O>
 
     constructor(options?: O) {
@@ -75,7 +71,7 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.enabled = enabled
-        this.modified.trigger(ModelReason.ENABLED)
+        this.modified.trigger({type: ENABLED})
     }
     get enabled(): boolean { return this.options?.enabled !== false }
 
@@ -86,7 +82,7 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.color = color
-        this.modified.trigger(ModelReason.COLOR)
+        this.modified.trigger({type: COLOR})
     }
     get color(): string | undefined { return this.options?.color }
 
@@ -97,7 +93,7 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.label = label
-        this.modified.trigger(ModelReason.LABEL)
+        this.modified.trigger({type: LABEL})
     }
     get label(): string | undefined { return this.options?.label }
 
@@ -108,7 +104,7 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.description = description
-        this.modified.trigger(ModelReason.DESCRIPTION)
+        this.modified.trigger({type: DESCRIPTION})
     }
     get description(): string | undefined { return this.options?.description }
 
@@ -120,7 +116,7 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.error = error
-        this.modified.trigger(ModelReason.ERROR)
+        this.modified.trigger({type: ERROR})
     }
     get error(): string | undefined { return this.options?.error }
 
@@ -156,3 +152,4 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
         }
     }
 }
+

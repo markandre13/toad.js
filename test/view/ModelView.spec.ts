@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { Model, View, ModelView } from "@toad"
-import { ModelReason } from '@toad/model/Model'
+import { ModelEvent } from '@toad/model/Model'
 
 describe("view", function() {
     describe("ModelView<Model<MSG>>", function() {
@@ -52,12 +52,12 @@ describe("view", function() {
                 override updateModel() {
                     this.log.push({method: "updateModel()", model: this.model})
                 }
-                override updateView(reason: MyMessage | ModelReason): void {
+                override updateView(reason: MyMessage | ModelEvent): void {
                     console.log(`MyView::updateView(${reason})`)
                     if (typeof reason === "object" && "message" in reason) {
                         this.log.push({method: `updateView(${reason?.message})`, model: this.model})
                     } else {
-                        this.log.push({method: `updateView(${ModelReason[reason]})`, model: this.model})
+                        this.log.push({method: `updateView(${reason.type.description})`, model: this.model})
                     }
                 }
             }

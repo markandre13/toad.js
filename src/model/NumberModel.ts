@@ -16,17 +16,19 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ValueModel, ValueModelOptions, ValueModelReason } from "./ValueModel"
+import { ValueModel, ValueModelOptions, ValueModelEvent } from "./ValueModel"
 import { BigDecimal } from "@toad/util/BigDecimal"
 import { expression } from "@toad/util/expressions/expression"
 
-export enum NumberModelReason {
-    MIN = ValueModelReason.MAX_REASON,
-    MAX,
-    STEP,
-    AUTOCORRECT,
-    MAX_REASON,
-}
+export const MIN_VALUE = Symbol("MIN_VALUE")
+export const MAX_VALUE = Symbol("MAX_VALUE")
+export const STEP_VALUE = Symbol("STEP_VALUE")
+export const AUTOCORRECT_VALUE = Symbol("AUTOCORRECT")
+export type MinValueEvent = { type: typeof MIN_VALUE }
+export type MaxValueEvent = { type: typeof MAX_VALUE }
+export type StepValueEvent = { type: typeof STEP_VALUE }
+export type AutoCorrectValueEvent = { type: typeof AUTOCORRECT_VALUE }
+export type NumberModelEvent = ValueModelEvent | MinValueEvent | MaxValueEvent | StepValueEvent | AutoCorrectValueEvent
 
 export interface NumberModelOptions extends ValueModelOptions<number> {
     /**
@@ -51,7 +53,7 @@ export interface NumberModelOptions extends ValueModelOptions<number> {
 /**
  * @category Application Model
  */
-export class NumberModel extends ValueModel<number, NumberModelReason, NumberModelOptions> {
+export class NumberModel extends ValueModel<number, NumberModelEvent, NumberModelOptions> {
     constructor(value: number, options?: NumberModelOptions) {
         super(value, options)
     }
@@ -99,7 +101,7 @@ export class NumberModel extends ValueModel<number, NumberModelReason, NumberMod
             this.options = {}
         }
         this.options.min = min
-        this.modified.trigger(NumberModelReason.MIN)
+        this.modified.trigger({ type: MIN_VALUE })
     }
     get min(): number | undefined {
         return this.options?.min
@@ -111,7 +113,7 @@ export class NumberModel extends ValueModel<number, NumberModelReason, NumberMod
             this.options = {}
         }
         this.options.max = max
-        this.modified.trigger(NumberModelReason.MAX)
+        this.modified.trigger({ type: MAX_VALUE })
     }
     get max(): number | undefined {
         return this.options?.max
@@ -123,19 +125,19 @@ export class NumberModel extends ValueModel<number, NumberModelReason, NumberMod
             this.options = {}
         }
         this.options.step = step
-        this.modified.trigger(NumberModelReason.STEP)
+        this.modified.trigger({ type: STEP_VALUE })
     }
     get step(): number | undefined {
         return this.options?.step
     }
 
     set autocorrect(autocorrect: boolean | undefined) {
-        if (this.options?.autocorrect === autocorrect) return
+        if (this.autocorrect === autocorrect) return
         if (this.options === undefined) {
             this.options = {}
         }
         this.options.autocorrect = autocorrect
-        this.modified.trigger(NumberModelReason.AUTOCORRECT)
+        this.modified.trigger({ type: AUTOCORRECT_VALUE })
     }
     get autocorrect(): boolean {
         return this.options?.autocorrect === true

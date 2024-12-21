@@ -1,7 +1,7 @@
 import { expect } from "chai"
-import { ModelReason } from "@toad/model/Model"
 import { OptionModel } from "@toad/model/OptionModel"
-import { ValueModelReason } from "@toad/model/ValueModel"
+import { VALUE } from "@toad/model/ValueModel"
+import { ALL } from "dns"
 
 describe("OptionModel", function () {
     describe("value", function () {
@@ -15,23 +15,23 @@ describe("OptionModel", function () {
         })
         it("value change triggers ModelReason.VALUE signal", function () {
             const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
-            let reason: void | ValueModelReason | ModelReason | undefined
+            let reason: any
             model.modified.add((a) => (reason = a))
 
             model.value = "Left"
-            expect(reason).to.equal(ModelReason.VALUE)
+            expect(reason.type).to.equal(VALUE)
         })
     })
     describe("setMapping()", function () {
         it("sets a new mapping and triggers ModelReason.ALL", function () {
             const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
-            let reason: void | ValueModelReason | ModelReason | undefined
+            let reason: any
             model.modified.add((a) => (reason = a))
             expect(model.index).to.equal(1)
 
             model.setMapping(["Left", "Right", "Up", "Down"])
 
-            expect(reason).to.equal(ModelReason.ALL)
+            expect(reason.type).to.equal(ALL)
             expect(model.index).to.equal(3)
         })
         describe("does not signal a change when the new mapping equals the current one", function () {
@@ -44,7 +44,7 @@ describe("OptionModel", function () {
 
                 const model = new OptionModel(1, mapping as any) // FIXME: WTF?
 
-                let reason: void | ValueModelReason | ModelReason | undefined
+                let reason: any
                 model.modified.add((a) => (reason = a))
                 expect(model.index).to.equal(1)
 
@@ -56,7 +56,7 @@ describe("OptionModel", function () {
             it("mapping has same values (list of strings)", function () {
                 const model = new OptionModel("Down", ["Up", "Down"])
 
-                let reason: void | ValueModelReason | ModelReason | undefined
+                let reason: any
                 model.modified.add((a) => (reason = a))
                 expect(model.index).to.equal(1)
 
@@ -72,7 +72,7 @@ describe("OptionModel", function () {
                     [1, "true"],
                 ])
 
-                let reason: void | ValueModelReason | ModelReason | undefined
+                let reason: any
                 model.modified.add((a) => (reason = a))
                 expect(model.index).to.equal(1)
 

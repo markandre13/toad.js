@@ -17,7 +17,7 @@
  */
 
 import { TableEvent } from "../TableEvent"
-import { TableEventType } from "../TableEventType"
+import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEventType } from "../TableEventType"
 import { TypedTableModel } from "./TypedTableModel"
 import { ColumnEditInterface, RowEditInterface } from "./TableModel"
 
@@ -78,7 +78,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         this._data.splice(row * this._cols, 0, ...rowData)
         this._rows += count
         this.modified.trigger(new TableEvent(
-            TableEventType.INSERT_ROW, row, count
+            INSERT_ROW, row, count
         ))
         return row
     }
@@ -86,7 +86,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         this._data.splice(row * this._cols, this._cols * count)
         this._rows -= count
         this.modified.trigger(new TableEvent(
-            TableEventType.REMOVE_ROW, row, count
+            REMOVE_ROW, row, count
         ))
         return row
     }
@@ -114,7 +114,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
 
         this._cols += newColumnCount
         this.modified.trigger(new TableEvent(
-            TableEventType.INSERT_COL, col, newColumnCount
+            INSERT_COL, col, newColumnCount
         ))
 
         return col
@@ -127,7 +127,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         }
         this._cols -= count
         this.modified.trigger(new TableEvent(
-            TableEventType.REMOVE_COL, col, count
+            REMOVE_COL, col, count
         ))
         return col
     }

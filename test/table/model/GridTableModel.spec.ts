@@ -2,7 +2,7 @@ import { expect } from "chai"
 
 import { GridTableModel } from "src/table/model/GridTableModel"
 import { TableEvent } from "src/table/TableEvent"
-import { TableEventType } from "src/table/TableEventType"
+import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEventType } from "src/table/TableEventType"
 
 class NumberGrid extends GridTableModel<Number> {}
 
@@ -37,7 +37,7 @@ describe("gridtablemodel", function () {
             expect(model.getCell(2, 1)).to.equal(6)
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_ROW)
+            expect(event!!.type).to.equal(INSERT_ROW)
             expect(event!!.index).to.equal(0)
             expect(event!!.size).to.equal(2)
         })
@@ -55,7 +55,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_ROW)
+            expect(event!!.type).to.equal(INSERT_ROW)
             expect(event!!.index).to.equal(0)
             expect(event!!.size).to.equal(2)
         })
@@ -73,7 +73,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_ROW)
+            expect(event!!.type).to.equal(INSERT_ROW)
             expect(event!!.index).to.equal(1)
             expect(event!!.size).to.equal(2)
         })
@@ -91,7 +91,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_ROW)
+            expect(event!!.type).to.equal(INSERT_ROW)
             expect(event!!.index).to.equal(2)
             expect(event!!.size).to.equal(2)
         })
@@ -112,7 +112,7 @@ describe("gridtablemodel", function () {
             expect(model.getCell(1, 2)).to.equal(6)
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_COL)
+            expect(event!!.type).to.equal(INSERT_COL)
             expect(event!!.index).to.equal(0)
             expect(event!!.size).to.equal(2)
         })
@@ -131,7 +131,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 4, 7, 10, 2, 5, 8, 11, 3, 6, 9, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_COL)
+            expect(event!!.type).to.equal(INSERT_COL)
             expect(event!!.index).to.equal(0)
             expect(event!!.size).to.equal(2)
         })
@@ -151,7 +151,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 4, 7, 10, 2, 5, 8, 11, 3, 6, 9, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_COL)
+            expect(event!!.type).to.equal(INSERT_COL)
             expect(event!!.index).to.equal(1)
             expect(event!!.size).to.equal(2)
         })
@@ -170,7 +170,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 4, 7, 10, 2, 5, 8, 11, 3, 6, 9, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.INSERT_COL)
+            expect(event!!.type).to.equal(INSERT_COL)
             expect(event!!.index).to.equal(2)
             expect(event!!.size).to.equal(2)
         })
@@ -192,7 +192,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([7, 8, 9, 10, 11, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.REMOVE_ROW)
+            expect(event!!.type).to.equal(REMOVE_ROW)
             expect(event!!.index).to.equal(0)
             expect(event!!.size).to.equal(2)
         })
@@ -211,7 +211,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 2, 3, 10, 11, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.REMOVE_ROW)
+            expect(event!!.type).to.equal(REMOVE_ROW)
             expect(event!!.index).to.equal(1)
             expect(event!!.size).to.equal(2)
         })
@@ -230,7 +230,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 2, 3, 4, 5, 6])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.REMOVE_ROW)
+            expect(event!!.type).to.equal(REMOVE_ROW)
             expect(event!!.index).to.equal(2)
             expect(event!!.size).to.equal(2)
         })
@@ -252,7 +252,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([3, 4, 7, 8, 11, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.REMOVE_COL)
+            expect(event!!.type).to.equal(REMOVE_COL)
             expect(event!!.index).to.equal(0)
             expect(event!!.size).to.equal(2)
         })
@@ -271,7 +271,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 4, 5, 8, 9, 12])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.REMOVE_COL)
+            expect(event!!.type).to.equal(REMOVE_COL)
             expect(event!!.index).to.equal(1)
             expect(event!!.size).to.equal(2)
         })
@@ -290,7 +290,7 @@ describe("gridtablemodel", function () {
             expect(model.asArray()).to.deep.equal([1, 2, 5, 6, 9, 10])
 
             expect(event).to.be.not.undefined
-            expect(event!!.type).to.equal(TableEventType.REMOVE_COL)
+            expect(event!!.type).to.equal(REMOVE_COL)
             expect(event!!.index).to.equal(2)
             expect(event!!.size).to.equal(2)
         })

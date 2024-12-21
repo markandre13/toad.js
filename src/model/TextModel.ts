@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, ModelOptions, ModelReason } from "./Model"
-import { AbstractValueModel, ValueModelOptions } from "./ValueModel"
+import { Model, ModelOptions, ModelEvent } from "./Model"
+import { AbstractValueModel, VALUE, ValueModelOptions } from "./ValueModel"
 
 export type StringFunction = () => string
 
@@ -40,9 +40,9 @@ export class TextModel extends AbstractValueModel<string, ValueModelOptions<stri
      * hence set promise(...) allows to set a value and trigger a change event
      * with the actual value only retrieved when needed.
      */
-    set promise(promise: () => string) {
+    set promise(promise: StringFunction) {
         this._value = promise
-        this.modified.trigger(ModelReason.VALUE)
+        this.modified.trigger({type: VALUE})
     }
 
     get promise(): StringFunction {
@@ -66,15 +66,16 @@ export class TextModel extends AbstractValueModel<string, ValueModelOptions<stri
         this.modified.withLock(() => {
             this.error = undefined
             this._value = value
-            this.modified.trigger(ModelReason.VALUE)   
+            this.modified.trigger({type:VALUE})   
         })
     }
 
     override get value(): string {
         switch (typeof this._value) {
             case "number": // ????
-            case "string":
                 this._value = `${this._value}`
+                break
+            case "string":
                 break
             case "function":
                 this._value = this._value()

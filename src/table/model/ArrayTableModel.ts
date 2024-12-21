@@ -17,7 +17,7 @@
  */
 
 import { TableEvent } from "../TableEvent"
-import { TableEventType } from "../TableEventType"
+import { INSERT_ROW, REMOVE_ROW, TableEventType } from "../TableEventType"
 import { RowEditInterface } from "./TableModel"
 import { TypedTableModel } from "./TypedTableModel"
 
@@ -56,7 +56,7 @@ export abstract class ArrayTableModel<T>
         else
             rowArray = [rowData]
         this.data.splice(row, 0, ...rowArray)
-        this.modified.trigger(new TableEvent(TableEventType.INSERT_ROW, row, rowArray.length))
+        this.modified.trigger(new TableEvent(INSERT_ROW, row, rowArray.length))
         return row
     }
 
@@ -66,7 +66,7 @@ export abstract class ArrayTableModel<T>
         }
         // console.log(`delete row ${row}`)
         this.data.splice(row, count)
-        this.modified.trigger(new TableEvent(TableEventType.REMOVE_ROW, row, count))
+        this.modified.trigger(new TableEvent(REMOVE_ROW, row, count))
         return row
     }
 }

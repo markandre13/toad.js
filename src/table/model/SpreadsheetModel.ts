@@ -17,7 +17,7 @@
  */
 
 import { TableEvent } from '../TableEvent'
-import { TableEventType } from '../TableEventType'
+import { CELL_CHANGED, TableEventType } from '../TableEventType'
 import { GridTableModel } from './GridTableModel'
 import { SpreadsheetCell } from "./SpreadsheetCell"
 
@@ -62,7 +62,7 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         for(let row = 0; row<this._rows; ++row) {
             for(let col = 0; col<this._cols; ++col) {
                 if (cell === this._data[idx++]) {
-                    this.modified.trigger(new TableEvent(TableEventType.CELL_CHANGED, col, row))
+                    this.modified.trigger(new TableEvent(CELL_CHANGED, col, row))
                     return
                 }
             }

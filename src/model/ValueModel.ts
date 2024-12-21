@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2023 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,12 +16,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, ModelOptions, ModelReason } from "./Model"
+import { Model, ModelOptions, ModelEvent } from "./Model"
 
-export enum ValueModelReason {
-    DEFAULT = ModelReason.MAX_REASON,
-    MAX_REASON,
-}
+export const VALUE = Symbol("VALUE")
+export const DEFAULT_VALUE = Symbol("DEFAULT_VALUE")
+export type ValueEvent = { type: typeof VALUE }
+export type DefaultValueEvent = { type: typeof DEFAULT_VALUE }
+export type ValueModelEvent = ModelEvent | ValueEvent | DefaultValueEvent
 
 export interface ValueModelOptions<V> extends ModelOptions {
     /**
@@ -38,7 +39,7 @@ export interface ValueModelOptions<V> extends ModelOptions {
  *
  */
 export abstract class AbstractValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> 
-extends Model<ValueModelReason | R, O> {
+extends Model<ValueModelEvent | R, O> {
 
     abstract set value(value: V)
     abstract get value(): V
@@ -49,7 +50,7 @@ extends Model<ValueModelReason | R, O> {
             this.options = {}
         }
         this.options.default = aDefault
-        this.modified.trigger(ValueModelReason.DEFAULT)
+        this.modified.trigger({type: DEFAULT_VALUE})
     }
     get default(): V | undefined {
         return this.options?.default
@@ -80,7 +81,7 @@ extends AbstractValueModel<V, R, O>
     override set value(value: V) {
         if (this._value === value) return
         this._value = value
-        this.modified.trigger(ModelReason.VALUE)
+        this.modified.trigger({type: VALUE})
     }
     override get value(): V {
         return this._value

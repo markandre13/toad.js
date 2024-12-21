@@ -18,6 +18,20 @@
 
 import { TableEventType } from './TableEventType'
 
+// const INSERT_ROW = Symbol("INSERT_ROW")
+// const REMOVE_ROW = Symbol("REMOVE_ROW")
+// type InsertRowEvent = {
+//     type: typeof INSERT_ROW
+//     row: number
+//     size: number
+// }
+// type RemoveRowEvent = {
+//     type: typeof REMOVE_ROW
+//     row: number
+//     size: number
+// }
+// type TableEvent = ValueModelEvent | InsertRowEvent | RemoveRowEvent
+
 // TODO: rename into TableModelEvent ???
 
 export class TableEvent {
@@ -39,6 +53,6 @@ export class TableEvent {
     }
 
     toString() {
-        return `TableEvent {type: ${TableEventType[this.type]}, index: ${this.index}, size: ${this.size}}`
+        return `TableEvent {type: ${this.type.description}, index: ${this.index}, size: ${this.size}}`
     }
 }
