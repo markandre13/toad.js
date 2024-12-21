@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2021, 2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -44,23 +44,44 @@ export class Signal<T = void> {
     add(callback: (data: T) => void): void
     add(callback: (data: T) => void, id: any): void
     add(callback: (data: T) => void, id?: any) {
-        if (!this.callbacks)
+        if (!this.callbacks) {
             this.callbacks = new Array<SignalLink>()
+        }
         this.callbacks.push(new SignalLink(callback, id))
+    }
+    has(id: any): boolean {
+        if (!this.callbacks) {
+            return false
+        }
+        if (id instanceof WeakRef) {
+            id = id.deref()
+        }
+        for (let callback of this.callbacks) {
+            if (id !== undefined && callback.id instanceof WeakRef && callback.id.deref() === id) {
+                return true
+            }
+            if (callback.id === id) {
+                return true
+            }
+        }
+        return false
     }
 
     remove(id: any) {
-        if (!this.callbacks)
+        if (!this.callbacks) {
             return
+        }
         for (let i = this.callbacks.length - 1; i >= 0; --i) {
-            if (this.callbacks[i].id === id)
+            if (this.callbacks[i].id === id) {
                 this.callbacks.splice(i, 1)
+            }
         }
     }
 
     count(): number {
-        if (!this.callbacks)
+        if (!this.callbacks) {
             return 0
+        }
         return this.callbacks.length
     }
 
@@ -100,8 +121,14 @@ export class Signal<T = void> {
         }
         let error: any
         for (let i = 0; i < this.callbacks.length; ++i) {
+            const callback = this.callbacks[i]
+            if (callback.id instanceof WeakRef && callback.id.deref() === undefined) {
+                this.callbacks.splice(i, 1)
+                --i
+                continue
+            }
             try {
-                this.callbacks[i].callback(data)
+                callback.callback(data)
             }
             catch (e) {
                 error = e
