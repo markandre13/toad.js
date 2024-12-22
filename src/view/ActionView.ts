@@ -17,7 +17,7 @@
  */
 
 import { TextModel } from "../model/TextModel"
-import { ALL, ModelEvent } from "../model/Model"
+import { ALL } from "../model/Model"
 import { globalController } from "../controller/globalController"
 import { Action } from "../model/Action"
 import { ModelView } from "./ModelView"
@@ -67,20 +67,20 @@ export abstract class ActionView extends ModelView<TextModel> {
             if (this.action) this.action.modified.remove(this)
             this.model = undefined
             this.action = undefined
-            this.updateView(ALL)
+            this.updateView()
             return
         }
         if (model instanceof Action) {
             // FIXME: what if this.action is already set?
             this.action = model
             this.action.modified.add(() => {
-                this.updateView(ALL)
+                this.updateView()
             }, this)
         } else if (model instanceof TextModel) {
             // FIXME: what if this.model is already set?
             this.model = model
             this.model.modified.add(() => {
-                this.updateView(ALL)
+                this.updateView()
             }, this)
         } else {
             if (typeof model === "object") {
@@ -90,7 +90,7 @@ export abstract class ActionView extends ModelView<TextModel> {
             }
         }
 
-        this.updateView(ALL)
+        this.updateView()
     }
 
     setAction(value: (() => void) | Action) {

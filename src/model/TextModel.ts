@@ -16,7 +16,6 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, ModelOptions, ModelEvent } from "./Model"
 import { AbstractValueModel, VALUE, ValueModelOptions } from "./ValueModel"
 
 export type StringFunction = () => string
@@ -24,7 +23,7 @@ export type StringFunction = () => string
 /**
  * @category Application Model
  */
-export class TextModel extends AbstractValueModel<string, ValueModelOptions<string>> {
+export class TextModel extends AbstractValueModel<string, void, ValueModelOptions<string>> {
     protected _value!: string | StringFunction
 
     constructor(value: string = "", options?: ValueModelOptions<string>) {

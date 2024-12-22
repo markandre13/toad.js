@@ -38,8 +38,8 @@ export interface ValueModelOptions<V> extends ModelOptions {
  * @category Application Model
  *
  */
-export abstract class AbstractValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> 
-extends Model<ValueModelEvent | R, O> {
+export abstract class AbstractValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> 
+extends Model<ValueModelEvent | E, O> {
 
     abstract set value(value: V)
     abstract get value(): V
@@ -68,8 +68,8 @@ extends Model<ValueModelEvent | R, O> {
  * @category Application Model
  *
  */
-export class ValueModel<V, R = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
-extends AbstractValueModel<V, R, O>
+export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
+extends AbstractValueModel<V, E, O>
 {
     protected _value: V
 

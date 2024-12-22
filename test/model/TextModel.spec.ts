@@ -9,7 +9,7 @@ describe("TextModel", function () {
                 expect(model.value).to.equal("")
             })
             it("initializable via constructor", () => {
-                const model = new TextModel("hello")
+                const model = new TextModel("hello", { label: "text", description: "desc", default: "none" })
                 expect(model.value).to.equal("hello")
             })
             it("promise sets a function, which is called once to set the value at a later time", () => {

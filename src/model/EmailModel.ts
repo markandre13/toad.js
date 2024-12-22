@@ -34,5 +34,7 @@ export class EmailModel extends TextModel {
             }
         })
     }
-    override get value(): string { return super.value }
+    override get value(): string {
+        return super.value
+    }
 }

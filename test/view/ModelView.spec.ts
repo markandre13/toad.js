@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { Model, View, ModelView } from "@toad"
-import { ModelEvent } from '@toad/model/Model'
+import { ALL, ModelEvent } from '@toad/model/Model'
 
 describe("view", function() {
     describe("ModelView<Model<MSG>>", function() {
@@ -30,7 +30,7 @@ describe("view", function() {
             expect(view.log[0].method).equals("updateView()")
             expect(view.log[0].model).equals(model)
 
-            model.modified.trigger()
+            model.modified.trigger({type: ALL})
             expect(view.log.length).equals(2)
             expect(view.log[1].method).equals("updateView()")
             expect(view.log[1].model).equals(model)

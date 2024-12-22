@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { VALUE, ValueModel } from "@toad/model/ValueModel"
 import { Model } from "../../model/Model"
 import { TableEditMode } from "../TableEditMode"
 import { TablePos } from "../TablePos"
@@ -25,21 +26,19 @@ import { TablePos } from "../TablePos"
 /**
  * @category Application Model
  */
-export class SelectionModel extends Model {
+export class SelectionModel extends ValueModel<TablePos> {
     mode: TableEditMode // FIXME: there might be a way to do without, just by the behaviour of a common API towards Table
-    protected _value: TablePos
 
     constructor(mode = TableEditMode.EDIT_CELL) {
-        super()
+        super(new TablePos(0, 0))
         this.mode = mode
-        this._value = new TablePos(0, 0)
     }
 
     set col(col: number) {
         if (this._value.col === col)
             return
         this._value.col = col
-        this.modified.trigger()
+        this.modified.trigger({type: VALUE})
     }
 
     get col(): number {
@@ -50,21 +49,22 @@ export class SelectionModel extends Model {
         if (this._value.row === row)
             return
         this._value.row = row
-        this.modified.trigger()
+        this.modified.trigger({type: VALUE})
     }
 
     get row(): number {
         return this._value.row
     }
 
-    set value(value: TablePos) {
-        if (this._value.col === value.col && this._value.row === value.row)
+    override set value(value: TablePos)  {
+        if (this._value.col === value.col && this._value.row === value.row) {
             return
+        }
         this._value = value
-        this.modified.trigger()
+        this.modified.trigger({type: VALUE})
     }
 
-    get value(): TablePos {
+    override get value(): TablePos {
         return this._value
     }
 

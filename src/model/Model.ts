@@ -54,10 +54,11 @@ export interface ModelOptions {
  * have a reference to the model available to access the model's state/value.
  * The R will then indicate why the signal has been triggered.
  * 
+ * E: An optional event type for the signal to emit besides ModelEvent
  * O: A list of optional values.
  */
-export class Model<R = void, O extends ModelOptions = ModelOptions> {
-    modified = new Signal<ModelEvent | R>()
+export class Model<E = void, O extends ModelOptions = ModelOptions> {
+    modified = new Signal<E | ModelEvent>()
     options?: Partial<O>
 
     constructor(options?: O) {
@@ -131,10 +132,10 @@ export class Model<R = void, O extends ModelOptions = ModelOptions> {
             element.style.fontWeight = ""
             element.style.color = ""
             switch(this.color) {
-                case "italic":
+                case "italic": // hack
                     element.style.fontStyle = "italic"
                     break
-                case "bold":
+                case "bold": // hack
                     element.style.fontWeight = "bold"
                     break
                 default:

@@ -23,11 +23,11 @@ import { OptionModelBase } from "./OptionModelBase"
 /**
  * @category Application Model
  */
-export class OptionModel<
+export class OptionModel<V, E = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<
     V,
-    R extends ModelEvent = ModelEvent,
-    O extends ModelOptions = ModelOptions
-> extends OptionModelBase<V, ModelEvent, O> {
+    E | ModelEvent,
+    O
+> {
     protected _mapping!: readonly (readonly [V, string])[]
     /**
      * Examples:

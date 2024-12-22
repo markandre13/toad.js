@@ -23,12 +23,12 @@ import { OptionModelBase } from "./OptionModelBase"
  * @category Application Model
  */
 export type EnumType<T> = {
-    [id: string]: T | string;
+    [id: string]: T | string
     [nu: number]: string
 }
 
-export class EnumModel<T, V extends T = T, R = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<T, R, O>
-{
+export class EnumModel<T, V extends T = T, E = void, O extends ModelOptions = ModelOptions> 
+extends OptionModelBase<T, E, O> {
     protected enumType: EnumType<T>
     constructor(value: V, enumType: EnumType<T>, options?: O) {
         super(value, options)

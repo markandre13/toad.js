@@ -26,7 +26,7 @@ import { ModelOptions } from "./Model"
  * Stores a current value and a list of all values to select from along with their
  * respective DOM representations.
  */
-export abstract class OptionModelBase<V, R = void, O extends ModelOptions = ModelOptions> extends ValueModel<V, R, O> {
+export abstract class OptionModelBase<V, E = void, O extends ModelOptions = ModelOptions> extends ValueModel<V, E, O> {
     /**
      * OptionModelBase does not hold 'list of all values to select from along with their
      * respective DOM representations'. Instead the sub-classes need to implement the

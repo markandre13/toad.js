@@ -22,7 +22,7 @@ import { ValueModel, ValueModelOptions } from "./ValueModel"
  * @category Application Model
  */
 export class BooleanModel extends ValueModel<boolean> {
-  constructor(value: boolean, options?: ValueModelOptions<boolean>) {
-    super(value, options)
-  }
+    constructor(value: boolean, options?: ValueModelOptions<boolean>) {
+        super(value, options)
+    }
 }

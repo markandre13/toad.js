@@ -5,11 +5,11 @@ import { Model } from "./Model"
  * @category Application Model
  *
  * This is an application layer support class for the &lt;If&gt; view.
- * 
+ *
  * As a subclass of BooleanModel, it sets itself by evaluating the
  * provided _condition_ whenever on of the provided _dependencies_ changes.
- * 
- * 
+ *
+ *
  * @see If
  */
 export class Condition extends BooleanModel {

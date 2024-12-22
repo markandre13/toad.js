@@ -27,7 +27,7 @@ export interface ModelViewProps<M> extends HTMLElementProps {
 /**
  * @category View
  */
-export class ModelView<M extends Model<R>, R = InferModelParameter<M>> extends View {
+export class ModelView<M extends Model<E>, E = InferModelParameter<M>> extends View {
     model?: M = undefined
 
     constructor(init?: ModelViewProps<M>) {
@@ -39,7 +39,7 @@ export class ModelView<M extends Model<R>, R = InferModelParameter<M>> extends V
 
     // NOTE: these were 'abstract' but then the 'override' did not work
     updateModel(): void {}
-    updateView(reason: R | ModelEvent): void {}
+    updateView(event: E | ModelEvent): void {}
 
     override setModel(model?: M): void {
         if (model === this.model) return
@@ -51,7 +51,7 @@ export class ModelView<M extends Model<R>, R = InferModelParameter<M>> extends V
         }
 
         if (model) {
-            model.modified.add((reason: R | ModelEvent) => view.updateView(reason), view)
+            model.modified.add((event) => view.updateView(event), view)
         }
 
         this.model = model
