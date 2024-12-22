@@ -16,7 +16,7 @@ describe("OptionModel", function () {
         it("value change triggers ModelReason.VALUE signal", function () {
             const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
             let reason: any
-            model.modified.add((a) => (reason = a))
+            model.signal.add((a) => (reason = a))
 
             model.value = "Left"
             expect(reason.type).to.equal(VALUE)
@@ -26,7 +26,7 @@ describe("OptionModel", function () {
         it("sets a new mapping and triggers ModelReason.ALL", function () {
             const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
             let reason: any
-            model.modified.add((a) => (reason = a))
+            model.signal.add((a) => (reason = a))
             expect(model.index).to.equal(1)
 
             model.setMapping(["Left", "Right", "Up", "Down"])
@@ -45,7 +45,7 @@ describe("OptionModel", function () {
                 const model = new OptionModel(1, mapping as any) // FIXME: WTF?
 
                 let reason: any
-                model.modified.add((a) => (reason = a))
+                model.signal.add((a) => (reason = a))
                 expect(model.index).to.equal(1)
 
                 model.setMapping(mapping as any)
@@ -57,7 +57,7 @@ describe("OptionModel", function () {
                 const model = new OptionModel("Down", ["Up", "Down"])
 
                 let reason: any
-                model.modified.add((a) => (reason = a))
+                model.signal.add((a) => (reason = a))
                 expect(model.index).to.equal(1)
 
                 model.setMapping(["Up", "Down"])
@@ -73,7 +73,7 @@ describe("OptionModel", function () {
                 ])
 
                 let reason: any
-                model.modified.add((a) => (reason = a))
+                model.signal.add((a) => (reason = a))
                 expect(model.index).to.equal(1)
 
                 model.setMapping([

@@ -57,7 +57,7 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> implements R
             rowArray = rowData
         else rowArray = [rowData]
         this.data.splice(row, 0, ...rowArray)
-        this.modified.trigger({ type: INSERT_ROW, index: row, size: rowArray.length })
+        this.signal.emit({ type: INSERT_ROW, index: row, size: rowArray.length })
         return row
     }
 
@@ -69,7 +69,7 @@ export abstract class ArrayTableModel<T> extends TypedTableModel<T> implements R
         }
         // console.log(`delete row ${row}`)
         this.data.splice(row, count)
-        this.modified.trigger({ type: REMOVE_ROW, index: row, size: count })
+        this.signal.emit({ type: REMOVE_ROW, index: row, size: count })
         return row
     }
 }

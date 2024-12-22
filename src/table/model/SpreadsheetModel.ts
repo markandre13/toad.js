@@ -61,7 +61,7 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         for (let row = 0; row < this._rows; ++row) {
             for (let col = 0; col < this._cols; ++col) {
                 if (cell === this._data[idx++]) {
-                    this.modified.trigger({ type: CELL_CHANGED, col, row })
+                    this.signal.emit({ type: CELL_CHANGED, col, row })
                     return
                 }
             }

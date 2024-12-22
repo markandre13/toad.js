@@ -78,6 +78,6 @@ export abstract class ArrayAdapter<
     protected setField(col: number, row: number, text: string): void {
         if (!this.model) return
         this.getRow(this.model.data[row])[col].fromString(text)
-        this.model.modified.trigger({ type: CELL_CHANGED, col, row })
+        this.model.signal.emit({ type: CELL_CHANGED, col, row })
     }
 }

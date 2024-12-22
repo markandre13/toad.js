@@ -47,11 +47,11 @@ export class ModelView<M extends Model<E>, E = InferModelParameter<M>> extends V
         const view = this
 
         if (this.model) {
-            this.model.modified.remove(view)
+            this.model.signal.remove(view)
         }
 
         if (model) {
-            model.modified.add((event) => view.updateView(event), view)
+            model.signal.add((event) => view.updateView(event), view)
         }
 
         this.model = model

@@ -19,7 +19,7 @@ export class Condition extends BooleanModel {
         this.condition = condition
         this.evaluate = this.evaluate.bind(this)
         for (const model of dependencies) {
-            model.modified.add(this.evaluate)
+            model.signal.add(this.evaluate)
         }
     }
     evaluate() {

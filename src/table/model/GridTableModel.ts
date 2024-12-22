@@ -78,13 +78,13 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         const count = rowData.length / this._cols
         this._data.splice(row * this._cols, 0, ...rowData)
         this._rows += count
-        this.modified.trigger({ type: INSERT_ROW, index: row, size: count })
+        this.signal.emit({ type: INSERT_ROW, index: row, size: count })
         return row
     }
     removeRow(row: number, count: number = 1): number {
         this._data.splice(row * this._cols, this._cols * count)
         this._rows -= count
-        this.modified.trigger({ type: REMOVE_ROW, index: row, size: count })
+        this.signal.emit({ type: REMOVE_ROW, index: row, size: count })
         return row
     }
     insertColumn(col: number, colData?: Array<T>, columnLength: number = this._rows): number {
@@ -110,7 +110,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         }
 
         this._cols += newColumnCount
-        this.modified.trigger({ type: INSERT_COL, index: col, size: newColumnCount })
+        this.signal.emit({ type: INSERT_COL, index: col, size: newColumnCount })
 
         return col
     }
@@ -121,7 +121,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
             idx -= this._cols
         }
         this._cols -= count
-        this.modified.trigger({ type: REMOVE_COL, index: col, size: count })
+        this.signal.emit({ type: REMOVE_COL, index: col, size: count })
         return col
     }
 }

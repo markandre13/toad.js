@@ -23,11 +23,11 @@ import { Signal } from "../Signal"
  * @category Application Model
  */
 export class Action extends Model {
-    signal = new Signal()
+    private action = new Signal<any>()
 
     constructor(callback: () => void, options?: ModelOptions) {
         super(options)
-        this.signal.add(callback)
+        this.action.add(callback)
     }
 
     set value(_: any) {
@@ -42,6 +42,6 @@ export class Action extends Model {
         if (!this.enabled) {
             return
         }
-        this.signal.trigger(data)
+        this.action.emit(data)
     }
 }

@@ -20,23 +20,23 @@ describe("view", function() {
             const model = new MyModel()
             const view = new MyView()
             document.body.appendChild(view)
-            expect(model.modified.callbacks).to.be.undefined
+            expect(model.signal.callbacks).to.be.undefined
             expect(view.log.length).equals(0)
 
             view.setModel(model)
-            expect(model.modified.callbacks?.length).equals(1)
+            expect(model.signal.callbacks?.length).equals(1)
             expect(view.log.length).equals(1)
 
             expect(view.log[0].method).equals("updateView()")
             expect(view.log[0].model).equals(model)
 
-            model.modified.trigger({type: ALL})
+            model.signal.emit({type: ALL})
             expect(view.log.length).equals(2)
             expect(view.log[1].method).equals("updateView()")
             expect(view.log[1].model).equals(model)
 
             view.setModel(undefined)
-            expect(model.modified.callbacks?.length).equals(0)
+            expect(model.signal.callbacks?.length).equals(0)
             expect(view.log.length).equals(3)
             expect(view.log[2].method).equals("updateView()")
             expect(view.log[2].model).equals(undefined)
@@ -66,22 +66,22 @@ describe("view", function() {
             const view = new MyView()
             document.body.appendChild(view)
 
-            expect(model.modified.callbacks).to.be.undefined
+            expect(model.signal.callbacks).to.be.undefined
             expect(view.log.length).equals(0)
 
             view.setModel(model)
-            expect(model.modified.callbacks?.length).equals(1)
+            expect(model.signal.callbacks?.length).equals(1)
             expect(view.log.length).equals(1)
             expect(view.log[0].method).equals("updateView(ALL)")
             expect(view.log[0].model).equals(model)
 
-            model.modified.trigger({message: "message"})
+            model.signal.emit({message: "message"})
             expect(view.log.length).equals(2)
             expect(view.log[1].method).equals("updateView(message)")
             expect(view.log[1].model).equals(model)
 
             view.setModel(undefined)
-            expect(model.modified.callbacks?.length).equals(0)
+            expect(model.signal.callbacks?.length).equals(0)
             expect(view.log.length).equals(3)
             expect(view.log[2].method).equals("updateView(ALL)")
             expect(view.log[2].model).equals(undefined)

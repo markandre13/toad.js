@@ -15,7 +15,7 @@ describe("models", () => {
             it("get, set and change event", () => {
                 const model = new Model()
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.enabled = false
@@ -35,7 +35,7 @@ describe("models", () => {
             it("get, set and change event", () => {
                 const model = new Model()
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.label = "alice"
@@ -55,7 +55,7 @@ describe("models", () => {
             it("get, set and change event", () => {
                 const model = new Model()
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.description = "alice"
@@ -75,7 +75,7 @@ describe("models", () => {
             it("get, set and change event", () => {
                 const model = new Model()
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.color = "alice"
@@ -95,7 +95,7 @@ describe("models", () => {
             it("get, set and change event", () => {
                 const model = new Model()
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.error = "alice"

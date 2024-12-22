@@ -94,7 +94,7 @@ export class Signal<T = void> {
         if (this.triggered) {
             let data = this.triggered.data
             this.triggered = undefined
-            this.trigger(data)
+            this.emit(data)
         }
     }
 
@@ -105,7 +105,7 @@ export class Signal<T = void> {
         return r
     }
 
-    trigger(data: T): void {
+    emit(data: T): void {
         if (this.busy) {
             return
         }

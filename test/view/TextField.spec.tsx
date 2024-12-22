@@ -144,16 +144,16 @@ describe("view", function () {
                 let model = new TextModel("alfa")
                 bindModel("text", model)
 
-                expect(model.modified.count()).to.equal(0)
+                expect(model.signal.count()).to.equal(0)
 
                 document.body.innerHTML = "<tx-text model='text'></tx-text><tx-text model='text'></tx-text>"
-                expect(model.modified.count()).to.equal(2)
+                expect(model.signal.count()).to.equal(2)
 
                 document.body.removeChild(document.body.children[0])
-                expect(model.modified.count()).to.equal(1)
+                expect(model.signal.count()).to.equal(1)
 
                 document.body.innerHTML = ""
-                expect(model.modified.count()).to.equal(0)
+                expect(model.signal.count()).to.equal(0)
             })
         })
     })

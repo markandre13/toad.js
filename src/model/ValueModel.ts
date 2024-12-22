@@ -50,7 +50,7 @@ extends Model<ValueModelEvent | E, O> {
             this.options = {}
         }
         this.options.default = aDefault
-        this.modified.trigger({type: DEFAULT_VALUE})
+        this.signal.emit({type: DEFAULT_VALUE})
     }
     get default(): V | undefined {
         return this.options?.default
@@ -81,7 +81,7 @@ extends AbstractValueModel<V, E, O>
     override set value(value: V) {
         if (this._value === value) return
         this._value = value
-        this.modified.trigger({type: VALUE})
+        this.signal.emit({type: VALUE})
     }
     override get value(): V {
         return this._value

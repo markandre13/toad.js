@@ -83,7 +83,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
                 this.rows.splice(row, 0, new RowInfo(nn, this.rows[row].depth))
             }
         }
-        this.modified.trigger({ type: INSERT_ROW, index: row, size: 1 })
+        this.signal.emit({ type: INSERT_ROW, index: row, size: 1 })
         return row
     }
 
@@ -103,7 +103,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             row += count + 1
             this.rows.splice(row, 0, new RowInfo(nn, depth))
         }
-        this.modified.trigger({ type: INSERT_ROW, index: row, size: 1 })
+        this.signal.emit({ type: INSERT_ROW, index: row, size: 1 })
         return row
     }
 
@@ -112,7 +112,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         if (this.rows.length === 0) {
             this.setRoot(nn)
             this.rows.push(new RowInfo(nn, 0))
-            this.modified.trigger({ type: INSERT_ROW, index: 0, size: 1 })
+            this.signal.emit({ type: INSERT_ROW, index: 0, size: 1 })
         } else {
             const down = this.getDown(this.rows[row].node)
 
@@ -124,7 +124,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             this.setDown(this.rows[row].node, nn)
 
             this.rows.splice(row + 1, 0, new RowInfo(nn, this.rows[row].depth + 1))
-            this.modified.trigger({ type: INSERT_ROW, index: row + 1, size: 1 })
+            this.signal.emit({ type: INSERT_ROW, index: row + 1, size: 1 })
         }
         return row
     }
@@ -150,7 +150,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             else this.setDown(this.rows[row - 1].node, nn)
             this.rows.splice(row, 0, new RowInfo(nn, depth))
         }
-        this.modified.trigger({ type: INSERT_ROW, index: row, size: 1 })
+        this.signal.emit({ type: INSERT_ROW, index: row, size: 1 })
         return row
     }
 
@@ -186,7 +186,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             }
         }
         this.rows.splice(row, 1)
-        this.modified.trigger({ type: REMOVE_ROW, index: row, size: 1 })
+        this.signal.emit({ type: REMOVE_ROW, index: row, size: 1 })
         return row
     }
 
@@ -211,7 +211,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         r.open = true
         const newRows = this.createRowInfo(row)
         this.rows.splice(row + 1, 0, ...newRows)
-        this.modified.trigger({ type: INSERT_ROW, index: row + 1, size: newRows.length })
+        this.signal.emit({ type: INSERT_ROW, index: row + 1, size: newRows.length })
         // console.log(`TreeModel.openAt(${row})`)
     }
 
@@ -222,7 +222,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         const count = this.getVisibleChildCount(row)
         r.open = false
         this.rows.splice(row + 1, count)
-        this.modified.trigger({ type: REMOVE_ROW, index: row + 1, size: count })
+        this.signal.emit({ type: REMOVE_ROW, index: row + 1, size: count })
     }
 
     collapse() {

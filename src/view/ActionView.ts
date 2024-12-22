@@ -63,8 +63,8 @@ export abstract class ActionView extends ModelView<TextModel> {
 
     override setModel(model?: TextModel | Action): void {
         if (model === undefined) {
-            if (this.model) this.model.modified.remove(this)
-            if (this.action) this.action.modified.remove(this)
+            if (this.model) this.model.signal.remove(this)
+            if (this.action) this.action.signal.remove(this)
             this.model = undefined
             this.action = undefined
             this.updateView()
@@ -73,13 +73,13 @@ export abstract class ActionView extends ModelView<TextModel> {
         if (model instanceof Action) {
             // FIXME: what if this.action is already set?
             this.action = model
-            this.action.modified.add(() => {
+            this.action.signal.add(() => {
                 this.updateView()
             }, this)
         } else if (model instanceof TextModel) {
             // FIXME: what if this.model is already set?
             this.model = model
-            this.model.modified.add(() => {
+            this.model.signal.add(() => {
                 this.updateView()
             }, this)
         } else {

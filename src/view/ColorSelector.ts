@@ -39,12 +39,12 @@ export class ColorSelector extends ModelView<RGBModel> {
 
         this.hsCaret.id = "hsv"
 
-        this.s.modified.add(this.hsvChanged)
-        this.h.modified.add(this.hsvChanged)
-        this.v.modified.add(this.hsvChanged)
-        this.r.modified.add(this.rgbChanged)
-        this.g.modified.add(this.rgbChanged)
-        this.b.modified.add(this.rgbChanged)
+        this.s.signal.add(this.hsvChanged)
+        this.h.signal.add(this.hsvChanged)
+        this.v.signal.add(this.hsvChanged)
+        this.r.signal.add(this.rgbChanged)
+        this.g.signal.add(this.rgbChanged)
+        this.b.signal.add(this.rgbChanged)
 
         let skew: number | undefined
         this.hsCaret.onpointerdown = (ev: PointerEvent) => {

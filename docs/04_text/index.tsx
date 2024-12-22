@@ -9,7 +9,7 @@ import { code } from "./index.source"
 const hello = new TextModel("hello")
 
 const markup = new HtmlModel("Salt &amp; Pepper")
-markup.modified.add(() => {
+markup.signal.add(() => {
     document.getElementById("rawhtml")!.innerText = markup.value
 })
 

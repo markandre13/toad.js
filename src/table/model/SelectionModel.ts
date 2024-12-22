@@ -38,7 +38,7 @@ export class SelectionModel extends ValueModel<TablePos> {
         if (this._value.col === col)
             return
         this._value.col = col
-        this.modified.trigger({type: VALUE})
+        this.signal.emit({type: VALUE})
     }
 
     get col(): number {
@@ -49,7 +49,7 @@ export class SelectionModel extends ValueModel<TablePos> {
         if (this._value.row === row)
             return
         this._value.row = row
-        this.modified.trigger({type: VALUE})
+        this.signal.emit({type: VALUE})
     }
 
     get row(): number {
@@ -61,7 +61,7 @@ export class SelectionModel extends ValueModel<TablePos> {
             return
         }
         this._value = value
-        this.modified.trigger({type: VALUE})
+        this.signal.emit({type: VALUE})
     }
 
     override get value(): TablePos {

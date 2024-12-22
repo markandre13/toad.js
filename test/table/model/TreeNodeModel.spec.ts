@@ -60,7 +60,7 @@ describe("model", function () {
                 counter = 0
                 event = undefined
                 tree = new MyTreeModel(Node)
-                tree.modified.add((e) => {
+                tree.signal.add((e) => {
                     event = e
                 })
             })

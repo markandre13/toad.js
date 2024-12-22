@@ -41,7 +41,7 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
      */
     set promise(promise: StringFunction) {
         this._value = promise
-        this.modified.trigger({type: VALUE})
+        this.signal.emit({type: VALUE})
     }
 
     get promise(): StringFunction {
@@ -62,10 +62,10 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
             console.trace(`TextModel.set value(value: string): ${typeof value} is not type string`)
             return
         }
-        this.modified.withLock(() => {
+        this.signal.withLock(() => {
             this.error = undefined
             this._value = value
-            this.modified.trigger({type:VALUE})   
+            this.signal.emit({type:VALUE})   
         })
     }
 

@@ -77,7 +77,7 @@ export class OptionModel<V, E = void, O extends ModelOptions = ModelOptions> ext
         }
 
         this._mapping = newMapping
-        this.modified.trigger({ type: ALL })
+        this.signal.emit({ type: ALL })
     }
     forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void {
         this._mapping.forEach(([value, label], index) => {

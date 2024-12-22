@@ -21,7 +21,7 @@ describe("NumberModel", function () {
             it("get, set and change event", () => {
                 const model = new NumberModel(42)
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.min = 10
@@ -41,7 +41,7 @@ describe("NumberModel", function () {
             it("get, set and change event", () => {
                 const model = new NumberModel(42)
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.max = 90
@@ -61,7 +61,7 @@ describe("NumberModel", function () {
             it("get, set and change event", () => {
                 const model = new NumberModel(42)
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.step = 5
@@ -82,7 +82,7 @@ describe("NumberModel", function () {
                 // this.timeout(1)
                 const model = new NumberModel(42)
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.autocorrect = true

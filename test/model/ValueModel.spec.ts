@@ -11,7 +11,7 @@ describe("models", () => {
             it("get, set and change event", () => {
                 const model = new ValueModel(42)
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.value = 24
@@ -31,7 +31,7 @@ describe("models", () => {
             it("get, set and change event", () => {
                 const model = new ValueModel(42)
                 let event: any
-                model.modified.add((ev) => {
+                model.signal.add((ev) => {
                     event = ev
                 })
                 model.default = 50

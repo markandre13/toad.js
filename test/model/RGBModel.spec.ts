@@ -19,7 +19,7 @@ describe("RGBModel", function () {
         it("change nothing", () => {
             const model = new RGBModel({ r: 16, g: 32, b: 64 })
             let changed = false
-            model.modified.add( () => {
+            model.signal.add( () => {
                 changed = true
             })
             model.value = { r: 16, g: 32, b: 64 }
@@ -28,7 +28,7 @@ describe("RGBModel", function () {
         it("change only R", () => {
             const model = new RGBModel({ r: 16, g: 32, b: 64 })
             let changed = false
-            model.modified.add( () => {
+            model.signal.add( () => {
                 changed = true
             })
             model.value = { r: 128, g: 32, b: 64 }
@@ -38,7 +38,7 @@ describe("RGBModel", function () {
         it("change only G", () => {
             const model = new RGBModel({ r: 16, g: 32, b: 64 })
             let changed = false
-            model.modified.add( () => {
+            model.signal.add( () => {
                 changed = true
             })
             model.value = { r: 16, g: 128, b: 64 }
@@ -48,7 +48,7 @@ describe("RGBModel", function () {
         it("change only B", () => {
             const model = new RGBModel({ r: 16, g: 32, b: 64 })
             let changed = false
-            model.modified.add( () => {
+            model.signal.add( () => {
                 changed = true
             })
             model.value = { r: 16, g: 32, b: 128}

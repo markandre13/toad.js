@@ -58,8 +58,8 @@ export interface ModelOptions {
  * O: A list of optional values.
  */
 export class Model<E = void, O extends ModelOptions = ModelOptions> {
-    modified = new Signal<E | ModelEvent>()
-    options?: Partial<O>
+    signal = new Signal<E | ModelEvent>()
+    protected options?: Partial<O>
 
     constructor(options?: O) {
         this.options = options
@@ -72,7 +72,7 @@ export class Model<E = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.enabled = enabled
-        this.modified.trigger({type: ENABLED})
+        this.signal.emit({type: ENABLED})
     }
     get enabled(): boolean { return this.options?.enabled !== false }
 
@@ -83,7 +83,7 @@ export class Model<E = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.color = color
-        this.modified.trigger({type: COLOR})
+        this.signal.emit({type: COLOR})
     }
     get color(): string | undefined { return this.options?.color }
 
@@ -94,7 +94,7 @@ export class Model<E = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.label = label
-        this.modified.trigger({type: LABEL})
+        this.signal.emit({type: LABEL})
     }
     get label(): string | undefined { return this.options?.label }
 
@@ -105,7 +105,7 @@ export class Model<E = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.description = description
-        this.modified.trigger({type: DESCRIPTION})
+        this.signal.emit({type: DESCRIPTION})
     }
     get description(): string | undefined { return this.options?.description }
 
@@ -117,7 +117,7 @@ export class Model<E = void, O extends ModelOptions = ModelOptions> {
             this.options = {}
         }
         this.options.error = error
-        this.modified.trigger({type: ERROR})
+        this.signal.emit({type: ERROR})
     }
     get error(): string | undefined { return this.options?.error }
 

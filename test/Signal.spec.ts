@@ -12,24 +12,24 @@ describe("signal", function () {
             expect(signal.count()).to.equal(2)
         })
     })
-    describe("trigger(...)", function () {
-        it("trigger() calls observers", function () {
+    describe("emit(...)", function () {
+        it("emit() calls observers", function () {
             const signal = new Signal()
             let counter = 9
             signal.add(() => ++counter)
             expect(counter).to.equal(9)
 
-            signal.trigger()
+            signal.emit()
 
             expect(counter).to.equal(10)
         })
-        it("trigger(arg: T) calls observers with the provided argument", function () {
+        it("emit(arg: T) calls observers with the provided argument", function () {
             const signal = new Signal<number>()
             let counter = 7
             signal.add((n: number) => counter += n)
             expect(counter).to.equal(7)
 
-            signal.trigger(3)
+            signal.emit(3)
 
             expect(counter).to.equal(10)
         })
@@ -42,7 +42,7 @@ describe("signal", function () {
 
             signal.remove(link)
 
-            signal.trigger()
+            signal.emit()
             expect(counter).to.equal(9)
         })
         it("add(..., obj); remove(obj);", function () {
@@ -53,7 +53,7 @@ describe("signal", function () {
             signal.add(() => ++counter, obj)
             signal.remove(obj)
 
-            signal.trigger()
+            signal.emit()
             expect(counter).to.equal(9)
         })
     })
@@ -64,9 +64,9 @@ describe("signal", function () {
             signal.add(() => ++counter)
 
             signal.lock()
-            signal.trigger()
-            signal.trigger()
-            signal.trigger()
+            signal.emit()
+            signal.emit()
+            signal.emit()
             signal.unlock()
 
             expect(counter).to.equal(1)

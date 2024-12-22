@@ -23,7 +23,7 @@ import { TextModel } from "./TextModel"
  */
 export class EmailModel extends TextModel {
     override set value(value: string) {
-        this.modified.withLock(() => {
+        this.signal.withLock(() => {
             if (this._value === value) {
                 return
             }

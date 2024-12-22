@@ -275,7 +275,7 @@ export class Table extends View {
         super.connectedCallback()
         if (this.selection === undefined) {
             this.selection = new SelectionModel(TableEditMode.SELECT_CELL)
-            this.selection.modified.add(this.selectionChanged, this)
+            this.selection.signal.add(this.selectionChanged, this)
         }
     }
 
@@ -579,11 +579,11 @@ export class Table extends View {
         if (model === undefined) {
             this.logger.log(`Table::setModel(undefined) => remove all models`)
             if (this.selection) {
-                this.selection.modified.remove(this)
+                this.selection.signal.remove(this)
             }
             this.model = undefined
             this.selection = new SelectionModel()
-            this.selection.modified.add(this.selectionChanged, this)
+            this.selection.signal.add(this.selectionChanged, this)
             //   this.updateView()
             return
         }
@@ -591,18 +591,18 @@ export class Table extends View {
         if (model instanceof SelectionModel) {
             this.logger.log(`Table::setModel(SelectionModel) => set selection model`)
             if (this.selection) {
-                this.selection.modified.remove(this)
+                this.selection.signal.remove(this)
             }
             this.selection = model
             // this.createSelection()
-            this.selection.modified.add(this.selectionChanged, this)
+            this.selection.signal.add(this.selectionChanged, this)
             return
         }
 
         if (model instanceof TableModel) {
             this.logger.log(`Table::setModel(TableModel) => set table model`)
             this.model = model
-            this.model.modified.add(this.modelChanged, this)
+            this.model.signal.add(this.modelChanged, this)
             const adapter = TableAdapter.lookup(model) as new (model: TableModel) => TableAdapter<any>
             try {
                 this.adapter = new adapter(model)

@@ -82,7 +82,7 @@ export class NumberModel extends ValueModel<number, NumberModelEvent, NumberMode
             number = value
         }
         // let number = typeof value === "string" ? parseFloat(value) : value
-        this.modified.withLock(() => {
+        this.signal.withLock(() => {
             if (this.autocorrect) {
                 super.value = this.clip(number)
             } else {
@@ -101,7 +101,7 @@ export class NumberModel extends ValueModel<number, NumberModelEvent, NumberMode
             this.options = {}
         }
         this.options.min = min
-        this.modified.trigger({ type: MIN_VALUE })
+        this.signal.emit({ type: MIN_VALUE })
     }
     get min(): number | undefined {
         return this.options?.min
@@ -113,7 +113,7 @@ export class NumberModel extends ValueModel<number, NumberModelEvent, NumberMode
             this.options = {}
         }
         this.options.max = max
-        this.modified.trigger({ type: MAX_VALUE })
+        this.signal.emit({ type: MAX_VALUE })
     }
     get max(): number | undefined {
         return this.options?.max
@@ -125,7 +125,7 @@ export class NumberModel extends ValueModel<number, NumberModelEvent, NumberMode
             this.options = {}
         }
         this.options.step = step
-        this.modified.trigger({ type: STEP_VALUE })
+        this.signal.emit({ type: STEP_VALUE })
     }
     get step(): number | undefined {
         return this.options?.step
@@ -137,7 +137,7 @@ export class NumberModel extends ValueModel<number, NumberModelEvent, NumberMode
             this.options = {}
         }
         this.options.autocorrect = autocorrect
-        this.modified.trigger({ type: AUTOCORRECT_VALUE })
+        this.signal.emit({ type: AUTOCORRECT_VALUE })
     }
     get autocorrect(): boolean {
         return this.options?.autocorrect === true

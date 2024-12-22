@@ -11,9 +11,9 @@ describe("view", function () {
                 document.body.innerHTML = "<tx-slider model='number'></tx-slider>"
                 expect(getHTMLInputElement().value).to.equal("0.5")
 
-                expect(model.modified.callbacks).to.be.an("array")
-                if (!model.modified.callbacks) throw Error("yikes")
-                expect(model.modified.callbacks.length).to.equal(1) // FIXME: in new test
+                expect(model.signal.callbacks).to.be.an("array")
+                if (!model.signal.callbacks) throw Error("yikes")
+                expect(model.signal.callbacks.length).to.equal(1) // FIXME: in new test
             })
 
             it("works when the view is defined before the model", function () {

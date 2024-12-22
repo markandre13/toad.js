@@ -226,7 +226,7 @@ export class MenuButton extends ModelView<TextModel> {
 
     override setModel(model?: TextModel): void {
         if (!model) {
-            if (this.action) this.action.modified.remove(this)
+            if (this.action) this.action.signal.remove(this)
             this.model = undefined
             this.action = undefined
             this.updateView()
@@ -235,7 +235,7 @@ export class MenuButton extends ModelView<TextModel> {
 
         if (model instanceof Action) {
             this.action = model
-            this.action.modified.add(() => {
+            this.action.signal.add(() => {
                 this.updateView()
             }, this)
         } else if (model instanceof TextModel) {
