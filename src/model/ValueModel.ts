@@ -17,6 +17,7 @@
  */
 
 import { Model, ModelOptions, ModelEvent } from "./Model"
+import { produceValue } from "./Computed"
 
 export const VALUE = Symbol("VALUE")
 export const DEFAULT_VALUE = Symbol("DEFAULT_VALUE")
@@ -84,6 +85,7 @@ extends AbstractValueModel<V, E, O>
         this.signal.emit({type: VALUE})
     }
     override get value(): V {
+        produceValue(this.signal)
         return this._value
     }
 }
