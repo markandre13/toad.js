@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,16 +16,15 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEvent } from '../TableEvent'
-import { span } from '@toad/util/lsx'
-import { Table, px2float } from '../Table'
+import { RemoveColEvent } from "../TableEvent"
+import { Table, px2float } from "../Table"
 import { TableAnimation } from "./TableAnimation"
 
 export class RemoveColumnAnimation extends TableAnimation {
-    event: TableEvent
+    event: RemoveColEvent
     initialWidth: number
     totalWidth!: number
-    done = false;
+    done = false
     colCount: number
     rowCount: number
     animationWidth!: number
@@ -37,7 +36,7 @@ export class RemoveColumnAnimation extends TableAnimation {
 
     static current: RemoveColumnAnimation
 
-    constructor(table: Table, event: TableEvent) {
+    constructor(table: Table, event: RemoveColEvent) {
         super(table)
 
         this.colCount = this.adapter.colCount
@@ -64,7 +63,7 @@ export class RemoveColumnAnimation extends TableAnimation {
         this.arrangeColumnsInStaging()
         this.splitVertical()
     }
-    firstFrame(): void { }
+    firstFrame(): void {}
     animationFrame(n: number): void {
         let a = 0
         if (this.adapter.config.seamless) {
@@ -95,7 +94,8 @@ export class RemoveColumnAnimation extends TableAnimation {
         const firstCellOfStaging = this.bodyStaging.children[0] as HTMLSpanElement
         const lastCellOfStaging = this.bodyStaging.children[this.bodyStaging.children.length - 1] as HTMLSpanElement
 
-        let rightOfStaging = px2float(lastCellOfStaging.style.left) + px2float(lastCellOfStaging.style.width) + this.table.WIDTH_ADJUST
+        let rightOfStaging =
+            px2float(lastCellOfStaging.style.left) + px2float(lastCellOfStaging.style.width) + this.table.WIDTH_ADJUST
         rightOfStaging -= 1
         let w = rightOfStaging - px2float(firstCellOfStaging.style.left)
 
@@ -121,7 +121,8 @@ export class RemoveColumnAnimation extends TableAnimation {
 
     splitVertical() {
         this.table.splitVerticalNew(this.event.index)
-        if(this.colHeads !== undefined) { // FIXME: Hack
+        if (this.colHeads !== undefined) {
+            // FIXME: Hack
             this.splitHead = this.colHeads.lastElementChild as HTMLDivElement
         }
 
@@ -147,7 +148,7 @@ export class RemoveColumnAnimation extends TableAnimation {
             this.headStaging.removeChild(this.headMask)
             this.colHeads.removeChild(this.splitHead)
             this.headStaging.replaceChildren()
-            this.moveSplitHeadToHead()           
+            this.moveSplitHeadToHead()
         }
 
         if (this.table.animationDone) {

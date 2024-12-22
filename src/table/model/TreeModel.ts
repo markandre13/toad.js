@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -17,8 +17,7 @@
  */
 
 import { TypedTableModel } from "./TypedTableModel"
-import { TableEvent } from "../TableEvent"
-import { INSERT_ROW, REMOVE_ROW, TableEventType } from "../TableEventType"
+import { INSERT_ROW, REMOVE_ROW } from "../TableEvent"
 
 /**
  * @category Application Model
@@ -38,7 +37,6 @@ export class RowInfo<T> {
  * @category Application Model
  */
 export abstract class TreeModel<T> extends TypedTableModel<T> {
-
     rows: Array<RowInfo<T>>
 
     constructor(nodeClass: new () => T, root?: T) {
@@ -49,8 +47,12 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         }
     }
 
-    override get colCount(): number { return 1 }
-    override get rowCount(): number { return this.rows.length }
+    override get colCount(): number {
+        return 1
+    }
+    override get rowCount(): number {
+        return this.rows.length
+    }
 
     getRow(node: T): number | undefined {
         for (let i = 0; i < this.rows.length; ++i) {
@@ -63,7 +65,8 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
 
     addSiblingBefore(row: number): number {
         const nn = this.createNode()
-        if (this.rows.length === 0) { // TODO: can we remove this?
+        if (this.rows.length === 0) {
+            // TODO: can we remove this?
             row = 0
             this.setRoot(nn)
             this.rows.push(new RowInfo(nn, 0))
@@ -76,13 +79,11 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
                 this.setNext(nn, this.rows[row].node)
                 if (this.getNext(this.rows[row - 1].node) === this.rows[row].node)
                     this.setNext(this.rows[row - 1].node, nn)
-
-                else
-                    this.setDown(this.rows[row - 1].node, nn)
+                else this.setDown(this.rows[row - 1].node, nn)
                 this.rows.splice(row, 0, new RowInfo(nn, this.rows[row].depth))
             }
         }
-        this.modified.trigger(new TableEvent(INSERT_ROW, row, 1))
+        this.modified.trigger({ type: INSERT_ROW, index: row, size: 1 })
         return row
     }
 
@@ -102,7 +103,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             row += count + 1
             this.rows.splice(row, 0, new RowInfo(nn, depth))
         }
-        this.modified.trigger(new TableEvent(INSERT_ROW, row, 1))
+        this.modified.trigger({ type: INSERT_ROW, index: row, size: 1 })
         return row
     }
 
@@ -111,20 +112,19 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         if (this.rows.length === 0) {
             this.setRoot(nn)
             this.rows.push(new RowInfo(nn, 0))
-            this.modified.trigger(new TableEvent(INSERT_ROW, 0, 1))
+            this.modified.trigger({ type: INSERT_ROW, index: 0, size: 1 })
         } else {
             const down = this.getDown(this.rows[row].node)
 
             const subtreeSize = this.nodeCount(down)
             // console.log(`subtreeSize = ${subtreeSize}`)
-            for (let i = 0; i < subtreeSize; ++i)
-                ++this.rows[row + 1 + i].depth
+            for (let i = 0; i < subtreeSize; ++i) ++this.rows[row + 1 + i].depth
 
             this.setDown(nn, down)
             this.setDown(this.rows[row].node, nn)
 
             this.rows.splice(row + 1, 0, new RowInfo(nn, this.rows[row].depth + 1))
-            this.modified.trigger(new TableEvent(INSERT_ROW, row + 1, 1))
+            this.modified.trigger({ type: INSERT_ROW, index: row + 1, size: 1 })
         }
         return row
     }
@@ -132,8 +132,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
     addParentBefore(row: number): number {
         const nn = this.createNode()
         if (row === 0) {
-            for (let i = 0; i < this.rows.length; ++i)
-                ++this.rows[row + i].depth
+            for (let i = 0; i < this.rows.length; ++i) ++this.rows[row + i].depth
             this.setDown(nn, this.getRoot())
             this.setRoot(nn)
             this.rows.unshift(new RowInfo(nn, 0))
@@ -141,21 +140,17 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             const depth = this.rows[row].depth
             const subtreeSize = this.nodeCount(this.getDown(this.rows[row].node)) + 1
             // console.log(`row = ${row}, this.rows.length=${this.rows.length}, subtreeSize = ${subtreeSize}`)
-            for (let i = 0; i < subtreeSize; ++i)
-                ++this.rows[row + i].depth
+            for (let i = 0; i < subtreeSize; ++i) ++this.rows[row + i].depth
 
             this.setDown(nn, this.rows[row].node)
             this.setNext(nn, this.getNext(this.rows[row].node))
 
             this.setNext(this.rows[row].node, undefined)
-            if (this.getNext(this.rows[row - 1].node) === this.rows[row].node)
-                this.setNext(this.rows[row - 1].node, nn)
-
-            else
-                this.setDown(this.rows[row - 1].node, nn)
+            if (this.getNext(this.rows[row - 1].node) === this.rows[row].node) this.setNext(this.rows[row - 1].node, nn)
+            else this.setDown(this.rows[row - 1].node, nn)
             this.rows.splice(row, 0, new RowInfo(nn, depth))
         }
-        this.modified.trigger(new TableEvent(INSERT_ROW, row, 1))
+        this.modified.trigger({ type: INSERT_ROW, index: row, size: 1 })
         return row
     }
 
@@ -165,8 +160,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
             // move child to current position
             const subtreeSize = this.nodeCount(down) + 1
             // console.log(`row = ${row}, this.rows.length=${this.rows.length}, subtreeSize = ${subtreeSize}`)
-            for (let i = 0; i < subtreeSize; ++i)
-                --this.rows[row + i].depth
+            for (let i = 0; i < subtreeSize; ++i) --this.rows[row + i].depth
 
             this.append(down, this.getNext(this.rows[row].node))
             this.setNext(this.rows[row].node, undefined)
@@ -188,13 +182,11 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
                 // this.setDown(this.rows[row-1].node, next)
                 if (this.getNext(this.rows[row - 1].node) === this.rows[row].node)
                     this.setNext(this.rows[row - 1].node, next)
-
-                else
-                    this.setDown(this.rows[row - 1].node, next)
+                else this.setDown(this.rows[row - 1].node, next)
             }
         }
         this.rows.splice(row, 1)
-        this.modified.trigger(new TableEvent(REMOVE_ROW, row, 1))
+        this.modified.trigger({ type: REMOVE_ROW, index: row, size: 1 })
         return row
     }
 
@@ -215,30 +207,28 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
 
     openAt(row: number) {
         let r = this.rows[row]
-        if (r.open || this.getDown(r.node) === undefined)
-            return
+        if (r.open || this.getDown(r.node) === undefined) return
         r.open = true
         const newRows = this.createRowInfo(row)
         this.rows.splice(row + 1, 0, ...newRows)
-        this.modified.trigger(new TableEvent(INSERT_ROW, row+1, newRows.length))
+        this.modified.trigger({ type: INSERT_ROW, index: row + 1, size: newRows.length })
         // console.log(`TreeModel.openAt(${row})`)
     }
 
     closeAt(row: number) {
         let r = this.rows[row]
-        if (!r.open || this.getDown(r.node) === undefined)
-            return
+        if (!r.open || this.getDown(r.node) === undefined) return
         // console.log(`TreeModel.closeAt(${row})`)
         const count = this.getVisibleChildCount(row)
         r.open = false
-        this.rows.splice(row+1, count)
-        this.modified.trigger(new TableEvent(REMOVE_ROW, row+1, count))
+        this.rows.splice(row + 1, count)
+        this.modified.trigger({ type: REMOVE_ROW, index: row + 1, size: count })
     }
 
     collapse() {
         // close all visible open nodes
         let row = 0
-        while(row < this.rowCount) {
+        while (row < this.rowCount) {
             this.closeAt(row)
             ++row
         }
@@ -276,7 +266,7 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         // console.log(`row=${row}, count=${count}, open=${r.open}`)
         if (r.open && this.getDown(r.node)) {
             // console.log(`  go down`)
-            const rows = this.getVisibleChildCountHelper(row+1)
+            const rows = this.getVisibleChildCountHelper(row + 1)
             row += rows
             count += rows
             // console.log(`  down rows=${rows} row=${row}, count=${count}, open=${r.open}`)
@@ -290,14 +280,14 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
         // console.log(`row=${row}, count=${count}, open=${r.open}`)
         if (r.open && this.getDown(r.node)) {
             // console.log(`  go down`)
-            const rows = this.getVisibleChildCountHelper(row+1)
+            const rows = this.getVisibleChildCountHelper(row + 1)
             row += rows
             count += rows
             // console.log(`  down rows=${rows} row=${row}, count=${count}, open=${r.open}`)
         }
         if (this.getNext(r.node)) {
             // console.log(`  next`)
-            const rows = this.getVisibleChildCountHelper(row+1)
+            const rows = this.getVisibleChildCountHelper(row + 1)
             row += rows
             count += rows
             // console.log(`  next rows=${rows} row=${row}, count=${count}, open=${r.open}`)
@@ -306,22 +296,19 @@ export abstract class TreeModel<T> extends TypedTableModel<T> {
     }
 
     private append(chain: T, node?: T) {
-        if (node === undefined)
-            return
+        if (node === undefined) return
         let p = chain
         let next
         while (true) {
             next = this.getNext(p)
-            if (next === undefined)
-                break
+            if (next === undefined) break
             p = next
         }
         this.setNext(p, node)
     }
 
     private nodeCount(node?: T): number {
-        if (node === undefined)
-            return 0
+        if (node === undefined) return 0
         return 1 + this.nodeCount(this.getDown(node)) + this.nodeCount(this.getNext(node))
     }
 

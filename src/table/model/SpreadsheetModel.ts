@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,18 +16,17 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEvent } from '../TableEvent'
-import { CELL_CHANGED, TableEventType } from '../TableEventType'
-import { GridTableModel } from './GridTableModel'
+import { CELL_CHANGED } from "../TableEvent"
+import { GridTableModel } from "./GridTableModel"
 import { SpreadsheetCell } from "./SpreadsheetCell"
 
 /**
  * A simple spreadsheet.
- * 
+ *
  * @category Application Model
  */
 export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
-    protected dependencies = new Map<SpreadsheetCell, Set<SpreadsheetCell>>();
+    protected dependencies = new Map<SpreadsheetCell, Set<SpreadsheetCell>>()
 
     constructor(cols: number, rows: number) {
         super(SpreadsheetCell, cols, rows)
@@ -59,10 +58,10 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
     // FIXME: can we do this without a linear search for the cell coordinates?
     protected sendCellChanged(cell: SpreadsheetCell) {
         let idx = 0
-        for(let row = 0; row<this._rows; ++row) {
-            for(let col = 0; col<this._cols; ++col) {
+        for (let row = 0; row < this._rows; ++row) {
+            for (let col = 0; col < this._cols; ++col) {
                 if (cell === this._data[idx++]) {
-                    this.modified.trigger(new TableEvent(CELL_CHANGED, col, row))
+                    this.modified.trigger({ type: CELL_CHANGED, col, row })
                     return
                 }
             }
@@ -72,8 +71,9 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
     protected eval(cell: SpreadsheetCell, marks: Set<SpreadsheetCell>) {
         // mark...
         if (marks.has(cell)) {
-            marks.forEach( c => {
-                c._error = "Cycle: This formula can't reference its own cell, or depend on another formula that references this cell."
+            marks.forEach((c) => {
+                c._error =
+                    "Cycle: This formula can't reference its own cell, or depend on another formula that references this cell."
                 this.sendCellChanged(c)
             })
             return
@@ -94,7 +94,7 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
         // ...and sweep
         const observers = this.dependencies.get(cell)
         if (observers !== undefined) {
-            observers.forEach(observer => {
+            observers.forEach((observer) => {
                 // console.log(`  update observer ${observer._str}`)
                 this.eval(observer, marks)
             })
@@ -103,7 +103,7 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
 
     protected observe(cell: SpreadsheetCell) {
         const dependencies = cell.getDependencies()
-        dependencies.forEach(element => {
+        dependencies.forEach((element) => {
             const col = element[0]
             const row = element[1]
 
@@ -125,7 +125,7 @@ export class SpreadsheetModel extends GridTableModel<SpreadsheetCell> {
 
     protected unobserve(cell: SpreadsheetCell) {
         const dependencies = cell.getDependencies()
-        dependencies.forEach(element => {
+        dependencies.forEach((element) => {
             const col = element[0]
             const row = element[1]
 

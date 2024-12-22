@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,13 +16,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEvent } from '../TableEvent'
-import { Table, px2float } from '../Table'
+import { RemoveRowEvent } from "../TableEvent"
+import { Table, px2float } from "../Table"
 import { TableAnimation } from "./TableAnimation"
 
 export class RemoveRowAnimation extends TableAnimation {
     static current?: RemoveRowAnimation
-    event: TableEvent
+    event: RemoveRowEvent
     initialHeight: number
     animationHeight!: number
     removeAll: boolean
@@ -33,7 +33,7 @@ export class RemoveRowAnimation extends TableAnimation {
     topSplitBody!: number
     topMask!: number
 
-    constructor(table: Table, event: TableEvent) {
+    constructor(table: Table, event: RemoveRowEvent) {
         super(table)
         this.event = event
         this.joinHorizontal = this.joinHorizontal.bind(this)
@@ -108,7 +108,8 @@ export class RemoveRowAnimation extends TableAnimation {
     splitHorizontal() {
         this.table.splitHorizontalNew(this.event.index)
 
-        if (this.rowHeads !== undefined) { // FIXME: Hack
+        if (this.rowHeads !== undefined) {
+            // FIXME: Hack
             this.splitHead = this.rowHeads.lastElementChild as HTMLDivElement
         }
 
@@ -127,7 +128,7 @@ export class RemoveRowAnimation extends TableAnimation {
             this.headStaging.removeChild(this.headMask)
             this.rowHeads.removeChild(this.splitHead)
             this.headStaging.replaceChildren()
-            this.moveSplitHeadToHead()           
+            this.moveSplitHeadToHead()
         }
 
         if (this.table.animationDone) {

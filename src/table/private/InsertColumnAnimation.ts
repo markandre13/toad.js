@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,18 +16,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEvent } from '../TableEvent'
-import { TablePos } from '../TablePos'
-import { span, div } from '@toad/util/lsx'
-import { Table, px2int, px2float } from '../Table'
+import { InsertColEvent } from "../TableEvent"
+import { TablePos } from "../TablePos"
+import { span, div } from "../../util/lsx"
+import { Table, px2int, px2float } from "../Table"
 import { InsertAnimation } from "./InsertAnimation"
 
-export class InsertColumnAnimation extends InsertAnimation {
+export class InsertColumnAnimation extends InsertAnimation<InsertColEvent> {
     static current?: InsertColumnAnimation
     colCount: number
     rowCount: number
 
-    constructor(table: Table, event: TableEvent) {
+    constructor(table: Table, event: InsertColEvent) {
         super(table, event)
         this.event = event
         this.join = this.join.bind(this)
@@ -156,7 +156,6 @@ export class InsertColumnAnimation extends InsertAnimation {
             }
         }
 
-
         // rowHeight[] := height of each row to be inserted
         // totalHeight := height of all rows to be inserted
         // colWidth[]  : adjust if needed to new rows
@@ -175,7 +174,11 @@ export class InsertColumnAnimation extends InsertAnimation {
         colHeadHeight = Math.ceil(colHeadHeight)
 
         let rowHeadWidth = 0
-        if (this.rowHeads !== undefined && this.rowHeads.children.length === 0 && this.adapter.colCount == this.event.size) {
+        if (
+            this.rowHeads !== undefined &&
+            this.rowHeads.children.length === 0 &&
+            this.adapter.colCount == this.event.size
+        ) {
             rowHeadWidth = this.table.minCellWidth
             for (let row = 0; row < this.adapter.rowCount; ++row) {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
@@ -221,7 +224,7 @@ export class InsertColumnAnimation extends InsertAnimation {
             }
             this.totalSize += colWidth[col] - overlap
         }
-        colWidth.forEach((v, i) => colWidth[i] = v + 4)
+        colWidth.forEach((v, i) => (colWidth[i] = v + 4))
 
         // when expandColumn => adust left & width of all cells
         // TBD
@@ -246,7 +249,11 @@ export class InsertColumnAnimation extends InsertAnimation {
         }
 
         // place row headers
-        if (this.rowHeads !== undefined && this.rowHeads.children.length === 0 && this.adapter.colCount == this.event.size) {
+        if (
+            this.rowHeads !== undefined &&
+            this.rowHeads.children.length === 0 &&
+            this.adapter.colCount == this.event.size
+        ) {
             let y = 0
             for (let row = 0; row < this.adapter.rowCount; ++row) {
                 const cell = this.measure.children[0] as HTMLSpanElement
@@ -301,7 +308,8 @@ export class InsertColumnAnimation extends InsertAnimation {
     split() {
         this.table.splitVerticalNew(this.event.index)
 
-        if (this.colHeads !== undefined) { // FIXME: Hack
+        if (this.colHeads !== undefined) {
+            // FIXME: Hack
             this.splitHead = this.colHeads.lastElementChild as HTMLDivElement
         }
     }

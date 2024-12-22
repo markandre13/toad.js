@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,18 +16,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TablePos } from '../TablePos'
-import { TableEvent } from '../TableEvent'
-import { Table, px2float } from '../Table'
+import { TablePos } from "../TablePos"
+import { InsertRowEvent } from "../TableEvent"
+import { Table, px2float } from "../Table"
 import { InsertAnimation } from "./InsertAnimation"
-import { span, div } from '@toad/util/lsx'
+import { span, div } from "../../util/lsx"
 
-export class InsertRowAnimation extends InsertAnimation {
+export class InsertRowAnimation extends InsertAnimation<InsertRowEvent> {
     static current?: InsertRowAnimation
 
     initialRowCount: number
 
-    constructor(table: Table, event: TableEvent) {
+    constructor(table: Table, event: InsertRowEvent) {
         super(table, event)
         this.join = this.join.bind(this)
         this.initialRowCount = this.adapter.rowCount - event.size
@@ -174,7 +174,11 @@ export class InsertRowAnimation extends InsertAnimation {
         rowHeadWidth = Math.ceil(rowHeadWidth)
 
         let colHeadHeight = 0
-        if (this.colHeads !== undefined && this.colHeads.children.length === 0 && this.adapter.rowCount == this.event.size) {
+        if (
+            this.colHeads !== undefined &&
+            this.colHeads.children.length === 0 &&
+            this.adapter.rowCount == this.event.size
+        ) {
             colHeadHeight = this.table.minCellHeight
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[idx++] as HTMLSpanElement
@@ -269,23 +273,27 @@ export class InsertRowAnimation extends InsertAnimation {
         }
 
         // place column headers
-        if (this.colHeads !== undefined && this.colHeads.children.length === 0 && this.adapter.rowCount == this.event.size) {
+        if (
+            this.colHeads !== undefined &&
+            this.colHeads.children.length === 0 &&
+            this.adapter.rowCount == this.event.size
+        ) {
             let x = 0
             for (let col = 0; col < this.adapter.colCount; ++col) {
                 const cell = this.measure.children[0] as HTMLSpanElement
                 cell.style.left = `${x}px`
-                cell.style.width = `${colWidth[col]  - this.table.WIDTH_ADJUST}px`
+                cell.style.width = `${colWidth[col] - this.table.WIDTH_ADJUST}px`
                 cell.style.height = `${colHeadHeight}px`
                 this.colHeads.appendChild(cell)
                 x += colWidth[col] - overlap
             }
             // rowHeadWidth += this.table.WIDTH_ADJUST
             colHeadHeight += this.table.HEIGHT_ADJUST
-            this.body.style.top = `${colHeadHeight-overlap}px`
-            this.bodyStaging.style.top = `${colHeadHeight-overlap}px`
-            this.headStaging.style.top = `${colHeadHeight-overlap}px`
-            this.rowHeads.style.top = `${colHeadHeight-overlap}px`
-            this.colHeads.style.left = `${rowHeadWidth-overlap}px`
+            this.body.style.top = `${colHeadHeight - overlap}px`
+            this.bodyStaging.style.top = `${colHeadHeight - overlap}px`
+            this.headStaging.style.top = `${colHeadHeight - overlap}px`
+            this.rowHeads.style.top = `${colHeadHeight - overlap}px`
+            this.colHeads.style.left = `${rowHeadWidth - overlap}px`
             this.colHeads.style.right = `0px`
             this.colHeads.style.height = `${colHeadHeight}px`
         }
@@ -303,7 +311,6 @@ export class InsertRowAnimation extends InsertAnimation {
                 if (this.adapter.config.seamless) {
                     x -= 2
                 }
-
             }
             y += rowHeight[row] - overlap
             if (this.adapter.config.seamless) {
@@ -328,7 +335,8 @@ export class InsertRowAnimation extends InsertAnimation {
 
     split() {
         this.table.splitHorizontalNew(this.event.index)
-        if (this.rowHeads !== undefined) { // FIXME: Hack
+        if (this.rowHeads !== undefined) {
+            // FIXME: Hack
             this.splitHead = this.rowHeads.lastElementChild as HTMLDivElement
         }
         this.animationStart = px2float(this.splitBody.style.top)

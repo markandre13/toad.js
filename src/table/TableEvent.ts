@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,43 +16,36 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEventType } from './TableEventType'
+import { ModelEvent } from "../model/Model"
 
-// const INSERT_ROW = Symbol("INSERT_ROW")
-// const REMOVE_ROW = Symbol("REMOVE_ROW")
-// type InsertRowEvent = {
-//     type: typeof INSERT_ROW
-//     row: number
-//     size: number
-// }
-// type RemoveRowEvent = {
-//     type: typeof REMOVE_ROW
-//     row: number
-//     size: number
-// }
-// type TableEvent = ValueModelEvent | InsertRowEvent | RemoveRowEvent
+export const INSERT_ROW = Symbol("INSERT_ROW")
+export const REMOVE_ROW = Symbol("REMOVE_ROW")
+export const INSERT_COL = Symbol("INSERT_COL")
+export const REMOVE_COL = Symbol("REMOVE_COL")
+export const CELL_CHANGED = Symbol("CELL_CHANGED")
 
-// TODO: rename into TableModelEvent ???
+export type InsertRowEvent = { type: typeof INSERT_ROW; index: number; size: number }
+export type RemoveRowEvent = { type: typeof REMOVE_ROW; index: number; size: number }
+export type InsertColEvent = { type: typeof INSERT_COL; index: number; size: number }
+export type RemoveColEvent = { type: typeof REMOVE_COL; index: number; size: number }
+export type CellChangedEvent = { type: typeof CELL_CHANGED; col: number; row: number }
 
-export class TableEvent {
-    type: TableEventType
-    index: number
-    size: number
-    constructor(type: TableEventType, index: number, size: number) {
-        this.type = type
-        this.index = index
-        this.size = size
-    }
+export type TableEvent =
+    | ModelEvent
+    | InsertRowEvent
+    | RemoveRowEvent
+    | InsertColEvent
+    | RemoveColEvent
+    | CellChangedEvent
 
-    get col() {
-        return this.index
-    }
-
-    get row() {
-        return this.size
-    }
-
-    toString() {
-        return `TableEvent {type: ${this.type.description}, index: ${this.index}, size: ${this.size}}`
+function f(e: TableEvent) {
+    switch (e.type) {
+        case INSERT_COL:
+            e.size
+            e.index
+            break
+        case CELL_CHANGED:
+            e.col
+            e.row
     }
 }

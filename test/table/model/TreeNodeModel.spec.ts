@@ -2,10 +2,8 @@ import { expect, use } from "chai"
 import { chaiSubset } from "../../chaiSubset"
 use(chaiSubset)
 
-import {
-    TextModel, TreeNodeModel, TableEvent, TableEventType
-} from "@toad"
-import { INSERT_ROW, REMOVE_ROW } from "@toad/table/TableEventType"
+import { TextModel, TreeNodeModel, TableEvent } from "@toad"
+import { INSERT_ROW, REMOVE_ROW } from "@toad/table/TableEvent"
 
 describe("model", function () {
     describe("table", function () {
@@ -15,19 +13,15 @@ describe("model", function () {
                 next?: Node
                 down?: Node
                 constructor(label?: string, next?: Node, down?: Node) {
-                    if (label === undefined)
-                        this.label = `#${counter++}`
-                    else
-                        this.label = label
+                    if (label === undefined) this.label = `#${counter++}`
+                    else this.label = label
                     this.next = next
                     this.down = down
                 }
                 print(indent = 0) {
                     console.log(`${"  ".repeat(indent)} ${this.label}`)
-                    if (this.down)
-                        this.down.print(indent + 1)
-                    if (this.next)
-                        this.next.print(indent)
+                    if (this.down) this.down.print(indent + 1)
+                    if (this.next) this.next.print(indent)
                 }
             }
 
@@ -51,12 +45,13 @@ describe("model", function () {
                 for (let i in tree.rows) {
                     if (tree.rows[i] === undefined) {
                         console.log(`tree.rows[${i}]: undefined`)
-                    } else
-                        if (tree.rows[i].node === undefined) {
-                            console.log(`tree.rows[${i}]: depth = ${tree.rows[i].depth}, node=undefined'`)
-                        } else {
-                            console.log(`tree.rows[${i}]: depth = ${tree.rows[i].depth}, label='${tree.rows[i].node.label}'`)
-                        }
+                    } else if (tree.rows[i].node === undefined) {
+                        console.log(`tree.rows[${i}]: depth = ${tree.rows[i].depth}, node=undefined'`)
+                    } else {
+                        console.log(
+                            `tree.rows[${i}]: depth = ${tree.rows[i].depth}, label='${tree.rows[i].node.label}'`
+                        )
+                    }
                 }
                 console.log(`${ctx.test?.title}: ${reason} <<<<<<<<<<<`)
             }
@@ -66,9 +61,7 @@ describe("model", function () {
                 event = undefined
                 tree = new MyTreeModel(Node)
                 tree.modified.add((e) => {
-                    if (e instanceof TableEvent) {
-                        event = e
-                    }
+                    event = e
                 })
             })
 
@@ -92,12 +85,10 @@ describe("model", function () {
                     tree.addSiblingBefore(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 0, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#0", undefined, undefined)
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#0", undefined, undefined))
 
                     // check table
                     expect(tree.rows.length).is.equal(1)
@@ -111,14 +102,10 @@ describe("model", function () {
                     tree.addSiblingBefore(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 0, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#1",
-                            new Node("#0", undefined, undefined),
-                            undefined)
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#1", new Node("#0", undefined, undefined), undefined))
 
                     // check table
                     expect(tree.rows.length).is.equal(2)
@@ -135,13 +122,11 @@ describe("model", function () {
                     tree.addSiblingBefore(1)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
                     expect(tree.root).to.deep.equal(
-                        new Node("#1",
-                            new Node("#2", new Node("#0", undefined, undefined), undefined),
-                            undefined)
+                        new Node("#1", new Node("#2", new Node("#0", undefined, undefined), undefined), undefined)
                     )
 
                     // check table
@@ -160,12 +145,11 @@ describe("model", function () {
                     tree.addSiblingBefore(1)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
                     expect(tree.root).to.deep.equal(
-                        new Node("#0", undefined,
-                            new Node("#2", new Node("#1", undefined, undefined), undefined))
+                        new Node("#0", undefined, new Node("#2", new Node("#1", undefined, undefined), undefined))
                     )
 
                     // check table
@@ -182,12 +166,10 @@ describe("model", function () {
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 0, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#0", undefined, undefined)
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#0", undefined, undefined))
 
                     // check table
                     expect(tree.rows.length).is.equal(1)
@@ -195,18 +177,16 @@ describe("model", function () {
                 })
                 it("can add after node", function () {
                     // └─ 0  ⇨  ├─ 0
-                    //          └─ 1      
+                    //          └─ 1
                     tree.addSiblingAfter(0)
 
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#0", new Node("#1", undefined, undefined), undefined)
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#0", new Node("#1", undefined, undefined), undefined))
 
                     // check table
                     expect(tree.rows.length).is.equal(2)
@@ -223,7 +203,7 @@ describe("model", function () {
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -250,16 +230,14 @@ describe("model", function () {
                     tree.addSiblingAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 4, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 4, size: 1 })
 
                     // check tree
                     expect(tree.root).to.deep.equal(
-                        new Node("#0",
+                        new Node(
+                            "#0",
                             new Node("#4", undefined, undefined),
-                            new Node("#1",
-                                new Node("#3", undefined, undefined),
-                                new Node("#2", undefined, undefined)
-                            )
+                            new Node("#1", new Node("#3", undefined, undefined), new Node("#2", undefined, undefined))
                         )
                     )
 
@@ -279,12 +257,10 @@ describe("model", function () {
                     tree.addChildAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 0, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#0", undefined, undefined)
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#0", undefined, undefined))
 
                     // check table
                     expect(tree.rows.length).is.equal(1)
@@ -292,7 +268,7 @@ describe("model", function () {
                 })
                 it("can add a child to a root node", function () {
                     // └─ 0  ⇨  └─ 0
-                    //             └─ 1        
+                    //             └─ 1
                     tree.addSiblingBefore(0)
 
                     // dump(this, "BEFORE")
@@ -300,12 +276,10 @@ describe("model", function () {
                     // dump(this, "AFTER")
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#0", undefined, new Node("#1", undefined, undefined))
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#0", undefined, new Node("#1", undefined, undefined)))
 
                     // check table
                     expect(tree.rows.length).is.equal(2)
@@ -315,14 +289,14 @@ describe("model", function () {
                 it("can add a child between a root node and it's child", function () {
                     // └─ 0        └─ 0
                     //    └─ 1  ⇨      └─ 2
-                    //                    └─ 1          
+                    //                    └─ 1
                     tree.addSiblingBefore(0)
                     tree.addChildAfter(0)
 
                     tree.addChildAfter(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -343,12 +317,10 @@ describe("model", function () {
                     tree.addParentBefore(0)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 0, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#0", undefined, undefined)
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#0", undefined, undefined))
 
                     // check table
                     expect(tree.rows.length).is.equal(1)
@@ -364,12 +336,10 @@ describe("model", function () {
                     // dump(this, "AFTER")
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 0, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 0, size: 1 })
 
                     // check tree
-                    expect(tree.root).to.deep.equal(
-                        new Node("#1", undefined, new Node("#0", undefined, undefined))
-                    )
+                    expect(tree.root).to.deep.equal(new Node("#1", undefined, new Node("#0", undefined, undefined)))
 
                     // check table
                     expect(tree.rows.length).is.equal(2)
@@ -379,14 +349,14 @@ describe("model", function () {
                 it("add a parent at head of children", function () {
                     // └─ 0     ⇨  └─ 0
                     //    └─ 1        └─ 2
-                    //                   └─ 1      
+                    //                   └─ 1
                     tree.addSiblingBefore(0)
                     tree.addChildAfter(0)
 
                     tree.addParentBefore(1)
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
                     expect(tree.root).to.deep.equal(
@@ -413,11 +383,15 @@ describe("model", function () {
                     // dump(this, "AFTER")
 
                     // check signal
-                    expect(event).to.deep.equal(new TableEvent(INSERT_ROW, 1, 1))
+                    expect(event).to.deep.equal({ type: INSERT_ROW, index: 1, size: 1 })
 
                     // check tree
                     expect(tree.root).to.deep.equal(
-                        new Node("#0", new Node("#3", new Node("#2", undefined, undefined), new Node("#1", undefined, undefined)), undefined)
+                        new Node(
+                            "#0",
+                            new Node("#3", new Node("#2", undefined, undefined), new Node("#1", undefined, undefined)),
+                            undefined
+                        )
                     )
 
                     // check table
@@ -443,7 +417,7 @@ describe("model", function () {
                         tree.deleteAt(0)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 0, 1))
+                        expect(event).to.deep.equal({ type: REMOVE_ROW, index: 0, size: 1 })
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -471,7 +445,7 @@ describe("model", function () {
                         // dump(this, "after")
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 1, 1))
+                        expect(event).to.deep.equal({ type: REMOVE_ROW, index: 1, size: 1 })
 
                         // check tree
                         expect(tree.root).to.deep.equal(
@@ -496,12 +470,10 @@ describe("model", function () {
                         tree.deleteAt(0)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 0, 1))
+                        expect(event).to.deep.equal({ type: REMOVE_ROW, index: 0, size: 1 })
 
                         // check tree
-                        expect(tree.root).to.deep.equal(
-                            new Node("#1", undefined, undefined)
-                        )
+                        expect(tree.root).to.deep.equal(new Node("#1", undefined, undefined))
 
                         // check table
                         expect(tree.rows.length).is.equal(1)
@@ -518,12 +490,10 @@ describe("model", function () {
                         tree.deleteAt(1)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 1, 1))
+                        expect(event).to.deep.equal({ type: REMOVE_ROW, index: 1, size: 1 })
 
                         // check tree
-                        expect(tree.root).to.deep.equal(
-                            new Node("#0", undefined, new Node("#2", undefined, undefined))
-                        )
+                        expect(tree.root).to.deep.equal(new Node("#0", undefined, new Node("#2", undefined, undefined)))
 
                         // check table
                         expect(tree.rows.length).is.equal(2)
@@ -541,12 +511,10 @@ describe("model", function () {
                         tree.deleteAt(1)
 
                         // check signal
-                        expect(event).to.deep.equal(new TableEvent(REMOVE_ROW, 1, 1))
+                        expect(event).to.deep.equal({ type: REMOVE_ROW, index: 1, size: 1 })
 
                         // check tree
-                        expect(tree.root).to.deep.equal(
-                            new Node("#0", new Node("#2", undefined, undefined), undefined)
-                        )
+                        expect(tree.root).to.deep.equal(new Node("#0", new Node("#2", undefined, undefined), undefined))
 
                         // check table
                         expect(tree.rows.length).is.equal(2)
@@ -632,21 +600,18 @@ describe("model", function () {
                 xit("do not overlap tree cell with input div", function () {
                     // 1st there's some list of events to reach this state
                     // the input overlay should only be visible/placed when there is an editCell provided by the adapter
-
                     // to ease debugging, code has been tweak to use opacity 0.5 instead of 0 and a red background
                     // was reproduced by opening/closing row 0 very fast, then clicking in 4?
                     // animateStep -> replaceChild gives: NotFoundError: The object can not be found here
                     // 30 updateViewAfterInsertRow: adjustToCell() messages
                     // haven't I done something with the display option as it's visible...?
                     // can i make the input overlay transparent for input too? what the heck am i doing here anyway?
-
                     // here's an idea for the animation: put it into an object, add a replace() method to it,
                     // which will jump to the animations and on the next animation frame and jump into the animation
                     // provided by the next animation. we could also use the earlier animations number of steps already
                     // passed to use them for the duration of the next animation. (which is for the key up/down stuff)
                 })
-                xit("fast open/close with mouse breaks table update", function () {
-                })
+                xit("fast open/close with mouse breaks table update", function () {})
                 // cursor up & down should just skip the animation if it ain't fast enough or
                 // adjust the scroll speed dynamically (whew! over-engineering)
 

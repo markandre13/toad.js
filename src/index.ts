@@ -76,7 +76,6 @@ export { TypedTableModel } from "./table/model/TypedTableModel"
 export { SelectionModel } from "./table/model/SelectionModel"
 export { TableEditMode } from "./table/TableEditMode"
 export { TablePos } from "./table/TablePos"
-export { TableEventType } from "./table/TableEventType"
 export { TableEvent } from "./table/TableEvent"
 export { TreeModel } from "./table/model/TreeModel"
 export { TreeAdapter } from "./table/adapter/TreeAdapter"
@@ -86,4 +85,3 @@ export { TreeNodeModel } from "./table/model/TreeNodeModel"
 
 export { ArrayModel } from "./table/model/ArrayModel"
 export { ArrayAdapter } from "./table/adapter/ArrayAdapter"
-

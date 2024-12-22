@@ -1,8 +1,8 @@
-import { expect } from 'chai'
+import { expect } from "chai"
 
-import { SpreadsheetModel } from 'src/table/model/SpreadsheetModel'
-import { TableEvent } from 'src/table/TableEvent'
-import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEventType } from 'src/table/TableEventType'
+import { SpreadsheetModel } from "src/table/model/SpreadsheetModel"
+import { TableEvent } from "src/table/TableEvent"
+import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW } from "src/table/TableEvent"
 
 describe.only("spreadsheetmodel", function () {
     function createModel4x4() {
@@ -29,17 +29,15 @@ describe.only("spreadsheetmodel", function () {
             const m = createModel4x4()
             let event!: TableEvent
             m.modified.add((e) => {
-                if (e instanceof TableEvent) {
-                    event = e
-                }
+                event = e
             })
 
             m.insertRow(2)
-            
+
             expect(event).to.deep.equal({
                 type: INSERT_ROW,
                 index: 2,
-                size: 1
+                size: 1,
             })
 
             expect(m.rowCount).to.equal(5)
@@ -47,13 +45,12 @@ describe.only("spreadsheetmodel", function () {
             for (let row = 0; row < 5; ++row) {
                 for (let col = 0; col < 4; ++col) {
                     let want
-                    if (row<2) {
+                    if (row < 2) {
                         want = `C${col}R${row}`
-                    } else
-                    if (row === 2) {
+                    } else if (row === 2) {
                         want = ""
                     } else {
-                        want = `C${col}R${row-1}`
+                        want = `C${col}R${row - 1}`
                     }
                     expect(m.getField(col, row)).to.equal(want)
                 }
@@ -63,39 +60,35 @@ describe.only("spreadsheetmodel", function () {
             const m = createModel4x4()
             let event!: TableEvent
             m.modified.add((e) => {
-                if (e instanceof TableEvent) {
-                    event = e
-                }
+                event = e
             })
 
             m.removeRow(2)
-            
+
             expect(event).to.deep.equal({
                 type: REMOVE_ROW,
                 index: 2,
-                size: 1
+                size: 1,
             })
-            
+
             expect(m.rowCount).to.equal(3)
             for (let row = 0; row < 3; ++row) {
                 for (let col = 0; col < 4; ++col) {
                     let want
-                    if (row<2) {
+                    if (row < 2) {
                         want = `C${col}R${row}`
                     } else {
-                        want = `C${col}R${row+1}`
+                        want = `C${col}R${row + 1}`
                     }
                     expect(m.getField(col, row)).to.equal(want)
                 }
             }
         })
-        it("insert column", function() {
+        it("insert column", function () {
             const m = createModel4x4()
             let event!: TableEvent
             m.modified.add((e) => {
-                if (e instanceof TableEvent) {
-                    event = e
-                }
+                event = e
             })
 
             m.insertColumn(2)
@@ -103,20 +96,19 @@ describe.only("spreadsheetmodel", function () {
             expect(event).to.deep.equal({
                 type: INSERT_COL,
                 index: 2,
-                size: 1
+                size: 1,
             })
 
             expect(m.colCount).to.equal(5)
             for (let col = 0; col < 5; ++col) {
-                for (let row = 0; row < 4; ++row) {                
+                for (let row = 0; row < 4; ++row) {
                     let want
-                    if (col<2) {
+                    if (col < 2) {
                         want = `C${col}R${row}`
-                    } else
-                    if (col === 2) {
+                    } else if (col === 2) {
                         want = ""
                     } else {
-                        want = `C${col-1}R${row}`
+                        want = `C${col - 1}R${row}`
                     }
                     expect(m.getField(col, row)).to.equal(want)
                 }
@@ -126,9 +118,7 @@ describe.only("spreadsheetmodel", function () {
             const m = createModel4x4()
             let event!: TableEvent
             m.modified.add((e) => {
-                if (e instanceof TableEvent) {
-                    event = e
-                }
+                event = e
             })
 
             m.removeColumn(2)
@@ -136,16 +126,16 @@ describe.only("spreadsheetmodel", function () {
             expect(event).to.deep.equal({
                 type: REMOVE_COL,
                 index: 2,
-                size: 1
+                size: 1,
             })
             expect(m.colCount).to.equal(3)
             for (let col = 0; col < 3; ++col) {
                 for (let row = 0; row < 4; ++row) {
                     let want
-                    if (col<2) {
+                    if (col < 2) {
                         want = `C${col}R${row}`
                     } else {
-                        want = `C${col+1}R${row}`
+                        want = `C${col + 1}R${row}`
                     }
                     expect(m.getField(col, row)).to.equal(want)
                 }
@@ -176,13 +166,13 @@ describe.only("spreadsheetmodel", function () {
         })
         it("cycle", function () {
             const m = new SpreadsheetModel(4, 4)
-            m.setField(0, 0, "=1")    // A1 := 1
+            m.setField(0, 0, "=1") // A1 := 1
             m.setField(1, 0, "=A1+1") // B1 := A1 +1
             m.setField(2, 0, "=B1+2") // C1 := B1 + 2
 
-            expect(m.getCell(0,0)._error).to.be.undefined
+            expect(m.getCell(0, 0)._error).to.be.undefined
             m.setField(0, 0, "=C1+3")
-            expect(m.getCell(0,0)._error).to.not.be.undefined
+            expect(m.getCell(0, 0)._error).to.not.be.undefined
         })
     })
 })

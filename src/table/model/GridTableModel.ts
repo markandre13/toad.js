@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,13 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEvent } from "../TableEvent"
-import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEventType } from "../TableEventType"
+import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW } from "../TableEvent"
 import { TypedTableModel } from "./TypedTableModel"
 import { ColumnEditInterface, RowEditInterface } from "./TableModel"
 
 /**
  * A two dimensional grid in which rows and columns can be added and removed.
- * 
+ *
  * @category Application Model
  */
 export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInterface, ColumnEditInterface {
@@ -56,7 +55,9 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
     getCell(col: number, row: number): T {
         const idx = col + row * this._cols
         if (idx >= this._data.length) {
-            throw Error(`GridTableModel.getCell(${col}, ${row}) is out of range in grid of size ${this.colCount} x ${this.rowCount}`)
+            throw Error(
+                `GridTableModel.getCell(${col}, ${row}) is out of range in grid of size ${this.colCount} x ${this.rowCount}`
+            )
         }
         return this._data[idx]
     }
@@ -77,17 +78,13 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         const count = rowData.length / this._cols
         this._data.splice(row * this._cols, 0, ...rowData)
         this._rows += count
-        this.modified.trigger(new TableEvent(
-            INSERT_ROW, row, count
-        ))
+        this.modified.trigger({ type: INSERT_ROW, index: row, size: count })
         return row
     }
     removeRow(row: number, count: number = 1): number {
         this._data.splice(row * this._cols, this._cols * count)
         this._rows -= count
-        this.modified.trigger(new TableEvent(
-            REMOVE_ROW, row, count
-        ))
+        this.modified.trigger({ type: REMOVE_ROW, index: row, size: count })
         return row
     }
     insertColumn(col: number, colData?: Array<T>, columnLength: number = this._rows): number {
@@ -113,9 +110,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
         }
 
         this._cols += newColumnCount
-        this.modified.trigger(new TableEvent(
-            INSERT_COL, col, newColumnCount
-        ))
+        this.modified.trigger({ type: INSERT_COL, index: col, size: newColumnCount })
 
         return col
     }
@@ -126,9 +121,7 @@ export class GridTableModel<T> extends TypedTableModel<T> implements RowEditInte
             idx -= this._cols
         }
         this._cols -= count
-        this.modified.trigger(new TableEvent(
-            REMOVE_COL, col, count
-        ))
+        this.modified.trigger({ type: REMOVE_COL, index: col, size: count })
         return col
     }
 }

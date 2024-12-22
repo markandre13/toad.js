@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -16,14 +16,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TableEvent } from '../TableEvent'
-import { TablePos } from '../TablePos'
-import { span, div } from '@toad/util/lsx'
-import { Table, px2int, px2float } from '../Table'
+import { Table } from "../Table"
 import { TableAnimation } from "./TableAnimation"
 
-export abstract class InsertAnimation extends TableAnimation {
-    event: TableEvent
+export abstract class InsertAnimation<T> extends TableAnimation {
+    event: T
     done = false
     totalSize!: number
     animationStart!: number
@@ -31,7 +28,7 @@ export abstract class InsertAnimation extends TableAnimation {
     splitHead!: HTMLDivElement
     headMask!: HTMLSpanElement
 
-    constructor(table: Table, event: TableEvent) {
+    constructor(table: Table, event: T) {
         super(table)
         this.event = event
     }

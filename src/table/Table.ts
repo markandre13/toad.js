@@ -20,10 +20,9 @@ import { View } from "../view/View"
 import { TableModel } from "./model/TableModel"
 import { SelectionModel } from "./model/SelectionModel"
 import { EditMode, TableAdapter } from "./adapter/TableAdapter"
-import { TableEvent } from "./TableEvent"
 import { TablePos } from "./TablePos"
 import { TableEditMode } from "./TableEditMode"
-import { CELL_CHANGED, INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEventType } from "./TableEventType"
+import { CELL_CHANGED, INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW, TableEvent } from "./TableEvent"
 import { Animator } from "../util/animation"
 import { TableAnimation } from "./private/TableAnimation"
 import { InsertRowAnimation } from "./private/InsertRowAnimation"
@@ -75,7 +74,7 @@ export class MemoryLogger implements Logger {
     }
     print() {
         console.log(`MemoryLogger collected ${this.logs.length} logs`)
-        this.logs.forEach(msg => console.log(msg))
+        this.logs.forEach((msg) => console.log(msg))
     }
 }
 
@@ -619,7 +618,9 @@ export class Table extends View {
             return
         }
         if ((model as any) instanceof Object) {
-            this.logger.log(`Table::setModel(TableModel) => unexpected model of type ${(model as Object).constructor.name}`)
+            this.logger.log(
+                `Table::setModel(TableModel) => unexpected model of type ${(model as Object).constructor.name}`
+            )
             throw Error(`Table.setModel(): unexpected model of type ${(model as Object).constructor.name}`)
         }
     }
@@ -673,46 +674,45 @@ export class Table extends View {
         }
     }
 
-    modelChanged(event: TableEvent | ModelEvent) {
+    modelChanged(event: TableEvent) {
         this.logger.log(`Table::modelChanged(${event})`)
         if (!this.visible && this.body.children.length === 0) {
             return
         }
-        if (event instanceof TableEvent) {
-            switch (event.type) {
-                case CELL_CHANGED:
-                    {
-                        const index = event.col + event.row * this.adapter!.colCount
-                        const cell = this.body.children[index]
-                        if (cell === undefined) {
-                            console.log(`Table::modelChanged(): failed to find cell ${event.col}, ${event.row} (${index}) (body has ${this.body.children.length} children and table has parent ${this.parentElement})`)
-                            return
-                        }
-                        if (cell instanceof HTMLSpanElement) {
-                            this.showCell(event, cell)
-                        }
+        switch (event.type) {
+            case CELL_CHANGED:
+                {
+                    const index = event.col + event.row * this.adapter!.colCount
+                    const cell = this.body.children[index]
+                    if (cell === undefined) {
+                        console.log(
+                            `Table::modelChanged(): failed to find cell ${event.col}, ${event.row} (${index}) (body has ${this.body.children.length} children and table has parent ${this.parentElement})`
+                        )
+                        return
                     }
-                    break
-                case INSERT_ROW:
-                    this.animator.run(new InsertRowAnimation(this, event))
-                    break
-                case REMOVE_ROW:
-                    this.animator.run(new RemoveRowAnimation(this, event))
-                    break
-                case INSERT_COL:
-                    this.animator.run(new InsertColumnAnimation(this, event))
-                    break
-                case REMOVE_COL:
-                    this.animator.run(new RemoveColumnAnimation(this, event))
-                    break
-                default:
-                // console.log(`Table.modelChanged(): ${event} is not implemented`)
-            }
+                    if (cell instanceof HTMLSpanElement) {
+                        this.showCell(event, cell)
+                    }
+                }
+                break
+            case INSERT_ROW:
+                this.animator.run(new InsertRowAnimation(this, event))
+                break
+            case REMOVE_ROW:
+                this.animator.run(new RemoveRowAnimation(this, event))
+                break
+            case INSERT_COL:
+                this.animator.run(new InsertColumnAnimation(this, event))
+                break
+            case REMOVE_COL:
+                this.animator.run(new RemoveColumnAnimation(this, event))
+                break
+            default:
+            // console.log(`Table.modelChanged(): ${event} is not implemented`)
         }
     }
 
     prepareCells() {
-
         if (this.adapter === undefined) {
             this.logger.log(`Table::prepareCells(): no adapter => abort`)
             return
@@ -1404,7 +1404,9 @@ export class Table extends View {
 
     // move 'splitBody' back into 'body' to end animation
     joinVertical(splitCol: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
-        this.logger.log(`Table::joinVertical(splitCol=${splitCol}, delta=${delta}, extra=${extra}, colCount = ${colCount}, rowCount = ${rowCount})`)
+        this.logger.log(
+            `Table::joinVertical(splitCol=${splitCol}, delta=${delta}, extra=${extra}, colCount = ${colCount}, rowCount = ${rowCount})`
+        )
         if (colCount === undefined) {
             colCount = this.adapter!.colCount
         }
@@ -1558,8 +1560,8 @@ export class Table extends View {
         this.body.appendChild(this.splitBody)
     }
 
-    splitHorizontal(splitRow: number, extra: number = 0, event?: TableEvent) {
-        this.logger.log(`Table.splitHorizontal(splitRow = ${splitRow}, extra = ${extra}, event = ...)`)
+    splitHorizontal(splitRow: number) {
+        this.logger.log(`Table.splitHorizontal(splitRow = ${splitRow})`)
         // initialize splitHead
         if (this.rowHeads !== undefined) {
             this.splitHead = div()
@@ -1584,7 +1586,7 @@ export class Table extends View {
 
         this.body.appendChild(this.splitBody)
 
-        const splitBodyRows = this.adapter!.rowCount - splitRow + extra
+        const splitBodyRows = this.adapter!.rowCount - splitRow
 
         // move heads into splitHead
         if (this.splitHead !== undefined) {
@@ -1616,13 +1618,6 @@ export class Table extends View {
             this.splitBody.style.backgroundColor = "#f80" // #1e1e1e
             this.splitBody.style.top = `${top}px`
             this.splitBody.style.height = `${b.height - top}px`
-        } else if (event !== undefined && this.body.children.length > 0) {
-            // console.log("[1]")
-            idx = event.index * this.adapter!.colCount
-            const last = this.body.children[idx] as HTMLElement
-            const top = px2int(last.style.top)
-            this.splitBody.style.top = `${top}px`
-            this.splitBody.style.height = `${b.height - top}px`
         } else if (this.body.children.length > 0) {
             // console.log("[2]")
             const filler = span()
@@ -1647,7 +1642,9 @@ export class Table extends View {
 
     // move 'splitBody' back into 'body' to end animation
     joinHorizontal(splitRow: number, delta: number, extra: number = 0, colCount?: number, rowCount?: number) {
-        this.logger.log(`Table. joinHorizontal(splitRow = ${splitRow}, delta = ${delta}, extra = ${extra}, colCount = ${colCount}, rowCount = ${rowCount}`)
+        this.logger.log(
+            `Table. joinHorizontal(splitRow = ${splitRow}, delta = ${delta}, extra = ${extra}, colCount = ${colCount}, rowCount = ${rowCount}`
+        )
         if (colCount === undefined) {
             colCount = this.adapter!.colCount
         }

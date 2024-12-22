@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -18,8 +18,7 @@
 
 import { ArrayModel } from "../model/ArrayModel"
 import { TypedTableAdapter, InferTypedTableModelParameter } from "./TypedTableAdapter"
-import { TableEvent } from "../TableEvent"
-import { CELL_CHANGED, TableEventType } from "../TableEventType"
+import { CELL_CHANGED } from "../TableEvent"
 
 import { Reference } from "toad.jsx"
 import { TablePos } from "../TablePos"
@@ -27,8 +26,10 @@ import { TablePos } from "../TablePos"
 /**
  * @category Table Adapter
  */
-export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTableModelParameter<M>> extends TypedTableAdapter<M> {
-
+export abstract class ArrayAdapter<
+    M extends ArrayModel<any>,
+    T = InferTypedTableModelParameter<M>
+> extends TypedTableAdapter<M> {
     abstract getColumnHeads(): Array<string> | undefined
     abstract getRow(row: T): Array<Reference<T>>
 
@@ -43,18 +44,15 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
     override getRowHead(row: number): Node | undefined {
         return undefined
     }
-    
+
     override get colCount(): number {
         return this.getRow(this.model?.data[0]).length
     }
 
     override showCell(pos: TablePos, cell: HTMLSpanElement) {
         const text = this.getField(pos.col, pos.row)
-        if (text === undefined)
-            return undefined
-        cell.replaceChildren(
-            document.createTextNode(text)
-        )
+        if (text === undefined) return undefined
+        cell.replaceChildren(document.createTextNode(text))
     }
 
     override editCell(pos: TablePos, cell: HTMLSpanElement) {
@@ -71,17 +69,15 @@ export abstract class ArrayAdapter<M extends ArrayModel<any>, T = InferTypedTabl
     }
 
     protected getField(col: number, row: number): string | undefined {
-        if (!this.model)
-            return undefined
+        if (!this.model) return undefined
         const struct = this.model.data[row]
         const array = this.getRow(struct)
         return array[col].toString()
     }
 
     protected setField(col: number, row: number, text: string): void {
-        if (!this.model)
-            return
+        if (!this.model) return
         this.getRow(this.model.data[row])[col].fromString(text)
-        this.model.modified.trigger(new TableEvent(CELL_CHANGED, col, row))
+        this.model.modified.trigger({ type: CELL_CHANGED, col, row })
     }
 }
