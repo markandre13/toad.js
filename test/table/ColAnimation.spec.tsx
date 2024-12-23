@@ -6,8 +6,8 @@ import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 import { sleep } from "../testlib"
-import { InsertColumnAnimation } from '@toad/table/private/InsertColumnAnimation'
-import { RemoveColumnAnimation } from '@toad/table/private/RemoveColumnAnimation'
+import { InsertColumnAnimation } from '@toad/table/detail/InsertColumnAnimation'
+import { RemoveColumnAnimation } from '@toad/table/detail/RemoveColumnAnimation'
 import { AnimationBase } from '@toad/util/animation'
 import {
     Measure, prepareByColumns, flatMapColumns, getTable, testTableLayout,

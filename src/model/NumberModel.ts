@@ -17,8 +17,8 @@
  */
 
 import { ValueModel, ValueModelOptions, ValueModelEvent } from "./ValueModel"
-import { BigDecimal } from "@toad/util/BigDecimal"
-import { expression } from "@toad/util/expressions/expression"
+import { BigDecimal } from "../util/BigDecimal"
+import { expression } from "../util/expressions/expression"
 
 export const MIN_VALUE = Symbol("MIN_VALUE")
 export const MAX_VALUE = Symbol("MAX_VALUE")

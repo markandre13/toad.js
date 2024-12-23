@@ -16,10 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { TablePos } from "@toad"
-import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
-import { EditMode } from '@toad/table/adapter/TableAdapter'
+import { SpreadsheetModel } from '../model/SpreadsheetModel'
+import { EditMode } from './TableAdapter'
 import { GridAdapter } from "./GridAdapter"
+import { TablePos } from '../TablePos'
 
 /**
  * @category Table Adapter

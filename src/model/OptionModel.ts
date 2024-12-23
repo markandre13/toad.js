@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { deepEqual } from "@toad/util/deepEqual"
+import { deepEqual } from "../util/deepEqual"
 import { ALL, ModelEvent, ModelOptions } from "./Model"
 import { OptionModelBase } from "./OptionModelBase"
 

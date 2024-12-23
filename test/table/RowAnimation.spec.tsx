@@ -5,8 +5,8 @@ import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 import { px2float, sleep } from "../testlib"
-import { InsertRowAnimation } from '@toad/table/private/InsertRowAnimation'
-import { RemoveRowAnimation } from '@toad/table/private/RemoveRowAnimation'
+import { InsertRowAnimation } from '@toad/table/detail/InsertRowAnimation'
+import { RemoveRowAnimation } from '@toad/table/detail/RemoveRowAnimation'
 import { Animator, AnimationBase } from '@toad/util/animation'
 import {
     Measure, prepareByRows, flatMapRows, getTable, testTableLayout,

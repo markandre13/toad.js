@@ -1,4 +1,4 @@
-import { parseColor, RGB } from "@toad/util/color"
+import { parseColor, RGB } from "../util/color"
 import { VALUE, ValueModel, ValueModelOptions } from "./ValueModel"
 import { ModelOptions } from "./Model"
 

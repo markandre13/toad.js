@@ -16,8 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { VALUE, ValueModel } from "@toad/model/ValueModel"
-import { Model } from "../../model/Model"
+import { VALUE, ValueModel } from "../../model/ValueModel"
 import { TableEditMode } from "../TableEditMode"
 import { TablePos } from "../TablePos"
 

@@ -19,7 +19,7 @@
 import { TreeModel } from "../model/TreeModel"
 import { TypedTableAdapter } from "./TypedTableAdapter"
 import { TablePos } from "../TablePos"
-import { svg, rect, line, span, text } from "@toad/util/lsx"
+import { svg, rect, line, span, text } from "../../util/lsx"
 
 /**
  * @category Table Adapter

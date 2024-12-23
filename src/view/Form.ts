@@ -1,7 +1,7 @@
 import { HTMLElementProps } from "toad.jsx/lib/jsx-runtime"
 import { View } from "./View"
 import { slot } from '../util/lsx'
-import { styleBase, styleNarrow } from "@toad/style/tx-form"
+import { styleBase, styleNarrow } from "../style/tx-form"
 
 import { Model } from "../model/Model"
 import { ModelView, ModelViewProps } from "./ModelView"

@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { span, text } from "@toad/util/lsx"
+import { span, text } from "../util/lsx"
 import { ValueModel } from "./ValueModel"
 import { ModelOptions } from "./Model"
 

@@ -6,7 +6,7 @@ import { Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"
 import { TableAdapter, TableAdapterConfig } from "@toad/table/adapter/TableAdapter"
 import { GridAdapter } from "@toad/table/adapter/GridAdapter"
-import { TableFriend } from "@toad/table/private/TableFriend"
+import { TableFriend } from "@toad/table/detail/TableFriend"
 
 import { px2int, px2float, sleep } from "../testlib"
 import { GridTableModel } from "@toad/table/model/GridTableModel"

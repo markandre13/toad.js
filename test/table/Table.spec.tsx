@@ -17,7 +17,7 @@ import { TableAdapter, EditMode } from "@toad/table/adapter/TableAdapter"
 import { ArrayAdapter } from "@toad/table/adapter/ArrayAdapter"
 import { SpreadsheetAdapter } from "@toad/table/adapter/SpreadsheetAdapter"
 
-import { TableFriend } from "@toad/table/private/TableFriend"
+import { TableFriend } from "@toad/table/detail/TableFriend"
 
 import { TextModel } from "@toad/model/TextModel"
 import { NumberModel } from "@toad/model/NumberModel"
@@ -56,7 +56,7 @@ import {
 } from "./util"
 import { Animator, AnimationBase } from "@toad/util/animation"
 
-import { InsertRowAnimation } from "@toad/table/private/InsertRowAnimation"
+import { InsertRowAnimation } from "@toad/table/detail/InsertRowAnimation"
 import { SelectionModel } from "@toad/table/model/SelectionModel"
 import { hasFocus } from "@toad/util/dom"
 import { Tab } from "@toad/view/Tab"

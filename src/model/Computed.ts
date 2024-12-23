@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Signal } from "@toad/Signal"
+import { Signal } from "../Signal"
 
 export class Computed<T> {
     signal = new Signal()
