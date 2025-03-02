@@ -103,6 +103,24 @@ style.replaceSync(css`
     z-index: 2;
 }
 
+.body > span.focus-row-head, .splitBody > span.focus-row-head {
+    background: #0e2035;
+    border-color: #2680eb var(--tx-gray-200) #2680eb #2680eb;
+    z-index: 2;
+}
+
+.body > span.focus-row-middle, .splitBody > span.focus-row-middle {
+    background: #0e2035;
+    border-color: #2680eb var(--tx-gray-200) #2680eb var(--tx-gray-200);
+    z-index: 2;
+}
+
+.body > span.focus-row-tail, .splitBody > span.focus-row-tail {
+    background: #0e2035;
+    border-color: #2680eb #2680eb #2680eb var(--tx-gray-200);
+    z-index: 2;
+}
+
 .body > span:focus:hover {
     background: #112d4d;
 }

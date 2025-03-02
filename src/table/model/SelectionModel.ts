@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { Signal } from "@toad/Signal"
 import { VALUE, ValueModel } from "../../model/ValueModel"
 import { TableEditMode } from "../TableEditMode"
 import { TablePos } from "../TablePos"
@@ -27,6 +28,7 @@ import { TablePos } from "../TablePos"
  */
 export class SelectionModel extends ValueModel<TablePos> {
     mode: TableEditMode // FIXME: there might be a way to do without, just by the behaviour of a common API towards Table
+    trigger = new Signal()
 
     constructor(mode = TableEditMode.EDIT_CELL) {
         super(new TablePos(0, 0))

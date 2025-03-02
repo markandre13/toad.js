@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2022 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2022, 2025 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ import { scrollIntoView } from "../util/scrollIntoView"
 import { style as txTable } from "./style/tx-table"
 import { style as txScrollbar } from "../style/tx-scrollbar"
 import { hasFocus } from "../util/dom"
-import { ModelEvent } from "../model/Model"
+import { ALL, ModelEvent } from "../model/Model"
 
 // TABLE ANIMATION
 //
@@ -178,6 +178,8 @@ export class Table extends View {
     protected splitHead?: HTMLDivElement
     protected splitBody?: HTMLDivElement
 
+    protected cellsToReset: HTMLSpanElement[] = []
+
     private animator = new Animator()
 
     constructor(props?: TableProps) {
@@ -193,6 +195,7 @@ export class Table extends View {
         this.focusIn = this.focusIn.bind(this)
         this.focusOut = this.focusOut.bind(this)
         this.pointerDown = this.pointerDown.bind(this)
+        this.doubleClick = this.doubleClick.bind(this)
         this.handleDown = this.handleDown.bind(this)
         this.handleMove = this.handleMove.bind(this)
         this.handleUp = this.handleUp.bind(this)
@@ -207,6 +210,7 @@ export class Table extends View {
         this.measure.classList.add("measure")
 
         this.onkeydown = this.hostKeyDown
+        this.addEventListener("dblclick", this.doubleClick)
         this.addEventListener("focusin", this.focusIn)
         this.addEventListener("focusout", this.focusOut)
 
@@ -461,6 +465,7 @@ export class Table extends View {
         if (ev.key === "Enter") {
             // console.log(`### CELL ENTER`)
             this.hostKeyDown(ev)
+            this.selection?.trigger.emit()
             ev.preventDefault()
             return
         }
@@ -571,6 +576,10 @@ export class Table extends View {
         // this.selection!.value = pos
     }
 
+    doubleClick() {
+        this.selection?.trigger.emit()
+    }
+
     getModel(): TableModel | undefined {
         return this.model
     }
@@ -631,46 +640,85 @@ export class Table extends View {
                 this.selection ? TableEditMode[this.selection!.mode] : "undefined"
             }`
         )
+        if (this.model === undefined) {
+            return
+        }
         if (this.selection === undefined) {
+            return
+        }
+        if (document.activeElement !== this) {
             return
         }
         this.saveCell()
         switch (this.selection.mode) {
             case TableEditMode.EDIT_CELL:
                 {
-                    if (document.activeElement === this) {
-                        const cell = this.body.children[
-                            this.selection!.col + this.selection!.row * this.adapter!.colCount
-                        ] as HTMLSpanElement
-                        // TODO: don't focus on cell in case controll inside the cell was clicked
-                        if (!hasFocus(cell)) {
-                            cell.focus()
-                        }
-                        scrollIntoView(cell)
-                        if (this.adapter?.config.editMode === EditMode.EDIT_ON_FOCUS) {
-                            this.editCell()
-                        }
+                    const cell = this.body.children[
+                        this.selection!.col + this.selection!.row * this.adapter!.colCount
+                    ] as HTMLSpanElement
+                    // TODO: don't focus on cell in case controll inside the cell was clicked
+                    if (!hasFocus(cell)) {
+                        cell.focus()
+                    }
+                    scrollIntoView(cell)
+                    if (this.adapter?.config.editMode === EditMode.EDIT_ON_FOCUS) {
+                        this.editCell()
                     }
                 }
                 break
             case TableEditMode.SELECT_CELL:
-            case TableEditMode.SELECT_ROW:
+            // case TableEditMode.SELECT_ROW:
                 {
                     // this.log(Log.SELECTION, `Table.createSelection(): mode=EDIT_CELL, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-                    if (document.activeElement === this) {
-                        const cell = this.body.children[
-                            this.selection!.col + this.selection!.row * this.adapter!.colCount
+                    const cell = this.body.children[
+                        this.selection!.col + this.selection!.row * this.adapter!.colCount
+                    ] as HTMLSpanElement
+                    cell.focus()
+                    scrollIntoView(cell)
+                }
+                break
+            case TableEditMode.SELECT_ROW:
+                {
+                    // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
+                    // this.toggleRowSelection(this.selectionModel.value.row, true)
+                    const cell = this.body.children[
+                        this.selection!.col + this.selection!.row * this.adapter!.colCount
+                    ] as HTMLSpanElement
+                    cell.focus()
+
+                    const colCount = this.model.colCount
+                    if (colCount > 1) {
+                        // remove previous focus style
+                        for(const cell of this.cellsToReset) {
+                            cell.classList.remove("focus-row-head")
+                            cell.classList.remove("focus-row-middle")
+                            cell.classList.remove("focus-row-tail")
+                        }
+                        this.cellsToReset.length = 0
+
+                        // set row focus style
+                        const headCell = this.body.children[
+                            this.selection!.row * this.adapter!.colCount
                         ] as HTMLSpanElement
-                        cell.focus()
-                        scrollIntoView(cell)
+                        headCell.classList.add("focus-row-head")
+                        this.cellsToReset.push(headCell)
+
+                        for(let col=1; col<colCount-1; ++col) {
+                            const middleCell = this.body.children[
+                                col + this.selection!.row * this.adapter!.colCount
+                            ] as HTMLSpanElement
+                            middleCell.classList.add("focus-row-middle")
+                            this.cellsToReset.push(middleCell)
+                        }
+
+                        const tailCell = this.body.children[
+                            colCount - 1 + this.selection!.row * this.adapter!.colCount
+                        ] as HTMLSpanElement
+                        tailCell.classList.add("focus-row-tail")
+                        this.cellsToReset.push(tailCell)
                     }
                 }
                 break
-            // case TableEditMode.SELECT_ROW: {
-            //     // this.log(Log.SELECTION, `Table.createSelection(): mode=SELECT_ROW, selection=${this.selectionModel.col}, ${this.selectionModel.row}`)
-            //     // this.toggleRowSelection(this.selectionModel.value.row, true)
-
-            // } break
         }
     }
 
@@ -706,6 +754,13 @@ export class Table extends View {
                 break
             case REMOVE_COL:
                 this.animator.run(new RemoveColumnAnimation(this, event))
+                break
+            case ALL:
+                console.log(`ALL CHANGED`)
+                this.rowHeads?.replaceChildren()
+                this.rowResizeHandles?.replaceChildren()
+                this.body.replaceChildren()
+                this.prepareCells()
                 break
             default:
             // console.log(`Table.modelChanged(): ${event} is not implemented`)
@@ -855,9 +910,9 @@ export class Table extends View {
         cell.onfocus = this.cellFocus
         cell.onkeydown = this.cellKeyDown
         cell.tabIndex = 0
-        // if (this.adapter?.config.editMode !== EditMode.NO_EDIT) {
-        cell.setAttribute("contenteditable", "")
-        // }
+        if (this.selection?.mode === TableEditMode.EDIT_CELL) {
+            cell.setAttribute("contenteditable", "")
+        }
         return cell
     }
 
