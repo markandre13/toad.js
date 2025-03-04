@@ -54,6 +54,9 @@ export class OptionModel<V, E = void, O extends ModelOptions = ModelOptions> ext
         super(value, options)
         this.setMapping(mapping)
     }
+    get length(): number {
+        return this._mapping.length
+    }
     setMapping(mapping: readonly (readonly [V, string | number | HTMLElement] | string)[]) {
         if (mapping === this._mapping) {
             return
