@@ -3,8 +3,8 @@ import { div, span, text } from "../util/lsx"
 import { hsv2rgb, rgb2hsv } from "../util/color"
 import { Slider } from "./Slider"
 import { TextField } from "./TextField"
-import { style } from "@toad/style/tx-colorselector"
-import { RGBModel } from "@toad/model/RGBModel"
+import { style } from "../style/tx-colorselector"
+import { RGBModel } from "../model/RGBModel"
 import { ModelView, ModelViewProps } from "./ModelView"
 
 // i know, this implementation is a mess. i just wanted to get it done.

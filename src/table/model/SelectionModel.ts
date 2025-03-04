@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Signal } from "@toad/Signal"
+import { Signal } from "../../Signal"
 import { VALUE, ValueModel } from "../../model/ValueModel"
 import { TableEditMode } from "../TableEditMode"
 import { TablePos } from "../TablePos"

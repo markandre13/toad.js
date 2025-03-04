@@ -756,7 +756,6 @@ export class Table extends View {
                 this.animator.run(new RemoveColumnAnimation(this, event))
                 break
             case ALL:
-                console.log(`ALL CHANGED`)
                 this.rowHeads?.replaceChildren()
                 this.rowResizeHandles?.replaceChildren()
                 this.body.replaceChildren()

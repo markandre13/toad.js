@@ -1,4 +1,4 @@
-import { Animator } from '@toad/util/animation'
+import { Animator } from '../../util/animation'
 import { TableAdapter } from '../adapter/TableAdapter'
 import { Logger, Table } from '../Table'
 import { TableAnimation } from './TableAnimation'
