@@ -74,10 +74,19 @@ pre {
 /*
  * COLOR
  */
-body {
+body, dialog {
     background: var(--tx-gray-100);
     color: var(--tx-gray-800);
 }
+dialog {
+    border: solid 1px var(--tx-outline-color);
+    border-radius: 4px;
+    box-shadow: 5px 5px 5px #000;
+}
+dialog::backdrop {
+    background-color: rgba(0,0,0,0.4);
+}
+
 a:link { 
     color: var(--tx-gray-900);
     font-weight: bold;
