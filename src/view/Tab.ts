@@ -24,17 +24,17 @@ import { HTMLElementProps, JSX } from "toad.jsx"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../model/OptionModelBase"
 
-export interface TabsProps<V> extends ModelViewProps<OptionModelBase<V>> {
+export interface TabsProps<V=void> extends ModelViewProps<OptionModelBase<V>> {
     orientation?: "horizontal" | "vertical"
     // the approach implemented here doesn't really work, instead something like this is needed:
     // https://stackoverflow.com/questions/44475309/how-do-i-restrict-the-type-of-react-children-in-typescript-using-the-newly-adde
-    children?: Tab<V>
+    // children?: any
 }
 
 /**
  * @category View
  */
-export class Tabs<V> extends ModelView<OptionModelBase<V>> {
+export class Tabs<V=void> extends ModelView<OptionModelBase<V>> {
     markerLine: HTMLElement
     content: HTMLElement
 
