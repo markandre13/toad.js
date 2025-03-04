@@ -30,9 +30,9 @@ export class SignalLink {
 
 /**
  * The backbone of toad.js' Observer Pattern implementation.
- * 
+ *
  * [Usage Example](https://github.com/markandre13/toad.js/blob/master/test/Signal.spec.ts)
- * 
+ *
  * @category Observer Pattern
  */
 export class Signal<T = void> {
@@ -105,6 +105,18 @@ export class Signal<T = void> {
         return r
     }
 
+    async withLockAsync<R>(closure: () => Promise<R>) {
+        this.lock()
+        try {
+            const r = await closure()
+            this.unlock()
+            return r
+        } catch (e) {
+            this.unlock()
+            throw e
+        }
+    }
+
     emit(data: T): void {
         if (this.busy) {
             return
@@ -129,8 +141,7 @@ export class Signal<T = void> {
             }
             try {
                 callback.callback(data)
-            }
-            catch (e) {
+            } catch (e) {
                 error = e
             }
         }
