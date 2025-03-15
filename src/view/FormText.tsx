@@ -1,10 +1,8 @@
 import { Model } from "../model/Model"
-import { TextModel } from "../model/TextModel"
-import { NumberModel } from "../model/NumberModel"
 import { FormLabel, FormField, FormHelp } from "./Form"
-import { TextField } from "./TextField"
+import { TextField, TextFieldModel } from "./TextField"
 
-export function FormText(props: { model: TextModel | NumberModel }) {
+export function FormText(props: { model: TextFieldModel }) {
     return (
         <>
             <FormLabel model={props.model as Model} />

@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2023 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2025 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -18,32 +18,35 @@
 
 import { TextModel } from "../model/TextModel"
 import { NumberModel } from "../model/NumberModel"
+import { Converter } from "../model/Converter"
 import { ModelView, ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
+
+export type TextFieldModel = TextModel | NumberModel | Converter<string>
 
 /**
  * @category View
  */
-export class TextField extends ModelView<TextModel | NumberModel> {
+export class TextField extends ModelView<TextFieldModel> {
     input: HTMLInputElement
 
-    constructor(init?: ModelViewProps<TextModel | NumberModel>) {
+    constructor(init?: ModelViewProps<TextFieldModel>) {
         super(init)
         this.input = document.createElement("input")
         this.input.classList.add("tx-text")
 
         this.input.onkeydown = (e: KeyboardEvent) => {
-            if (e.key === "Enter" && this.model instanceof NumberModel) {
+            if (e.key === "Enter" && !(this.model instanceof TextModel)) {
                 this.updateModel()
             }
         }
         this.input.onblur = (e: FocusEvent) => {
-            if (this.model instanceof NumberModel) {
+            if (!(this.model instanceof TextModel)) {
                 this.updateModel()
             }
         }
         this.input.oninput = (e) => {
-            if (!(this.model instanceof NumberModel)) {
+            if (this.model instanceof TextModel) {
                 this.updateModel()
             }
         }
@@ -62,14 +65,16 @@ export class TextField extends ModelView<TextModel | NumberModel> {
     }
 
     protected wheel(e: WheelEvent) {
-        if (this.model instanceof NumberModel) {
+        if (this.model === undefined) {
+            return
+        }
+        if (e.deltaY > 0 && "decrement" in this.model) {
             e.preventDefault()
-            if (e.deltaY > 0) {
-                this.model.decrement()
-            }
-            if (e.deltaY < 0) {
-                this.model.increment()
-            }
+            this.model.decrement()
+        }
+        if (e.deltaY < 0 && "increment" in this.model) {
+            e.preventDefault()
+            this.model.increment()
         }
     }
 
@@ -82,7 +87,9 @@ export class TextField extends ModelView<TextModel | NumberModel> {
         this.input.blur()
     }
 
-    static get observedAttributes() { return ['value'] }
+    static get observedAttributes() {
+        return ["value"]
+    }
 
     attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
         switch (name) {
@@ -113,6 +120,12 @@ export class TextField extends ModelView<TextModel | NumberModel> {
             this.setAttribute("disabled", "disabled")
         }
         this.model.applyStyle(this.input)
+
+        // in case there is an error, keep the value so that the user can edit it
+        if (this.model.error !== undefined) {
+            return
+        }
+
         const strValue = `${this.model.value}`
         if (this.input.value !== strValue) {
             this.input.value = strValue

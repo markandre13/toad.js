@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2025 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -18,6 +18,9 @@
 
 import { Signal } from "../Signal"
 
+/**
+ * Computed is updated whenever one of it's dependant models changes.
+ */
 export class Computed<T> {
     signal = new Signal()
     private _out: () => T
@@ -31,28 +34,13 @@ export class Computed<T> {
     }
 }
 
-export class Convert<T> extends Computed<T> {
-    private _in: (value: T) => void
-    constructor(input: (value: T) => void, output: () => T) {
-        super(output)
-        this._in = input
-    }
-    // TODO: needed? i think we always needed both...
-    override get value(): T {
-        return super.value
-    }
-    override set value(value: T) {
-        this._in(value)
-    }
-}
-
 /**
  * Create a constraint which will be evaluated any time the models
  * it depends on changes.
- * 
+ *
  * called effect(...), autorun(...), ... in other web frameworks
- * 
- * @param fn 
+ *
+ * @param fn
  */
 export function constraint(fn: () => void) {
     const signal = new Signal()
@@ -65,17 +53,17 @@ let currentTrigger: () => void | undefined
 
 /**
  * Called by a potential observer to execute the action start to observe the models used by the action.
- * 
+ *
  * We use https://github.com/tc39/proposal-signals' clever approach to discover
  * dependencies.
- * 
+ *
  * TODO: async action?
- * 
+ *
  * @param observer signal to be called now and later when observed models change
  * @param action action to execute
  * @returns the action's result
  */
-function evaluateAndDiscoverDependencies<T>(observer: Signal, action: () => T) {
+export function evaluateAndDiscoverDependencies<T>(observer: Signal, action: () => T) {
     const previous = { observer: currentObserver, trigger: currentTrigger }
 
     // TODO: use WeakRef
@@ -92,10 +80,10 @@ function evaluateAndDiscoverDependencies<T>(observer: Signal, action: () => T) {
 
 /**
  * Called when an observable value is to be retrieved.
- * 
+ *
  * When called while Compute, Convert (TBD), Effect (TBD) are running,
  * the model will begin to call Compute, et al. when it changes.
- * 
+ *
  * @param signal The model's signal which is going to trigger the observer.
  */
 export function produceValue(signal: Signal<any>): void {
@@ -108,6 +96,4 @@ export function produceValue(signal: Signal<any>): void {
     }
 }
 
-export function consumeValue(): void {
-
-}
+export function consumeValue(): void {}
