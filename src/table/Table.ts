@@ -758,6 +758,8 @@ export class Table extends View {
             case ALL:
                 this.rowHeads?.replaceChildren()
                 this.rowResizeHandles?.replaceChildren()
+                this.colHeads?.replaceChildren()
+                this.colResizeHandles?.replaceChildren()
                 this.body.replaceChildren()
                 this.prepareCells()
                 break
