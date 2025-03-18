@@ -1,7 +1,7 @@
 
 import { NumberModel, Slider, TextField } from "@toad"
 import { code } from "./index.source"
-import { FixedNumberModel } from "@toad/model/FixedNumberModel"
+import { IntegerModel } from "@toad/model/IntegerModel"
 import { RGBModel } from "@toad/model/RGBModel"
 import { ColorSelector } from "@toad/view/ColorSelector"
 
@@ -10,7 +10,7 @@ import { ColorSelector } from "@toad/view/ColorSelector"
 //
 
 let floatModel = new NumberModel(42, { min: 0, max: 99 })
-let integerModel = new FixedNumberModel(42, { min: 0, max: 99 })
+let integerModel = new IntegerModel(42, { min: 0, max: 99 })
 
 const sliderEnabled = new NumberModel(42, { min: 0, max: 99 })
 const sliderDisabled = new NumberModel(83, { min: 0, max: 99, enabled: false })
@@ -30,7 +30,7 @@ export default () => (
             <TextField model={floatModel} />
             <Slider model={floatModel} />
         </div>
-        <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with FixedNumberModel</h3>
+        <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with IntegerModel</h3>
         <div class="section">
             <TextField model={integerModel} />
             <Slider model={integerModel} />
