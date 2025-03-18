@@ -1,4 +1,4 @@
-import { FixedNumberModel } from "../model/FixedNumberModel"
+import { IntegerModel } from "../model/IntegerModel"
 import { div, span, text } from "../util/lsx"
 import { hsv2rgb, rgb2hsv } from "../util/color"
 import { Slider } from "./Slider"
@@ -10,13 +10,13 @@ import { ModelView, ModelViewProps } from "./ModelView"
 // i know, this implementation is a mess. i just wanted to get it done.
 
 export class ColorSelector extends ModelView<RGBModel> {
-    h = new FixedNumberModel(0, { min: 0, max: 360, step: 1 })
-    s = new FixedNumberModel(0, { min: 0, max: 100, step: 1 })
-    v = new FixedNumberModel(0, { min: 0, max: 100, step: 1 })
+    h = new IntegerModel(0, { min: 0, max: 360, step: 1 })
+    s = new IntegerModel(0, { min: 0, max: 100, step: 1 })
+    v = new IntegerModel(0, { min: 0, max: 100, step: 1 })
 
-    r = new FixedNumberModel(0, { min: 0, max: 255, step: 1 })
-    g = new FixedNumberModel(0, { min: 0, max: 255, step: 1 })
-    b = new FixedNumberModel(0, { min: 0, max: 255, step: 1 })
+    r = new IntegerModel(0, { min: 0, max: 255, step: 1 })
+    g = new IntegerModel(0, { min: 0, max: 255, step: 1 })
+    b = new IntegerModel(0, { min: 0, max: 255, step: 1 })
 
     block = false
     hsCaret = span()

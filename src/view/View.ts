@@ -84,12 +84,14 @@ export class View extends HTMLElement {
             modelId = this.getModelId()
         } catch (error) {
         }
-        if (modelId != "")
+        if (modelId != "") {
             globalController.registerView(modelId, this)
+        }
     }
 
     disconnectedCallback() {
-        if (this.controller)
+        if (this.controller) {
             this.controller.unregisterView(this)
+        }
     }
 }
