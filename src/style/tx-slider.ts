@@ -104,16 +104,15 @@ style.replaceSync(css`
 
     .tx-thumb {
         border: 2px solid var(--tx-gray-700); /* knob border */
-        border-radius: 50%;
         background: var(--tx-gray-75); /* inside knob */
         cursor: pointer;
         position: absolute;
         display: flex;
+        border-radius: 50%;
         width: 14px;
         height: 14px;
         box-sizing: border-box;
         outline-width: 0px;
-        border-radius: 50%;
         transform: translate(-50%, -50%);
     }
     .tx-thumb:hover {

@@ -168,6 +168,7 @@ export class Slider extends View {
             } else {
                 v = ((ev.clientX - b.x) / b.width) * (max - min) + min + skew
             }
+
             if (v < min) {
                 v = min
             }
@@ -175,25 +176,23 @@ export class Slider extends View {
                 v = max
             }
 
+            // FIXME: some of these constraints most work on the model level
             if (this.knob.length > 1) {
                 const first = this.knob[0]
-                const last = this.knob[1]
-                if (model === first.model) {
+                const last = this.knob[this.knob.length - 1]
+                if (model !== last.model) {
                     if (v > last.model.value) {
                         v = last.model.value
                     }
                 }
-                if (model == last.model) {
+                if (model !== first.model) {
                     if (v < first.model.value) {
                         v = first.model.value
                     }
                 }
             }
 
-
-            if (model) {
-                model.value = v
-            }
+            model.value = v
         }
         thumb.onpointerup = (ev: PointerEvent) => {
             if (skew === undefined) {
@@ -295,17 +294,16 @@ export class Slider extends View {
             }
         } else {
             const v0 = va[0]
-            const v1 = va[va.length -1]
+            const v1 = va[va.length - 1]
 
             if (this.vertical) {
                 this.track.style.top = `${100 - v0}%`
-                this.track.style.height = `${v1-v0}%`
+                this.track.style.height = `${v1 - v0}%`
             } else {
                 this.track.style.left = `${v0}%`
-                this.track.style.width = `${v1-v0}%`
+                this.track.style.width = `${v1 - v0}%`
             }
         }
-
     }
 }
 Slider.define("tx-slider", Slider)
