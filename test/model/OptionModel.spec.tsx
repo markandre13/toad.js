@@ -1,7 +1,7 @@
 import { expect } from "chai"
 import { OptionModel } from "@toad/model/OptionModel"
 import { VALUE } from "@toad/model/ValueModel"
-import { ALL } from "dns"
+import { ALL } from "@toad/model/Model"
 
 describe("OptionModel", function () {
     describe("value", function () {
