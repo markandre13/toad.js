@@ -48,21 +48,36 @@ p {
 }
 b      { font-weight: 500; }
 strong { font-weight: 500; }
+/* 
+ * headings follow the classic typographic scale (see also: Bringhurst, The Elements of Typographic Style)
+ *  6 7 8 9 10 11 12 14 16 18 21 24 36 48 60 72
+ * | +1             | +2        |+3| +12
+ */
+/* TODO: improve: the grid-column is for when we are inside a form */
+h1, h2, h3, h4, h5, h6 {
+  margin-block-start: calc((6/16) * 1rem);
+  margin-block-end: calc((6/16) * 1rem);
+  font-weight: 500;
+}
 h1 {
+  font-size: calc((36/16) * 1rem);
+  font-weight: 600;
+}
+h2 {
   font-size: calc((24/16) * 1rem);
   font-weight: 600;
 }
-h2 { 
-  font-size: calc((22/16) * 1rem);
-  font-weight: 600;
-}
 h3 {
-  font-size: calc((18/16) * 1rem);
-  font-weight: 500;
+  font-size: calc((21/16) * 1rem);
 }
 h4 {
+  font-size: calc((18/16) * 1rem);
+}
+h5 {
+  font-size: calc((16/16) * 1rem);
+}
+h6 {
   font-size: calc((14/16) * 1rem);
-  font-weight: 500;
 }
 pre {
   font-family: "IBM Plex Mono", Courier, monospaced;

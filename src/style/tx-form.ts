@@ -15,7 +15,9 @@ styleBase.replaceSync(css`
     padding: 16px;
     row-gap: 6px;
 }
-
+::slotted(h1), ::slotted(h2), ::slotted(h3), ::slotted(h4), ::slotted(h5), ::slotted(h6) {
+    grid-column: 1 / span 2;
+}
 ::slotted(tx-formlabel) {
     grid-column: 1 / span 1;
     font-size: var(--tx-font-size-info);
