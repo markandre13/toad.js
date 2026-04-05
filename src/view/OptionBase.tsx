@@ -5,6 +5,23 @@ import { placePopupVertical } from "../menu/PopupMenu"
 import { style as txCombobox } from "../style/tx-combobox"
 import { style as txMenu } from "../style/tx-menu"
 
+function isChildOf(child: Node, parent: Node) {
+    if (child.parentNode === parent) {
+        return true
+    }
+    if (child.parentNode === null) {
+        return false
+    }
+    return isChildOf(child.parentNode, parent)
+}
+
+function isSameOrChildOf(child: Node, parent: Node) {
+    if (child === parent) {
+        return true
+    }
+    return isChildOf(child, parent)
+}
+
 /**
  * @category View
  *
@@ -88,7 +105,7 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
                 case "Escape":
                     if (this.popup !== undefined) {
                         // TODO: in case of combobox, restore previous value
-                        this.close()
+                        this.closePopup()
                     }
                     break
             }
@@ -125,11 +142,11 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
             return
         }
         if (this.popup) {
-            this.close()
+            this.closePopup()
             return
         }
         this.displayElement.focus()
-        this.open()
+        this.openPopup()
         this.button.setPointerCapture(ev.pointerId)
     }
     protected pointermove(ev: PointerEvent) {
@@ -165,7 +182,7 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
     protected pointerup(ev: PointerEvent) {
         if (this.hover) {
             const idx = parseInt(this.hover.dataset["idx"]!)
-            this.close()
+            this.closePopup()
             this.select(idx)
             return
         }
@@ -173,21 +190,28 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
         if (this.displayElement.contains(e) || this.button.contains(e)) {
             return
         }
-        this.close()
+        this.closePopup()
     }
 
     //
     // POPUP
     //
+
+    /**
+     * open popup when closed, close popup when open
+     */
     togglePopup() {
         if (this.popup) {
-            this.close()
+            this.closePopup()
         } else {
-            this.open()
+            this.openPopup()
         }
     }
 
-    open() {
+    /**
+     * open the popup menu
+     */
+    openPopup() {
         // console.log("OPEN")
         this.popup = div()
         if (this.model) {
@@ -199,13 +223,24 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
                         item.ariaRoleDescription = "option"
                         item.dataset["idx"] = `${idx}`
                         item.onpointerdown = (ev: PointerEvent) => {
-                            // console.log(`list pointer down ${idx}`)
+                            // console.log(`OptionBase.popup pointer down ${idx}`)
                             // redirect other events to to our event handle child
                             this.button.setPointerCapture(ev.pointerId)
                             this.hover = item
                             ev.preventDefault()
                         }
                         item.onkeydown = this.keydown
+                        item.onblur = (ev: FocusEvent) => {
+                            if (
+                                // new focus is outside this application
+                                ev.relatedTarget == null
+                                // or new focus is outside of this popup
+                                || !isChildOf(ev.relatedTarget as HTMLElement, this.popup!)
+                            ) {
+                                this.closePopup()
+                            }
+                        }
+
                         return item
                     })}
                 </ul>
@@ -223,21 +258,21 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
         this.focusToItem()
     }
 
-    focusToItem() {
-        if (this.popup && this.model) {
-            const index = this.model.index
-            if (index !== undefined) {
-                ; (this.popup.children[0].children[this.model.index!] as HTMLElement).focus()
-            }
-        }
-    }
-
-    close() {
+    protected closePopup() {
         this.hover = undefined
         if (this.popup !== undefined) {
             this.shadowRoot!.removeChild(this.popup!)
             this.popup = undefined
             this.displayElement.focus()
+        }
+    }
+
+    focusToItem() {
+        if (this.popup && this.model) {
+            const index = this.model.index
+            if (index !== undefined) {
+                (this.popup.children[0].children[this.model.index!] as HTMLElement).focus()
+            }
         }
     }
 

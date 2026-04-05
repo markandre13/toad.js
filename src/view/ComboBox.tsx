@@ -29,8 +29,8 @@ export class ComboBox extends OptionBase<string | number> {
         this.finalize()
     }
 
-    override close() {
-        super.close()
+    override closePopup() {
+        super.closePopup()
         if (this.popup === undefined) {
             this.displayElement.focus()
         }
