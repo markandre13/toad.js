@@ -33,14 +33,21 @@ export interface ValueModelOptions<V> extends ModelOptions {
      * or to reset the value to the default value, e.g. with a double click
      */
     default?: V
+
+    /**
+     * persist value in local storage
+     * 
+     * when set, the model is persisted in local storage during browser sessions
+     */
+    local?: string
 }
 
 /**
  * @category Application Model
  *
  */
-export abstract class AbstractValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> 
-extends Model<ValueModelEvent | E, O> {
+export abstract class AbstractValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
+    extends Model<ValueModelEvent | E, O> {
 
     abstract set value(value: V)
     abstract get value(): V
@@ -51,7 +58,7 @@ extends Model<ValueModelEvent | E, O> {
             this.options = {}
         }
         this.options.default = aDefault
-        this.signal.emit({type: DEFAULT_VALUE})
+        this.signal.emit({ type: DEFAULT_VALUE })
     }
     get default(): V | undefined {
         return this.options?.default
@@ -70,19 +77,30 @@ extends Model<ValueModelEvent | E, O> {
  *
  */
 export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
-extends AbstractValueModel<V, E, O>
-{
+    extends AbstractValueModel<V, E, O> {
     protected _value: V
 
     constructor(value: V, options?: O) {
         super(options)
+        if (options?.local) {
+            const local = localStorage.getItem(options.local)
+            if (local !== null) {
+                this._value = JSON.parse(local)
+                return
+            } else {
+                localStorage.setItem(options.local, JSON.stringify(value))
+            }
+        }
         this._value = value
     }
 
     override set value(value: V) {
         if (this._value === value) return
         this._value = value
-        this.signal.emit({type: VALUE})
+        if (this.options?.local) {
+            localStorage.setItem(this.options.local, JSON.stringify(value))
+        }
+        this.signal.emit({ type: VALUE })
     }
     override get value(): V {
         produceValue(this.signal)
