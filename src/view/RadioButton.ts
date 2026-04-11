@@ -36,7 +36,7 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
     protected value?: V
 
     static radioGroupCounter = 0
-    static radioGroups = new WeakMap<OptionModelBase<unknown>, number>()
+    static radioGroups = new WeakMap<OptionModelBase<any>, number>()
 
     constructor(init?: RadioButtonProps<V>) {
         super(init)

@@ -17,13 +17,14 @@
  */
 
 import { deepEqual } from "../util/deepEqual"
-import { ALL, ModelEvent, ModelOptions } from "./Model"
+import { ALL, ModelEvent } from "./Model"
 import { OptionModelBase } from "./OptionModelBase"
+import { ValueModelOptions } from "./ValueModel"
 
 /**
  * @category Application Model
  */
-export class OptionModel<V, E = void, O extends ModelOptions = ModelOptions> extends OptionModelBase<
+export class OptionModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> extends OptionModelBase<
     V,
     E | ModelEvent,
     O
@@ -80,6 +81,20 @@ export class OptionModel<V, E = void, O extends ModelOptions = ModelOptions> ext
         }
 
         this._mapping = newMapping
+
+        // we might have previously failed to restore the value from local storage because of a wrong mapping
+        // let's try again
+        if (this.options?.local !== undefined && typeof this.options.local !== "string") {
+            let name = this.options.local.name
+            const local = localStorage.getItem(name)
+            if (local !== null) {
+                try {
+                    this._value = this.options.local.fromJSON(local)
+                } catch (error) {
+                    console.log(`OptionModel.setMapping(): failed to restore "${name}" = "${local}" from local`)
+                }
+            }
+        }
         this.signal.emit({ type: ALL })
     }
     forEach(callback: (value: V, label: string | number | HTMLElement, index: number) => void): void {

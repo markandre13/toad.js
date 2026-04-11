@@ -11,8 +11,8 @@ export interface ComboBoxProps<V> extends ModelViewProps<OptionModelBase<V>> {
 export class ComboBox extends OptionBase<string | number> {
     override displayElement: HTMLInputElement
     textModel?: TextModel
-    constructor(init?: ComboBoxProps<string>) {
-        super(init)
+    constructor(init?: ComboBoxProps<string | number> | ComboBoxProps<string>) {
+        super(init as any)
         this.textModel = init?.text
         this.displayElement = input()
         this.displayElement.type = "text"

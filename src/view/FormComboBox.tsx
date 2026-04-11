@@ -3,7 +3,7 @@ import { FormField, FormHelp, FormLabel } from "./Form"
 import { ComboBox } from "./ComboBox"
 import { TextModel } from "../model/TextModel"
 
-export function FormCombobox(props: { model: OptionModelBase<string>, text?: TextModel }) {
+export function FormCombobox(props: { model: OptionModelBase<string | number> , text?: TextModel }) {
     return (
         <>
             <FormLabel model={props.model} />
