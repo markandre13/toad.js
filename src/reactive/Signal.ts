@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021, 2024 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2026 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -207,6 +207,19 @@ export function runWithAutorelease<T>(fn: () => T): T {
     try {
         return fn()
     } finally {
+        owner.release()
+        autoreleasePoolStack.pop()
+    }
+}
+
+export function pushAutorelease() {
+    const owner = new AutoreleasePool()
+    autoreleasePoolStack.push(owner)
+}
+
+export function popAutorelease() {
+    const owner = getCurrentAutoreleasePool()
+    if (owner !== null) {
         owner.release()
         autoreleasePoolStack.pop()
     }
