@@ -54,7 +54,7 @@ let currentTrigger: () => void | undefined
 /**
  * Called by a potential observer to execute the action start to observe the models used by the action.
  *
- * We use https://github.com/tc39/proposal-signals' clever approach to discover
+ * We use https://github.com/tc39/proposal-signal's clever approach to discover
  * dependencies.
  *
  * TODO: async action?
