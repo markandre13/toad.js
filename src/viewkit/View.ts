@@ -19,8 +19,6 @@
 import { Model } from "../appkit/Model"
 import { HTMLElementProps, setInitialProperties } from "toad.jsx"
 
-// TODO: do we use this directly or is GenericView it's only subclass?
-
 /**
  * @category View
  */
@@ -49,32 +47,14 @@ export class View extends HTMLElement {
         super()
         setInitialProperties(this, props)
     }
-    
+
     setModel(model?: Model<any>): void {
         console.trace(`Please note that View.setModel(model) has no implementation.`)
     }
 
-    getModelId(): string {
-        if (!this.hasAttribute("model"))
-            throw Error("no 'model' attribute")
-        let modelId = this.getAttribute("model") // FIXME: both hasAttribute & getAttribute? really?
-        if (!modelId)
-            throw Error("no model id")
-        return "M:" + modelId
-    }
-
-    getActionId(): string {
-        if (!this.hasAttribute("action"))
-            throw Error("no 'action' attribute")
-        let actionId = this.getAttribute("action") // FIXME: both hasAttribute & getAttribute? really?
-        if (!actionId)
-            throw Error("no action id")
-        return "A:" + actionId
-    }
-
     connectedCallback(): void { }
     disconnectedCallback(): void { }
-    connectedMoveCallback(): void {}
-    adoptedCallback(): void {}
-    attributeChangedCallback(name: string, oldValue?: string, newValue?: string): void {}
+    connectedMoveCallback(): void { }
+    adoptedCallback(): void { }
+    attributeChangedCallback(name: string, oldValue?: string, newValue?: string): void { }
 }
