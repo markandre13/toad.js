@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { Animator, unbind } from "@toad"
 import { Table } from '@toad/table/Table'
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
@@ -8,12 +7,13 @@ import { style as txDark } from "@toad/style/tx-dark"
 import { sleep } from "../testlib"
 import { InsertColumnAnimation } from '@toad/table/detail/InsertColumnAnimation'
 import { RemoveColumnAnimation } from '@toad/table/detail/RemoveColumnAnimation'
-import { AnimationBase } from '@toad/util/animation'
+import { AnimationBase, Animator } from '@toad/util/animation'
 import {
     Measure, prepareByColumns, flatMapColumns, getTable, testTableLayout,
     bodyColInfo, splitColInfo, stagingColInfo, stagingInsertColInfo, splitBodyX, splitBodyW, maskX, maskW,
     headColInfo, stagingColHeadInfo, headMaskX, headMaskW, splitColHeadInfo, splitColHeadX, splitColHeadW
 } from "./util"
+import { unbind } from '@toad/controller/globalController'
 
 describe("table", function () {
     beforeEach(async function () {

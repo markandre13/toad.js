@@ -1,6 +1,7 @@
 import { expect } from 'chai'
-import { Model, View, ModelView } from "@toad"
-import { ALL, ModelEvent } from '@toad/model/Model'
+import { ALL, Model, ModelEvent } from '@toad/model/Model'
+import { ModelView } from '@toad/view/ModelView'
+import { View } from '@toad/view/View'
 
 describe("view", function() {
     describe("ModelView<Model<MSG>>", function() {

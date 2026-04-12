@@ -1,5 +1,8 @@
+import { bindModel } from "@toad/controller/globalController"
+import { NumberModel } from "@toad/model/NumberModel"
+import { TextModel } from "@toad/model/TextModel"
+import { Slider } from "@toad/view/Slider"
 import { expect } from "chai"
-import { Slider, NumberModel, TextModel, bindModel as bind } from "@toad"
 import { sleep } from "test/testlib"
 
 describe("view", function () {
@@ -7,7 +10,7 @@ describe("view", function () {
         describe("NumberModel", function () {
             it("works when the model is defined before the view", async function () {
                 let model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
-                bind("number", model)
+                bindModel("number", model)
                 document.body.innerHTML = "<tx-slider model='number'></tx-slider>"
                 expect(getHTMLInputElement().value).to.equal("0.5")
 
@@ -17,7 +20,7 @@ describe("view", function () {
             it("works when the view is defined before the model", function () {
                 document.body.innerHTML = "<tx-slider model='number'></tx-slider>"
                 let model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
-                bind("number", model)
+                bindModel("number", model)
                 expect(getHTMLInputElement().value).to.equal("0.5")
             })
 
@@ -32,7 +35,7 @@ describe("view", function () {
         describe("TextModel", function () {
             it("updates the html element when the model changes", function () {
                 let model = new TextModel("alfa")
-                bind("text", model)
+                bindModel("text", model)
                 document.body.innerHTML = "<tx-text model='text'></tx-text>"
                 let input = getHTMLInputElement()
                 expect(input.value).not.to.equal("bravo")
@@ -42,7 +45,7 @@ describe("view", function () {
 
             it("updates the model when the html element changes", function () {
                 let model = new TextModel("alfa")
-                bind("text", model)
+                bindModel("text", model)
                 document.body.innerHTML = "<tx-text model='text'></tx-text>"
                 let input = getHTMLInputElement()
                 expect(model.value).not.to.equal("charly")

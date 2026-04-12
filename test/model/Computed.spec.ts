@@ -1,6 +1,6 @@
 import { expect } from "chai"
-import { NumberModel } from "@toad"
 import { Computed, constraint } from "@toad/model/Computed"
+import { NumberModel } from "@toad/model/NumberModel"
 
 describe("models", () => {
     describe("Computed", () => {

@@ -1,10 +1,11 @@
 import { expect } from 'chai'
-import { RadioButton, TextModel, unbind } from "@toad"
 import { OptionModel } from '@toad/model/OptionModel'
 
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
+import { unbind } from '@toad/controller/globalController'
+import { RadioButton } from '@toad/view/RadioButton'
 
 describe("Select", function () {
 

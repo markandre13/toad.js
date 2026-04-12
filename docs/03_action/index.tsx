@@ -1,7 +1,8 @@
 
-import { Button, TextModel, action } from "@toad"
+import { TextModel } from "@toad/model/TextModel"
 import { code } from "./index.source"
-import { ButtonVariant } from "@toad/view/Button"
+import { Button, ButtonVariant } from "@toad/view/Button"
+import { action } from "@toad/controller/globalController"
 
 //
 // Application Layer

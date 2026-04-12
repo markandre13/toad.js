@@ -1,7 +1,5 @@
 import { expect } from "chai"
 
-import { bindModel, unbind, refs, TableEditMode, Tabs } from "@toad"
-
 import { MemoryLogger, Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"
 
@@ -59,7 +57,10 @@ import { Animator, AnimationBase } from "@toad/util/animation"
 import { InsertRowAnimation } from "@toad/table/detail/InsertRowAnimation"
 import { SelectionModel } from "@toad/table/model/SelectionModel"
 import { hasFocus } from "@toad/util/dom"
-import { Tab } from "@toad/view/Tab"
+import { Tab, Tabs } from "@toad/view/Tab"
+import { bindModel, unbind } from "@toad/controller/globalController"
+import { refs } from "toad.jsx/lib/jsx-runtime"
+import { TableEditMode } from "@toad/table/TableEditMode"
 
 // TODO:
 // [X] send modified-events

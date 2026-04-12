@@ -1,9 +1,13 @@
 import { expect } from "chai"
-import { Fragment, TextField, TextModel, NumberModel, bindModel, unbind } from "@toad"
 
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
+import { bindModel, unbind } from "@toad/controller/globalController"
+import { TextModel } from "@toad/model/TextModel"
+import { TextField } from "@toad/view/TextField"
+import { NumberModel } from "@toad/model/NumberModel"
+import { Fragment } from "toad.jsx/lib/jsx-runtime"
 
 describe("view", function () {
     beforeEach(async function () {

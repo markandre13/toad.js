@@ -1,5 +1,7 @@
+import { bindModel, unbind } from '@toad/controller/globalController'
+import { BooleanModel } from '@toad/model/BooleanModel'
+import { Checkbox } from '@toad/view/Checkbox'
 import { expect } from 'chai'
-import { Checkbox, BooleanModel, bindModel, unbind } from "@toad"
 
 describe("view", function () {
 

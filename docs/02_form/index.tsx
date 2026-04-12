@@ -1,6 +1,7 @@
-import { NumberModel, TextModel } from "@toad"
 import { code } from "./index.source"
 import { EmailModel } from "@toad/model/EmailModel"
+import { NumberModel } from "@toad/model/NumberModel"
+import { TextModel } from "@toad/model/TextModel"
 import { Form } from "@toad/view/Form"
 import { FormText } from "@toad/view/FormText"
 

@@ -1,5 +1,7 @@
+import { action } from "@toad/controller/globalController"
+import { Action } from "@toad/model/Action"
+import { Button } from "@toad/view/Button"
 import { expect } from "chai"
-import { action, Action, Button } from "@toad"
 
 describe("action", function () {
     it("button created before action", function () {

@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { bindModel, unbind } from "@toad"
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
@@ -17,6 +16,7 @@ import { forEach } from 'test/mocha-each'
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
+import { bindModel, unbind } from '@toad/controller/globalController'
 
 describe("table", function () {
     beforeEach(async function () {

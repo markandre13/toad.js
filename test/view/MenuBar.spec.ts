@@ -1,6 +1,7 @@
 import { expect } from 'chai'
 import * as dom from "@toad/util/dom"
-import { MenuButton, action, globalController } from "@toad"
+import { action, globalController } from '@toad/controller/globalController'
+import { MenuButton } from '@toad/menu/MenuButton'
 
 describe("view", function() {
 

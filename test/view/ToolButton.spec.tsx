@@ -1,9 +1,10 @@
 // npm run dev:test --file=./lib/test/view/ToolButton.spec.js
 
 import { expect } from "chai"
-import { OptionModel, ToolButton } from "@toad"
 import { loadFont } from "@toad/util/loadFont"
 import { loadStyle } from "@toad/util/loadStyle"
+import { OptionModel } from "@toad/model/OptionModel"
+import { ToolButton } from "@toad/view/ToolButton"
 
 describe("ToolButton", function () {
     beforeEach(async function () {

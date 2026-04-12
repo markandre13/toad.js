@@ -1,7 +1,9 @@
+import { TableAdapter } from "@toad/table/adapter/TableAdapter"
+import { TypedTableAdapter } from "@toad/table/adapter/TypedTableAdapter"
+import { TableModel } from "@toad/table/model/TableModel"
+import { TreeNode } from "@toad/table/model/TreeNode"
+import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { expect } from "chai"
-import {
-    TableAdapter, TypedTableAdapter, TableModel, TreeNodeModel, TreeNode
-} from "@toad"
 
 describe("view", function () {
     describe("table", function () {

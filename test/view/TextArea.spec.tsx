@@ -1,5 +1,7 @@
+import { bindModel, unbind } from '@toad/controller/globalController'
+import { HtmlModel } from '@toad/model/HtmlModel'
+import { TextModel } from '@toad/model/TextModel'
 import { expect } from 'chai'
-import { TextModel, HtmlModel, bindModel, unbind } from "@toad"
 
 describe("view", function () {
 

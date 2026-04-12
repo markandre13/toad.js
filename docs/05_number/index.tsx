@@ -1,9 +1,11 @@
 
-import { NumberModel, Slider, TextField } from "@toad"
+import { NumberModel } from "@toad/model/NumberModel"
 import { code } from "./index.source"
 import { IntegerModel } from "@toad/model/IntegerModel"
 import { RGBModel } from "@toad/model/RGBModel"
 import { ColorSelector } from "@toad/view/ColorSelector"
+import { Slider } from "@toad/view/Slider"
+import { TextField } from "@toad/view/TextField"
 
 //
 // Application Layer
