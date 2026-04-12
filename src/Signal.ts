@@ -36,7 +36,7 @@ export class SignalLink {
  * @category Observer Pattern
  */
 export class Signal<T = void> {
-    callbacks?: Array<SignalLink>
+    protected callbacks?: Array<SignalLink>
 
     /**
      * flag used by emit() to prevent cycles
@@ -95,7 +95,7 @@ export class Signal<T = void> {
      * 
      * @returns the number of callbacks being added
      */
-    count(): number {
+    get count(): number {
         if (!this.callbacks) {
             return 0
         }

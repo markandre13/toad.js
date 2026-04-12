@@ -20,11 +20,11 @@ describe("view", function() {
             const model = new MyModel()
             const view = new MyView()
             document.body.appendChild(view)
-            expect(model.signal.callbacks).to.be.undefined
+            expect(model.signal.count).to.be.equal(0)
             expect(view.log.length).equals(0)
 
             view.setModel(model)
-            expect(model.signal.callbacks?.length).equals(1)
+            expect(model.signal.count).equals(1)
             expect(view.log.length).equals(1)
 
             expect(view.log[0].method).equals("updateView()")
@@ -36,7 +36,7 @@ describe("view", function() {
             expect(view.log[1].model).equals(model)
 
             view.setModel(undefined)
-            expect(model.signal.callbacks?.length).equals(0)
+            expect(model.signal.count).equals(0)
             expect(view.log.length).equals(3)
             expect(view.log[2].method).equals("updateView()")
             expect(view.log[2].model).equals(undefined)
@@ -66,11 +66,11 @@ describe("view", function() {
             const view = new MyView()
             document.body.appendChild(view)
 
-            expect(model.signal.callbacks).to.be.undefined
+            expect(model.signal.count).to.equal(0)
             expect(view.log.length).equals(0)
 
             view.setModel(model)
-            expect(model.signal.callbacks?.length).equals(1)
+            expect(model.signal.count).equals(1)
             expect(view.log.length).equals(1)
             expect(view.log[0].method).equals("updateView(ALL)")
             expect(view.log[0].model).equals(model)
@@ -81,7 +81,7 @@ describe("view", function() {
             expect(view.log[1].model).equals(model)
 
             view.setModel(undefined)
-            expect(model.signal.callbacks?.length).equals(0)
+            expect(model.signal.count).equals(0)
             expect(view.log.length).equals(3)
             expect(view.log[2].method).equals("updateView(ALL)")
             expect(view.log[2].model).equals(undefined)

@@ -5,11 +5,11 @@ describe("signal", function () {
     describe("add(...)", function () {
         it("adds observers", function () {
             const signal = new Signal()
-            expect(signal.count()).to.equal(0)
+            expect(signal.count).to.equal(0)
             signal.add(() => { })
-            expect(signal.count()).to.equal(1)
+            expect(signal.count).to.equal(1)
             signal.add(() => { })
-            expect(signal.count()).to.equal(2)
+            expect(signal.count).to.equal(2)
         })
     })
     describe("emit(...)", function () {
