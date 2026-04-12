@@ -1,4 +1,4 @@
-import { EnumModel } from "@toad/model/EnumModel"
+import { EnumModel } from "@toad/appkit/EnumModel"
 
 export enum TAB {
     INTRODUCTION = "introduction",

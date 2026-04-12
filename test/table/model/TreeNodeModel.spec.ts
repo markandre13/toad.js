@@ -4,7 +4,7 @@ use(chaiSubset)
 
 import { INSERT_ROW, REMOVE_ROW, TableEvent } from "@toad/table/TableEvent"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
-import { TextModel } from "@toad/model/TextModel"
+import { TextModel } from "@toad/appkit/TextModel"
 
 describe("model", function () {
     describe("table", function () {

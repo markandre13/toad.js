@@ -17,10 +17,10 @@ import { SpreadsheetAdapter } from "@toad/table/adapter/SpreadsheetAdapter"
 
 import { TableFriend } from "@toad/table/detail/TableFriend"
 
-import { TextModel } from "@toad/model/TextModel"
-import { NumberModel } from "@toad/model/NumberModel"
-import { TextField } from "@toad/view/TextField"
-import { Slider } from "@toad/view/Slider"
+import { TextModel } from "@toad/appkit/TextModel"
+import { NumberModel } from "@toad/appkit/NumberModel"
+import { TextField } from "@toad/viewkit/TextField"
+import { Slider } from "@toad/viewkit/Slider"
 
 import { span, input, text } from "@toad/util/lsx"
 
@@ -57,7 +57,7 @@ import { Animator, AnimationBase } from "@toad/util/animation"
 import { InsertRowAnimation } from "@toad/table/detail/InsertRowAnimation"
 import { SelectionModel } from "@toad/table/model/SelectionModel"
 import { hasFocus } from "@toad/util/dom"
-import { Tab, Tabs } from "@toad/view/Tab"
+import { Tab, Tabs } from "@toad/viewkit/Tab"
 import { bindModel, unbind } from "@toad/controller/globalController"
 import { refs } from "toad.jsx/lib/jsx-runtime"
 import { TableEditMode } from "@toad/table/TableEditMode"

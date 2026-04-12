@@ -1,10 +1,10 @@
 
-import { TextModel } from "@toad/model/TextModel"
+import { TextModel } from "@toad/appkit/TextModel"
 import { code } from "./index.source"
-import { HtmlModel } from "@toad/model/HtmlModel"
-import { TextField } from "@toad/view/TextField"
-import { TextTool } from "@toad/view/TextTool"
-import { TextArea } from "@toad/view/TextArea"
+import { HtmlModel } from "@toad/appkit/HtmlModel"
+import { TextField } from "@toad/viewkit/TextField"
+import { TextTool } from "@toad/viewkit/TextTool"
+import { TextArea } from "@toad/viewkit/TextArea"
 
 //
 // Application Layer

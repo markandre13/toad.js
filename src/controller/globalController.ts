@@ -16,10 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
-import { TextModel } from "../model/TextModel"
-import { Model } from "../model/Model"
-import { Action } from "../model/Action"
+import { BooleanModel } from "../appkit/BooleanModel"
+import { TextModel } from "../appkit/TextModel"
+import { Model } from "../appkit/Model"
+import { Action } from "../appkit/Action"
 import { Controller } from "./Controller"
 
 export let globalController = new Controller()

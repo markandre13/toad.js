@@ -1,8 +1,8 @@
 
-import { OptionModel } from "@toad/model/OptionModel"
+import { OptionModel } from "@toad/appkit/OptionModel"
 import { code } from "./index.source"
 import { parseColor, rgb2hsl } from "@toad/util/color"
-import { Select } from "@toad/view/Select"
+import { Select } from "@toad/viewkit/Select"
 
 //
 // APPLICATION LAYER

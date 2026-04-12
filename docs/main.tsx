@@ -1,5 +1,5 @@
-import { EnumModel } from "@toad/model/EnumModel"
-import { Tabs, Tab } from "@toad/view/Tab"
+import { EnumModel } from "@toad/appkit/EnumModel"
+import { Tabs, Tab } from "@toad/viewkit/Tab"
 import { initHistoryManager, TAB } from "./history"
 import { loadFont } from "@toad/util/loadFont"
 import { loadStyle } from "@toad/util/loadStyle"

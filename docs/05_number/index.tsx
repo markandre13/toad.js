@@ -1,11 +1,11 @@
 
-import { NumberModel } from "@toad/model/NumberModel"
+import { NumberModel } from "@toad/appkit/NumberModel"
 import { code } from "./index.source"
-import { IntegerModel } from "@toad/model/IntegerModel"
-import { RGBModel } from "@toad/model/RGBModel"
-import { ColorSelector } from "@toad/view/ColorSelector"
-import { Slider } from "@toad/view/Slider"
-import { TextField } from "@toad/view/TextField"
+import { IntegerModel } from "@toad/appkit/IntegerModel"
+import { RGBModel } from "@toad/appkit/RGBModel"
+import { ColorSelector } from "@toad/viewkit/ColorSelector"
+import { Slider } from "@toad/viewkit/Slider"
+import { TextField } from "@toad/viewkit/TextField"
 
 //
 // Application Layer

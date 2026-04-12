@@ -1,5 +1,5 @@
-import { NumberModel } from "@toad/model/NumberModel"
-import { TextModel } from "@toad/model/TextModel"
+import { NumberModel } from "@toad/appkit/NumberModel"
+import { TextModel } from "@toad/appkit/TextModel"
 import { bindModel } from "@toad/controller/globalController"
 
 export function main() {

@@ -1,4 +1,4 @@
-import { NumberModel } from "@toad/model/NumberModel"
+import { NumberModel } from "@toad/appkit/NumberModel"
 import { bindModel } from "@toad/controller/globalController"
 
 export function main() {

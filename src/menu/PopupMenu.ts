@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { View } from "../view/View"
+import { View } from "../viewkit/View"
 import { MenuButton } from "./MenuButton"
 import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuHelper"

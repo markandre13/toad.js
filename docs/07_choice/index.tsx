@@ -1,11 +1,11 @@
 
-import { EnumModel } from "@toad/model/EnumModel"
+import { EnumModel } from "@toad/appkit/EnumModel"
 import { code } from "./index.source"
-import { ComboBox } from "@toad/view/ComboBox"
-import { TextModel } from "@toad/model/TextModel"
-import { RadioButton } from "@toad/view/RadioButton"
-import { Select } from "@toad/view/Select"
-import { Search } from "@toad/view/Search"
+import { ComboBox } from "@toad/viewkit/ComboBox"
+import { TextModel } from "@toad/appkit/TextModel"
+import { RadioButton } from "@toad/viewkit/RadioButton"
+import { Select } from "@toad/viewkit/Select"
+import { Search } from "@toad/viewkit/Search"
 
 //
 // Application Layer

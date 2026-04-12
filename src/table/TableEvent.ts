@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelEvent } from "../model/Model"
+import { ModelEvent } from "../appkit/Model"
 
 export const INSERT_ROW = Symbol("INSERT_ROW")
 export const REMOVE_ROW = Symbol("REMOVE_ROW")

@@ -18,8 +18,8 @@
 
 import { MenuButton } from "./MenuButton"
 import { MenuButtonContainer } from "./MenuHelper"
-import { TextModel } from "../model/TextModel"
-import { HtmlModel } from "../model/HtmlModel"
+import { TextModel } from "../appkit/TextModel"
+import { HtmlModel } from "../appkit/HtmlModel"
 
 /**
  * @internal 

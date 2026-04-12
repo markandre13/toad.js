@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { View } from "../view/View"
+import { View } from "../viewkit/View"
 import { TableModel } from "./model/TableModel"
 import { SelectionModel } from "./model/SelectionModel"
 import { EditMode, TableAdapter } from "./adapter/TableAdapter"
@@ -37,7 +37,7 @@ import { scrollIntoView } from "../util/scrollIntoView"
 import { style as txTable } from "./style/tx-table"
 import { style as txScrollbar } from "../style/tx-scrollbar"
 import { hasFocus } from "../util/dom"
-import { ALL, ModelEvent } from "../model/Model"
+import { ALL, ModelEvent } from "../appkit/Model"
 
 // TABLE ANIMATION
 //

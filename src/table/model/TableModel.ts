@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "../../model/Model"
+import { Model } from "../../appkit/Model"
 import { TableEvent } from "../TableEvent"
 
 /**

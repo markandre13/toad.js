@@ -16,11 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Action } from "../model/Action"
-import { HtmlModel } from "../model/HtmlModel"
-import { TextModel } from "../model/TextModel"
-import { Model } from "../model/Model"
-import { ModelView } from "../view/ModelView"
+import { Action } from "../appkit/Action"
+import { HtmlModel } from "../appkit/HtmlModel"
+import { TextModel } from "../appkit/TextModel"
+import { ModelView } from "../viewkit/ModelView"
 import { globalController } from "../controller/globalController"
 import { menuStyle } from "./menuStyle"
 import { MenuState } from "./MenuState"

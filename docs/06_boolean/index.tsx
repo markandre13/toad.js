@@ -1,10 +1,10 @@
 
 
-import { BooleanModel } from "@toad/model/BooleanModel"
+import { BooleanModel } from "@toad/appkit/BooleanModel"
 import { code } from "./index.source"
-import { Checkbox } from "@toad/view/Checkbox"
-import { Switch } from "@toad/view/Switch"
-import { ToadIf } from "@toad/view/ToadIf"
+import { Checkbox } from "@toad/viewkit/Checkbox"
+import { Switch } from "@toad/viewkit/Switch"
+import { ToadIf } from "@toad/viewkit/ToadIf"
 
 //
 // Application Layer

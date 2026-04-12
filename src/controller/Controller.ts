@@ -16,14 +16,14 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BooleanModel } from "../model/BooleanModel"
-import { NumberModel } from "../model/NumberModel"
-import { HtmlModel } from "../model/HtmlModel"
-import { TextModel } from "../model/TextModel"
-import { Model } from "../model/Model"
-import { View } from "../view/View"
-import { Action } from "../model/Action"
-import { Signal } from "../Signal"
+import { BooleanModel } from "../appkit/BooleanModel"
+import { NumberModel } from "../appkit/NumberModel"
+import { HtmlModel } from "../appkit/HtmlModel"
+import { TextModel } from "../appkit/TextModel"
+import { Model } from "../appkit/Model"
+import { View } from "../viewkit/View"
+import { Action } from "../appkit/Action"
+import { Signal } from "../reactive/Signal"
 
 export class Controller {
     modelId2Models: Map<string, Set<Model>>

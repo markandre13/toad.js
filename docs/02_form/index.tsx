@@ -1,9 +1,9 @@
 import { code } from "./index.source"
-import { EmailModel } from "@toad/model/EmailModel"
-import { NumberModel } from "@toad/model/NumberModel"
-import { TextModel } from "@toad/model/TextModel"
-import { Form } from "@toad/view/Form"
-import { FormText } from "@toad/view/FormText"
+import { EmailModel } from "@toad/appkit/EmailModel"
+import { NumberModel } from "@toad/appkit/NumberModel"
+import { TextModel } from "@toad/appkit/TextModel"
+import { Form } from "@toad/viewkit/Form"
+import { FormText } from "@toad/viewkit/FormText"
 
 //
 // APPLICATION LAYER

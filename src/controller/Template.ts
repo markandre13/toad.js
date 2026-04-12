@@ -17,7 +17,7 @@
  */
 
 import * as dom from "../util/dom"
-import { View } from "../view/View"
+import { View } from "../viewkit/View"
 import { Controller } from "./Controller"
 
 export class Template extends Controller {

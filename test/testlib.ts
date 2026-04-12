@@ -2,7 +2,7 @@
 // https://testing-library.com/docs/dom-testing-library/cheatsheet
 // https://testing-library.com/docs/user-event/intro
 
-import { TextField as TextView } from "@toad/view/TextField"
+import { TextField as TextView } from "@toad/viewkit/TextField"
 
 export function sleep(milliseconds: number = 0) {
     return new Promise((resolve, reject) => {

@@ -21,8 +21,8 @@ import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuHelper"
 import { menuStyle } from "./menuStyle"
 import { HTMLElementProps } from "toad.jsx"
-import { TextModel } from "../model/TextModel"
-import { HtmlModel } from "../model/HtmlModel"
+import { TextModel } from "../appkit/TextModel"
+import { HtmlModel } from "../appkit/HtmlModel"
 
 interface MenuConfig {
   name?: string,

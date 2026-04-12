@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Signal } from "../../Signal"
-import { VALUE, ValueModel } from "../../model/ValueModel"
+import { Signal } from "../../reactive/Signal"
+import { VALUE, ValueModel } from "../../appkit/ValueModel"
 import { TableEditMode } from "../TableEditMode"
 import { TablePos } from "../TablePos"
 

@@ -16,10 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model } from "../model/Model"
-import { View } from "../view/View"
-import { GenericTool } from "../view/GenericTool"
-import { textAreaStyle } from "../view/textAreaStyle"
+import { Model } from "../appkit/Model"
+import { View } from "../viewkit/View"
+import { GenericTool } from "../viewkit/GenericTool"
+import { textAreaStyle } from "../viewkit/textAreaStyle"
 
 import { Table } from "./Table"
 import { RowEditInterface, ColumnEditInterface } from "./model/TableModel"

@@ -1,4 +1,4 @@
-import { Tabs, Tab } from "@toad/view/Tab"
+import { Tabs, Tab } from "@toad/viewkit/Tab"
 import { code } from "./index.source"
 
 export default () => (

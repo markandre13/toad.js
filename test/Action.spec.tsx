@@ -1,6 +1,6 @@
 import { action } from "@toad/controller/globalController"
-import { Action } from "@toad/model/Action"
-import { Button } from "@toad/view/Button"
+import { Action } from "@toad/appkit/Action"
+import { Button } from "@toad/viewkit/Button"
 import { expect } from "chai"
 
 describe("action", function () {

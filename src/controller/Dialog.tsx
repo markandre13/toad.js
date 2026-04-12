@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { View } from "../view/View"
+import { View } from "../viewkit/View"
 import { Controller } from "./Controller"
 import { Fragment } from "toad.jsx"
 
