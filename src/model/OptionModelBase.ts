@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2021 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2021, 2026 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -19,13 +19,36 @@
 import { span, text } from "../util/lsx"
 import { ValueModel, ValueModelOptions } from "./ValueModel"
 
+export interface OptionMapping {
+    /**
+     * an id which can be used to persist the option
+     */
+    id: string
+    /**
+     * representation of the option to the user
+     */
+    view: string | number | HTMLElement
+}
+
+export function makeOptionMapping(
+    id: string,
+    view: string | number | HTMLElement
+): OptionMapping {
+    return { id, view }
+}
+
+export interface OptionModelOptions<V> extends ValueModelOptions<V> {
+    mapper?: (value: V) => OptionMapping
+}
+
 /**
  * @category Application Model
  * 
  * Stores a current value and a list of all values to select from along with their
  * respective DOM representations.
  */
-export abstract class OptionModelBase<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>> extends ValueModel<V, E, O> {
+export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<V> = OptionModelOptions<V>>
+    extends ValueModel<V, E, O> {
     /**
      * OptionModelBase does not hold 'list of all values to select from along with their
      * respective DOM representations'. Instead the sub-classes need to implement the

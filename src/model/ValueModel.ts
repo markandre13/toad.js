@@ -25,12 +25,6 @@ export type ValueEvent = { type: typeof VALUE }
 export type DefaultValueEvent = { type: typeof DEFAULT_VALUE }
 export type ValueModelEvent = ModelEvent | ValueEvent | DefaultValueEvent
 
-export interface Persister<V> {
-    name: string
-    toJSON: (value: V) => string
-    fromJSON: (value: string) => V
-}
-
 export interface ValueModelOptions<V> extends ModelOptions {
     /**
      * a default value
@@ -44,10 +38,8 @@ export interface ValueModelOptions<V> extends ModelOptions {
      * persist value in local storage
      * 
      * when set, the model is persisted in local storage during browser sessions
-     * 
-     * Persister<V> can be used in case the value can not be represented as JSON
      */
-    local?: string | Persister<V>
+    local?: string
 }
 
 /**
@@ -90,54 +82,43 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
 
     constructor(value: V, options?: O) {
         super(options)
-        if (this.options?.local) {
-            let name: string
-            if (typeof this.options.local === "string") {
-                name = this.options.local
-            } else {
-                name = this.options.local.name
-            }
-            const local = localStorage.getItem(name)
-            if (local !== null) {
-                try {
-                    if (typeof this.options.local === "string") {
-                        this._value = JSON.parse(local)
-                    } else {
-                        this._value = this.options.local.fromJSON(local)
-                    }
-                    return
-                } catch (error) {
-                    console.log(`ValueModel.constructor(): failed to restore "${name}" = "${local}" from local`)
-                }
-            } else {
-                if (typeof this.options.local === "string") {
-                    localStorage.setItem(name, JSON.stringify(value))
-                } else {
-                    localStorage.setItem(name, JSON.stringify(this.options.local.toJSON(value)))
-                }
-            }
-        }
         this._value = value
+        this.setFromLocalStorage()
+    }
+
+    protected setFromLocalStorage() {
+        if (this.options?.local === undefined) {
+            return
+        }
+        const name = this.options.local
+        const value = localStorage.getItem(this.options.local)
+        if (value !== null) {
+            try {
+                this._value = JSON.parse(value)
+                return
+            } catch (error) {
+                console.log(`ValueModel.constructor(): failed to restore "${name}" = "${value}" from local`)
+            }
+        } else {
+            localStorage.setItem(name, JSON.stringify(this._value))
+        }
+    }
+    protected persistToLocalStorage() {
+        if (this.options?.local === undefined) {
+            return
+        }
+        try {
+            const name = this.options.local
+            const value = JSON.stringify(this._value)
+            // console.log(`ValueModel.set value(): store "${name}" = "${value}" to local`)
+            localStorage.setItem(name, value)
+        } catch (e) { }
     }
 
     override set value(value: V) {
         if (this._value === value) return
         this._value = value
-        if (this.options?.local) {
-            try {
-                let name: string
-                let jsonString
-                if (typeof this.options.local === "string") {
-                    name = this.options.local
-                    jsonString = JSON.stringify(value)
-                } else {
-                    name = this.options.local.name
-                    jsonString = this.options.local.toJSON(value)
-                }
-                console.log(`ValueModel.set value(): store "${name}" = "${jsonString}" to local`)
-                localStorage.setItem(name, jsonString)
-            } catch (e) { }
-        }
+        this.persistToLocalStorage()
         this.signal.emit({ type: VALUE })
     }
     override get value(): V {

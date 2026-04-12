@@ -17,7 +17,7 @@
  */
 
 import { ModelOptions } from "./Model"
-import { OptionModelBase } from "./OptionModelBase"
+import { OptionModelBase, OptionModelOptions } from "./OptionModelBase"
 
 /**
  * @category Application Model
@@ -27,7 +27,7 @@ export type EnumType<T> = {
     [nu: number]: string
 }
 
-export class EnumModel<T, V extends T = T, E = void, O extends ModelOptions = ModelOptions> 
+export class EnumModel<T, V extends T = T, E = void, O extends OptionModelOptions<T> = OptionModelOptions<T>> 
 extends OptionModelBase<T, E, O> {
     protected enumType: EnumType<T>
     constructor(value: V, enumType: EnumType<T>, options?: O) {

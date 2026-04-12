@@ -2,6 +2,7 @@ import { expect } from "chai"
 import { OptionModel } from "@toad/model/OptionModel"
 import { VALUE } from "@toad/model/ValueModel"
 import { ALL } from "@toad/model/Model"
+import { makeOptionMapping } from "@toad/model/OptionModelBase"
 
 describe("OptionModel", function () {
     describe("value", function () {
@@ -156,6 +157,33 @@ describe("OptionModel", function () {
                 [A.LEFT, <i>Left</i>, 2],
                 [A.RIGHT, <i>Right</i>, 3],
             ])
+        })
+    })
+    describe("id and mapping function", () => {
+        interface Camera {
+            id: string,
+            name: string
+        }
+        const cameras: Camera[] = [
+            { id: "B0B255DB-22AC-4826-B8B6-ACA5F9CAC646", name: "sony pcr101" },
+            { id: "924580AC-7ECA-4497-8603-29B30E78342A", name: "canon xm-1" },
+            { id: "1C9AEF84-B37A-49A9-8045-982F0A3D506D", name: "olympus d-600l" }
+        ]
+        const activeCamera = new OptionModel(
+            undefined,
+            cameras,
+            v => makeOptionMapping(
+                v?.id ? v.id : "null",
+                v?.name ? v.name : "none"
+            ), { label: "camera" })
+
+        it("set id", () => {
+            activeCamera.id = cameras[1].id
+            expect(activeCamera.html.childNodes[0].textContent).to.equal(cameras[1].name)
+        })
+        it("get id", () => {
+            activeCamera.value = cameras[2]
+            expect(activeCamera.id).to.equal(cameras[2].id)
         })
     })
 })
