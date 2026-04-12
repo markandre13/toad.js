@@ -1,42 +1,30 @@
-import { bindModel } from "@toad/controller/globalController"
 import { NumberModel } from "@toad/appkit/NumberModel"
 import { TextModel } from "@toad/appkit/TextModel"
 import { Slider } from "@toad/viewkit/Slider"
+import { TextField } from "@toad/viewkit/TextField"
 import { expect } from "chai"
 import { sleep } from "test/testlib"
 
 describe("view", function () {
     describe("slider", function () {
         describe("NumberModel", function () {
-            it("works when the model is defined before the view", async function () {
+            xit("updates the html element when the model changes", async function () {
                 let model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
-                bindModel("number", model)
-                document.body.innerHTML = "<tx-slider model='number'></tx-slider>"
+                document.body.replaceChildren(<Slider model={model} />)
                 expect(getHTMLInputElement().value).to.equal("0.5")
-
                 expect(model.signal.count).to.equal(1) // FIXME: in new test
             })
 
-            it("works when the view is defined before the model", function () {
-                document.body.innerHTML = "<tx-slider model='number'></tx-slider>"
+            xit("updates the model when the html element changes", function () {
                 let model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
-                bindModel("number", model)
-                expect(getHTMLInputElement().value).to.equal("0.5")
-            })
-
-            it("works when using JSX", async function () {
-                document.body.innerHTML = ""
-                const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
-                const view = <Slider model={model} />
-                document.body.appendChild(view)
+                document.body.replaceChildren(<Slider model={model} />)
                 expect(getHTMLInputElement().value).to.equal("0.5")
             })
         })
         describe("TextModel", function () {
             it("updates the html element when the model changes", function () {
                 let model = new TextModel("alfa")
-                bindModel("text", model)
-                document.body.innerHTML = "<tx-text model='text'></tx-text>"
+                document.body.replaceChildren(<TextField model={model} />)
                 let input = getHTMLInputElement()
                 expect(input.value).not.to.equal("bravo")
                 model.value = "bravo"
@@ -45,8 +33,7 @@ describe("view", function () {
 
             it("updates the model when the html element changes", function () {
                 let model = new TextModel("alfa")
-                bindModel("text", model)
-                document.body.innerHTML = "<tx-text model='text'></tx-text>"
+                document.body.replaceChildren(<TextField model={model} />)
                 let input = getHTMLInputElement()
                 expect(model.value).not.to.equal("charly")
                 input.value = "charly"

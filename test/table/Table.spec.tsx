@@ -58,7 +58,6 @@ import { InsertRowAnimation } from "@toad/table/detail/InsertRowAnimation"
 import { SelectionModel } from "@toad/table/model/SelectionModel"
 import { hasFocus } from "@toad/util/dom"
 import { Tab, Tabs } from "@toad/viewkit/Tab"
-import { bindModel, unbind } from "@toad/controller/globalController"
 import { refs } from "toad.jsx/lib/jsx-runtime"
 import { TableEditMode } from "@toad/table/TableEditMode"
 
@@ -101,7 +100,6 @@ import { TableEditMode } from "@toad/table/TableEditMode"
 describe("table", function () {
     beforeEach(async function () {
         Table.loggerType = MemoryLogger
-        unbind()
         TableAdapter.unbind()
         Animator.halt = false
         AnimationBase.animationFrameCount = 2000
@@ -915,8 +913,7 @@ describe("table", function () {
             it("editing an empty cell will result in an empty cell", async function () {
                 TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
                 const model = new TestSpreadsheetModel(2, 2)
-                bindModel("model", model)
-                document.body.innerHTML = `<tx-table model="model"></tx-table>`
+                document.body.replaceChildren(<Table model={model}/>)
                 await sleep()
                 const table = getTable()
                 const c0r0 = table.body.children[0]
@@ -1172,7 +1169,6 @@ function createModel(cols: number, rows: number) {
             model.setField(col, row, `C${col}R${row}`)
         }
     }
-    bindModel("model", model)
     return model
 }
 
@@ -1237,7 +1233,6 @@ function createTree(): TreeNodeModel<MyNode> {
     model.addSiblingAfter(1)
     model.addChildAfter(4)
     model.addSiblingAfter(0)
-    bindModel("tree", model)
     return model
 }
 

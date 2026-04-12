@@ -13,11 +13,9 @@ import {
     bodyColInfo, splitColInfo, stagingColInfo, stagingInsertColInfo, splitBodyX, splitBodyW, maskX, maskW,
     headColInfo, stagingColHeadInfo, headMaskX, headMaskW, splitColHeadInfo, splitColHeadX, splitColHeadW
 } from "./util"
-import { unbind } from '@toad/controller/globalController'
 
 describe("table", function () {
     beforeEach(async function () {
-        unbind()
         TableAdapter.unbind()
         Table.maskColor = `rgba(0,0,128,0.3)`
         Table.splitColor = `rgba(255,128,0,0.5)`

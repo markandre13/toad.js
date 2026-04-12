@@ -18,7 +18,6 @@
 
 import { TextModel } from "../appkit/TextModel"
 import { ALL } from "../appkit/Model"
-import { globalController } from "../controller/globalController"
 import { Action } from "../appkit/Action"
 import { ModelView } from "./ModelView"
 import { HTMLElementProps } from "toad.jsx"
@@ -40,25 +39,7 @@ export abstract class ActionView extends ModelView<TextModel> {
     }
 
     override connectedCallback() {
-        if (this.controller) {
-            this.updateView({type:ALL})
-            return
-        }
-
-        try {
-            globalController.registerView(this.getActionId(), this) // FIXME: don't register always on globalController
-        } catch (e) {}
-
-        try {
-            globalController.registerView(this.getModelId(), this) // FIXME: don't register always on globalController
-        } catch (e) {}
-
         this.updateView({type:ALL})
-    }
-
-    override disconnectedCallback() {
-        super.disconnectedCallback()
-        if (this.controller) this.controller.unregisterView(this)
     }
 
     override setModel(model?: TextModel | Action): void {

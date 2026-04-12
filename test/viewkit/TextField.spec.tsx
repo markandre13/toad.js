@@ -3,7 +3,6 @@ import { expect } from "chai"
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { bindModel, unbind } from "@toad/controller/globalController"
 import { TextModel } from "@toad/appkit/TextModel"
 import { TextField } from "@toad/viewkit/TextField"
 import { NumberModel } from "@toad/appkit/NumberModel"
@@ -11,7 +10,6 @@ import { Fragment } from "toad.jsx/lib/jsx-runtime"
 
 describe("view", function () {
     beforeEach(async function () {
-        unbind()
         document.body.replaceChildren()
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
@@ -91,26 +89,6 @@ describe("view", function () {
         })
         describe("TextModel", function () {
             describe("initialize view from model", function () {
-                it("does so when the model is defined before the view", function () {
-                    const model = new TextModel("alpha")
-                    bindModel("model", model)
-                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
-                    const view = document.body.children[0]
-                    // console.log(view.nodeName)
-
-                    expect(view.getAttribute("value")).to.equal("alpha")
-                })
-
-                it("does so when the view is defined before the model", function () {
-                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
-
-                    const model = new TextModel("alpha")
-                    bindModel("model", model)
-
-                    const view = document.body.children[0]
-                    expect(view.getAttribute("value")).to.equal("alpha")
-                })
-
                 it("works when using JSX", async function () {
                     // const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
                     const model = new TextModel("alpha")
@@ -120,44 +98,6 @@ describe("view", function () {
                     let view = document.body.children[0]
                     expect(view.getAttribute("value")).to.equal("alpha")
                 })
-            })
-
-            describe("on change sync data between model and view", function () {
-                it("updates the html element when the model changes", function () {
-                    let model = new TextModel("alpha")
-                    bindModel("model", model)
-                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
-                    let checkbox = document.body.children[0]
-                    expect(checkbox.getAttribute("value")).to.equal("alpha")
-                    model.value = "bravo"
-                    expect(checkbox.getAttribute("value")).to.equal("bravo")
-                })
-
-                it("updates the model when the html element changes", function () {
-                    let model = new TextModel("alpha")
-                    bindModel("model", model)
-                    document.body.innerHTML = "<tx-text model='model'></tx-text>"
-                    let view = document.body.children[0] as TextField
-                    expect(model.value).to.equal("alpha")
-                    view.setAttribute("value", "bravo")
-                    expect(model.value).to.equal("bravo")
-                })
-            })
-
-            it("unregisters the view from the model when the view is removed from the dom", function () {
-                let model = new TextModel("alfa")
-                bindModel("text", model)
-
-                expect(model.signal.count).to.equal(0)
-
-                document.body.innerHTML = "<tx-text model='text'></tx-text><tx-text model='text'></tx-text>"
-                expect(model.signal.count).to.equal(2)
-
-                document.body.removeChild(document.body.children[0])
-                expect(model.signal.count).to.equal(1)
-
-                document.body.innerHTML = ""
-                expect(model.signal.count).to.equal(0)
             })
         })
     })

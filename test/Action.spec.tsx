@@ -1,37 +1,8 @@
-import { action } from "@toad/controller/globalController"
 import { Action } from "@toad/appkit/Action"
 import { Button } from "@toad/viewkit/Button"
 import { expect } from "chai"
 
 describe("action", function () {
-    it("button created before action", function () {
-        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
-
-        let flag = false
-
-        action("logon", () => {
-            flag = true
-        })
-
-        getHTMLButtonElement().dispatchEvent(new Event("click"))
-
-        expect(flag).to.equal(true)
-    })
-
-    it("action created before button", function () {
-        let flag = false
-
-        let logon = action("logon", () => {
-            flag = true
-        })
-
-        document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
-
-        getHTMLButtonElement().dispatchEvent(new Event("click"))
-
-        expect(flag).to.equal(true)
-    })
-
     it("single action directly using JSX", async function () {
         let flag = false
 
@@ -50,7 +21,7 @@ describe("action", function () {
     it("two buttons for one action", function () {
         let flag = false
 
-        let logon = action("logon", () => {
+        let logon = new Action(() => {
             flag = true
         })
 
@@ -70,11 +41,11 @@ describe("action", function () {
         let flag0 = false
         let flag1 = false
 
-        let logon0 = action("logon", () => {
+        let logon0 = new Action(() => {
             flag0 = true
         })
 
-        let logon1 = action("logon", () => {
+        let logon1 = new Action(() => {
             flag1 = true
         })
 
@@ -97,7 +68,7 @@ describe("action", function () {
     })
 
     it("disable/enable button depending on action state", async function () {
-        let logon = action("logon", () => {
+        let logon = new Action(() => {
             console.log("LOGON")
         })
 
@@ -114,10 +85,10 @@ describe("action", function () {
     })
 
     it.skip("disable/enable button depending on two action states", function () {
-        let logon0 = action("logon", () => {
+        let logon0 = new Action(() => {
             console.log("LOGON")
         })
-        let logon1 = action("logon", () => {
+        let logon1 = new Action(() => {
             console.log("LOGON")
         })
 

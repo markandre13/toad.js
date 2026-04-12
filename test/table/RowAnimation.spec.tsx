@@ -16,11 +16,11 @@ import { forEach } from 'test/mocha-each'
 import { SpreadsheetModel } from '@toad/table/model/SpreadsheetModel'
 import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
-import { bindModel, unbind } from '@toad/controller/globalController'
+import { Table } from '@toad/table/Table'
+import { TableTool } from '@toad/table/TableTool'
 
 describe("table", function () {
     beforeEach(async function () {
-        unbind()
         TableAdapter.unbind()
         // Table.maskColor = `rgba(0,0,128,0.3)`
         // Table.splitColor = `rgba(255,128,0,0.5)`
@@ -30,7 +30,7 @@ describe("table", function () {
     })
 
     // TODO: spreadsheet can't handle insert/remove row/column yet
-    xit("spreadsheet", async function() {
+    xit("spreadsheet", async function () {
         AnimationBase.animationFrameCount = 468
         Animator.halt = false
         const sheet = [
@@ -50,11 +50,14 @@ describe("table", function () {
             }
         }
         TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
-        bindModel("spreadsheet", spreadsheet)
 
-        document.body.innerHTML=`<tx-tabletool></tx-tabletool><tx-table style="width: 100%; height: 200px;" model="spreadsheet"></tx-table>`
+        document.body.replaceChildren(...<>
+            <TableTool />
+            <Table style={{ width: "100%", height: "200px" }}
+                model={spreadsheet} />
+        </>)
 
-        const r = spreadsheet.getCell(3,4)
+        const r = spreadsheet.getCell(3, 4)
         expect(r.value).to.equal("9.36")
     })
 

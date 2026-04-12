@@ -17,8 +17,6 @@
  */
 
 import { Model } from "../appkit/Model"
-import { globalController } from "../controller/globalController"
-import { Controller } from "../controller/Controller"
 import { HTMLElementProps, setInitialProperties } from "toad.jsx"
 
 // TODO: do we use this directly or is GenericView it's only subclass?
@@ -34,7 +32,7 @@ export class View extends HTMLElement {
             window.customElements.define(name, view, options)
         } else {
             if (element !== view) {
-                for(let i = 0; i<255; ++i) {
+                for (let i = 0; i < 255; ++i) {
                     const dname = `${name}-duplicate-${i}`
                     if (window.customElements.get(dname) === undefined) {
                         console.log(`View::define(${name}, ...) with different constructor, using ${dname} instead (known issue on Safari and Edge)`)
@@ -51,9 +49,7 @@ export class View extends HTMLElement {
         super()
         setInitialProperties(this, props)
     }
-
-    controller?: Controller
-
+    
     setModel(model?: Model<any>): void {
         console.trace(`Please note that View.setModel(model) has no implementation.`)
     }
@@ -76,22 +72,9 @@ export class View extends HTMLElement {
         return "A:" + actionId
     }
 
-    connectedCallback() {
-        if (this.controller)
-            return
-        let modelId = ""
-        try {
-            modelId = this.getModelId()
-        } catch (error) {
-        }
-        if (modelId != "") {
-            globalController.registerView(modelId, this)
-        }
-    }
-
-    disconnectedCallback() {
-        if (this.controller) {
-            this.controller.unregisterView(this)
-        }
-    }
+    connectedCallback(): void { }
+    disconnectedCallback(): void { }
+    connectedMoveCallback(): void {}
+    adoptedCallback(): void {}
+    attributeChangedCallback(name: string, oldValue?: string, newValue?: string): void {}
 }

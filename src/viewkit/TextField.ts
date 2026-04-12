@@ -91,7 +91,7 @@ export class TextField extends ModelView<TextFieldModel> {
         return ["value"]
     }
 
-    attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
+    override attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
         switch (name) {
             case "value":
                 if (this.model && newValue !== undefined) {

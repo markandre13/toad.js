@@ -6,7 +6,6 @@ import { ComboBox } from "@toad/viewkit/ComboBox"
 import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
-import { unbind } from "@toad/controller/globalController"
 import { TextModel } from "@toad/appkit/TextModel"
 
 enum Enum {
@@ -30,7 +29,6 @@ const htmlComboBox = `<tx-select model='option' text='text'>
 
 describe("Select", function () {
     beforeEach(async function () {
-        unbind()
         document.body.replaceChildren()
         document.head.replaceChildren(txBase, txStatic, txDark)
     })

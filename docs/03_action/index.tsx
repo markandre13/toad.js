@@ -2,7 +2,7 @@
 import { TextModel } from "@toad/appkit/TextModel"
 import { code } from "./index.source"
 import { Button, ButtonVariant } from "@toad/viewkit/Button"
-import { action } from "@toad/controller/globalController"
+import { Action } from "@toad/appkit/Action"
 
 //
 // Application Layer
@@ -13,11 +13,11 @@ function dummy() {}
 let textModel = new TextModel("")
 
 // TODO: get rid of the 'action' function
-const hitMe = action("hitMe", () => {
+const hitMe = new Action(() => {
     textModel.value = "Hit me too!"
     hitMeMore.enabled = true
 })
-const hitMeMore = action("hitMeMore", () => {
+const hitMeMore = new Action(() => {
     textModel.value = "You hit me!"
     hitMeMore.enabled = false
 })

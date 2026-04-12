@@ -1,5 +1,4 @@
 import { expect } from 'chai'
-import { unbind } from "@toad/controller/globalController"
 import { Tabs, Tab } from "@toad/viewkit/Tab"
 import { EnumModel } from '@toad/appkit/EnumModel'
 
@@ -12,7 +11,6 @@ import { getByText, click } from "../testlib"
 describe("view", function () {
 
     beforeEach(async function () {
-        unbind()
         document.body.replaceChildren()
         document.head.replaceChildren(txBase, txStatic, txDark)
     })
