@@ -36,7 +36,7 @@ export class SignalLink {
  * @category Observer Pattern
  */
 export class Signal<T = void> {
-    protected callbacks?: Array<SignalLink>
+    protected callbacks?: SignalLink[]
 
     /**
      * flag used by emit() to prevent cycles
@@ -58,7 +58,14 @@ export class Signal<T = void> {
      */
     add(callback: (data: T) => void, id?: any) {
         if (!this.callbacks) {
-            this.callbacks = new Array<SignalLink>()
+            this.callbacks = []
+        }
+        if (id === undefined) {
+            const owner = getCurrentAutoreleasePool()
+            if (owner !== null) {
+                id = owner
+                owner.add(this)
+            }
         }
         this.callbacks.push(new SignalLink(callback, id))
     }
@@ -96,10 +103,7 @@ export class Signal<T = void> {
      * @returns the number of callbacks being added
      */
     get count(): number {
-        if (!this.callbacks) {
-            return 0
-        }
-        return this.callbacks.length
+        return this.callbacks ? this.callbacks.length : 0
     }
 
     lock(): void {
@@ -165,5 +169,44 @@ export class Signal<T = void> {
         if (error !== undefined) {
             throw error
         }
+    }
+}
+
+/**
+ * Owners determine cleanup for descendant computations.
+ */
+class AutoreleasePool {
+    private signals = new Set<Signal<any>>()
+    add(signal: Signal<any>) {
+        this.signals.add(signal)
+    }
+    release() {
+        for (let signal of this.signals) {
+            signal.remove(this)
+        }
+    }
+}
+const autoreleasePoolStack: AutoreleasePool[] = []
+
+/**
+ * returns the owner for the currently executing reactive scope.
+ * 
+ * @returns the current owner or null when no owner is active.
+ */
+export function getCurrentAutoreleasePool(): AutoreleasePool | null {
+    return autoreleasePoolStack.length === 0 ? null : autoreleasePoolStack[autoreleasePoolStack.length - 1]
+}
+/**
+ * Execute the provided function and release all signal callbacks when it
+ * returns, which were added by Signal.add(...) without provding an id.
+ */
+export function runWithAutorelease<T>(fn: () => T): T {
+    const owner = new AutoreleasePool()
+    autoreleasePoolStack.push(owner)
+    try {
+        return fn()
+    } finally {
+        owner.release()
+        autoreleasePoolStack.pop()
     }
 }

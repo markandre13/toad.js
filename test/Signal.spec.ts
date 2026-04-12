@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { Signal } from "@toad/Signal"
+import { runWithAutorelease, Signal } from "@toad/Signal"
 
 describe("signal", function () {
     describe("add(...)", function () {
@@ -70,6 +70,32 @@ describe("signal", function () {
             signal.unlock()
 
             expect(counter).to.equal(1)
+        })
+    })
+    describe("runWithAutorelease<T>(fn: () => T): T", () => {
+        it("callbacks added during fn are removed when fn returns", () => {
+            const signal = new Signal()
+            signal.add(() => { })
+            runWithAutorelease(() => {
+                signal.add(() => { })
+            })
+            expect(signal.count).to.equal(1)
+        })
+        it("callbacks added during fn are removed when fn throws", () => {
+            const signal = new Signal()
+            signal.add(() => { })
+            expect(() =>
+                runWithAutorelease(() => {
+                    signal.add(() => { })
+                    throw Error("boing")
+                })).to.throw
+            expect(signal.count).to.equal(1)
+        })
+        it("returns the value of fn", () => {
+            const result = runWithAutorelease(() => {
+                return 42
+            })
+            expect(result).to.equal(42)
         })
     })
 })
