@@ -36,13 +36,26 @@ export class SignalLink {
  * @category Observer Pattern
  */
 export class Signal<T = void> {
-    protected locked: boolean = false
-    protected busy: boolean = false
-    protected triggered?: any
     callbacks?: Array<SignalLink>
 
-    add(callback: (data: T) => void): void
-    add(callback: (data: T) => void, id: any): void
+    /**
+     * flag used by emit() to prevent cycles
+     */
+    protected busy: boolean = false
+
+    protected locked: boolean = false
+    protected triggered?: any
+
+    /**
+     * add a callback to be invoked when the signal's emit() method
+     * is called.
+     * 
+     * an optional id can be provided to remove the callback again
+     * from the signal
+     * 
+     * @param callback 
+     * @param id 
+     */
     add(callback: (data: T) => void, id?: any) {
         if (!this.callbacks) {
             this.callbacks = new Array<SignalLink>()
@@ -78,6 +91,10 @@ export class Signal<T = void> {
         }
     }
 
+    /**
+     * 
+     * @returns the number of callbacks being added
+     */
     count(): number {
         if (!this.callbacks) {
             return 0
@@ -106,14 +123,13 @@ export class Signal<T = void> {
     }
 
     async withLockAsync<R>(closure: () => Promise<R>) {
-        this.lock()
         try {
-            const r = await closure()
-            this.unlock()
-            return r
+            this.lock()
+            return await closure()
         } catch (e) {
-            this.unlock()
             throw e
+        } finally {
+            this.unlock()
         }
     }
 
