@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Action } from "../appkit/Action"
+import { Action, globalController } from "../appkit/Action"
 import { HtmlModel } from "../appkit/HtmlModel"
 import { TextModel } from "../appkit/TextModel"
 import { ModelView } from "../viewkit/ModelView"
@@ -192,6 +192,35 @@ export class MenuButton extends ModelView<TextModel> {
         if (!this.node.modelId) {
             this.shadowRoot.appendChild(document.createTextNode(node.label))
         }
+    }
+
+        override connectedCallback() {
+        // if (this.controller) return
+
+        if (this.node.down === undefined) {
+            let actionId = this.node.title
+            for (let node = this.node.parent; node; node = node.parent) {
+                if (!node.title.length) break
+                actionId = node.title + "|" + actionId
+            }
+            actionId = "A:" + actionId
+            //console.log("*** register view action "+actionId, this.node)
+            globalController.registerView(actionId, this)
+        }
+
+        if (this.node.modelId !== undefined) {
+            if (typeof this.node.modelId === "string") {
+                let modelId = "M:" + this.node.modelId
+                globalController.registerView(modelId, this)
+            } else {
+                this.setModel(this.node.modelId as TextModel)
+            }
+        }
+    }
+
+    override disconnectedCallback() {
+        // if (this.controller) this.controller.unregisterView(this)
+        globalController.unregisterView(this)
     }
 
     override setModel(model?: TextModel): void {
