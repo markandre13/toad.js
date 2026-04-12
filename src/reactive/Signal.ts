@@ -162,6 +162,7 @@ export class Signal<T = void> {
             try {
                 callback.callback(data)
             } catch (e) {
+                console.error(e)
                 error = e
             }
         }
