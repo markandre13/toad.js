@@ -1,5 +1,5 @@
 import { popAutorelease, pushAutorelease } from "@toad/reactive/Signal"
-import { Fragment } from "toad.jsx/lib/jsx-runtime"
+import { Fragment } from "toad.jsx"
 
 const modalDialogStack: HTMLDialogElement[] = []
 

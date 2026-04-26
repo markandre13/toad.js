@@ -50,7 +50,7 @@ export class TableTool extends GenericTool<Model> {
     constructor() {
         super()
 
-        this.toolbar = <div class="toolbar"/>
+        this.toolbar = <div class="toolbar"/> as HTMLDivElement
 
         this.buttonAddRowAbove = <button class="left" title="add row above">
             <svg style={{ display: "block" }} viewBox="0 0 13 13" width="13" height="13">
@@ -61,7 +61,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="6.5" y1="2" x2="6.5" y2="7" class="stroke" />
                 <line x1="4" y1="4.5" x2="9" y2="4.5" class="stroke" />
             </svg>
-        </button>
+        </button>as HTMLElement
         this.buttonAddRowAbove.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
@@ -81,7 +81,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="6.5" y1="6" x2="6.5" y2="11" class="stroke" />
                 <line x1="4" y1="8.5" x2="9" y2="8.5" class="stroke" />
             </svg>
-        </button>
+        </button>as HTMLElement
         this.buttonAddRowBelow.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
@@ -100,7 +100,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="5.5" y1="3.5" x2="11.5" y2="9.5" class="stroke" stroke-width="1.5" />
                 <line x1="11.5" y1="3.5" x2="5.5" y2="9.5" class="stroke" stroke-width="1.5" />
             </svg>
-        </button>
+        </button>as HTMLElement
         this.buttonDeleteRow.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
@@ -122,7 +122,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="2" y1="6.5" x2="7" y2="6.5" class="stroke" />
                 <line x1="4.5" y1="4" x2="4.5" y2="9" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         this.buttonAddColumnLeft.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
@@ -142,7 +142,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="6" y1="6.5" x2="11" y2="6.5" class="stroke" />
                 <line x1="8.5" y1="4" x2="8.5" y2="9" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         this.buttonAddColumnRight.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
@@ -161,7 +161,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="3.5" y1="5.5" x2="9.5" y2="11.5" class="stroke" stroke-width="1.5" />
                 <line x1="3.5" y1="11.5" x2="9.5" y2="5.5" class="stroke" stroke-width="1.5" />
             </svg>
-        </button>
+        </button> as HTMLElement
         this.buttonDeleteColumn.onclick = () => {
             this.lastActiveTable?.focus()
             const model = this.lastActiveTable?.model
@@ -183,7 +183,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="3.5" y1="0" x2="3.5" y2="1" class="stroke" />
                 <line x1="3.5" y1="8" x2="3.5" y2="17" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         // this.buttonAddNodeAbove.onclick = () => {
         //     document.execCommand("bold", false)
         //     this.update()
@@ -199,7 +199,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="3.5" y1="0" x2="3.5" y2="9" class="stroke" />
                 <line x1="3.5" y1="16" x2="3.5" y2="17" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         // this.buttonAddNodeBelow.onclick = () => {
         //     document.execCommand("italic", false)
         //     this.update()
@@ -217,7 +217,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="3.5" y1="0" x2="3.5" y2="1" class="stroke" />
                 <line x1="3.5" y1="8" x2="3.5" y2="17" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         this.buttonAddNodeParent.onclick = () => {
             // document.execCommand("underline", false)
             // this.update()
@@ -234,7 +234,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="8" y1="12.5" x2="11" y2="12.5" class="stroke" />
                 <line x1="3.5" y1="0" x2="3.5" y2="17" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         // this.buttonAddNodeChild.onclick = () => {
         //     document.execCommand("strikeThrough", false)
         //     this.update()
@@ -249,7 +249,7 @@ export class TableTool extends GenericTool<Model> {
                 <line x1="0.5" y1="4.5" x2="8.5" y2="12.5" class="stroke" stroke-width="1.5" />
                 <line x1="8.5" y1="4.5" x2="0.5" y2="12.5" class="stroke" stroke-width="1.5" />
             </svg>
-        </button>
+        </button> as HTMLElement
         // this.buttonDeleteNode.onclick = () => {
         //     document.execCommand("subscript", false)
         //     this.update()

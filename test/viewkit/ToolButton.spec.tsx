@@ -3,6 +3,7 @@ import { loadFont } from "@toad/util/loadFont"
 import { loadStyle } from "@toad/util/loadStyle"
 import { OptionModel } from "@toad/appkit/OptionModel"
 import { ToolButton } from "@toad/viewkit/ToolButton"
+import { replaceChildren } from "toad.jsx"
 
 describe("ToolButton", function () {
     beforeEach(async function () {
@@ -11,10 +12,10 @@ describe("ToolButton", function () {
         loadStyle()
     })
 
-    class Tool {}
-    class Hammer extends Tool {}
-    class Nail extends Tool {}
-    class Screw extends Tool {}
+    class Tool { }
+    class Hammer extends Tool { }
+    class Nail extends Tool { }
+    class Screw extends Tool { }
 
     it("uses an OptionModel", function () {
         const hammer = new Hammer()
@@ -25,21 +26,17 @@ describe("ToolButton", function () {
             [nail, "nail"],
         ])
 
-        document.body.replaceChildren(
-            ...(
-                <>
-                    <ToolButton id="hammer" model={model} value={hammer}>
-                        H
-                    </ToolButton>
-                    <ToolButton id="nail" model={model} value={nail}>
-                        N
-                    </ToolButton>
-                    <ToolButton id="screw" model={model} value={screw}>
-                        S
-                    </ToolButton>
-                </>
-            )
-        )
+        replaceChildren(document.body, <>
+            <ToolButton id="hammer" model={model} value={hammer}>
+                H
+            </ToolButton>
+            <ToolButton id="nail" model={model} value={nail}>
+                N
+            </ToolButton>
+            <ToolButton id="screw" model={model} value={screw}>
+                S
+            </ToolButton>
+        </>)
         const hammerButton = document.getElementById("hammer")!
         const nailButton = document.getElementById("nail")!
         const screwButton = document.getElementById("screw")!

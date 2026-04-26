@@ -7,6 +7,7 @@ import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 import { TextModel } from "@toad/appkit/TextModel"
+import { replaceChildren } from "toad.jsx"
 
 enum Enum {
     A,
@@ -55,7 +56,10 @@ describe("Select", function () {
 
         const model = new OptionModel("Down", ["Up", "Down", "Left", "Right"])
         const text = new TextModel()
-        document.body.replaceChildren(<ComboBox model={model} text={text} />, <Select model={model0} />)
+        replaceChildren(document.body, <>
+            <ComboBox model={model} text={text} />
+            <Select model={model0} />
+        </>)
     })
 
     // // FIXME: this is actually: signal: clear busy flag after exception
@@ -94,7 +98,7 @@ describe("Select", function () {
                     [Enum.B, "b"],
                     [Enum.C, "c"],
                 ])
-                document.body.replaceChildren(<Select model={option} />)
+                replaceChildren(document.body, <Select model={option} />)
                 expect(innerText()).to.equal("a")
 
                 option.value = Enum.B
@@ -108,7 +112,7 @@ describe("Select", function () {
                     [Enum.B, "b"],
                     [Enum.C, "c"],
                 ])
-                document.body.replaceChildren(<Select model={option} />)
+                replaceChildren(document.body, <Select model={option} />)
                 expect(innerText()).to.equal("b")
 
                 option.setMapping([
@@ -122,7 +126,7 @@ describe("Select", function () {
 
             it("updates the model when the html element changes", function () {
                 const option = new OptionModel("Up", ["Up", "Down"])
-                document.body.replaceChildren(<Select model={option} />)
+                replaceChildren(document.body, <Select model={option} />)
                 expect(innerText()).to.equal("Up")
 
                 let btn = button()
@@ -137,43 +141,43 @@ describe("Select", function () {
 
         // describe("ComboBox", function () {
 
-            //     describe("OptionModel & TextModel", function() {
-            //         it("updates the html element when the option model changes", function() {
-            //             const option = new EnumModel<Enum>(Enum, Enum.A)
-            //             bind("option", option)
-            //             const text = new TextModel()
-            //             bind("text", text)
+        //     describe("OptionModel & TextModel", function() {
+        //         it("updates the html element when the option model changes", function() {
+        //             const option = new EnumModel<Enum>(Enum, Enum.A)
+        //             bind("option", option)
+        //             const text = new TextModel()
+        //             bind("text", text)
 
-            //             document.body.innerHTML = htmlComboBox
-            //             let input = getHTMLInputElement()
-            //             expect(input.value).to.equal("a")
-            //             expect(text.value).to.equal("a")
+        //             document.body.innerHTML = htmlComboBox
+        //             let input = getHTMLInputElement()
+        //             expect(input.value).to.equal("a")
+        //             expect(text.value).to.equal("a")
 
-            //             option.value = Enum.B
+        //             option.value = Enum.B
 
-            //             expect(input.value).to.equal("b")
-            //             expect(text.value).to.equal("b")
-            //         })
-            //         it("updates the html element when the text model changes")
+        //             expect(input.value).to.equal("b")
+        //             expect(text.value).to.equal("b")
+        //         })
+        //         it("updates the html element when the text model changes")
 
-            //         it("updates the model when the html element changes", function () {
-            //             const option = new EnumModel<Enum>(Enum, Enum.A)
-            //             bind("option", option)
-            //             const text = new TextModel()
-            //             bind("text", text)
+        //         it("updates the model when the html element changes", function () {
+        //             const option = new EnumModel<Enum>(Enum, Enum.A)
+        //             bind("option", option)
+        //             const text = new TextModel()
+        //             bind("text", text)
 
-            //             document.body.innerHTML = htmlComboBox
-            //             expect(text.value).to.equal("a")
+        //             document.body.innerHTML = htmlComboBox
+        //             expect(text.value).to.equal("a")
 
-            //             let button = getHTMLButtonElement()
-            //             button.dispatchEvent(new PointerEvent("pointerdown", {pointerId: 1}))
-            //             button.dispatchEvent(new PointerEvent("pointerup", {pointerId: 1}))
-            //             document.activeElement!.shadowRoot!.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowDown"}))
+        //             let button = getHTMLButtonElement()
+        //             button.dispatchEvent(new PointerEvent("pointerdown", {pointerId: 1}))
+        //             button.dispatchEvent(new PointerEvent("pointerup", {pointerId: 1}))
+        //             document.activeElement!.shadowRoot!.activeElement!.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowDown"}))
 
-            //             expect(option.value).to.equal(Enum.B)
-            //             expect(text.value).to.equal("b")
+        //             expect(option.value).to.equal(Enum.B)
+        //             expect(text.value).to.equal("b")
 
-            //         })
+        //         })
         // })
     })
 })

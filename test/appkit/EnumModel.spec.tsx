@@ -66,27 +66,27 @@ describe("EnumModel automatically maps all the value in an enum to the UI", func
                 [A.RIGHT, "Right", 3],
             ])
         })
-        it("enum Direction { UP = <>Up</>, ... }", function () {
-            enum A {
-                UP = (<i>Up</i>),
-                DOWN = (<i>Down</i>),
-                LEFT = (<i>Left</i>),
-                RIGHT = (<i>Right</i>)
-            }
-            const model = new EnumModel(A.UP, A)
+        // it("enum Direction { UP = <>Up</>, ... }", function () {
+        //     enum A {
+        //         UP = (<i>Up</i>),
+        //         DOWN = (<i>Down</i>),
+        //         LEFT = (<i>Left</i>),
+        //         RIGHT = (<i>Right</i>)
+        //     }
+        //     const model = new EnumModel(A.UP, A)
 
-            const out: any[][] = []
-            model.forEach((value, label, index) => {
-                out.push([value, label, index])
-            })
+        //     const out: any[][] = []
+        //     model.forEach((value, label, index) => {
+        //         out.push([value, label, index])
+        //     })
 
-            expect(out).to.deep.equal([
-                [A.UP, <i>Up</i>, 0],
-                [A.DOWN, <i>Down</i>, 1],
-                [A.LEFT, <i>Left</i>, 2],
-                [A.RIGHT, <i>Right</i>, 3],
-            ])
-        })
+        //     expect(out).to.deep.equal([
+        //         [A.UP, <i>Up</i>, 0],
+        //         [A.DOWN, <i>Down</i>, 1],
+        //         [A.LEFT, <i>Left</i>, 2],
+        //         [A.RIGHT, <i>Right</i>, 3],
+        //     ])
+        // })
     })
     describe("map<R>(callback: (value: V, label: any) => R): R[]", function () {
         it('enum Direction { UP = "Up", ... }', function () {

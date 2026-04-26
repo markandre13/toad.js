@@ -10,6 +10,7 @@ import { TableFriend } from "@toad/table/detail/TableFriend"
 
 import { px2int, px2float, sleep } from "../testlib"
 import { GridTableModel } from "@toad/table/model/GridTableModel"
+import { replaceChildren } from "toad.jsx"
 
 export enum Orientation {
     HORIZONTAL,
@@ -155,7 +156,7 @@ async function prepareCore(data: Measure[], props: PrepareProps | undefined, mod
     model.config.expandColumn = props?.expandColumn === true
     model.rowHeaders = props?.rowHeaders === true
     model.columnHeaders = props?.columnHeaders === true
-    document.body.replaceChildren(
+    replaceChildren(document.body, 
         <Table
             style={{
                 width: `${props?.width ?? 720}px`,

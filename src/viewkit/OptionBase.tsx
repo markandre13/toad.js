@@ -243,7 +243,7 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
 
                         return item
                     })}
-                </ul>
+                </ul> as HTMLElement
             )
         }
         this.popup.classList.add("tx-popover")

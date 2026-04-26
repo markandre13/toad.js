@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ref } from 'toad.jsx/lib/jsx-runtime'
+import { ref } from 'toad.jsx'
 
 class Book {
     title: string

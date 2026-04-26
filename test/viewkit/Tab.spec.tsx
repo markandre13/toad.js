@@ -7,6 +7,7 @@ import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 
 import { getByText, click } from "../testlib"
+import { replaceChildren } from 'toad.jsx'
 
 describe("view", function () {
 
@@ -20,7 +21,7 @@ describe("view", function () {
             console.log(document.visibilityState) // hidden,visible
         })
         it.only("the is such an event", function() {
-            document.body.replaceChildren(
+            replaceChildren(document.body, 
                 <Tabs>
                     <Tab label="Uno">T1</Tab>
                     <Tab label="Duo">T2</Tab>
@@ -33,7 +34,7 @@ describe("view", function () {
     describe("Tab", function () {
         describe("JSX", function () {
             it("no model, click changes tab", function () {
-                document.body.replaceChildren(
+                replaceChildren(document.body, 
                     <Tabs>
                         <Tab label="Uno">T1</Tab>
                         <Tab label="Duo">T2</Tab>
@@ -59,7 +60,7 @@ describe("view", function () {
                 enum TAB { UNO, DUO, TRES }
                 const model = new EnumModel(TAB.DUO, TAB)
 
-                document.body.replaceChildren(
+                replaceChildren(document.body, 
                     <Tabs model={model}>
                         <Tab value={TAB.UNO} label="Uno">T1</Tab>
                         <Tab value={TAB.DUO} label="Duo">T2</Tab>
@@ -81,7 +82,7 @@ describe("view", function () {
                 enum TAB { UNO, DUO, TRES }
                 const model = new EnumModel(TAB.UNO, TAB)
 
-                document.body.replaceChildren(
+                replaceChildren(document.body, 
                     <Tabs model={model}>
                         <Tab value={TAB.UNO} label="Uno">T1</Tab>
                         <Tab value={TAB.DUO} label="Duo">T2</Tab>

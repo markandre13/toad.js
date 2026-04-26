@@ -53,30 +53,30 @@ export class TextTool extends ModelView<Model> {
 
         TextTool.texttool = this
 
-        let toolbar = <div class="toolbar"/>
+        let toolbar = <div class="toolbar" /> as HTMLElement
 
-        this.buttonH1 = <button class="left">H1</button>
+        this.buttonH1 = <button class="left">H1</button> as HTMLElement
         this.buttonH1.onclick = () => {
             document.execCommand("formatBlock", false, "<h1>")
             this.update()
         }
         toolbar.appendChild(this.buttonH1)
 
-        this.buttonH2 = <button>H2</button>
+        this.buttonH2 = <button>H2</button> as HTMLElement
         this.buttonH2.onclick = () => {
             document.execCommand("formatBlock", false, "<h2>")
             this.update()
         }
         toolbar.appendChild(this.buttonH2)
 
-        this.buttonH3 = <button>H3</button>
+        this.buttonH3 = <button>H3</button> as HTMLElement
         this.buttonH3.onclick = () => {
             document.execCommand("formatBlock", false, "<h3>")
             this.update()
         }
         toolbar.appendChild(this.buttonH3)
 
-        this.buttonH4 = <button class="right">H4</button>
+        this.buttonH4 = <button class="right">H4</button> as HTMLElement
         this.buttonH4.onclick = () => {
             document.execCommand("formatBlock", false, "<h4>")
             this.update()
@@ -85,42 +85,42 @@ export class TextTool extends ModelView<Model> {
 
         toolbar.appendChild(document.createTextNode(" "))
 
-        this.buttonBold = <button class="left"><b>B</b></button>
+        this.buttonBold = <button class="left"><b>B</b></button> as HTMLElement
         this.buttonBold.onclick = () => {
             document.execCommand("bold", false)
             this.update()
         }
         toolbar.appendChild(this.buttonBold)
 
-        this.buttonItalic = <button><i>I</i></button>
+        this.buttonItalic = <button><i>I</i></button> as HTMLElement
         this.buttonItalic.onclick = () => {
             document.execCommand("italic", false)
             this.update()
         }
         toolbar.appendChild(this.buttonItalic)
 
-        this.buttonUnderline = <button><u>U</u></button>
+        this.buttonUnderline = <button><u>U</u></button> as HTMLElement
         this.buttonUnderline.onclick = () => {
             document.execCommand("underline", false)
             this.update()
         }
         toolbar.appendChild(this.buttonUnderline)
 
-        this.buttonStrikeThrough = <button><strike>S</strike></button>
+        this.buttonStrikeThrough = <button><strike>S</strike></button> as HTMLElement
         this.buttonStrikeThrough.onclick = () => {
             document.execCommand("strikeThrough", false)
             this.update()
         }
         toolbar.appendChild(this.buttonStrikeThrough)
 
-        this.buttonSubscript = <button>x₂</button>
+        this.buttonSubscript = <button>x₂</button> as HTMLElement
         this.buttonSubscript.onclick = () => {
             document.execCommand("subscript", false)
             this.update()
         }
         toolbar.appendChild(this.buttonSubscript)
 
-        this.buttonSuperscript = <button class="right">x²</button>
+        this.buttonSuperscript = <button class="right">x²</button> as HTMLElement
         this.buttonSuperscript.onclick = () => {
             document.execCommand("superscript", false)
             this.update()
@@ -138,7 +138,7 @@ export class TextTool extends ModelView<Model> {
                 <line x1="0" y1="6.5" x2="6" y2="6.5" class="stroke" />
                 <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         this.buttonJustifyLeft.onclick = () => {
             document.execCommand("justifyLeft", false)
             this.update()
@@ -153,7 +153,7 @@ export class TextTool extends ModelView<Model> {
                 <line x1="2" y1="6.5" x2="8" y2="6.5" class="stroke" />
                 <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         this.buttonJustifyCenter.onclick = () => {
             document.execCommand("justifyCenter", false)
             this.update()
@@ -168,7 +168,7 @@ export class TextTool extends ModelView<Model> {
                 <line x1="4" y1="6.5" x2="10" y2="6.5" class="stroke" />
                 <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
             </svg>
-        </button>
+        </button> as HTMLElement
         this.buttonJustifyRight.onclick = () => {
             document.execCommand("justifyRight", false)
             this.update()

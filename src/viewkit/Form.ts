@@ -1,4 +1,4 @@
-import { HTMLElementProps } from "toad.jsx/lib/jsx-runtime"
+import { HTMLElementProps } from "toad.jsx"
 import { View } from "./View"
 import { slot } from '../util/lsx'
 import { styleBase, styleNarrow } from "../style/tx-form"

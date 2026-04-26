@@ -18,6 +18,7 @@ import { SpreadsheetAdapter } from '@toad/table/adapter/SpreadsheetAdapter'
 import { SpreadsheetCell } from '@toad/table/model/SpreadsheetCell'
 import { Table } from '@toad/table/Table'
 import { TableTool } from '@toad/table/TableTool'
+import { replaceChildren } from 'toad.jsx'
 
 describe("table", function () {
     beforeEach(async function () {
@@ -51,7 +52,7 @@ describe("table", function () {
         }
         TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
 
-        document.body.replaceChildren(...<>
+        replaceChildren(document.body, <>
             <TableTool />
             <Table style={{ width: "100%", height: "200px" }}
                 model={spreadsheet} />

@@ -6,7 +6,7 @@ import { style as txDark } from "@toad/style/tx-dark"
 import { TextModel } from "@toad/appkit/TextModel"
 import { TextField } from "@toad/viewkit/TextField"
 import { NumberModel } from "@toad/appkit/NumberModel"
-import { Fragment } from "toad.jsx/lib/jsx-runtime"
+import { Fragment, replaceChildren } from "toad.jsx"
 
 describe("view", function () {
     beforeEach(async function () {
@@ -18,7 +18,7 @@ describe("view", function () {
         describe("layout", function () {
             it("style.width", async function () {
                 const model = new TextModel("A")
-                document.body.replaceChildren(<TextField model={model} style={{ width: "16px" }} />)
+                replaceChildren(document.body, <TextField model={model} style={{ width: "16px" }} />)
             })
         })
 
@@ -31,7 +31,7 @@ describe("view", function () {
                         <TextField model={model} />
                     </>
                 ) as Fragment
-                content.replaceIn(document.body)
+                replaceChildren(document.body, content)
                 const view = content[0] as TextField
 
                 expect(view.value).to.equal(`${model.value}`)
@@ -45,7 +45,7 @@ describe("view", function () {
             it("works when using JSX", function () {
                 const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
 
-                document.body.appendChild(<TextField model={model} />)
+                replaceChildren(document.body, <TextField model={model} />)
 
                 let view = document.body.children[0]
                 expect(view.getAttribute("value")).to.equal("0.5")
@@ -53,8 +53,7 @@ describe("view", function () {
             describe("scrollwheel", function () {
                 it("down", function () {
                     const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
-
-                    document.body.appendChild(<TextField model={model} />)
+                    replaceChildren(document.body, <TextField model={model} />)
                     let view = document.body.children[0]
                     let input = view.shadowRoot!.children[0]
 
@@ -70,7 +69,7 @@ describe("view", function () {
                 it("up", function () {
                     const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
 
-                    document.body.appendChild(<TextField model={model} />)
+                    replaceChildren(document.body, <TextField model={model} />)
                     let view = document.body.children[0]
                     let input = view.shadowRoot!.children[0]
 
@@ -93,7 +92,7 @@ describe("view", function () {
                     // const model = new NumberModel(0.5, { min: 0.0, max: 1.0, step: 0.1 })
                     const model = new TextModel("alpha")
 
-                    document.body.appendChild(<TextField model={model} />)
+                    replaceChildren(document.body, <TextField model={model} />)
 
                     let view = document.body.children[0]
                     expect(view.getAttribute("value")).to.equal("alpha")

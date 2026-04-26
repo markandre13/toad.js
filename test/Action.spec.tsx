@@ -1,6 +1,7 @@
 import { Action } from "@toad/appkit/Action"
 import { Button } from "@toad/viewkit/Button"
 import { expect } from "chai"
+import { replaceChildren } from "toad.jsx"
 
 describe("action", function () {
     it("single action directly using JSX", async function () {
@@ -10,9 +11,7 @@ describe("action", function () {
             flag = true
         })
 
-        const view = <Button action={logon} />
-        document.body.innerHTML = ""
-        document.body.appendChild(view)
+        replaceChildren(document.body, <Button action={logon} />)
         getHTMLButtonElement().dispatchEvent(new Event("click"))
 
         expect(flag).to.equal(true)

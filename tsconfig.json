@@ -30,7 +30,7 @@
             "ESNext"
         ],
         "jsx": "react-jsx",
-        "jsxImportSource": "toad.jsx/lib",
+        "jsxImportSource": "toad.jsx",
         "plugins": [
             {
                 "transform": "./m13-es-transformer.js",

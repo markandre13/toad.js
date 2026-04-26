@@ -5,6 +5,7 @@ import { style as txBase } from "@toad/style/tx"
 import { style as txStatic } from "@toad/style/tx-static"
 import { style as txDark } from "@toad/style/tx-dark"
 import { RadioButton } from '@toad/viewkit/RadioButton'
+import { replaceChildren } from 'toad.jsx'
 
 describe("Select", function () {
 
@@ -22,7 +23,7 @@ describe("Select", function () {
             [A.RIGHT, "Right"]
         ])
 
-        document.body.replaceChildren(<div style={{width: "200px"}}>
+        replaceChildren(document.body, <div style={{width: "200px"}}>
             <RadioButton model={model} value={A.UP} /><br />
             <RadioButton model={model} value={A.DOWN} /><br />
             <RadioButton model={model} value={A.LEFT}>

@@ -37,7 +37,7 @@ import { scrollIntoView } from "../util/scrollIntoView"
 import { style as txTable } from "./style/tx-table"
 import { style as txScrollbar } from "../style/tx-scrollbar"
 import { hasFocus } from "../util/dom"
-import { ALL, ModelEvent } from "../appkit/Model"
+import { ALL } from "../appkit/Model"
 
 // TABLE ANIMATION
 //

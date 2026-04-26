@@ -20,7 +20,7 @@ import { NumberModel, NumberModelEvent } from "../appkit/NumberModel"
 import { style as txSlider } from "../style/tx-slider"
 import { div, input, span } from "../util/lsx"
 import { parseColor, RGBA } from "../util/color"
-import { HTMLElementProps } from "toad.jsx/lib/jsx-runtime"
+import { HTMLElementProps } from "toad.jsx"
 import { View } from "./View"
 import { ALL, Model } from "../appkit/Model"
 

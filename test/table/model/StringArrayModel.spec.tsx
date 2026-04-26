@@ -6,6 +6,7 @@ import { TableAdapter } from "@toad/table/adapter/TableAdapter"
 import { TableEditMode } from "@toad/table/TableEditMode"
 import { StringArrayModel } from "@toad/table/model/StringArrayModel"
 import { StringArrayAdapter } from "@toad/table/adapter/StringArrayAdapter"
+import { replaceChildren } from "toad.jsx"
 
 describe("StringArrayModel", () => {
     before(() => {
@@ -32,7 +33,7 @@ describe("StringArrayModel", () => {
         it("render", () => {
             const model = new StringArrayModel(data)
             const selection = new SelectionModel(TableEditMode.SELECT_CELL)
-            document.body.replaceChildren(<Table model={model} style={{ width: "320px", height: "200px" }} />)
+            replaceChildren(document.body, <Table model={model} style={{ width: "320px", height: "200px" }} />)
         })
     })
 })

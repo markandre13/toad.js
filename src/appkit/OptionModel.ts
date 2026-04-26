@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { JSX } from "toad.jsx"
 import { deepEqual } from "../util/deepEqual"
 import { ALL, ModelEvent } from "./Model"
 import { OptionMapping, OptionModelBase, OptionModelOptions } from "./OptionModelBase"
@@ -59,12 +60,12 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
     )
     constructor(
         value: V,
-        mapping: ReadonlyArray<[V, string | number | HTMLElement] | string>,
+        mapping: ReadonlyArray<[V, string | number | JSX.Element ] | string>,
         modelOptions?: O
     )
     constructor(
         value: V,
-        listOrMapping: ReadonlyArray<V> | ReadonlyArray<[V, string | number | HTMLElement] | string>,
+        listOrMapping: ReadonlyArray<V> | ReadonlyArray<[V, string | number | JSX.Element] | string>,
         mapperOrOptions: (value: V) => OptionMapping | O,
         options?: O
     ) {

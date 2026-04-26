@@ -58,7 +58,7 @@ import { InsertRowAnimation } from "@toad/table/detail/InsertRowAnimation"
 import { SelectionModel } from "@toad/table/model/SelectionModel"
 import { hasFocus } from "@toad/util/dom"
 import { Tab, Tabs } from "@toad/viewkit/Tab"
-import { refs } from "toad.jsx/lib/jsx-runtime"
+import { refs, replaceChildren } from "toad.jsx"
 import { TableEditMode } from "@toad/table/TableEditMode"
 
 // TODO:
@@ -158,7 +158,7 @@ describe("table", function () {
             TableAdapter.register(BookAdapter, ArrayModel, Book)
 
             // View Layer
-            document.body.replaceChildren(<Table style={{ width: `720px`, height: `350px` }} model={model} />)
+            replaceChildren(document.body, <Table style={{ width: `720px`, height: `350px` }} model={model} />)
 
             // TODO: add some test
         })
@@ -220,7 +220,7 @@ describe("table", function () {
             TableAdapter.register(BookAdapter, ArrayModel, Book)
 
             // View Layer
-            document.body.replaceChildren(<Table style={{ width: `720px`, height: `350px` }} model={model} />)
+            replaceChildren(document.body, <Table style={{ width: `720px`, height: `350px` }} model={model} />)
 
             // TODO: add some test
         })
@@ -300,7 +300,7 @@ describe("table", function () {
             const selectionModel = new SelectionModel(TableEditMode.SELECT_CELL)
 
             // View Layer
-            document.body.replaceChildren(
+            replaceChildren(document.body,
                 <Table style={{ width: `720px`, height: `350px` }} model={model} selectionModel={selectionModel} />
             )
 
@@ -407,7 +407,7 @@ describe("table", function () {
             const selectionModel = new SelectionModel(TableEditMode.SELECT_CELL)
 
             // View Layer
-            document.body.replaceChildren(
+            replaceChildren(document.body,
                 <Table style={{ width: `720px`, height: `350px` }} model={model} selectionModel={selectionModel} />
             )
 
@@ -473,10 +473,11 @@ describe("table", function () {
                     return text(`${row + 1}`)
                 }
                 override showCell(pos: TablePos, cell: HTMLSpanElement) {
-                    cell.replaceChildren(
+                    replaceChildren(cell, <>
                         <TextField model={model.data[pos.row].title} style={{ width: "100px" }} />,
                         <TextField model={model.data[pos.row].author} style={{ width: "100px" }} />,
                         <TextField model={model.data[pos.row].year} style={{ width: "50px" }} />
+                    </>
                     )
                 }
             }
@@ -486,7 +487,7 @@ describe("table", function () {
             const selectionModel = new SelectionModel(TableEditMode.SELECT_CELL)
 
             // View Layer
-            document.body.replaceChildren(
+            replaceChildren(document.body,
                 <Table style={{ width: `720px`, height: `350px` }} model={model} selectionModel={selectionModel} />
             )
 
@@ -541,7 +542,7 @@ describe("table", function () {
     describe("regressions", function () {
         it("JSX renders correctly", async function () {
             const model = createModel(4, 4)
-            document.body.replaceChildren(<Table style={{ width: `720px`, height: `350px` }} model={model} />)
+            replaceChildren(document.body, <Table style={{ width: `720px`, height: `350px` }} model={model} />)
             await sleep(20)
             const table = getTable()
             // table.logger.print()
@@ -559,7 +560,7 @@ describe("table", function () {
         it("insert row into table which already has row and column headers (UNSTABLE)", async function () {
             // AnimationBase.animationFrameCount = 2000
             AnimationBase.animationFrameCount = 1
-            Animator.halt = false 
+            Animator.halt = false
             const model = await prepareByRows([new Measure(1, 32), new Measure(4, 64)], {
                 rowHeaders: true,
                 columnHeaders: true,
@@ -636,7 +637,7 @@ describe("table", function () {
             //     </tx-tab>
             // </tx-tabs>`
             // FIXME: tab indicator is displayed on top
-            document.body.replaceChildren(
+            replaceChildren(document.body,
                 <Tabs style={{ width: "100%" }}>
                     <Tab label="TAB1">This page intentionally left blank.</Tab>
                     <Tab label="TAB2">
@@ -735,7 +736,7 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
             await sleep()
-            ;(document.body.children[0] as HTMLElement).focus()
+                ; (document.body.children[0] as HTMLElement).focus()
 
             tabForward()
 
@@ -749,7 +750,7 @@ describe("table", function () {
             const model = createModel(2, 2)
             document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
             await sleep()
-            ;(document.body.children[2] as HTMLElement).focus()
+                ; (document.body.children[2] as HTMLElement).focus()
 
             tabBackward()
 
@@ -900,10 +901,8 @@ describe("table", function () {
 
         function dumpCell(id: string, cell: SpreadsheetCell) {
             console.log(
-                `${id}: _inputValue=${cell._inputValue} (${typeof cell._inputValue}), _calculatedValue=${
-                    cell._calculatedValue
-                } (${typeof cell._calculatedValue}), _error=${cell._error} (${typeof cell._error}), _node=${
-                    cell._node
+                `${id}: _inputValue=${cell._inputValue} (${typeof cell._inputValue}), _calculatedValue=${cell._calculatedValue
+                } (${typeof cell._calculatedValue}), _error=${cell._error} (${typeof cell._error}), _node=${cell._node
                 } (${typeof cell._node})`
             )
         }
@@ -913,7 +912,7 @@ describe("table", function () {
             it("editing an empty cell will result in an empty cell", async function () {
                 TableAdapter.register(SpreadsheetAdapter, SpreadsheetModel, SpreadsheetCell)
                 const model = new TestSpreadsheetModel(2, 2)
-                document.body.replaceChildren(<Table model={model}/>)
+                replaceChildren(document.body, <Table model={model} />)
                 await sleep()
                 const table = getTable()
                 const c0r0 = table.body.children[0]
@@ -1023,13 +1022,10 @@ describe("table", function () {
     describe("jsx", function () {
         it("table accepts 'model' and 'style' attributes", async function () {
             const model = createModel(4, 4)
-            const x = (
-                <>
-                    <style>{"body{background: #888;}"}</style>
-                    <Table model={model} style={{ width: "42%" }} />
-                </>
-            )
-            document.body.replaceChildren(...x)
+            replaceChildren(document.body, <>
+                <style>{"body{background: #888;}"}</style>
+                <Table model={model} style={{ width: "42%" }} />
+            </>)
             await sleep(20)
 
             validateRender(model)
@@ -1043,16 +1039,16 @@ describe("table", function () {
         it("expand", async function () {
             // Table.transitionDuration = "500ms"
             const model = createWidgetTree()
-            // TODO
-            // * while when a TreeNodeModel is initialized from a populated tree,
-            //   all nodes are closed.
-            //   but an emtpy tree is used, which is then populated using add*()
-            //   methods, all nodes are open
-            //   => this should be consistent
-            // * the leaf nodes don't render correctly
-            ;(model as TreeModel<any>).collapse()
+                // TODO
+                // * while when a TreeNodeModel is initialized from a populated tree,
+                //   all nodes are closed.
+                //   but an emtpy tree is used, which is then populated using add*()
+                //   methods, all nodes are open
+                //   => this should be consistent
+                // * the leaf nodes don't render correctly
+                ; (model as TreeModel<any>).collapse()
 
-            document.body.replaceChildren(
+            replaceChildren(document.body,
                 <Table
                     model={model}
                     style={{
@@ -1089,7 +1085,7 @@ describe("table", function () {
             // InsertRowAnimation.halt = true
 
             const model = createTreeModelFromTree()
-            document.body.replaceChildren(<Table model={model} style={{ position: "absolute", inset: 0 }} />)
+            replaceChildren(document.body, <Table model={model} style={{ position: "absolute", inset: 0 }} />)
             await sleep()
             const table = getTable()
 
@@ -1141,7 +1137,7 @@ describe("table", function () {
 
             // GIVEN an initial tree view
             const model = createTreeModelFromTree()
-            document.body.replaceChildren(<Table model={model} style={{ position: "absolute", inset: 0 }} />)
+            replaceChildren(document.body, <Table model={model} style={{ position: "absolute", inset: 0 }} />)
             await sleep(20)
             const table = getTable()
             table.focus()
@@ -1191,7 +1187,7 @@ class TestSpreadsheetModel extends SpreadsheetModel implements TestModel {
     }
 }
 
-class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> {}
+class TestAdapter extends SpreadsheetAdapter<TestSpreadsheetModel> { }
 
 // ---------------------
 
@@ -1252,13 +1248,10 @@ class WidgetTreeAdapter extends TreeAdapter<WidgetNode> {
                 break
             case 1:
                 if (node.model && node.down === undefined) {
-                    const x = (
-                        <>
-                            <TextField model={node.model} style={{ width: "50px", margin: "10px" }} />
-                            <Slider model={node.model} style={{ margin: "10px" }} />
-                        </>
-                    )
-                    cell.replaceChildren(...x)
+                    replaceChildren(cell, <>
+                        <TextField model={node.model} style={{ width: "50px", margin: "10px" }} />
+                        <Slider model={node.model} style={{ margin: "10px" }} />
+                    </>)
                 }
                 break
         }

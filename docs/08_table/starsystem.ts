@@ -3,7 +3,7 @@ import { TableModel } from "@toad/table/model/TableModel"
 import { ArrayModel } from "@toad/table/model/ArrayModel"
 import { TableAdapter } from "@toad/table/adapter/TableAdapter"
 import { ArrayAdapter } from "@toad/table/adapter/ArrayAdapter"
-import { refs } from "toad.jsx/lib/jsx-runtime"
+import { refs } from "toad.jsx"
 import { text } from "@toad/util/lsx"
 
 //
