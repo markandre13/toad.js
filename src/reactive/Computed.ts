@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { setEffectHandler } from "toad.jsx"
 import { Signal } from "../reactive/Signal"
 
 /**
@@ -35,18 +36,20 @@ export class Computed<T> {
 }
 
 /**
- * Create a constraint which will be evaluated any time the models
- * it depends on changes.
- *
- * called effect(...), autorun(...), ... in other web frameworks
- *
- * @param fn
+ * evaluate fn once and later whenever one of it's dependencies change
  */
-export function constraint(fn: () => void) {
+export function effect(fn: () => void) {
     const signal = new Signal()
     signal.add(fn)
     evaluateAndDiscoverDependencies(signal, fn)
 }
+export const constraint = effect
+
+// register an effect handler for the Solid JSX runtime
+function effectHandler(fn: (prev?: any) => any, init?: any) {
+    effect(() => fn(init))
+}
+setEffectHandler(effectHandler)
 
 let currentObserver: Signal | undefined
 let currentTrigger: () => void | undefined
