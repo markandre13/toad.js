@@ -16,6 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+import { produceValue } from "@toad/reactive/Computed"
 import { AbstractValueModel, VALUE, ValueModelOptions } from "./ValueModel"
 
 export type StringFunction = () => string
@@ -80,6 +81,7 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
                 this._value = this._value()
                 break
         }
+        produceValue(this.signal)
         return this._value as string
     }
 }

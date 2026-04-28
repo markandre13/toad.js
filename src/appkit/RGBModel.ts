@@ -29,6 +29,6 @@ export class RGBModel extends ValueModel<RGB, void, ValueModelOptions<RGB>> {
         this.signal.emit({ type: VALUE })
     }
     override get value(): RGB {
-        return this._value
+        return super.value
     }
 }
