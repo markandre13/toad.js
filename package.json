@@ -76,7 +76,7 @@
         "concurrently": "^9.2.1",
         "http-server": "^14.1.1",
         "mocha": "^11.7.5",
-        "pixelmatch": "^7.1.0",
+        "pixelmatch": "^7.1.1",
         "pngjs": "^7.0.0",
         "prismjs": "^1.30.0",
         "puppeteer": "^24.42.0",
@@ -88,6 +88,6 @@
         "typescript": "^6.0.3"
     },
     "dependencies": {
-        "toad.jsx": "^0.1.2"
+        "toad.jsx": "^0.1.3"
     }
 }
