@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 import { form, input, button, svg, path, div } from "../util/lsx"
 import { TextModel } from "../appkit/TextModel"
 import { style as txSearch } from "../style/tx-search"

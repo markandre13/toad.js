@@ -16,10 +16,10 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { JSX } from "toad.jsx"
+import { type JSX } from "toad.jsx"
 import { deepEqual } from "../util/deepEqual"
-import { ALL, ModelEvent } from "./Model"
-import { OptionMapping, OptionModelBase, OptionModelOptions } from "./OptionModelBase"
+import { ALL, type ModelEvent } from "./Model"
+import { type OptionMapping, OptionModelBase, type OptionModelOptions } from "./OptionModelBase"
 
 /**
  * @category Application Model

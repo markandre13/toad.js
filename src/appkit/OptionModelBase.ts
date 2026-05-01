@@ -17,7 +17,7 @@
  */
 
 import { span, text } from "../util/lsx"
-import { ValueModel, ValueModelOptions } from "./ValueModel"
+import { ValueModel, type ValueModelOptions } from "./ValueModel"
 
 export interface OptionMapping {
     /**

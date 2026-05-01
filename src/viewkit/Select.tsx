@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelViewProps } from "./ModelView"
+import { type ModelViewProps } from "./ModelView"
 import { OptionBase } from "./OptionBase"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 import { div } from "../util/lsx"

@@ -17,7 +17,7 @@
  */
 
 import { OptionModelBase } from "../appkit/OptionModelBase"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 
 import { css } from 'src/util/lsx'
 

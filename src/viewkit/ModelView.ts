@@ -16,9 +16,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, InferModelParameter, ModelEvent, ALL } from "../appkit/Model"
+import { Model, type InferModelParameter, type ModelEvent, ALL } from "../appkit/Model"
 import { View } from "./View"
-import { HTMLElementProps } from "toad.jsx"
+import { type HTMLElementProps } from "toad.jsx"
 
 export interface ModelViewProps<M> extends HTMLElementProps {
     model?: M

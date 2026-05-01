@@ -19,7 +19,7 @@
 import { TextModel } from "../appkit/TextModel"
 import { NumberModel } from "../appkit/NumberModel"
 import { Converter } from "../appkit/Converter"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
 
 export type TextFieldModel = TextModel | NumberModel | Converter<string>

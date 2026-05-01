@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 import { input, label, slot, span, text } from "../util/lsx"
 import { style as txRadio } from "../style/tx-radio"

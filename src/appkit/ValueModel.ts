@@ -16,8 +16,8 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { produceValue } from "@toad/reactive/Computed"
-import { Model, ModelOptions, ModelEvent } from "./Model"
+import { produceValue } from "../reactive/Computed"
+import { Model, type ModelOptions, type ModelEvent } from "./Model"
 
 export const VALUE = Symbol("VALUE")
 export const DEFAULT_VALUE = Symbol("DEFAULT_VALUE")

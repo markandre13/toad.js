@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { ALL, Model, ModelEvent } from '@toad/appkit/Model'
+import { ALL, Model, type ModelEvent } from '@toad/appkit/Model'
 import { ModelView } from '@toad/viewkit/ModelView'
 import { View } from '@toad/viewkit/View'
 

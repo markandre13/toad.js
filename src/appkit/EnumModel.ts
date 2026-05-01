@@ -16,8 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelOptions } from "./Model"
-import { OptionModelBase, OptionModelOptions } from "./OptionModelBase"
+import { OptionModelBase, type OptionModelOptions } from "./OptionModelBase"
 
 /**
  * @category Application Model

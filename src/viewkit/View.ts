@@ -17,7 +17,7 @@
  */
 
 import { Model } from "../appkit/Model"
-import { HTMLElementProps, setInitialProperties } from "toad.jsx"
+import { type HTMLElementProps, setInitialProperties } from "toad.jsx"
 
 /**
  * @category View

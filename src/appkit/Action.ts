@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { Model, ModelOptions } from "./Model"
+import { Model, type ModelOptions } from "./Model"
 import { Signal } from "../reactive/Signal"
 import { View } from "../viewkit/View"
 

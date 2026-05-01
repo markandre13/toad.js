@@ -18,7 +18,7 @@
 
 import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW } from "../TableEvent"
 import { TypedTableModel } from "./TypedTableModel"
-import { ColumnEditInterface, RowEditInterface } from "./TableModel"
+import { type ColumnEditInterface, type RowEditInterface } from "./TableModel"
 
 /**
  * A two dimensional grid in which rows and columns can be added and removed.

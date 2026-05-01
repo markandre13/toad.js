@@ -17,7 +17,7 @@
  */
 
 import { TreeModel } from './TreeModel'
-import { TreeNode } from './TreeNode'
+import { type TreeNode } from './TreeNode'
 
 /**
  * @category Application Model

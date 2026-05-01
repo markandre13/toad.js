@@ -1,7 +1,7 @@
 import { TextModel } from "../appkit/TextModel"
 import { HtmlModel } from "../appkit/HtmlModel"
 import { NumberModel } from "../appkit/NumberModel"
-import { ModelView, ModelViewProps } from "../viewkit/ModelView"
+import { ModelView, type ModelViewProps } from "../viewkit/ModelView"
 
 /**
  * @category View

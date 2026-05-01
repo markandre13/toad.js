@@ -16,9 +16,9 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { evaluateAndDiscoverDependencies, produceValue } from "@toad/reactive/Computed"
+import { evaluateAndDiscoverDependencies, produceValue } from "../reactive/Computed"
 import { Signal } from "../reactive/Signal"
-import { AbstractValueModel, ValueModelOptions } from "./ValueModel"
+import { AbstractValueModel, type ValueModelOptions } from "./ValueModel"
 
 /**
  * Converter is updated whenever one of it's dependant models changes.

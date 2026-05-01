@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ModelOptions } from "./Model"
+import { type ModelOptions } from "./Model"
 import { TextModel } from "./TextModel"
 
 /**

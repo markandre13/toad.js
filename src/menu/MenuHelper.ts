@@ -19,7 +19,7 @@
 import { View } from "../viewkit/View"
 import { MenuButton } from "./MenuButton"
 import { MenuState } from "./MenuState"
-import { HTMLElementProps } from "toad.jsx"
+import { type HTMLElementProps } from "toad.jsx"
 
 /**
  * @internal 

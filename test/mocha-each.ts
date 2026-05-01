@@ -1,6 +1,6 @@
 // replacement for mocha-each, which isn't esm compatible
 
-import { AsyncFunc, Context, Done, Func, TestFunction } from 'mocha'
+import { Context, type Done } from 'mocha'
 
 export function forEach(param: ReadonlyArray<any>) {
     return {

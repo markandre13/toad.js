@@ -18,7 +18,7 @@
 
 import { BigDecimal } from "../util/BigDecimal"
 import { expression } from "../util/expressions/expression"
-import { AUTOCORRECT_VALUE, MAX_VALUE, MIN_VALUE, NumericModel, NumericModelEvent, NumericModelOptions, STEP_VALUE } from "./NumericModel"
+import { AUTOCORRECT_VALUE, MAX_VALUE, MIN_VALUE, NumericModel, type NumericModelEvent, type NumericModelOptions, STEP_VALUE } from "./NumericModel"
 export { AUTOCORRECT_VALUE, MAX_VALUE, MIN_VALUE, STEP_VALUE }
 
 export type NumberModelEvent = NumericModelEvent
@@ -28,9 +28,9 @@ export type NumberModelOptions = NumericModelOptions<number>
  * @category Application Model
  */
 export class NumberModel extends NumericModel<number> {
-    constructor(value: number, options?: NumberModelOptions) {
-        super(value, options)
-    }
+    // constructor(value: number, options?: NumberModelOptions) {
+    //     super(value, options)
+    // }
     increment() {
         if (this.step !== undefined) {
             const value = new BigDecimal(this.value)
@@ -69,55 +69,7 @@ export class NumberModel extends NumericModel<number> {
         return super.value
     }
 
-    set min(min: number | undefined) {
-        if (this.options?.min === min) return
-        if (this.options === undefined) {
-            this.options = {}
-        }
-        this.options.min = min
-        this.signal.emit({ type: MIN_VALUE })
-    }
-    get min(): number | undefined {
-        return this.options?.min
-    }
-
-    set max(max: number | undefined) {
-        if (this.options?.max === max) return
-        if (this.options === undefined) {
-            this.options = {}
-        }
-        this.options.max = max
-        this.signal.emit({ type: MAX_VALUE })
-    }
-    get max(): number | undefined {
-        return this.options?.max
-    }
-
-    set step(step: number | undefined) {
-        if (this.options?.step === step) return
-        if (this.options === undefined) {
-            this.options = {}
-        }
-        this.options.step = step
-        this.signal.emit({ type: STEP_VALUE })
-    }
-    get step(): number | undefined {
-        return this.options?.step
-    }
-
-    set autocorrect(autocorrect: boolean | undefined) {
-        if (this.autocorrect === autocorrect) return
-        if (this.options === undefined) {
-            this.options = {}
-        }
-        this.options.autocorrect = autocorrect
-        this.signal.emit({ type: AUTOCORRECT_VALUE })
-    }
-    get autocorrect(): boolean {
-        return this.options?.autocorrect === true
-    }
-
-    private clip(value: number) {
+        protected clip(value: number) {
         if (this.min !== undefined && value < this.min) {
             value = this.min
         }
@@ -127,7 +79,7 @@ export class NumberModel extends NumericModel<number> {
         return value
     }
 
-    private check(value: number) {
+    protected check(value: number) {
         if (this.min !== undefined && value < this.min) {
             return `The value must not be below ${this.min}.`
         }

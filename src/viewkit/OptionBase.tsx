@@ -1,4 +1,4 @@
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 import { button, svg, path, div, li } from "../util/lsx"
 import { placePopupVertical } from "../menu/PopupMenu"

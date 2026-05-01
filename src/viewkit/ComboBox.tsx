@@ -1,7 +1,7 @@
 import { input } from "../util/lsx"
 import { TextModel } from "../appkit/TextModel"
 import { OptionBase } from "./OptionBase"
-import { ModelViewProps } from "./ModelView"
+import { type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 
 export interface ComboBoxProps<V> extends ModelViewProps<OptionModelBase<V>> {

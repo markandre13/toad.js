@@ -1,6 +1,6 @@
 import { Animator } from '../../util/animation'
 import { TableAdapter } from '../adapter/TableAdapter'
-import { Logger, Table } from '../Table'
+import { type Logger, Table } from '../Table'
 import { TableAnimation } from './TableAnimation'
 
 // workaround for missing 'friend' declarator in typescript

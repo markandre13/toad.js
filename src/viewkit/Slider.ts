@@ -16,11 +16,11 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { NumberModel, NumberModelEvent } from "../appkit/NumberModel"
+import { NumberModel, type NumberModelEvent } from "../appkit/NumberModel"
 import { style as txSlider } from "../style/tx-slider"
 import { div, input, span } from "../util/lsx"
-import { parseColor, RGBA } from "../util/color"
-import { HTMLElementProps } from "toad.jsx"
+import { parseColor, type RGBA } from "../util/color"
+import { type HTMLElementProps } from "toad.jsx"
 import { View } from "./View"
 import { ALL, Model } from "../appkit/Model"
 

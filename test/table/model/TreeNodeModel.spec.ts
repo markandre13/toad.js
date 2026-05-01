@@ -2,7 +2,7 @@ import { expect, use } from "chai"
 import { chaiSubset } from "../../chaiSubset"
 use(chaiSubset)
 
-import { INSERT_ROW, REMOVE_ROW, TableEvent } from "@toad/table/TableEvent"
+import { INSERT_ROW, REMOVE_ROW, type TableEvent } from "@toad/table/TableEvent"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TextModel } from "@toad/appkit/TextModel"
 

@@ -17,7 +17,7 @@
  */
 
 import { Model } from "../../appkit/Model"
-import { TableEvent } from "../TableEvent"
+import { type TableEvent } from "../TableEvent"
 
 /**
  * @category Application Model

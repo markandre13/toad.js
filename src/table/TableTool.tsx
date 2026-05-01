@@ -22,7 +22,7 @@ import { GenericTool } from "../viewkit/GenericTool"
 import { textAreaStyle } from "../viewkit/textAreaStyle"
 
 import { Table } from "./Table"
-import { RowEditInterface, ColumnEditInterface } from "./model/TableModel"
+import { type RowEditInterface, type ColumnEditInterface } from "./model/TableModel"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 

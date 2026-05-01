@@ -20,7 +20,7 @@ import { TextModel } from "../appkit/TextModel"
 import { ALL } from "../appkit/Model"
 import { Action } from "../appkit/Action"
 import { ModelView } from "./ModelView"
-import { HTMLElementProps } from "toad.jsx"
+import { type HTMLElementProps } from "toad.jsx"
 
 // FIXME: ActionView should also be a template instead of having a fixed TextModel
 

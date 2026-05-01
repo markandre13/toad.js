@@ -1,6 +1,6 @@
 import { Table } from '../Table'
 import { TableFriend } from "./TableFriend"
-import { Animation } from "../../util/animation"
+import { type Animation } from "../../util/animation"
 import { div, span } from '../../util/lsx'
 
 export abstract class TableAnimation extends TableFriend implements Animation {

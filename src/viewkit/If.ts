@@ -1,6 +1,6 @@
-import { HTMLElementProps } from "toad.jsx"
+import { type HTMLElementProps } from "toad.jsx"
 import { ValueModel } from "../appkit/ValueModel"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 import { BooleanModel } from "../appkit/BooleanModel"
 
 interface IfPropsTrue extends HTMLElementProps {

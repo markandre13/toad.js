@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ValueModel, ValueModelOptions } from "./ValueModel"
+import { ValueModel, type ValueModelOptions } from "./ValueModel"
 
 /**
  * @category Application Model

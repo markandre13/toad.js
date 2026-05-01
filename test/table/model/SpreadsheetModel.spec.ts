@@ -1,7 +1,7 @@
 import { expect } from "chai"
 
 import { SpreadsheetModel } from "src/table/model/SpreadsheetModel"
-import { TableEvent } from "src/table/TableEvent"
+import { type TableEvent } from "src/table/TableEvent"
 import { INSERT_COL, INSERT_ROW, REMOVE_COL, REMOVE_ROW } from "src/table/TableEvent"
 
 describe.only("spreadsheetmodel", function () {

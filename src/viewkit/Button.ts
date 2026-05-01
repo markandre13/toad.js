@@ -17,7 +17,7 @@
  */
 
 import { HtmlModel } from "../appkit/HtmlModel"
-import { ActionView, ActionViewProps } from "./ActionView"
+import { ActionView, type ActionViewProps } from "./ActionView"
 
 import { button, span } from "../util/lsx"
 import { style as txButton } from "../style/tx-button"

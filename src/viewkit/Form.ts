@@ -1,10 +1,10 @@
-import { HTMLElementProps } from "toad.jsx"
+import { type HTMLElementProps } from "toad.jsx"
 import { View } from "./View"
 import { slot } from '../util/lsx'
 import { styleBase, styleNarrow } from "../style/tx-form"
 
 import { Model } from "../appkit/Model"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 
 interface FormProps extends HTMLElementProps {
     variant?: "wide" | "narrow"

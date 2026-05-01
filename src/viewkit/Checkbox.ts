@@ -18,7 +18,7 @@
 
 import { BooleanView } from "./BooleanView"
 import { BooleanModel } from "../appkit/BooleanModel"
-import { ModelViewProps } from "./ModelView"
+import { type ModelViewProps } from "./ModelView"
 
 import { input, svg, path } from "../util/lsx"
 import { style as txCheckbox } from "../style/tx-checkbox"

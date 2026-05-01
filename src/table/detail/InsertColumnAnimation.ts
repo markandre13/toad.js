@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { InsertColEvent } from "../TableEvent"
+import { type InsertColEvent } from "../TableEvent"
 import { TablePos } from "../TablePos"
 import { span, div } from "../../util/lsx"
 import { Table, px2int, px2float } from "../Table"

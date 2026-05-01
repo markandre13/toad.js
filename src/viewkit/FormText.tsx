@@ -1,6 +1,6 @@
 import { Model } from "../appkit/Model"
 import { FormLabel, FormField, FormHelp } from "./Form"
-import { TextField, TextFieldModel } from "./TextField"
+import { TextField, type TextFieldModel } from "./TextField"
 
 export function FormText(props: { model: TextFieldModel }) {
     return (

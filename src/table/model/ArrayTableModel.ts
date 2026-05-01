@@ -17,7 +17,7 @@
  */
 
 import { INSERT_ROW, REMOVE_ROW } from "../TableEvent"
-import { RowEditInterface } from "./TableModel"
+import { type RowEditInterface } from "./TableModel"
 import { TypedTableModel } from "./TypedTableModel"
 
 /**

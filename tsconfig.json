@@ -38,6 +38,7 @@
                 "after": true,
             }
         ],
+        "verbatimModuleSyntax": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
         "removeComments": true,

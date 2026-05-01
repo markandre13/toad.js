@@ -17,7 +17,7 @@
  */
 
 import { ArrayModel } from "../model/ArrayModel"
-import { TypedTableAdapter, InferTypedTableModelParameter } from "./TypedTableAdapter"
+import { TypedTableAdapter, type InferTypedTableModelParameter } from "./TypedTableAdapter"
 import { CELL_CHANGED } from "../TableEvent"
 
 import { Reference } from "toad.jsx"

@@ -19,7 +19,7 @@
 import { HtmlModel } from "../appkit/HtmlModel"
 import { TextModel } from "../appkit/TextModel"
 import { TextTool } from "./TextTool"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 import { style as txText } from "../style/tx-text"
 
 /**

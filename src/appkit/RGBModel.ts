@@ -1,6 +1,6 @@
-import { parseColor, RGB } from "../util/color"
-import { VALUE, ValueModel, ValueModelOptions } from "./ValueModel"
-import { ModelOptions } from "./Model"
+import { parseColor, type RGB } from "../util/color"
+import { VALUE, ValueModel, type ValueModelOptions } from "./ValueModel"
+import { type ModelOptions } from "./Model"
 
 export class RGBModel extends ValueModel<RGB, void, ValueModelOptions<RGB>> {
     constructor(value: RGB | string, options?: ModelOptions) {

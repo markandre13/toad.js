@@ -18,7 +18,7 @@
 
 import { BooleanView } from "./BooleanView"
 import { BooleanModel } from "../appkit/BooleanModel"
-import { ModelViewProps } from "./ModelView"
+import { type ModelViewProps } from "./ModelView"
 
 import { style as txSwitch } from "../style/tx-switch"
 import { input, span } from "../util/lsx"

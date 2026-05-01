@@ -18,7 +18,7 @@
 
 import { HtmlModel } from "../appkit/HtmlModel"
 import { TextModel } from "../appkit/TextModel"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 
 /**
  * @category View

@@ -3,7 +3,7 @@ import { expect } from "chai"
 import { MemoryLogger, Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"
 
-import { TreeNode } from "@toad/table/model/TreeNode"
+import { type TreeNode } from "@toad/table/model/TreeNode"
 import { TreeModel } from "@toad/table/model/TreeModel"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TreeAdapter } from "@toad/table/adapter/TreeAdapter"
@@ -42,7 +42,7 @@ import {
 } from "../testlib"
 import {
     validateRender,
-    TestModel,
+    type TestModel,
     getTable,
     prepareByRows,
     flatMapRows,

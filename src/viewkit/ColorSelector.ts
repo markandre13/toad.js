@@ -5,7 +5,7 @@ import { Slider } from "./Slider"
 import { TextField } from "./TextField"
 import { style } from "../style/tx-colorselector"
 import { RGBModel } from "../appkit/RGBModel"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { ModelView, type ModelViewProps } from "./ModelView"
 
 // i know, this implementation is a mess. i just wanted to get it done.
 

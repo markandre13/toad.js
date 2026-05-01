@@ -16,7 +16,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { RemoveRowEvent } from "../TableEvent"
+import { type RemoveRowEvent } from "../TableEvent"
 import { Table, px2float } from "../Table"
 import { TableAnimation } from "./TableAnimation"
 

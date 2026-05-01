@@ -17,7 +17,7 @@
  */
 
 import { TablePos } from "../TablePos"
-import { InsertRowEvent } from "../TableEvent"
+import { type InsertRowEvent } from "../TableEvent"
 import { Table, px2float } from "../Table"
 import { InsertAnimation } from "./InsertAnimation"
 import { span, div } from "../../util/lsx"

@@ -20,8 +20,8 @@ import { View } from "../viewkit/View"
 import { ul, li, span, text, div, slot } from "../util/lsx"
 import { style as txTabs } from "../style/tx-tabs"
 import { style as txScrollbar } from "../style/tx-scrollbar"
-import { HTMLElementProps, JSX } from "toad.jsx"
-import { ModelView, ModelViewProps } from "./ModelView"
+import { type HTMLElementProps, type JSX } from "toad.jsx"
+import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 
 export interface TabsProps<V=void> extends ModelViewProps<OptionModelBase<V>> {

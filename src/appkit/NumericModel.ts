@@ -1,4 +1,4 @@
-import { ValueModel, ValueModelEvent, ValueModelOptions } from "./ValueModel"
+import { ValueModel, type ValueModelEvent, type ValueModelOptions } from "./ValueModel"
 
 export const MIN_VALUE = Symbol("MIN_VALUE")
 export const MAX_VALUE = Symbol("MAX_VALUE")
@@ -33,5 +33,57 @@ export interface NumericModelOptions<T> extends ValueModelOptions<T> {
     autocorrect?: boolean
 }
 
-export class NumericModel<T> extends ValueModel<T, NumericModelEvent, NumericModelOptions<T>> {
+export abstract class NumericModel<T> extends ValueModel<T, NumericModelEvent, NumericModelOptions<T>> {
+    abstract increment(): void
+    abstract decrement(): void
+    protected abstract clip(value: T): void
+    protected abstract check(value: T): string | undefined
+
+    set min(min: number | undefined) {
+        if (this.options?.min === min) return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.min = min
+        this.signal.emit({ type: MIN_VALUE })
+    }
+    get min(): number | undefined {
+        return this.options?.min
+    }
+
+    set max(max: number | undefined) {
+        if (this.options?.max === max) return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.max = max
+        this.signal.emit({ type: MAX_VALUE })
+    }
+    get max(): number | undefined {
+        return this.options?.max
+    }
+
+    set step(step: number | undefined) {
+        if (this.options?.step === step) return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.step = step
+        this.signal.emit({ type: STEP_VALUE })
+    }
+    get step(): number | undefined {
+        return this.options?.step
+    }
+
+    set autocorrect(autocorrect: boolean | undefined) {
+        if (this.autocorrect === autocorrect) return
+        if (this.options === undefined) {
+            this.options = {}
+        }
+        this.options.autocorrect = autocorrect
+        this.signal.emit({ type: AUTOCORRECT_VALUE })
+    }
+    get autocorrect(): boolean {
+        return this.options?.autocorrect === true
+    }
 }
