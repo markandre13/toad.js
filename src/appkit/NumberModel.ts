@@ -16,44 +16,18 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { ValueModel, ValueModelOptions, ValueModelEvent } from "./ValueModel"
 import { BigDecimal } from "../util/BigDecimal"
 import { expression } from "../util/expressions/expression"
+import { AUTOCORRECT_VALUE, MAX_VALUE, MIN_VALUE, NumericModel, NumericModelEvent, NumericModelOptions, STEP_VALUE } from "./NumericModel"
+export { AUTOCORRECT_VALUE, MAX_VALUE, MIN_VALUE, STEP_VALUE }
 
-export const MIN_VALUE = Symbol("MIN_VALUE")
-export const MAX_VALUE = Symbol("MAX_VALUE")
-export const STEP_VALUE = Symbol("STEP_VALUE")
-export const AUTOCORRECT_VALUE = Symbol("AUTOCORRECT")
-export type MinValueEvent = { type: typeof MIN_VALUE }
-export type MaxValueEvent = { type: typeof MAX_VALUE }
-export type StepValueEvent = { type: typeof STEP_VALUE }
-export type AutoCorrectValueEvent = { type: typeof AUTOCORRECT_VALUE }
-export type NumberModelEvent = ValueModelEvent | MinValueEvent | MaxValueEvent | StepValueEvent | AutoCorrectValueEvent
-
-export interface NumberModelOptions extends ValueModelOptions<number> {
-    /**
-     * when set, value will not go below min
-     */
-    min?: number
-    /**
-     * when set, value will not go above max
-     */
-    max?: number
-    /**
-     * when set, some views can increase/decrease the value, e.g. using the scrollwheel
-     */
-    step?: number
-    /**
-     * when 'true', value will always be clipped to min/max. 'undefined' per default
-     * as it makes editing the value in a text field quite annoying.
-     */
-    autocorrect?: boolean
-}
+export type NumberModelEvent = NumericModelEvent
+export type NumberModelOptions = NumericModelOptions<number>
 
 /**
  * @category Application Model
  */
-export class NumberModel extends ValueModel<number, NumberModelEvent, NumberModelOptions> {
+export class NumberModel extends NumericModel<number> {
     constructor(value: number, options?: NumberModelOptions) {
         super(value, options)
     }
