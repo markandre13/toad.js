@@ -16,7 +16,7 @@ export class Lexer {
     }
     isalpha(c: string) {
         const code = c.charCodeAt(0)
-        return code >= 0x41 && code <= 0x5a || code >= 0x91 && code <= 0x7a
+        return code >= 0x41 && code <= 0x5a || code >= 0x61 && code <= 0x7a
     }
     isalnum(c: string) {
         return this.isnumber(c) || this.isalpha(c)
