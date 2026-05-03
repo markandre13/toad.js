@@ -1,6 +1,6 @@
 /*
  *  The TOAD JavaScript/TypeScript GUI Library
- *  Copyright (C) 2018-2024 Mark-André Hopf <mhopf@mark13.org>
+ *  Copyright (C) 2018-2026 Mark-André Hopf <mhopf@mark13.org>
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Affero General Public License as published by
@@ -94,13 +94,13 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         const value = localStorage.getItem(this.options.local)
         if (value !== null) {
             try {
-                this._value = JSON.parse(value)
+                this.fromJsonString(value)
                 return
             } catch (error) {
                 console.log(`ValueModel.constructor(): failed to restore "${name}" = "${value}" from local`)
             }
         } else {
-            localStorage.setItem(name, JSON.stringify(this._value))
+            localStorage.setItem(name, this.toJsonString())
         }
     }
     protected persistToLocalStorage() {
@@ -109,10 +109,43 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         }
         try {
             const name = this.options.local
-            const value = JSON.stringify(this._value)
-            // console.log(`ValueModel.set value(): store "${name}" = "${value}" to local`)
-            localStorage.setItem(name, value)
+            localStorage.setItem(name, this.toJsonString())
         } catch (e) { }
+    }
+
+    protected toJsonString() {
+        let value: string
+        if (this._value instanceof Int8Array ||
+            this._value instanceof Uint8Array ||
+            this._value instanceof Uint8ClampedArray ||
+            this._value instanceof Int16Array ||
+            this._value instanceof Uint16Array ||
+            this._value instanceof Int32Array ||
+            this._value instanceof Uint32Array ||
+            this._value instanceof Float32Array ||
+            this._value instanceof Float64Array
+        ) {
+            return `[${this._value.join(",")}]`
+        } else {
+            return JSON.stringify(this._value)
+        }
+    }
+
+    protected fromJsonString(value: string) {
+        if (this._value instanceof Int8Array ||
+            this._value instanceof Uint8Array ||
+            this._value instanceof Uint8ClampedArray ||
+            this._value instanceof Int16Array ||
+            this._value instanceof Uint16Array ||
+            this._value instanceof Int32Array ||
+            this._value instanceof Uint32Array ||
+            this._value instanceof Float32Array ||
+            this._value instanceof Float64Array
+        ) {
+            this._value = new (this._value.constructor as any)(JSON.parse(value))
+        } else {
+            this._value = JSON.parse(value)
+        }
     }
 
     override set value(value: V) {
