@@ -30,7 +30,7 @@ export class TreeNodeModel<T extends TreeNode> extends TreeModel<T> {
     }
 
     override createNode(): T { return new this.nodeClass() }
-    override deleteNode(node: T): void { }
+    override deleteNode(_node: T): void { }
     override getRoot(): T | undefined { return this.root }
     override setRoot(node?: T): void { this.root = node }
     override getDown(node: T): T | undefined { return node.down as T }

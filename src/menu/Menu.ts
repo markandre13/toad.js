@@ -69,7 +69,7 @@ export class Menu extends MenuButtonContainer {
 
     if (this.children.length === 0) {
       // Chrome, Opera invoke connectedCallback() before the children are conected
-      this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
+      this._observer = new MutationObserver((_record: MutationRecord[], _observer: MutationObserver) => {
         if (this._timer !== undefined)
           clearTimeout(this._timer)
         this._timer = window.setTimeout(() => {

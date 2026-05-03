@@ -37,15 +37,3 @@ export type TableEvent =
     | InsertColEvent
     | RemoveColEvent
     | CellChangedEvent
-
-function f(e: TableEvent) {
-    switch (e.type) {
-        case INSERT_COL:
-            e.size
-            e.index
-            break
-        case CELL_CHANGED:
-            e.col
-            e.row
-    }
-}

@@ -34,7 +34,7 @@ import { View } from "./View"
 /**
  * @category View
  */
-export abstract class GenericTool<T extends Model> extends View {
+export abstract class GenericTool<_T extends Model> extends View {
     static allTools = new Set<GenericTool<any>>()
     static activeTool: GenericTool<any> | undefined
     static activeView: View | undefined

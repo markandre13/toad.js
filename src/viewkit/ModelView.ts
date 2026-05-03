@@ -39,7 +39,7 @@ export class ModelView<M extends Model<E>, E = InferModelParameter<M>> extends V
 
     // NOTE: these were 'abstract' but then the 'override' did not work
     updateModel(): void {}
-    updateView(event: E | ModelEvent): void {}
+    updateView(_event: E | ModelEvent): void {}
 
     override setModel(model?: M): void {
         if (model === this.model) return

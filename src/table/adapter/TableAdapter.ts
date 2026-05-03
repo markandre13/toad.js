@@ -76,14 +76,14 @@ export class TableAdapter<T extends TableModel> {
      * @param col column number
      * @returns A HTMLSpanElement to be used as column header.
      */
-    getColumnHead(col: number): Node | undefined { return undefined }
+    getColumnHead(_col: number): Node | undefined { return undefined }
     /**
      * Override to return a row header.
      * 
      * @param row row number
      * @returns A HTMLSpanElement to be used as row header.
      */
-    getRowHead(row: number): Node | undefined { return undefined }
+    getRowHead(_row: number): Node | undefined { return undefined }
 
     /**
      * Override to copy data from the model into the table cell.
@@ -91,14 +91,14 @@ export class TableAdapter<T extends TableModel> {
      * @param pos cell position (col, row) to use when getting data frm the model.
      * @param cell table cell whose content to be set by this method.
      */
-    showCell(pos: TablePos, cell: HTMLSpanElement) { }
+    showCell(_pos: TablePos, _cell: HTMLSpanElement) { }
     /**
      * Override to copy data from the table cell to the model.
      * 
      * @param pos 
      * @param cell table cell with the edited value.
      */
-    saveCell(pos: TablePos, cell: HTMLSpanElement) { }
+    saveCell(_pos: TablePos, _cell: HTMLSpanElement) { }
     /**
      * Override when using 'contenteditable' is not sufficient to edit the cell.
      * 
@@ -108,7 +108,7 @@ export class TableAdapter<T extends TableModel> {
      * @param pos 
      * @param cell 
      */
-    editCell(pos: TablePos, cell: HTMLSpanElement) { }
+    editCell(_pos: TablePos, _cell: HTMLSpanElement) { }
 
     /**
      * Override when 'true' needs to be returned so that the cells won't be separated
@@ -217,7 +217,7 @@ export class TableAdapter<T extends TableModel> {
                 msg += " none."
             } else {
                 for (const [modelX, typeToAdapterX] of TableAdapter.modelToAdapter) {
-                    for (const [typeX, adapterX] of typeToAdapterX) {
+                    for (const [typeX] of typeToAdapterX) {
                         msg += `\n        model=${modelX.name}`
                         if (typeX !== undefined && typeX !== null) {
                             msg += `, type=${typeX.name}`

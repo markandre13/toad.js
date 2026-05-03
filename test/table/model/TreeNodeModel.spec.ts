@@ -27,7 +27,7 @@ describe("model", function () {
             }
 
             class MyTreeModel extends TreeNodeModel<Node> {
-                getFieldModel(col: number, row: number): TextModel {
+                getFieldModel(_col: number, row: number): TextModel {
                     let model = new TextModel(this.rows[row].node.label)
                     // model.modified.add( () => {
                     //     this.data[row][col] = model.value

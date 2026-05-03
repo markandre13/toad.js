@@ -15,12 +15,12 @@ function isChildOf(child: Node, parent: Node) {
     return isChildOf(child.parentNode, parent)
 }
 
-function isSameOrChildOf(child: Node, parent: Node) {
-    if (child === parent) {
-        return true
-    }
-    return isChildOf(child, parent)
-}
+// function isSameOrChildOf(child: Node, parent: Node) {
+//     if (child === parent) {
+//         return true
+//     }
+//     return isChildOf(child, parent)
+// }
 
 /**
  * @category View
@@ -217,7 +217,7 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
         if (this.model) {
             this.popup.replaceChildren(
                 <ul class="tx-menu" aria-roledescription="listbox">
-                    {this.model.map((value, key, idx) => {
+                    {this.model.map((_value, key, idx) => {
                         const item = li(this.model!.asHtml(key))
                         item.tabIndex = 0
                         item.ariaRoleDescription = "option"

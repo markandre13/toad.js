@@ -245,7 +245,7 @@ export class Table extends View {
         }
 
         if (Table.observer === undefined) {
-            Table.observer = new MutationObserver((mutations: MutationRecord[], observer: MutationObserver) => {
+            Table.observer = new MutationObserver((_mutations: MutationRecord[], _observer: MutationObserver) => {
                 Table.allTables.forEach((table) => {
                     if (isVisible(table)) {
                         this.logger.log(`Table.observer => table became visible => prepareCells()`)
@@ -525,11 +525,11 @@ export class Table extends View {
         }
     }
 
-    focusIn(event: FocusEvent) {
+    focusIn(_event: FocusEvent) {
         // console.log("Table.focusIn()")
     }
 
-    focusOut(event: FocusEvent) {
+    focusOut(_event: FocusEvent) {
         // console.log("Table.focusOut()")
     }
 
@@ -565,7 +565,7 @@ export class Table extends View {
         this.focus()
     }
 
-    pointerDown(ev: PointerEvent) {
+    pointerDown(_ev: PointerEvent) {
         // console.log("Table.pointerDown()")
         // ev.preventDefault()
         // // this.focus()
@@ -1136,7 +1136,7 @@ export class Table extends View {
         return { rowHeadWidth, colHeadHeight }
     }
 
-    placeBodyCells(colWidths: number[], rowHeights: number[], colHeadHeight: number, rowHeadWidth: number) {
+    placeBodyCells(colWidths: number[], rowHeights: number[], _colHeadHeight: number, _rowHeadWidth: number) {
         this.logger.log(`Table::placeBodyCells(...)`)
         const seam = this.adapter!.config.seamless ? 0 : 1
 

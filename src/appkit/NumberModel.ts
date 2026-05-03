@@ -69,7 +69,11 @@ export class NumberModel extends NumericModel<number> {
         return super.value
     }
 
-        protected clip(value: number) {
+    override toNumber(): number {
+        return super.value
+    }
+
+    clip(value: number) {
         if (this.min !== undefined && value < this.min) {
             value = this.min
         }

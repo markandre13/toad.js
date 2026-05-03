@@ -98,7 +98,7 @@ export class Slider extends View {
         this.shadowRoot!.replaceChildren(container)
     }
 
-    override setModel(model?: Model<any>): void {
+    override setModel(_model?: Model<any>): void {
         // console.trace(`Please note that View.setModel(model) has no implementation.`)
     }
 
@@ -225,14 +225,14 @@ export class Slider extends View {
     }
 
     updateModel() {
-        for (const { model, slider, thumb } of this.knob) {
+        for (const { model, slider } of this.knob) {
             if (model) {
                 model.value = Number.parseFloat(slider.value)
             }
         }
     }
 
-    updateView(event: NumberModelEvent): void {
+    updateView(_event: NumberModelEvent): void {
         let index = -1
         const va: number[] = []
         for (const { model, slider, thumb } of this.knob) {

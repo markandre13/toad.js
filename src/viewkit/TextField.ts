@@ -40,12 +40,12 @@ export class TextField extends ModelView<TextFieldModel> {
                 this.updateModel()
             }
         }
-        this.input.onblur = (e: FocusEvent) => {
+        this.input.onblur = (_e: FocusEvent) => {
             if (!(this.model instanceof TextModel)) {
                 this.updateModel()
             }
         }
-        this.input.oninput = (e) => {
+        this.input.oninput = () => {
             if (this.model instanceof TextModel) {
                 this.updateModel()
             }
@@ -91,7 +91,7 @@ export class TextField extends ModelView<TextFieldModel> {
         return ["value"]
     }
 
-    override attributeChangedCallback(name: string, oldValue?: string, newValue?: string) {
+    override attributeChangedCallback(name: string, _oldValue?: string, newValue?: string) {
         switch (name) {
             case "value":
                 if (this.model && newValue !== undefined) {

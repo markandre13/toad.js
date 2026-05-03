@@ -48,7 +48,7 @@ export class View extends HTMLElement {
         setInitialProperties(this, props)
     }
 
-    setModel(model?: Model<any>): void {
+    setModel(_model?: Model<any>): void {
         console.trace(`Please note that View.setModel(model) has no implementation.`)
     }
 
@@ -56,5 +56,5 @@ export class View extends HTMLElement {
     disconnectedCallback(): void { }
     connectedMoveCallback(): void { }
     adoptedCallback(): void { }
-    attributeChangedCallback(name: string, oldValue?: string, newValue?: string): void { }
+    attributeChangedCallback(_name: string, _oldValue?: string, _newValue?: string): void { }
 }

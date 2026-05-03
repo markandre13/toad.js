@@ -5,7 +5,7 @@ const modalDialogStack: HTMLDialogElement[] = []
 
 export function openModalDialog(createContent: () => Element | Fragment) {
     const dialog = document.createElement("dialog")
-    dialog.addEventListener("close", (event) => {
+    dialog.addEventListener("close", (_event) => {
         document.body.removeChild(dialog)
     })
     pushAutorelease()

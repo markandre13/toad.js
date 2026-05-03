@@ -1552,21 +1552,21 @@ describe("table", function () {
         describe("test support for expected final table layouts", function () {
             describe("insert", function () {
                 it("body 48, 72", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 48),
                         new Measure(2, 72)
                     ])
                     check48_72()
                 })
                 it("col head 48, 72", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 48),
                         new Measure(2, 72)
                     ], { rowHeaders: true, columnHeaders: true})
                     checkColHead48_72()
                 })
                 it("body 48, 72, 32, 64", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 48),
                         new Measure(2, 72),
                         new Measure(3, 32),
@@ -1575,7 +1575,7 @@ describe("table", function () {
                     check48_72_32_64()
                 })
                 it("col head 48, 72, 32, 64", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 48),
                         new Measure(2, 72),
                         new Measure(3, 32),
@@ -1585,7 +1585,7 @@ describe("table", function () {
                 })
 
                 it("32, 48, 72, 64 (seamless)", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 32),
                         new Measure(2, 48),
                         new Measure(3, 72),
@@ -1596,7 +1596,7 @@ describe("table", function () {
                     check32_48_72_64_seamless()
                 })
                 it("body 32, 48, 72, 64", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 32),
                         new Measure(2, 48),
                         new Measure(3, 72),
@@ -1605,7 +1605,7 @@ describe("table", function () {
                     check32_48_72_64()
                 })
                 it("col head 32, 48, 72, 64", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 32),
                         new Measure(2, 48),
                         new Measure(3, 72),
@@ -1614,7 +1614,7 @@ describe("table", function () {
                     checkColHead32_48_72_64()
                 })
                 it("body 32, 64, 48, 72", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 32),
                         new Measure(2, 64),
                         new Measure(3, 48),
@@ -1623,7 +1623,7 @@ describe("table", function () {
                     check32_64_48_72()
                 })
                 it("col head 32, 64, 48, 72", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 32),
                         new Measure(2, 64),
                         new Measure(3, 48),
@@ -1676,7 +1676,7 @@ describe("table", function () {
                     checkColHead32_64_remove_middle()
                 })
                 it("32, 64 (seamless)", async function () {
-                    const model = await prepareByColumns([
+                    await prepareByColumns([
                         new Measure(1, 32),
                         new Measure(4, 64)
                     ], {

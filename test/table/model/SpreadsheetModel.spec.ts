@@ -14,16 +14,16 @@ describe.only("spreadsheetmodel", function () {
         }
         return m
     }
-    function logModel(m: SpreadsheetModel) {
-        let txt = "\n"
-        for (let row = 0; row < m.rowCount; ++row) {
-            for (let col = 0; col < m.colCount; ++col) {
-                txt += m.getField(col, row) + " "
-            }
-            txt += "\n"
-        }
-        console.log(txt)
-    }
+    // function logModel(m: SpreadsheetModel) {
+    //     let txt = "\n"
+    //     for (let row = 0; row < m.rowCount; ++row) {
+    //         for (let col = 0; col < m.colCount; ++col) {
+    //             txt += m.getField(col, row) + " "
+    //         }
+    //         txt += "\n"
+    //     }
+    //     console.log(txt)
+    // }
     describe("add/remove rows/columns", function () {
         it("insert row", function () {
             const m = createModel4x4()

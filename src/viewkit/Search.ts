@@ -27,7 +27,7 @@ import { style as txSearch } from "../style/tx-search"
 export class Search extends ModelView<TextModel> {
     constructor(init?: ModelViewProps<TextModel>) {
         super(init)
-        let s0, s1, b, i, p
+        let s0, s1, i, p
         const f = form(
             div(
                 s0 = svg(
@@ -35,7 +35,7 @@ export class Search extends ModelView<TextModel> {
                 ),
                 i = input()
             ),
-            b = button(
+            button(
                 s1 = svg(
                     path("M6.548 5L9.63 1.917A1.094 1.094 0 008.084.371L5.001 3.454 1.917.37A1.094 1.094 0 00.371 1.917L3.454 5 .37 8.085A1.094 1.094 0 101.917 9.63l3.084-3.083L8.084 9.63a1.094 1.094 0 101.547-1.546z")
                 )

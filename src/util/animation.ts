@@ -48,7 +48,7 @@ export class AnimationBase {
 
     prepare() { }
     firstFrame() { }
-    animationFrame(value: number) { }
+    animationFrame(_value: number) { }
     lastFrame() { }
 
     protected _stop = false

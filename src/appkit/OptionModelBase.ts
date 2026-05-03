@@ -70,7 +70,7 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
      */
     get html(): any | undefined {
         let foundLabel: any
-        this.forEach((value, label, index) => {
+        this.forEach((value, label) => {
             if (this.value === value) {
                 foundLabel = label
             }
@@ -108,7 +108,7 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
     }
     find(block: (value: V) => boolean): V | undefined {
         let value: V | undefined
-        this.forEach((aValue, label, index) => {
+        this.forEach((aValue) => {
             if (block(aValue)) {
                 value = aValue
             }
@@ -120,7 +120,7 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
      */
     indexOf(value: V) {
         let idx: number | undefined
-        this.forEach((aValue, label, index) => {
+        this.forEach((aValue, _label, index) => {
             if (value === aValue) {
                 idx = index
             }
@@ -132,7 +132,7 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
      */
     labelOf(value: V): HTMLElement {
         let lab: any
-        this.forEach((aValue, label, index) => {
+        this.forEach((aValue, label) => {
             if (value === aValue) {
                 lab = label
             }
@@ -144,7 +144,7 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
      */
     isEnabledOf(value: V): boolean {
         let enabled = false
-        this.forEach((aValue, label, index) => {
+        this.forEach((aValue) => {
             if (value === aValue) {
                 enabled = true
             }
@@ -157,7 +157,7 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
      * if the index is not valid, it will be ignored.
      */
     set index(idx: number | undefined) {
-        this.forEach((value, label, index) => {
+        this.forEach((value, _label, index) => {
             if (index === idx) {
                 this.value = value
             }
@@ -168,7 +168,7 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
      */
     get index(): number | undefined {
         let idx: number | undefined
-        this.forEach((value, label, index) => {
+        this.forEach((value, _label, index) => {
             if (this.value === value) {
                 idx = index
             }

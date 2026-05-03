@@ -90,7 +90,7 @@ export class Button extends ActionView {
             return
         }
         // Chrome, Opera invoke connectedCallback() before the children are connected
-        this._observer = new MutationObserver((record: MutationRecord[], observer: MutationObserver) => {
+        this._observer = new MutationObserver((_record: MutationRecord[], _observer: MutationObserver) => {
             if (this._timer !== undefined) clearTimeout(this._timer)
             this._timer = window.setTimeout(() => {
                 this._timer = undefined

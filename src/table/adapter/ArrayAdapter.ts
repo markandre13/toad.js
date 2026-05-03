@@ -41,7 +41,7 @@ export abstract class ArrayAdapter<
         return document.createTextNode(headers[col])
     }
 
-    override getRowHead(row: number): Node | undefined {
+    override getRowHead(_row: number): Node | undefined {
         return undefined
     }
 
@@ -55,7 +55,7 @@ export abstract class ArrayAdapter<
         cell.replaceChildren(document.createTextNode(text))
     }
 
-    override editCell(pos: TablePos, cell: HTMLSpanElement) {
+    override editCell(_pos: TablePos, _cell: HTMLSpanElement) {
         // const text = this.getField(col, row)
         // if (text === undefined)
         //     return undefined

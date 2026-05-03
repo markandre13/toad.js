@@ -20,9 +20,9 @@ describe("action", function () {
     it("two buttons for one action", function () {
         let flag = false
 
-        let logon = new Action(() => {
-            flag = true
-        })
+        // let logon = new Action(() => {
+        //     flag = true
+        // })
 
         document.body.innerHTML = `<tx-button action="logon">Log on</tx-button><tx-button action="logon">Log on</tx-button>`
 
@@ -40,13 +40,13 @@ describe("action", function () {
         let flag0 = false
         let flag1 = false
 
-        let logon0 = new Action(() => {
-            flag0 = true
-        })
+        // let logon0 = new Action(() => {
+        //     flag0 = true
+        // })
 
-        let logon1 = new Action(() => {
-            flag1 = true
-        })
+        // let logon1 = new Action(() => {
+        //     flag1 = true
+        // })
 
         document.body.innerHTML = `<tx-button action="logon">Log on</tx-button>`
         getHTMLButtonElement().dispatchEvent(new Event("click"))

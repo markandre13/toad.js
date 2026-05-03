@@ -18,7 +18,7 @@
 
 import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
-import { input, label, slot, span, text } from "../util/lsx"
+import { input, label, slot, span } from "../util/lsx"
 import { style as txRadio } from "../style/tx-radio"
 
 export interface RadioButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {

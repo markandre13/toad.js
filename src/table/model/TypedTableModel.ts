@@ -23,7 +23,7 @@ import { TableModel } from "./TableModel"
  */
 export abstract class TypedTableModel<T> extends TableModel {
     nodeClass: new () => T
-    constructor(nodeClass: new () => T, root?: T) {
+    constructor(nodeClass: new () => T, _root?: T) {
         super()
         this.nodeClass = nodeClass
     }

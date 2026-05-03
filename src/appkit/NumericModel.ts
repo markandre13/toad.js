@@ -34,9 +34,16 @@ export interface NumericModelOptions<T> extends ValueModelOptions<T> {
 }
 
 export abstract class NumericModel<T> extends ValueModel<T, NumericModelEvent, NumericModelOptions<T>> {
+    /**
+     * increment value by step
+     */
     abstract increment(): void
+    /**
+     * decrement value by step
+     */
     abstract decrement(): void
-    protected abstract clip(value: T): void
+    abstract toNumber(): number
+    abstract clip(value: T): void
     protected abstract check(value: T): string | undefined
 
     set min(min: number | undefined) {

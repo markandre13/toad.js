@@ -32,7 +32,7 @@ export function initHistoryManager(tabModel: EnumModel<TAB>) {
     }
 
     // adjust state when moving back and forward
-    window.onpopstate = (ev: PopStateEvent) => {
+    window.onpopstate = (_ev: PopStateEvent) => {
         // console.log(`POPSTATE MODEL := ${location.hash}`)
         if (location.hash.length > 1) {
             // tabModel.value = parseInt(location.hash.substring(1))

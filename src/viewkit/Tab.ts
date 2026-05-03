@@ -24,7 +24,7 @@ import { type HTMLElementProps, type JSX } from "toad.jsx"
 import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 
-export interface TabsProps<V=void> extends ModelViewProps<OptionModelBase<V>> {
+export interface TabsProps<V = void> extends ModelViewProps<OptionModelBase<V>> {
     orientation?: "horizontal" | "vertical"
     // the approach implemented here doesn't really work, instead something like this is needed:
     // https://stackoverflow.com/questions/44475309/how-do-i-restrict-the-type-of-react-children-in-typescript-using-the-newly-adde
@@ -34,7 +34,7 @@ export interface TabsProps<V=void> extends ModelViewProps<OptionModelBase<V>> {
 /**
  * @category View
  */
-export class Tabs<V=void> extends ModelView<OptionModelBase<V>> {
+export class Tabs<V = void> extends ModelView<OptionModelBase<V>> {
     markerLine: HTMLElement
     content: HTMLElement
 
@@ -44,7 +44,7 @@ export class Tabs<V=void> extends ModelView<OptionModelBase<V>> {
 
     labelMap = new Map<Tab<V>, HTMLElement>()
 
-    constructor(init?: TabsProps<V>) { 
+    constructor(init?: TabsProps<V>) {
         super(init)
 
         this.setActivateTab = this.setActivateTab.bind(this)
@@ -79,8 +79,7 @@ export class Tabs<V=void> extends ModelView<OptionModelBase<V>> {
 
             if (typeof panel.value !== typeof this.model?.value) {
                 console.log(
-                    `Type error: Tab<${typeof panel.value}>({label="${panel.label}", value=${
-                        panel.value
+                    `Type error: Tab<${typeof panel.value}>({label="${panel.label}", value=${panel.value
                     }}) differs from Tabs<${typeof this.model?.value}>({model.value=${this.model?.value}})`
                 )
                 // } else {
@@ -152,7 +151,7 @@ export class Tabs<V=void> extends ModelView<OptionModelBase<V>> {
 
         this.activePanel.open()
         this.activeLabel.classList.add("active")
-        if (this.activePanel.jsxstyle?.display) {
+        if (typeof this.activePanel.jsxstyle === "object" && this.activePanel.jsxstyle.display) {
             this.activePanel.style.display = this.activePanel.jsxstyle?.display
         } else {
             this.activePanel.style.display = ""
@@ -196,7 +195,7 @@ export interface TabProps<V> extends HTMLElementProps {
 export class Tab<V> extends View {
     value?: V
     label?: string
-    jsxstyle?: JSX.CSSProperties
+    jsxstyle?: JSX.CSSProperties | string | undefined
     visibilityChange?: (state: "visible" | "hidden") => void
     /**
      * A Tab's content can either be provided as it's children, or when there are no children
@@ -244,7 +243,7 @@ export class Tab<V> extends View {
             appendChildren(this, this.content())
         }
     }
-    close() {}
+    close() { }
 }
 View.define("tx-tab", Tab)
 
