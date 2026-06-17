@@ -187,7 +187,11 @@ export function flatMapColumns(dataIn: Measure[]) {
 }
 
 export function getTable() {
-    return new TableFriend(document.querySelector("tx-table") as Table)
+    const table = document.querySelector("tx-table")
+    if (table === null) {
+        throw Error(`did not find tx-table element`)
+    }
+    return new TableFriend(table as Table)
 }
 export function bodyRowInfo(row: number) {
     const table = getTable()
@@ -534,6 +538,10 @@ export function validateRender(model: TestModel, print: boolean = false) {
     let x = 0
     for (let col = 0; col < adapter.colCount; ++col) {
         const cell = body.children[col] as HTMLSpanElement
+        if (cell === undefined) {
+            console.log(table.body)
+            throw Error(`table.body as ${table.body.children.length} columns but it expected to find ${adapter.colCount}`)
+        }
         const w = px2int(cell.style.width)
         expectCol.push({ x, w })
         // console.log(`expectCol[${col}] = {x: ${x}, w: ${w}}`)

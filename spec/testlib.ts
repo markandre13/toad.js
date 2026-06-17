@@ -3,6 +3,7 @@
 // https://testing-library.com/docs/user-event/intro
 
 import { TextField as TextView } from "@toad/viewkit/TextField"
+import { expect } from "chai"
 
 export function sleep(milliseconds: number = 0) {
     return new Promise((resolve, reject) => {
@@ -11,6 +12,16 @@ export function sleep(milliseconds: number = 0) {
         }, milliseconds)
     })
 }
+
+export function sleepUntilMicroTask() {
+    return new Promise((resolve, reject) => {
+        queueMicrotask(() => {
+            resolve('success')
+        })
+    })
+}
+
+// queueMicrotask()
 
 export function px2int(s: string) {
     return parseInt(s.substring(0, s.length - 2))
@@ -24,7 +35,15 @@ export function getById(id: string) {
     return document.getElementById(id)
 }
 
-export function getByText(text: string, node: Node = document): Element | undefined {
+export function getByText(text: string, node: Node = document): Element  {
+    const element = getByTextOrUndefined(text, node)
+    if (element === undefined) {
+        throw Error(`failed to find element containing text "${text}"`)
+    }
+    return element
+}
+
+export function getByTextOrUndefined(text: string, node: Node = document): Element | undefined {
     // HTML Text
     if (node instanceof Text) {
         if (text == node.nodeValue) {
@@ -40,7 +59,7 @@ export function getByText(text: string, node: Node = document): Element | undefi
     if (node instanceof HTMLElement) {
         if (node.shadowRoot) {
             for (const child of node.shadowRoot.childNodes) {
-                const r = getByText(text, child)
+                const r = getByTextOrUndefined(text, child)
                 if (r !== undefined) {
                     return r
                 }
@@ -48,7 +67,7 @@ export function getByText(text: string, node: Node = document): Element | undefi
         }
     }
     for (const child of node.childNodes) {
-        const r = getByText(text, child)
+        const r = getByTextOrUndefined(text, child)
         if (r !== undefined) {
             return r
         }

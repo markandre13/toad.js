@@ -55,6 +55,6 @@
         "vitest": "^4.1.9"
     },
     "dependencies": {
-        "toad.jsx": "^0.1.4"
+        "toad.jsx": "^0.1.5"
     }
 }

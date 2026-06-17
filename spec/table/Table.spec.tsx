@@ -61,7 +61,7 @@ import { Tab, Tabs } from "@toad/viewkit/Tab"
 import { refs, replaceChildren } from "toad.jsx"
 import { TableEditMode } from "@toad/table/TableEditMode"
 import { beforeEach, describe, it } from "vitest"
-import { xit } from "spec/spec"
+import { fit, xit } from "../spec"
 
 // TODO:
 // [X] send modified-events
@@ -112,8 +112,8 @@ describe("table", function () {
     describe("render", function () {
         it("render model", async function () {
             const model = createModel(4, 4)
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            await sleep()
+            replaceChildren(document.body, <Table model={model}/>)
+            await sleep(5) // FIXME: poll table
             validateRender(model)
         })
 
@@ -121,8 +121,8 @@ describe("table", function () {
             const model = createModel(4, 4)
             model.showColumnHeaders = true
             model.showRowHeaders = true
-            document.body.innerHTML = `<style>body{background: #888;}</style><tx-table model="model"></tx-table>`
-            await sleep()
+            replaceChildren(document.body, <Table model={model}/>)
+            await sleep(5)
             validateRender(model)
         })
     })
@@ -312,11 +312,11 @@ describe("table", function () {
             table.focus()
 
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
-            expect(c0r1).to.not.be.undefined
+            expect(c0r1, `cell "Stranger In A Strange Land" should exist`).to.not.be.undefined
 
             table.logger.log("================= click c0r1")
             click(c0r1)
-            expect(hasFocus(c0r1)).to.be.true
+            expect(hasFocus(c0r1), "clicked cell should have focus").to.be.true
 
             table.logger.log("================= hit [Enter] to start editing")
             keyboard({ key: "Enter" }) // enter edit mode
@@ -329,7 +329,7 @@ describe("table", function () {
 
             // table.logger.print()
 
-            expect(hasFocus(c0r1)).to.be.false
+            expect(hasFocus(c0r1), "cell should lose focus after Enter").to.be.false
 
             expect(model.data[1].title).to.equal("Hello")
         })
@@ -420,16 +420,16 @@ describe("table", function () {
 
             table.logger.log("================= click c0r1")
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
-            expect(c0r1).to.not.be.undefined
+            expect(c0r1, `cell "Stranger In A Strange Land" should exist`).to.not.be.undefined
             click(c0r1)
-            expect(hasFocus(c0r1)).to.be.true
+            expect(hasFocus(c0r1), "clicked cell should have focus").to.be.true
 
             table.logger.log("================= type 'Hello'")
             type("Hello", true)
 
             table.logger.log("================= hit [Enter] to finish editing")
             keyboard({ key: "Enter" }) // leave edit mode and jump to next cell
-            expect(hasFocus(c0r1)).to.be.false
+            expect(hasFocus(c0r1), "cell should lose focus after Enter").to.be.false
 
             // table.logger.print()
 
@@ -499,10 +499,10 @@ describe("table", function () {
             table.focus()
 
             const c0r1 = getByText("Stranger In A Strange Land") as HTMLSpanElement
-            expect(c0r1).to.not.be.undefined
+            expect(c0r1, `cell "Stranger In A Strange Land" should exist`).to.not.be.undefined
 
             click(c0r1)
-            expect(hasFocus(c0r1)).to.be.true
+            expect(hasFocus(c0r1), "clicked cell should have focus").to.be.true
 
             // type("Hello", true)
             c0r1.setAttribute("value", "Hello")
@@ -545,19 +545,10 @@ describe("table", function () {
         it("JSX renders correctly", async function () {
             const model = createModel(4, 4)
             replaceChildren(document.body, <Table style={{ width: `720px`, height: `350px` }} model={model} />)
-            await sleep(20)
-            const table = getTable()
-            // table.logger.print()
+            await sleep(5)
             validateRender(model)
         })
-        it("HTML renders correctly", async function () {
-            const model = createModel(4, 4)
-            document.body.innerHTML = `<tx-table model="model" style="width: 720px; height: 350px;"></tx-table>`
-            await sleep(20)
-            const table = getTable()
-            // table.logger.print()
-            validateRender(model)
-        })
+
         // FIXME: unstable test
         it("insert row into table which already has row and column headers (UNSTABLE)", async function () {
             // AnimationBase.animationFrameCount = 2000
@@ -650,7 +641,7 @@ describe("table", function () {
             await sleep()
 
             const tab2 = getByText("TAB2")
-            expect(tab2).to.be.not.undefined
+            expect(tab2, `tab "TAB2" should exist`).to.not.be.undefined
             click(tab2!)
 
             await sleep(20)
@@ -671,14 +662,17 @@ describe("table", function () {
     describe("error display", function () {
         it("cycle", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
-            await sleep()
+            replaceChildren(document.body, <Table model={model}/>)
+            await sleep(5)
             const table = getTable()
             table.focus()
 
             const c0r0 = getByText("C0R0") as HTMLSpanElement
+            expect(c0r0, `cell "C0R0" should exist`).to.not.be.undefined
             const c1r0 = getByText("C1R0") as HTMLSpanElement
+            expect(c1r0, `cell "C1R0" should exist`).to.not.be.undefined
             const c0r1 = getByText("C0R1") as HTMLSpanElement
+            expect(c0r1, `cell "C0R1" should exist`).to.not.be.undefined
 
             // create cycle
             click(c0r0)
@@ -699,9 +693,9 @@ describe("table", function () {
 
             keyboard({ key: "Enter" })
 
-            expect(c0r0.classList.contains("error")).to.be.true
-            expect(c1r0.classList.contains("error")).to.be.true
-            expect(c0r1.classList.contains("error")).to.be.true
+            expect(c0r0.classList.contains("error"), "C0R0 should show error after cycle").to.be.true
+            expect(c1r0.classList.contains("error"), "C1R0 should show error after cycle").to.be.true
+            expect(c0r1.classList.contains("error"), "C0R1 should show error after cycle").to.be.true
 
             // break cycle
             click(c0r0)
@@ -709,9 +703,9 @@ describe("table", function () {
             type("=7", true)
             keyboard({ key: "Enter" })
 
-            expect(c0r0.classList.contains("error")).to.be.false
-            expect(c1r0.classList.contains("error")).to.be.false
-            expect(c0r1.classList.contains("error")).to.be.false
+            expect(c0r0.classList.contains("error"), "C0R0 error should clear after cycle broken").to.be.false
+            expect(c1r0.classList.contains("error"), "C1R0 error should clear after cycle broken").to.be.false
+            expect(c0r1.classList.contains("error"), "C0R1 error should clear after cycle broken").to.be.false
         })
     })
 
@@ -719,7 +713,7 @@ describe("table", function () {
         // FIXME: timeout
         xit("click into cells", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -727,44 +721,45 @@ describe("table", function () {
             for (let row = 0; row < 2; ++row) {
                 for (let col = 0; col < 2; ++col) {
                     const cell = getByText(`C${col}R${row}`)
+                    expect(cell, `cell "C${col}R${row}" should exist`).to.not.be.undefined
                     click(cell!)
-                    expect(activeElement()).to.equal(cell)
-                    expect(table.selection?.value).to.deep.equal({ col, row })
+                    expect(activeElement(), `active element should be C${col}R${row}`).to.equal(cell)
+                    expect(table.selection?.value, `selection should be at (${col},${row})`).to.deep.equal({ col, row })
                 }
             }
         })
 
         it("tab forward into table", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
+            replaceChildren(document.body, <><input/><Table model={model} /><input/></>)
             await sleep()
                 ; (document.body.children[0] as HTMLElement).focus()
 
             tabForward()
 
             const cell = getByText("C0R0")
-            expect(activeElement()).to.equal(cell)
+            expect(activeElement(), "active element should be C0R0 after tab forward").to.equal(cell)
             const table = getTable()
-            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
+            expect(table.selection?.value, "selection should be at (0,0)").to.deep.equal({ col: 0, row: 0 })
         })
 
         it("tab backward into table", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<input/><tx-table model="model"></tx-table><input/>`
+            replaceChildren(document.body, <><input/><Table model={model} /><input/></>)
             await sleep()
                 ; (document.body.children[2] as HTMLElement).focus()
 
             tabBackward()
 
             const cell = getByText("C1R1")
-            expect(activeElement()).to.equal(cell)
+            expect(activeElement(), "active element should be C1R1 after tab backward").to.equal(cell)
             const table = getTable()
-            expect(table.selection?.value).to.deep.equal({ col: 1, row: 1 })
+            expect(table.selection?.value, "selection should be at (1,1)").to.deep.equal({ col: 1, row: 1 })
         })
 
         it("tab to next cell", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -773,12 +768,12 @@ describe("table", function () {
             tabForward()
 
             const cell = getByText("C1R0")
-            expect(activeElement()).to.equal(cell)
-            expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
+            expect(activeElement(), "active element should be C1R0 after tab").to.equal(cell)
+            expect(table.selection?.value, "selection should be at (1,0)").to.deep.equal({ col: 1, row: 0 })
         })
         it("tab to previous cell", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -786,12 +781,16 @@ describe("table", function () {
             click(getByText("C1R0")!)
             tabBackward()
             const cell = getByText("C0R0")
-            expect(activeElement()).to.equal(cell)
-            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
+            expect(activeElement(), "active element should be C0R0 after shift+tab").to.equal(cell)
+            expect(table.selection?.value, "selection should be at (0,0)").to.deep.equal({ col: 0, row: 0 })
         })
         it("tab forward out of table", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
+            const before = input()
+            before.id = "before"
+            const after = input()
+            after.id = "after"
+            replaceChildren(document.body, [before, <Table model={model} />, after])
             await sleep()
             const table = getTable()
             table.focus()
@@ -800,11 +799,15 @@ describe("table", function () {
             click(c1r1)
             tabForward()
 
-            expect(activeElement()).to.equal(getById("after"))
+            expect(activeElement(), "active element should be #after after tab out").to.equal(getById("after"))
         })
         it("tab backward out of table", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<input id="before"/><tx-table model="model"></tx-table><input id="after"/>`
+            const before = input()
+            before.id = "before"
+            const after = input()
+            after.id = "after"
+            replaceChildren(document.body, [before, <Table model={model} />, after])
             await sleep()
             const table = getTable()
             table.focus()
@@ -812,11 +815,11 @@ describe("table", function () {
             click(getByText("C0R0")!)
             tabBackward()
 
-            expect(activeElement()).to.equal(getById("before"))
+            expect(activeElement(), "active element should be #before after shift+tab out").to.equal(getById("before"))
         })
         it("cursor right to next cell", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -826,12 +829,12 @@ describe("table", function () {
             keyboard({ key: "ArrowRight" })
 
             const cell = getByText("C1R0")
-            expect(activeElement()).to.equal(cell)
-            expect(table.selection?.value).to.deep.equal({ col: 1, row: 0 })
+            expect(activeElement(), "active element should be C1R0 after ArrowRight").to.equal(cell)
+            expect(table.selection?.value, "selection should be at (1,0)").to.deep.equal({ col: 1, row: 0 })
         })
         xit("cursor right to next row", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -841,11 +844,12 @@ describe("table", function () {
             keyboard({ key: "ArrowRight" })
 
             const cell = getByText("C0R1")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(cell, "C0R1 should exist").to.not.be.undefined
+            expect(cell!.classList.contains("selected"), "C0R1 should be selected").is.true
         })
         it("cursor left to previous cell", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -855,12 +859,12 @@ describe("table", function () {
             keyboard({ key: "ArrowLeft" })
 
             const cell = getByText("C0R0")
-            expect(activeElement()).to.equal(cell)
-            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
+            expect(activeElement(), "active element should be C0R0 after ArrowLeft").to.equal(cell)
+            expect(table.selection?.value, "selection should be at (0,0)").to.deep.equal({ col: 0, row: 0 })
         })
         xit("cursor left to previous row", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
 
             click(getByText("C0R1")!)
@@ -868,11 +872,12 @@ describe("table", function () {
             keyboard({ key: "ArrowLeft" })
 
             const cell = getByText("C1R0")
-            expect(cell?.classList.contains("selected")).is.true
+            expect(cell, "C1R0 should exist").to.not.be.undefined
+            expect(cell!.classList.contains("selected"), "C1R0 should be selected").is.true
         })
         it("cursor up", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -882,12 +887,12 @@ describe("table", function () {
             keyboard({ key: "ArrowUp" })
 
             const cell = getByText("C0R0")
-            expect(activeElement()).to.equal(cell)
-            expect(table.selection?.value).to.deep.equal({ col: 0, row: 0 })
+            expect(activeElement(), "active element should be C0R0 after ArrowUp").to.equal(cell)
+            expect(table.selection?.value, "selection should be at (0,0)").to.deep.equal({ col: 0, row: 0 })
         })
         it("cursor down", async function () {
             const model = createModel(2, 2)
-            document.body.innerHTML = `<tx-table model="model"></tx-table>`
+            replaceChildren(document.body, <Table model={model} />)
             await sleep()
             const table = getTable()
             table.focus()
@@ -897,8 +902,8 @@ describe("table", function () {
             keyboard({ key: "ArrowDown" })
 
             const cell = getByText("C0R1")
-            expect(activeElement()).to.equal(cell)
-            expect(table.selection?.value).to.deep.equal({ col: 0, row: 1 })
+            expect(activeElement(), "active element should be C0R1 after ArrowDown").to.equal(cell)
+            expect(table.selection?.value, "selection should be at (0,1)").to.deep.equal({ col: 0, row: 1 })
         })
 
         function dumpCell(id: string, cell: SpreadsheetCell) {
@@ -917,40 +922,44 @@ describe("table", function () {
                 replaceChildren(document.body, <Table model={model} />)
                 await sleep()
                 const table = getTable()
-                const c0r0 = table.body.children[0]
+                const c0r0 = table.body.children[0] as HTMLElement | undefined
+                expect(c0r0, "first cell should exist").to.not.be.undefined
 
-                click(c0r0)
-                expect(c0r0.textContent).to.equal("")
-
-                keyboard({ key: "Enter" })
-                expect(c0r0.textContent).to.equal("")
+                click(c0r0!)
+                expect(c0r0!.textContent, "empty cell should have empty content").to.equal("")
 
                 keyboard({ key: "Enter" })
-                expect(c0r0.textContent).to.equal("")
+                expect(c0r0!.textContent, "cell should stay empty after Enter").to.equal("")
+
+                keyboard({ key: "Enter" })
+                expect(c0r0!.textContent, "cell should still be empty after second Enter").to.equal("")
             })
 
             // FIXME: timeout
             xit("edit cell", async function () {
                 const model = createModel(2, 2)
-                document.body.innerHTML = `<tx-table model="model"></tx-table>`
+                replaceChildren(document.body, <Table model={model} />)
                 await sleep()
                 const table = getTable()
                 table.focus()
 
                 const c0r0 = getByText("C0R0") as HTMLSpanElement
+                expect(c0r0, 'cell "C0R0" should exist').to.not.be.undefined
                 const c1r0 = getByText("C1R0") as HTMLSpanElement
+                expect(c1r0, 'cell "C1R0" should exist').to.not.be.undefined
                 const c0r1 = getByText("C0R1") as HTMLSpanElement
+                expect(c0r1, 'cell "C0R1" should exist').to.not.be.undefined
 
                 click(c0r0)
-                expect(activeElement()).to.equal(c0r0)
-                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+                expect(activeElement(), "active element should be C0R0 after click").to.equal(c0r0)
+                expect(table.selection!.value, "selection should be at (0,0)").to.deep.equal({ col: 0, row: 0 })
 
                 // [enter] starts editing the cell
                 keyboard({ key: "Enter" })
 
-                expect(c0r0.classList.contains("edit")).is.true
-                expect(c0r0.hasAttribute("contenteditable")).to.be.true
-                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+                expect(c0r0.classList.contains("edit"), "C0R0 should be in edit mode").is.true
+                expect(c0r0.hasAttribute("contenteditable"), "C0R0 should be contenteditable").to.be.true
+                expect(table.selection!.value, "selection should stay at (0,0)").to.deep.equal({ col: 0, row: 0 })
 
                 // when there is another row, [enter] saves value and edits next row
                 type("= 2 * 3", true)
@@ -961,10 +970,10 @@ describe("table", function () {
                 expect(c0r0.classList.contains("edit")).is.false
                 expect(c0r0.textContent).to.equal("6")
 
-                expect(c0r1.classList.contains("edit")).is.true
-                expect(c0r1.hasAttribute("contenteditable")).to.be.true
-                expect(activeElement()).to.equal(c0r1)
-                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
+                expect(c0r1.classList.contains("edit"), "C0R1 should be in edit mode").is.true
+                expect(c0r1.hasAttribute("contenteditable"), "C0R1 should be contenteditable").to.be.true
+                expect(activeElement(), "active element should be C0R1").to.equal(c0r1)
+                expect(table.selection!.value, "selection should be at (0,1)").to.deep.equal({ col: 0, row: 1 })
 
                 type("= A1 * 2", true)
 
@@ -974,33 +983,33 @@ describe("table", function () {
                 // which switches the cell again into edit mode
                 keyboard({ key: "Enter" })
 
-                expect(c0r1.classList.contains("edit")).is.false
+                expect(c0r1.classList.contains("edit"), "C0R1 should exit edit mode").is.false
                 expect(c0r1.textContent).to.equal("12")
-                expect(activeElement()).to.equal(c0r1)
-                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
+                expect(activeElement(), "active element should stay at C0R1").to.equal(c0r1)
+                expect(table.selection!.value, "selection should stay at (0,1)").to.deep.equal({ col: 0, row: 1 })
 
                 // we can move to another cell
                 keyboard({ key: "ArrowUp" })
-                expect(activeElement()).to.equal(c0r0)
-                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
+                expect(activeElement(), "active element should be C0R0 after ArrowUp").to.equal(c0r0)
+                expect(table.selection!.value, "selection should be at (0,0)").to.deep.equal({ col: 0, row: 0 })
 
                 // in edit mode ArrowDown moves to another cell
                 keyboard({ key: "Enter" })
                 keyboard({ key: "ArrowDown" })
-                expect(c0r0.classList.contains("edit")).is.false
+                expect(c0r0.classList.contains("edit"), "C0R0 should exit edit mode").is.false
                 expect(c0r0.textContent).to.equal("6")
-                expect(c0r1.classList.contains("edit")).is.false
-                expect(table.selection!.value).to.deep.equal({ col: 0, row: 1 })
-                expect(activeElement()).to.equal(c0r1)
+                expect(c0r1.classList.contains("edit"), "C0R1 should not be in edit mode").is.false
+                expect(table.selection!.value, "selection should be at (0,1)").to.deep.equal({ col: 0, row: 1 })
+                expect(activeElement(), "active element should be C0R1").to.equal(c0r1)
 
                 // in edit mode ArrowUp moves to another cell
                 keyboard({ key: "Enter" })
                 keyboard({ key: "ArrowUp" })
-                expect(c0r0.classList.contains("edit")).is.false
-                expect(c0r1.classList.contains("edit")).is.false
+                expect(c0r0.classList.contains("edit"), "C0R0 should not be in edit mode").is.false
+                expect(c0r1.classList.contains("edit"), "C0R1 should exit edit mode").is.false
                 expect(c0r1.textContent).to.equal("12")
-                expect(table.selection!.value).to.deep.equal({ col: 0, row: 0 })
-                expect(activeElement()).to.equal(c0r0)
+                expect(table.selection!.value, "selection should be at (0,0)").to.deep.equal({ col: 0, row: 0 })
+                expect(activeElement(), "active element should be C0R0").to.equal(c0r0)
 
                 // in edit mode Tab moves to another cell
                 // FIXME: test fails but it works in real
@@ -1011,10 +1020,10 @@ describe("table", function () {
                 tabForward()
 
                 await sleep(100)
-                expect(c0r0.classList.contains("edit")).is.false
-                expect(c1r0.classList.contains("edit")).is.false
-                expect(table.selection!.value).to.deep.equal({ col: 1, row: 0 })
-                expect(activeElement()).to.equal(c1r0)
+                expect(c0r0.classList.contains("edit"), "C0R0 should exit edit mode").is.false
+                expect(c1r0.classList.contains("edit"), "C1R0 should not be in edit mode").is.false
+                expect(table.selection!.value, "selection should be at (1,0)").to.deep.equal({ col: 1, row: 0 })
+                expect(activeElement(), "active element should be C1R0").to.equal(c1r0)
 
                 // allow shift + enter to create line break!
             })
@@ -1024,15 +1033,12 @@ describe("table", function () {
     describe("jsx", function () {
         it("table accepts 'model' and 'style' attributes", async function () {
             const model = createModel(4, 4)
-            replaceChildren(document.body, <>
-                <style>{"body{background: #888;}"}</style>
-                <Table model={model} style={{ width: "42%" }} />
-            </>)
+            replaceChildren(document.body, <Table model={model} style={{ width: "42%" }} />)
             await sleep(20)
 
             validateRender(model)
 
-            const table = getTable()!
+            const table = getTable()
             expect(table.style.width).to.equal("42%")
         })
     })
@@ -1323,23 +1329,49 @@ function createTreeModelFromTree(): TestTreeNodeModel {
 }
 
 function rowLabel(table: TableFriend, row: number): string {
-    // console.log(`${row} * ${table.adapter.colCount}`)
-    // console.log(table.body.children[row * table.adapter.colCount])
-    return (table.body.children[row * table.adapter.colCount].children[1] as HTMLElement).innerText
+    const index = row * table.adapter.colCount
+    const cell = table.body.children[index] as HTMLElement | undefined
+    if (cell === undefined) {
+        throw Error(`rowLabel: row ${row} (index ${index}) does not exist (body has ${table.body.children.length} children)`)
+    }
+    const label = cell.children[1] as HTMLElement | undefined
+    if (label === undefined) {
+        throw Error(`rowLabel: cell at index ${index} has no label child`)
+    }
+    return label.innerText
 }
 
 function rowPosAndLabelTop(table: TableFriend, row: number): string {
-    const child = table.body.children[row * table.adapter.colCount] as HTMLElement
+    const index = row * table.adapter.colCount
+    const child = table.body.children[index] as HTMLElement | undefined
+    if (child === undefined) {
+        throw Error(`rowPosAndLabelTop: row ${row} (index ${index}) does not exist (body has ${table.body.children.length} children)`)
+    }
     const x = px2float(child.style.left)
     const y = px2float(child.style.top)
-    return `${x},${y}: ${(child.children[1] as HTMLElement).innerText}`
+    const label = child.children[1] as HTMLElement | undefined
+    if (label === undefined) {
+        throw Error(`rowPosAndLabelTop: cell at index ${index} has no label child`)
+    }
+    return `${x},${y}: ${label.innerText}`
 }
 
 function rowPosAndLabelBottom(table: TableFriend, row: number): string {
-    const child = table.splitBody.children[row * table.adapter.colCount] as HTMLElement
+    if (table.splitBody === null) {
+        throw Error(`rowPosAndLabelBottom: table has no splitBody`)
+    }
+    const index = row * table.adapter.colCount
+    const child = table.splitBody.children[index] as HTMLElement | undefined
+    if (child === undefined) {
+        throw Error(`rowPosAndLabelBottom: row ${row} (index ${index}) does not exist (splitBody has ${table.splitBody.children.length} children)`)
+    }
     const x = px2float(child.style.left)
     const y = px2float(child.style.top)
-    return `${x},${y}: ${(child.children[1] as HTMLElement).innerText}`
+    const label = child.children[1] as HTMLElement | undefined
+    if (label === undefined) {
+        throw Error(`rowPosAndLabelBottom: cell at index ${index} has no label child`)
+    }
+    return `${x},${y}: ${label.innerText}`
 }
 
 function rowCount(table: TableFriend): number {
