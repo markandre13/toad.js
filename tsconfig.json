@@ -3,25 +3,20 @@
         "ignoreDeprecations": "6.0",
         "target": "es2021",
         "module": "es2020",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
+        "noEmit": true,
+        "declaration": false,
+        "sourceMap": false,
         "traceResolution": false,
         "esModuleInterop": true,
         "incremental": true,
-        "declaration": true,
-        "outDir": "lib",
-        "baseUrl": ".",
+        "outDir": "dist",
         "paths": {
-            "@toad": [
-                "src/index"
-            ],
             "@toad/*": [
-                "src/*"
-            ],
-            "src": [
-                "src/index"
+                "./src/*"
             ],
             "src/*": [
-                "src/*"
+                "./src/*"
             ],
         },
         "lib": [
@@ -31,13 +26,8 @@
         ],
         "jsx": "react-jsx",
         "jsxImportSource": "toad.jsx",
-        "plugins": [
-            {
-                "transform": "./m13-es-transformer.js",
-                // "afterDeclarations": true,
-                "after": true,
-            }
-        ],
+        "isolatedDeclarations": false,
+        "isolatedModules": true,
         "verbatimModuleSyntax": true,
         "forceConsistentCasingInFileNames": true,
         "resolveJsonModule": true,
@@ -48,11 +38,10 @@
         "strictNullChecks": true,
         "allowJs": false,
         "noImplicitAny": true,
-        "sourceMap": true
     },
     "include": [
         "src",
-        "test",
+        "spec",
         "docs"
     ]
 }

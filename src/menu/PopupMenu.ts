@@ -52,13 +52,13 @@ export class PopupMenu extends MenuButtonContainer {
         this.show()
     }
 
-    show() {
+    show(): void {
         if (!this.parentButton!.master!.vertical) placePopupVertical(this.parentButton!, this.popup)
         else placePopupHorizontal(this.parentButton!, this.popup)
         this.style.display = ""
     }
 
-    hide() {
+    hide(): void {
         this.style.display = "none"
     }
 }

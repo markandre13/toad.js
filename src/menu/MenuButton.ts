@@ -194,7 +194,7 @@ export class MenuButton extends ModelView<TextModel> {
         }
     }
 
-        override connectedCallback() {
+        override connectedCallback(): void {
         // if (this.controller) return
 
         if (this.node.down === undefined) {
@@ -218,7 +218,7 @@ export class MenuButton extends ModelView<TextModel> {
         }
     }
 
-    override disconnectedCallback() {
+    override disconnectedCallback(): void {
         // if (this.controller) this.controller.unregisterView(this)
         globalController.unregisterView(this)
     }

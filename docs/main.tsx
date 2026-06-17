@@ -3,7 +3,8 @@ import { Tabs, Tab } from "@toad/viewkit/Tab"
 import { initHistoryManager, TAB } from "./history"
 import { loadFont } from "@toad/util/loadFont"
 import { loadStyle } from "@toad/util/loadStyle"
-import { replaceChildren } from "toad.jsx"
+import type { JSX } from "toad.jsx"
+// import { replaceChildren } from "toad.jsx"
 
 window.onload = () => {
     const tabModel = new EnumModel(TAB.INTRODUCTION, TAB)
@@ -29,4 +30,16 @@ window.onload = () => {
             <Tab value={TAB.TABS} label="Tabs" content={() => import("./09_tabs")} />
         </Tabs>
     </>)
+}
+
+function replaceChildren(parent: Element, content: JSX.Element) {
+    if (Array.isArray(content)) {
+        if (content.length === 1 && Array.isArray(content[0])) {
+            parent.replaceChildren(...content[0] as any[])
+        } else {
+            parent.replaceChildren(...content as any[])
+        }
+    } else {
+        parent.replaceChildren(content as any)
+    }
 }

@@ -19,7 +19,7 @@
 import { TableModel } from "../model/TableModel"
 import { TypedTableModel } from "../model/TypedTableModel"
 import { TablePos } from "../TablePos"
-import { TypedTableAdapter } from "./TypedTableAdapter"
+import type { TypedTableAdapter } from "./TypedTableAdapter"
 
 export enum EditMode {
     // begin to edit the cell when it has the focus. this is the default

@@ -25,7 +25,7 @@ import { type TableEvent } from "../TableEvent"
 export abstract class TableModel extends Model<TableEvent> {
     abstract get colCount(): number
     abstract get rowCount(): number
-    isEmpty() { return this.colCount === 0 && this.rowCount === 0 }
+    isEmpty(): boolean { return this.colCount === 0 && this.rowCount === 0 }
 }
 
 /**

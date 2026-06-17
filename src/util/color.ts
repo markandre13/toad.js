@@ -50,7 +50,7 @@ export function rgb2hsv(r: number, g: number, b: number): HSV {
     return { h: 60 * (h < 0 ? h + 6 : h), s: v && c / v, v }
 }
 
-export function rgb2hsl(rgb: RGB) {
+export function rgb2hsl(rgb: RGB): HSL {
     const hsl = _rgb2hsl(rgb.r/255, rgb.g/255, rgb.b/255)
     return {h: hsl[0], s: hsl[1], l: hsl[2]}
 }
