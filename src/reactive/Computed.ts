@@ -38,9 +38,8 @@ export class Computed<T> {
 /**
  * evaluate fn once and later whenever one of it's dependencies change
  */
-export function effect(fn: () => void) {
-    const signal = new Signal()
-    signal.add(fn)
+export function effect(fn: () => void, signal = new Signal()) {
+    signal.add(() => evaluateAndDiscoverDependencies(signal, fn))
     evaluateAndDiscoverDependencies(signal, fn)
 }
 export const constraint = effect
