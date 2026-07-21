@@ -11,7 +11,7 @@ export interface RGBA extends RGB {
 /**
  * Hue
  * Saturation
- * Value (1 = bright)
+ * Value (100 = bright)
  */
 export interface HSV {
     h: number
@@ -22,7 +22,7 @@ export interface HSV {
 /**
  * Hue: 0 - 360
  * Saturation
- * Lightness (1 = white)
+ * Lightness (100 = white)
  */
 export interface HSL {
     h: number
@@ -62,11 +62,11 @@ export function rgb2hsv(r: number, g: number, b: number): HSV {
 
 export function rgb2hsl(rgb: RGB): HSL {
     const hsl = _rgb2hsl(rgb.r / 255, rgb.g / 255, rgb.b / 255)
-    return { h: hsl[0], s: hsl[1], l: hsl[2] }
+    return { h: hsl[0], s: hsl[1] * 100, l: hsl[2] * 100 }
 }
 
 export function hsl2rgb(hsl: HSL): RGB {
-    const rgb = _hsl2rgb(hsl.h, hsl.s, hsl.l)
+    const rgb = _hsl2rgb(hsl.h, hsl.s / 100, hsl.l / 100)
     return { r: rgb[0] * 255, g: rgb[1] * 255, b: rgb[2] * 255 }
 }
 
@@ -99,15 +99,19 @@ export function rgb2hex(rgb: RGB) {
     return `#${n2xx(rgb.r)}${n2xx(rgb.g)}${n2xx(rgb.b)}`
 }
 
+export function rgba2hex(rgb: RGBA) {
+    return `#${n2xx(rgb.r)}${n2xx(rgb.g)}${n2xx(rgb.b)}${n2xx(rgb.a * 255)}`
+}
+
 export function changeSaturationLightBy(color: string, s: number, l: number) {
     const hsl = rgb2hsl(parseColor(color)!)
-    hsl.s = limit(hsl.s + s, 0, 1)
-    hsl.l = limit(hsl.l + l, 0, 1)
+    hsl.s = limit(hsl.s + s, 0, 100)
+    hsl.l = limit(hsl.l + l, 0, 100)
     return rgb2hex(hsl2rgb(hsl))
 }
 
 export function parseColor(color: string): RGBA | undefined {
-    let m, r, g, b, a
+    let m, r, g, b, a, h, s, l
     color = color.trim()
     // #RGB
     m = color.match(/^#([0-9a-fA-F])([0-9a-fA-F])([0-9a-fA-F])$/)
@@ -162,13 +166,25 @@ export function parseColor(color: string): RGBA | undefined {
         return { r, g, b, a }
     }
     // rgba(uint8, uint8, uint8, float)
-    m = color.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/)
+    m = color.match(/^rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+(\.\d+)?)\s*\)$/)
     if (m !== null) {
         r = parseFloat(m[1])
         g = parseFloat(m[2])
         b = parseFloat(m[3])
         a = parseFloat(m[4])
         return { r, g, b, a }
+    }
+    m = color.match(/^hsl\s*\(\s*(\d+)\s*,\s*(\d+)%?\s*,\s*(\d+)%?\s*\)$/)
+    if (m !== null) {
+        h = parseFloat(m[1])
+        s = parseFloat(m[2])
+        l = parseFloat(m[3])
+        a = 1
+        const rgb = hsl2rgb({ h, s, l })
+        rgb.r = Math.round(rgb.r)
+        rgb.g = Math.round(rgb.g)
+        rgb.b = Math.round(rgb.b)
+        return { ...rgb, a }
     }
     return undefined
 }
