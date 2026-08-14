@@ -45,13 +45,13 @@
     },
     "devDependencies": {
         "@types/chai": "^5.2.3",
-        "@types/node": "^26.1.1",
+        "@types/node": "^26.2.0",
         "@types/prismjs": "^1.26.6",
         "@typescript/typescript6": "^6.0.2",
         "@vitest/browser-playwright": "^4.1.10",
         "prismjs": "^1.30.0",
         "unplugin-dts": "^1.0.3",
-        "vite": "^8.1.5",
+        "vite": "^8.2.1",
         "vitest": "^4.1.10"
     },
     "dependencies": {
