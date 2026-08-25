@@ -31,9 +31,6 @@ function applyMacColor(value: MacColor) {
     const rgb = parseColor(value)!
     const hsl = rgb2hsl(rgb)
 
-    hsl.s *= 100
-    hsl.l *= 100
-
     const obj = document.getElementById("macimg") as HTMLObjectElement
     if (obj === null) {
         return
