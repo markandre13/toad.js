@@ -1,5 +1,6 @@
 import { expect } from 'chai'
 import * as toadJSX from 'toad.jsx'
+import { makeRef } from 'toad.jsx'
 import { describe, it } from 'vitest'
 
 describe("jsx", function () {
@@ -39,5 +40,11 @@ describe("jsx", function () {
             const text = fragment[0] as Text
             expect(text.data).to.equal("hello")
         })
+        it("ref", () => {
+            let reference = makeRef()
+            const element = <div ref={reference} />
+            expect(reference.current).to.equal(element)
+        })
     })
 })
+
