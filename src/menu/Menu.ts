@@ -62,6 +62,7 @@ export class Menu extends MenuButtonContainer {
     override connectedCallback() {
         super.connectedCallback()
         this.tabIndex = 0
+        window.addEventListener("blur", this.onWindowBlur)
 
         if (this.config) {
             this.config2nodes(this.config, this.root)
@@ -105,6 +106,15 @@ export class Menu extends MenuButtonContainer {
               }
             }, this)
         */
+    }
+
+    override disconnectedCallback() {
+        super.disconnectedCallback()
+        window.removeEventListener("blur", this.onWindowBlur)
+    }
+
+    protected onWindowBlur = (): void => {
+        this.active?.deactivate()
     }
 
     protected layout2nodes(children: HTMLCollection, parent: MenuNode): void {
