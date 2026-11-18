@@ -1,7 +1,10 @@
 import { expect } from 'chai'
 import * as dom from "@toad/util/dom"
 import { MenuButton } from '@toad/menu/MenuButton'
+import { Menu } from '@toad/menu/Menu'
 import { describe, it } from 'vitest'
+import { userEvent } from 'vitest/browser'
+void Menu
 
 describe("view", function() {
 
@@ -28,6 +31,36 @@ describe("view", function() {
       </tx-menuentry>
     </tx-menuentry>
   </tx-menu>`
+
+        describe("release outside", function() {
+            // runs first: earlier tests leave document mouseup listeners behind
+            it("down, drag into submenu, drag outside and release closes the menu", async function() {
+                document.body.innerHTML = testData
+                await userEvent.hover(document.body)
+                let edit = findMenuButton("edit")
+                await userEvent.hover(edit)
+                sendMenuButton(edit, "mousedown")
+                expect(buttonIsActive(edit)).to.equal(true)
+                expect(buttonHasPopup(edit)).to.equal(true)
+
+                let search = findMenuButton("search")
+                await userEvent.hover(search)
+                expect(buttonIsActive(search)).to.equal(true)
+                expect(buttonHasPopup(search)).to.equal(true)
+
+                let forward = findMenuButton("forward")
+                await userEvent.hover(forward)
+                await userEvent.hover(document.body)
+
+                document.body.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }))
+                await new Promise(resolve => setTimeout(resolve, 0))
+
+                expect(buttonIsActive(edit)).to.equal(false)
+                expect(buttonHasPopup(edit)).to.equal(false)
+                expect(buttonIsActive(search)).to.equal(false)
+                expect(buttonHasPopup(search)).to.equal(false)
+            })
+        })
 
         describe("click interaction", function() {
     
