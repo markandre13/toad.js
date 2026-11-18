@@ -36,11 +36,11 @@
     "scripts": {
         "build": "vite build",
         "start": "node docs/highlight.cjs && vite --open docs/index.dev.html",
-        "test": "vitest --run",
+        "test": "if test -z \"$npm_config_file\" ; then vitest --run ; else vitest --run \"$npm_config_file\" ; fi",
         "lint": "tsc -p tslint.json",
         "build:watch": "vite build --watch",
         "lint:watch": "tsc --watch -p tslint.json",
-        "test:watch": "vitest",
+        "test:watch": "if test -z \"$npm_config_file\" ; then vitest ; else vitest \"$npm_config_file\" ; fi",
         "update": "npx npm-check-updates -u && npm install"
     },
     "devDependencies": {
