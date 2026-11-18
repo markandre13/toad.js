@@ -21,6 +21,6 @@ import { View } from "../viewkit/View"
 /**
  * @internal 
  */
-export class MenuEntry extends HTMLElement {}
+export class MenuEntry extends HTMLElement { }
 
 View.define("tx-menuentry", MenuEntry)

@@ -194,7 +194,7 @@ export class MenuButton extends ModelView<TextModel> {
         }
     }
 
-        override connectedCallback(): void {
+    override connectedCallback(): void {
         // if (this.controller) return
 
         if (this.node.down === undefined) {

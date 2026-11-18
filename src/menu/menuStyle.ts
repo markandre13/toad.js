@@ -28,18 +28,43 @@ import { css } from 'src/util/lsx'
 
 export const menuStyle = new CSSStyleSheet()
 menuStyle.replaceSync(css`
+
+  .menu-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: var(--tx-gray-200);
+    padding: 2px 2px 2px 2px;
+    /* height: 24px; */
+  }
+  .menu-popup {
+    background-color: var(--tx-gray-200);
+    border: solid 1px var(--tx-gray-100);
+    border-radius: 4px;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 5px var(--tx-gray-50);
+    padding: 2px 2px 2px 2px;
+  }
+
   :host(.menu-button) {
     font-family: var(--tx-font-family);
     font-size: var(--tx-edit-font-size);
     font-weight: var(--tx-edit-font-weight);
-    padding: 7px;
-    vertical-align: center;
+    padding: 2px 7px 2px 7px;
+    border-radius: 4px;
+    vertical-align: middle;
   
     background: var(--tx-gray-200);
-    color: var(--tx-gray-900);
+    /* background-color: #0f0; */
+    /* color: var(--tx-gray-900); */
+    color: var(--tx-gray-700);
     cursor: default;
   }
   :host(.menu-button:hover) {
+    color: var(--tx-gray-900);
     background: var(--tx-gray-300);
   }
   :host(.menu-button.active) {
@@ -52,7 +77,7 @@ menuStyle.replaceSync(css`
   :host(.menu-button.active.disabled) {
     color: var(--tx-gray-700);
   }
-  :host(.menu-button.menu-down) {
+  /* :host(.menu-button.menu-down) {
     padding-right: 20px;
     background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 4 l 10 0 l -5 5 Z" fill="#fff" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
@@ -62,29 +87,13 @@ menuStyle.replaceSync(css`
     background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 4 l 10 0 l -5 5 Z" fill="#fff" stroke="none"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
-  }
+  } */
   :host(.menu-button.menu-side) {
-    padding-right: 20px;
-    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 2 l 0 10 l 5 -5 Z" fill="#fff" stroke="none"/></svg>')}");
+    padding-right: 14px;
+    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="14"><path d="M 0 3 l 0 6 l 4 -3 Z" fill="#ccc" stroke="#ccc"/></svg>')}");
     background-repeat: no-repeat;
     background-position: right center;
   }
-  :host(.menu-button.active.menu-side) {
-    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="15" height="14"><path d="M 0 2 l 0 10 l 5 -5 Z" fill="#fff" stroke="none"/></svg>')}");
-    background-repeat: no-repeat;
-    background-position: right center;
-  }
-  .menu-bar {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    background-color: var(--tx-gray-200);
-  }
-  .menu-popup {
-    position: fixed;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 2px 2px 5px var(--tx-gray-50);
-  }
+  /* :host(.menu-button.active.menu-side) { } */
+
 `)

@@ -11,6 +11,7 @@ export enum TAB {
     CHOICE = "choice",
     TABLE = "table",
     TABS = "tabs",
+    MENU = "menu",
 }
 
 function makeUrl(tabModel: EnumModel<TAB>) {

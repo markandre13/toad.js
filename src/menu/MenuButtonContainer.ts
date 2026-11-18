@@ -23,17 +23,17 @@ import { MenuState } from "./MenuState"
  * @internal 
  */
 export class MenuButtonContainer extends HTMLElement {
-  vertical: boolean
-  closeOnClose: boolean
-  active?: MenuButton
-  state: MenuState
-  btnmaster?: MenuButton
-  parentButton?: MenuButton
+    vertical: boolean
+    closeOnClose: boolean
+    active?: MenuButton
+    state: MenuState
+    btnmaster?: MenuButton
+    parentButton?: MenuButton
 
-  constructor() {
-    super()
-    this.vertical = true
-    this.closeOnClose = false
-    this.state = MenuState.WAIT
-  }
+    constructor() {
+        super()
+        this.vertical = true
+        this.closeOnClose = false
+        this.state = MenuState.WAIT
+    }
 }

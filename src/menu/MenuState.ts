@@ -20,10 +20,10 @@
  * @internal 
  */
 export enum MenuState {
-  WAIT,
-  DOWN,
-  UP_N_HOLD,
-  DOWN_N_HOLD,
-  DOWN_N_OUTSIDE,
-  DOWN_N_INSIDE_AGAIN
+    WAIT,
+    DOWN,
+    UP_N_HOLD,
+    DOWN_N_HOLD,
+    DOWN_N_OUTSIDE,
+    DOWN_N_INSIDE_AGAIN
 }

@@ -81,9 +81,9 @@ export function placePopupVertical(parent: HTMLElement, popup: HTMLElement): voi
         if (popupBottom > window.innerHeight) {
             // ...and there's more space on top
             const top = parentBoundary.top - popupBoundary.height
-            if (top > 0 || -top <  popupBottom - window.innerHeight) {
+            if (top > 0 || -top < popupBottom - window.innerHeight) {
                 // place popup on top
-                popup.style.top = `${top}px` 
+                popup.style.top = `${top}px`
             }
         }
 

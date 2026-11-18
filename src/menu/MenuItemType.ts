@@ -20,8 +20,8 @@
  * @internal 
  */
 export enum MenuItemType {
-  BUTTON,
-  RADIOBUTTON,
-  CHECKBUTTON,
-  SEPARATOR
+    BUTTON,
+    RADIOBUTTON,
+    CHECKBUTTON,
+    SEPARATOR
 }

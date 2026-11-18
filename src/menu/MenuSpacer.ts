@@ -21,6 +21,6 @@ import { View } from "../viewkit/View"
 /**
  * @internal 
  */
-export class MenuSpacer extends HTMLElement {}
+export class MenuSpacer extends HTMLElement { }
 
 View.define("tx-menuspacer", MenuSpacer)

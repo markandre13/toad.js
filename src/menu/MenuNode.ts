@@ -21,49 +21,62 @@ import { MenuButtonContainer } from "./MenuHelper"
 import { TextModel } from "../appkit/TextModel"
 import { HtmlModel } from "../appkit/HtmlModel"
 
+export type MenuNodeType = "entry" | "spacer" | "separator"
+
 /**
  * @internal 
  */
 export class MenuNode {
-  title: string
-  label: string
-  shortcut?: string
-  type: string
-  modelId?: string | TextModel | HtmlModel
+    title: string
+    label: string
+    shortcut?: string
+    type: MenuNodeType
+    modelId?: string | TextModel | HtmlModel
 
-  parent?: MenuNode
-  down?: MenuNode
-  next?: MenuNode
+    parent?: MenuNode
+    down?: MenuNode
+    next?: MenuNode
 
-  view?: HTMLElement
+    view?: HTMLElement
 
-  constructor(title: string, label: string, shortcut?: string, type?: string, modelId?: string | TextModel | HtmlModel ) {
-    this.title = title
-    this.label = label
-    this.shortcut = shortcut
-    this.type = type ? type : "entry"
-    this.modelId = modelId
-  }
-
-  isEnabled(): boolean {
-    return true
-  }
-
-  isAvailable(): boolean {
-    return true
-  }
-
-  createWindowAt(parent: MenuButtonContainer, parentView: HTMLElement): void {
-    if (this.type == "spacer") {
-      let span = document.createElement("span") as HTMLSpanElement
-      span.style.flexGrow = "1"
-      parentView.appendChild(span)
-      return
+    constructor(title: string, label: string, shortcut?: string, type?: MenuNodeType, modelId?: string | TextModel | HtmlModel) {
+        this.title = title
+        this.label = label
+        this.shortcut = shortcut
+        this.type = type ? type : "entry"
+        this.modelId = modelId
     }
-    this.view = new MenuButton(parent, this)
-    parentView.appendChild(this.view)
-  }
 
-  deleteWindow(): void {
-  }
+    isEnabled(): boolean {
+        return true
+    }
+
+    isAvailable(): boolean {
+        return true
+    }
+
+    createWindowAt(parent: MenuButtonContainer, parentView: HTMLElement): void {
+        switch (this.type) {
+            case "spacer": {
+                let span = document.createElement("span") as HTMLSpanElement
+                span.style.flexGrow = "1"
+                parentView.appendChild(span)
+                break
+            }
+            case "separator": {
+                let span = document.createElement("span") as HTMLSpanElement
+                span.style.height = "1px"
+                span.style.margin = "0px 2px 0px 2px"
+                span.style.backgroundColor = "#666"
+                parentView.appendChild(span)
+                break
+            }
+            default:
+                this.view = new MenuButton(parent, this)
+                parentView.appendChild(this.view)
+        }
+    }
+
+    deleteWindow(): void {
+    }
 }

@@ -28,6 +28,7 @@ window.onload = () => {
             <Tab value={TAB.CHOICE} label="Choice" content={() => import("./07_choice")} />
             <Tab value={TAB.TABLE} label="Table" content={() => import("./08_table")} />
             <Tab value={TAB.TABS} label="Tabs" content={() => import("./09_tabs")} />
+            <Tab value={TAB.MENU} label="Menu" content={() => import("./10_menu")} />
         </Tabs>
     </>)
 }

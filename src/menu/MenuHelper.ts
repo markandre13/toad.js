@@ -25,17 +25,17 @@ import { type HTMLElementProps } from "toad.jsx"
  * @internal 
  */
 export class MenuButtonContainer extends View {
-  vertical: boolean
-  closeOnClose: boolean
-  active?: MenuButton
-  state: MenuState
-  btnmaster?: MenuButton
-  parentButton?: MenuButton
+    vertical: boolean
+    closeOnClose: boolean
+    active?: MenuButton
+    state: MenuState
+    btnmaster?: MenuButton
+    parentButton?: MenuButton
 
-  constructor(props?: HTMLElementProps) {
-    super(props)
-    this.vertical = true
-    this.closeOnClose = false
-    this.state = MenuState.WAIT
-  }
+    constructor(props?: HTMLElementProps) {
+        super(props)
+        this.vertical = true
+        this.closeOnClose = false
+        this.state = MenuState.WAIT
+    }
 }
