@@ -60,6 +60,33 @@ describe("view", function() {
                 expect(buttonIsActive(search)).to.equal(false)
                 expect(buttonHasPopup(search)).to.equal(false)
             })
+
+            it("down, drag to neighbouring button and entry, drag outside and release closes the menu", async function() {
+                document.body.innerHTML = testData
+                await userEvent.hover(document.body)
+                let file = findMenuButton("file")
+                await userEvent.hover(file)
+                sendMenuButton(file, "mousedown")
+                expect(buttonIsActive(file)).to.equal(true)
+                expect(buttonHasPopup(file)).to.equal(true)
+
+                let edit = findMenuButton("edit")
+                await userEvent.hover(edit)
+                expect(buttonIsActive(edit)).to.equal(true)
+                expect(buttonHasPopup(edit)).to.equal(true)
+
+                let undo = findMenuButton("undo")
+                await userEvent.hover(undo)
+                await userEvent.hover(document.body)
+
+                document.body.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }))
+                await new Promise(resolve => setTimeout(resolve, 0))
+
+                expect(buttonIsActive(file)).to.equal(false)
+                expect(buttonHasPopup(file)).to.equal(false)
+                expect(buttonIsActive(edit)).to.equal(false)
+                expect(buttonHasPopup(edit)).to.equal(false)
+            })
         })
 
         describe("click interaction", function() {

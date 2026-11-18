@@ -61,8 +61,11 @@ export class MenuButton extends ModelView<TextModel> {
                 event.preventDefault()
                 setTimeout(() => {
                     if (!MenuButton.buttonDown) return
-                    if (menuButton.master?.state === MenuState.DOWN) menuButton.master.state = MenuState.DOWN_N_OUTSIDE
-                    menuButton.dispatchEvent(new MouseEvent("mouseup", event))
+                    MenuButton.buttonDown = false
+                    let master = menuButton.master!
+                    while (master.parentButton) master = master.parentButton.master!
+                    master.active?.deactivate()
+                    master.state = MenuState.WAIT
                 }, 0)
             }
             document.addEventListener("mouseup", documentMouseUp, { capture: true })
