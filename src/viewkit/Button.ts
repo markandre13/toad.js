@@ -52,6 +52,8 @@ export class Button extends ActionView {
         this.button.onclick = () => {
             if (this.action) this.action.trigger()
         }
+        // keep the focus where it is on click, otherwise Safari loses its place for Tab
+        this.button.onmousedown = (ev: MouseEvent) => ev.preventDefault()
 
         switch (this.getAttribute("variant")) {
             case "primary":
