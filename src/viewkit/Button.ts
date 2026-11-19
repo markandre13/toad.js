@@ -47,6 +47,7 @@ export class Button extends ActionView {
 
         this.button = button((this.label = span()))
         this.button.classList.add("tx-button")
+        this.button.tabIndex = 0
         this.label.classList.add("tx-label")
         this.button.onclick = () => {
             if (this.action) this.action.trigger()

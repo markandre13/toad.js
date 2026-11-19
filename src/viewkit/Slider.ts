@@ -109,6 +109,7 @@ export class Slider extends View {
 
         thumb.classList.add("tx-thumb")
         slider.type = "range"
+        slider.tabIndex = 0
 
         this.container.appendChild(thumb)
 
