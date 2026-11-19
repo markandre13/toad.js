@@ -85,11 +85,13 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
     // KEYS
     //
     keydown(ev: KeyboardEvent) {
-        ev.preventDefault()
         // TODO: open popup and navigate it with keys
         // if (this.displayElement.readOnly) {
         //     ev.preventDefault()
         // }
+        if (ev.key !== "Tab") {
+            ev.preventDefault()
+        }
         if (this.model) {
             switch (ev.key) {
                 case "ArrowUp":
