@@ -1,5 +1,5 @@
 import { popAutorelease, pushAutorelease } from "../reactive/Signal"
-import { Fragment } from "toad.jsx"
+import { Fragment, replaceChildren } from "toad.jsx"
 
 const modalDialogStack: HTMLDialogElement[] = []
 
@@ -9,14 +9,7 @@ export function openModalDialog(createContent: () => Element | Fragment) {
         document.body.removeChild(dialog)
     })
     pushAutorelease()
-
-    const content = createContent()
-    if (content instanceof Element) {
-        dialog.replaceChildren(content)
-    } else {
-        dialog.replaceChildren(...content)
-    }
-
+    replaceChildren(dialog, createContent())
     document.body.appendChild(dialog)
     modalDialogStack.push(dialog)
     dialog.showModal()
