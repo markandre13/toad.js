@@ -93,7 +93,7 @@ export class Slider extends View {
 
         this.updateView({ type: ALL })
 
-        this.attachShadow({ mode: "open", delegatesFocus: true })
+        this.attachShadow({ mode: "open" })
         this.shadowRoot!.adoptedStyleSheets = [txSlider]
         this.shadowRoot!.replaceChildren(container)
     }
