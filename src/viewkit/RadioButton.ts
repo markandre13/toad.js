@@ -37,6 +37,7 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
 
     static radioGroupCounter = 0
     static radioGroups = new WeakMap<OptionModelBase<any>, number>()
+    static radioMembers = new WeakMap<OptionModelBase<any>, Set<RadioButton<any>>>()
 
     constructor(init?: RadioButtonProps<V>) {
         super(init)
@@ -50,11 +51,12 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
         this.input = input()
         this.input.type = "radio"
         this.input.onchange = this.updateModel
+        this.input.onkeydown = this.keydown.bind(this)
         this.input.disabled = true
 
         this.label = label()
 
-        this.attachShadow({ mode: 'open', delegatesFocus: true })
+        this.attachShadow({ mode: 'open' })
         this.shadowRoot!.adoptedStyleSheets = [txRadio]
         this.shadowRoot!.replaceChildren(
             this.input,
@@ -68,8 +70,57 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
         }
     }
 
+    override disconnectedCallback() {
+        if (this.model) {
+            RadioButton.radioMembers.get(this.model)?.delete(this)
+        }
+        super.disconnectedCallback()
+    }
+
+    keydown(ev: KeyboardEvent) {
+        if (this.model === undefined) {
+            return
+        }
+        let step: number
+        switch (ev.key) {
+            case "ArrowUp":
+            case "ArrowLeft":
+                step = -1
+                break
+            case "ArrowDown":
+            case "ArrowRight":
+                step = 1
+                break
+            default:
+                return
+        }
+        ev.preventDefault()
+        const values: V[] = []
+        this.model.forEach((value) => values.push(value))
+        let idx = values.indexOf(this.value!) + step
+        while (idx >= 0 && idx < values.length && !this.model.isEnabledOf(values[idx])) {
+            idx += step
+        }
+        if (idx < 0 || idx >= values.length) {
+            return
+        }
+        const target = values[idx]
+        this.model.value = target
+        for (const member of RadioButton.radioMembers.get(this.model) ?? []) {
+            if (member.isConnected && member.value === target) {
+                member.input.focus()
+            }
+        }
+    }
+
     override updateView() {
         if (this.model !== undefined) {
+            let members = RadioButton.radioMembers.get(this.model)
+            if (members === undefined) {
+                members = new Set()
+                RadioButton.radioMembers.set(this.model, members)
+            }
+            members.add(this)
             let radioGroup = RadioButton.radioGroups.get(this.model)
             if (radioGroup === undefined) {
                 radioGroup = ++RadioButton.radioGroupCounter
@@ -94,6 +145,7 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
 
         if (this.model) {
             this.input.checked = this.model.value === this.value
+            this.input.tabIndex = this.input.checked ? 0 : -1
         }
     }
 }
