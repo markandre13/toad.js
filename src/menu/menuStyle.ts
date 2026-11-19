@@ -47,6 +47,7 @@ menuStyle.replaceSync(css`
     flex-direction: column;
     box-shadow: 2px 2px 5px var(--tx-gray-50);
     padding: 2px 2px 2px 2px;
+    z-index: 255;
   }
 
   :host(.menu-button) {
