@@ -20,6 +20,7 @@ function firstTabbable(root: Element | ShadowRoot): HTMLElement | undefined {
 
 export function openModalDialog(createContent: () => Element | Fragment) {
     const dialog = document.createElement("dialog")
+    dialog.tabIndex = -1 // for Safari, not Chrome
     dialog.addEventListener("close", (_event) => {
         document.body.removeChild(dialog)
     })
