@@ -4,7 +4,7 @@ export const style = new CSSStyleSheet()
 style.replaceSync(css`
 .tx-button {
     padding: 2px 14px 2px 14px;
-    margin: 0;
+    margin: 3px;
     color: var(--tx-gray-800);
     transition: background-color 130ms ease-in-out;
     background-color: var(--tx-gray-300);
@@ -28,6 +28,12 @@ style.replaceSync(css`
 }
 :host([disabled]) > .tx-button:hover:active {
     transform: translate(0px, 0px);
+}
+
+.tx-button:focus-visible {
+    outline: 2px solid;
+    outline-color: var(--tx-outline-color);
+    outline-offset: 2px;
 }
 
 /* accent */
