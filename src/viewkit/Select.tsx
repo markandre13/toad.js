@@ -27,7 +27,7 @@ export class Select<V> extends OptionBase<V> {
         super(init)
         this.displayElement = div()
         this.displayElement.tabIndex = 0
-        this.displayElement.style.minWidth = "200px"
+        // this.displayElement.style.minWidth = "200px"
         this.displayElement.onpointerdown = this.pointerdown
         this.displayElement.onkeydown = this.keydown
         this.finalize()

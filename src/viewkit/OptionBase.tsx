@@ -64,7 +64,6 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
         b.onpointerup = this.pointerup
 
         // SHADOW
-        this.classList.add("tx-combobox") // TODO: drop this
         this.attachShadow({ mode: "open" })
         this.shadowRoot!.adoptedStyleSheets = [
             txCombobox,

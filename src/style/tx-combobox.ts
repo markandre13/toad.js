@@ -2,13 +2,14 @@ import { css } from 'src/util/lsx'
 
 export const style = new CSSStyleSheet()
 style.replaceSync(css`
-:host(.tx-combobox) {
+:host {
     display: inline-flex;
     align-items: flex-start;
     position: relative;
     vertical-align: top;
+    width: 200px;
 }
-:host(.tx-combobox) > :first-child {
+:host > :first-child {
     box-sizing: border-box;
     width: 100%;
     height: 32px;
@@ -28,18 +29,18 @@ style.replaceSync(css`
     font-weight: var(--tx-edit-font-weight);
     font-size: var(--tx-edit-font-size);
 }
-:host(.tx-combobox) > input:first-child {
+:host > input:first-child {
     padding: 4px 32px 4px 11px;
 }
-:host(.tx-combobox) > :first-child > :first-child {
+:host > :first-child > :first-child {
     padding-left: 7px;
 }
-:host(.tx-combobox) > :first-child::placeholder {
+:host > :first-child::placeholder {
     color: var(--tx-placeholder-fg-color);
     font-style: italic;
     font-weight: 300;
 }
-:host(.tx-combobox) > button {
+:host > button {
     position: absolute;
     right: 0;
     display: flex;
@@ -57,26 +58,26 @@ style.replaceSync(css`
     border-radius: 0 4px 4px 0;
     border: 1px solid var(--tx-gray-400);
 }
-:host(.tx-combobox) > button > svg {
+:host > button > svg {
     fill: var(--tx-gray-700);
     transform: rotate(90deg) translate(5px, 8px);
 }
 
-:host(.tx-combobox) > :first-child:hover {
+:host > :first-child:hover {
     border-color: var(--tx-gray-500);
 }
-:host(.tx-combobox) > button:hover {
+:host > button:hover {
     border-color: var(--tx-gray-500);
     background-color: var(--tx-gray-50);
 }
-:host(.tx-combobox) > button:hover > svg {
+:host > button:hover > svg {
     fill: var(--tx-gray-900);
 }
 
-:host(.tx-combobox) > :first-child:focus {
+:host > :first-child:focus {
     border-color: var(--tx-outline-color);
 }
-:host(.tx-combobox) > :first-child:focus + button {
+:host > :first-child:focus + button {
     border-color: var(--tx-outline-color);
 }
 /* spectrum use a 1px focus ring when the focus was set by mouse
@@ -91,28 +92,28 @@ style.replaceSync(css`
     border-left: none;
 } */
 
-:host(.tx-combobox) > :first-child.tx-disabled {
+:host > :first-child.tx-disabled {
     color: var(--tx-gray-700);
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-:host(.tx-combobox) > :first-child.tx-disabled > * {
+:host > :first-child.tx-disabled > * {
     color: var(--tx-gray-500);
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-:host(.tx-combobox) > :first-child.tx-disabled + button {
+:host > :first-child.tx-disabled + button {
     background-color: var(--tx-gray-200);
     border-color: var(--tx-gray-200);
 }
-:host(.tx-combobox) > :first-child.tx-disabled + button > svg {
+:host > :first-child.tx-disabled + button > svg {
     fill: var(--tx-gray-400);
 }
-:host(.tx-combobox) > :first-child.tx-error {
+:host > :first-child.tx-error {
     color: var(--tx-warning-color);
     border-color: var(--tx-warning-color)
 }
-:host(.tx-combobox) > :first-child.tx-error + button {
+:host > :first-child.tx-error + button {
     border-color: var(--tx-warning-color)
 }
 `)
