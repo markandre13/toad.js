@@ -28,7 +28,7 @@ const hitMeMore = new Action(() => {
 
 export default () => (
     <>
-        <h1>Action</h1>
+        <h3>Action</h3>
 
         <div class="section">
             <p>
@@ -42,7 +42,7 @@ export default () => (
             </p>
         </div>
 
-        <h3>Button</h3>
+        <h5>Button</h5>
 
         <div class="section">
             <Button action={dummy} variant={ButtonVariant.PRIMARY}>

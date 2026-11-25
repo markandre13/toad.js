@@ -106,7 +106,7 @@ export default () => (
             }
         `}</style>
 
-        <h1>Special Values</h1>
+        <h3>Special Values</h3>
 
         <div class="section">
             A model can hold the special values <em>VALUE_UNKNOWN</em> (the value is not known, the user may provide
@@ -115,7 +115,7 @@ export default () => (
             check for them. Reading <em>value</em> returns <em>undefined</em> in that case.
         </div>
 
-        <h3>NumberModel</h3>
+        <h5>NumberModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -145,7 +145,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>IntegerModel</h3>
+        <h5>IntegerModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -175,7 +175,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>TextModel</h3>
+        <h5>TextModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -205,7 +205,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>EmailModel</h3>
+        <h5>EmailModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -229,7 +229,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>HtmlModel</h3>
+        <h5>HtmlModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -259,7 +259,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>BooleanModel</h3>
+        <h5>BooleanModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -283,7 +283,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>RGBModel</h3>
+        <h5>RGBModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -301,7 +301,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>OptionModel</h3>
+        <h5>OptionModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -343,7 +343,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>EnumModel</h3>
+        <h5>EnumModel</h5>
         <div class="section">
             <table>
                 <tr>
@@ -385,7 +385,7 @@ export default () => (
             </table>
         </div>
 
-        <h3>Converter</h3>
+        <h5>Converter</h5>
         <div class="section">
             <table>
                 <tr>

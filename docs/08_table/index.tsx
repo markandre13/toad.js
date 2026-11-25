@@ -85,24 +85,24 @@ tree.addSiblingAfter(0)
 
 export default () => (
     <>
-        <h1>Table</h1>
+        <h3>Table</h3>
 
         <div class="section">
             <p>While tables are a work in progress, the following should illustrate the intended versatility:</p>
         </div>
 
-        <h2>Editable Array of Records</h2>
+        <h4>Editable Array of Records</h4>
         <TableTool />
         <Table style={{ width: "100%", height: "200px" }} model={dynamicSystem} />
 
-        <h2>Spreadsheet</h2>
+        <h4>Spreadsheet</h4>
 
         <p>Field values beginning with '=' define formulas. Valid operators are +, -, *, / and (, ).</p>
 
         <TableTool />
         <Table style={{ width: "100%", height: "200px" }} model={spreadsheet} />
 
-        <h2>Tree</h2>
+        <h4>Tree</h4>
 
         <TableTool />
         <Table style={{ width: "320px", height: "200px" }} model={tree} />

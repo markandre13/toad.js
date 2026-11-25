@@ -3,9 +3,9 @@ import { code } from "./index.source"
 
 export default () => (
     <>
-        <h1>Tabs</h1>
+        <h3>Tabs</h3>
 
-        <h2>Horizontal</h2>
+        <h4>Horizontal</h4>
 
         <Tabs style={{ width: "100%" }}>
             <Tab label="Explore">So much to see. So little time.</Tab>
@@ -13,7 +13,7 @@ export default () => (
             <Tab label="Trips">Take a trip dude. Odyssey of the Mind</Tab>
         </Tabs>
 
-        <h2>Vertical</h2>
+        <h4>Vertical</h4>
 
         <Tabs style={{ width: "100%" }} orientation="vertical">
             <Tab label="Explore">So much to see. So little time.</Tab>

@@ -34,11 +34,11 @@ const customFlavourDisabled = new TextModel("")
 
 export default () => (
     <>
-        <h1>Choice</h1>
+        <h3>Choice</h3>
 
         <div class="section">A list of values out of which one (and only one) can be selected.</div>
 
-        <h3>&lt;RadioButton&gt;, &lt;Select&gt; &amp; &lt;ComboBox&gt;</h3>
+        <h5>&lt;RadioButton&gt;, &lt;Select&gt; &amp; &lt;ComboBox&gt;</h5>
 
         <style>{`
             th {

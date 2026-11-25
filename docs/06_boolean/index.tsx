@@ -24,13 +24,13 @@ onDisabled.enabled = false
 
 export default () => (
     <>
-        <h1>Boolean</h1>
+        <h3>Boolean</h3>
 
         <div class="section">
             A Boolean can either be <em>true</em> or <em>false</em>.
         </div>
 
-        <h3>&lt;Checkbox&gt;, &lt;Switch&gt; and &lt;ToadIf&gt;</h3>
+        <h5>&lt;Checkbox&gt;, &lt;Switch&gt; and &lt;ToadIf&gt;</h5>
 
         <div class="section">
             <table>

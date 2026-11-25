@@ -25,20 +25,20 @@ const colorModel = new RGBModel({ r: 255, g: 128, b: 0 })
 
 export default () => (
     <>
-        <h1>Number</h1>
+        <h3>Number</h3>
 
-        <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with NumberModel</h3>
+        <h5>&lt;Text&gt; &amp; &lt;Slider&gt; with NumberModel</h5>
         <div class="section">
             <TextField model={floatModel} />
             <Slider model={floatModel} />
         </div>
-        <h3>&lt;Text&gt; &amp; &lt;Slider&gt; with IntegerModel</h3>
+        <h5>&lt;Text&gt; &amp; &lt;Slider&gt; with IntegerModel</h5>
         <div class="section">
             <TextField model={integerModel} />
             <Slider model={integerModel} />
         </div>
 
-        <h3>&lt;Slider&gt;</h3>
+        <h5>&lt;Slider&gt;</h5>
         <div class="section">
             <div style={{ width: "200px" }}>
                 <Slider model={sliderEnabled} />
@@ -47,14 +47,14 @@ export default () => (
             </div>
         </div>
 
-        <h3>&lt;Slider orientation="vertical"&gt;</h3>
+        <h5>&lt;Slider orientation="vertical"&gt;</h5>
         <div class="section" style={{ height: "200px" }}>
             <Slider model={sliderEnabled} orientation="vertical" />
             <Slider model={sliderEnabled} minColor="#00f" maxColor="#f00" orientation="vertical" />
             <Slider model={sliderDisabled} orientation="vertical" />
         </div>
 
-        <h3>&lt;ColorSelector&gt;</h3>
+        <h5>&lt;ColorSelector&gt;</h5>
 
         <div class="section">
             <ColorSelector model={colorModel} />

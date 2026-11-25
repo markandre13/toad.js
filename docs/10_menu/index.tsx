@@ -3,7 +3,7 @@ import { Menu } from "@toad/menu/Menu"
 
 export default () => (
     <>
-        <h1>Menu</h1>
+        <h3>Menu</h3>
         <Menu
             config={[
                 {

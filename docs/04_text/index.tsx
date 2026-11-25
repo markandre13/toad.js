@@ -23,16 +23,16 @@ markup.signal.add(() => {
 
 export default () => (
     <>
-        <h2>TextModel &amp; HtmlModel</h2>
+        <h4>TextModel &amp; HtmlModel</h4>
 
-        <h3>&lt;Text&gt;</h3>
+        <h5>&lt;Text&gt;</h5>
         <TextField model={hello} />
         <TextField model={hello} />
 
-        <h3>&lt;TextTool&gt; &amp; &lt;TextArea&gt;</h3>
+        <h5>&lt;TextTool&gt; &amp; &lt;TextArea&gt;</h5>
         <TextTool />
         <TextArea model={markup} style={{ width: "100%" }} />
-        <h3>Raw HTML</h3>
+        <h5>Raw HTML</h5>
         <pre
             id="rawhtml"
             style={{

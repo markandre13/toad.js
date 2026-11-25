@@ -5,11 +5,11 @@
 export default () => (
     <>
         <style>{`dt { font-weight: bold}`}</style>
-        <h1>Introduction</h1>
+        <h3>Introduction</h3>
 
         <div style={{ display: "grid", gridTemplateColumns: "auto auto", gridTemplateRows: "1" }}>
             <div class="section">
-                <h3>Foundations</h3>
+                <h5>Foundations</h5>
                 <dl>
                     <dt>Web Components &amp; ESM</dt>
                     <dd>
@@ -28,7 +28,7 @@ export default () => (
                 </dl>
             </div>
             <div class="section">
-                <h3>Look</h3>
+                <h5>Look</h5>
                 <dl>
                     <dt>
                         <a href="https://spectrum.adobe.com">Adobe's Spectrum design system</a>
@@ -61,7 +61,7 @@ export default () => (
             />
         </div>
         <div class="section">
-            <h3>Architecture</h3>
+            <h5>Architecture</h5>
             <p>
                 toad.js is build around the idea of horizontal layers (which does not exclude the use of vertical
                 layers, e.g. like sales, procurement, ...). For two of those layers toad.js provides separate
