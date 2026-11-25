@@ -1,11 +1,9 @@
 import { expect } from "chai"
+import { styleBase as txBase, styleDark as txDark, styleStatic as txStatic } from "@toad/util/loadStyle"
 import { OptionModel } from "@toad/appkit/OptionModel"
 import { Select } from "@toad/viewkit/Select"
 import { ComboBox } from "@toad/viewkit/ComboBox"
 
-import { style as txBase } from "@toad/style/tx"
-import { style as txStatic } from "@toad/style/tx-static"
-import { style as txDark } from "@toad/style/tx-dark"
 import { TextModel } from "@toad/appkit/TextModel"
 import { replaceChildren } from "toad.jsx"
 import { beforeEach, describe, it } from "vitest"

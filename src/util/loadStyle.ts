@@ -1,6 +1,16 @@
-import { style as styleStatic } from "../style/tx-static"
-import { style as styleDark } from "../style/tx-dark"
-import { style as styleBase } from "../style/tx"
+import txStatic from "../../style/tx-static.css?inline"
+import txDark from "../../style/tx-dark.css?inline"
+import txBase from "../../style/tx.css?inline"
+
+function createStyle(textContent: string) {
+    const style = document.createElement("style")
+    style.textContent = textContent
+    return style
+}
+
+export const styleStatic = createStyle(txStatic)
+export const styleDark = createStyle(txDark)
+export const styleBase = createStyle(txBase)
 
 export function loadStyle() {
     for(const style of [styleStatic, styleDark, styleBase]) {

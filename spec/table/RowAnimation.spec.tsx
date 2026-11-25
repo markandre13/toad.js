@@ -1,8 +1,6 @@
 import { expect } from 'chai'
+import { styleBase as txBase, styleDark as txDark, styleStatic as txStatic } from "@toad/util/loadStyle"
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
-import { style as txBase } from "@toad/style/tx"
-import { style as txStatic } from "@toad/style/tx-static"
-import { style as txDark } from "@toad/style/tx-dark"
 import { px2float, sleep } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/detail/InsertRowAnimation'
 import { RemoveRowAnimation } from '@toad/table/detail/RemoveRowAnimation'
