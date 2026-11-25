@@ -54,6 +54,10 @@ style.replaceSync(css`
     pointer-events: none;
 }
 
+:host(.tx-checkbox) > input:not(:checked) + svg {
+    display: none;
+}
+
 :host(.tx-checkbox) > input:hover {
     border-color: var(--tx-gray-800);
 }
