@@ -19,6 +19,9 @@
 import { produceValue } from "../reactive/Computed"
 import { Model, type ModelOptions, type ModelEvent } from "./Model"
 
+export const VALUE_UNKNOWN = Symbol("VALUE_UNKNOWN")
+export const VALUE_LOADING = Symbol("VALUE_LOADING")
+
 export const VALUE = Symbol("VALUE")
 export const DEFAULT_VALUE = Symbol("DEFAULT_VALUE")
 export type ValueEvent = { type: typeof VALUE }

@@ -1,125 +1,172 @@
 :root {
-  font-size: 100%;
-  text-size-adjust: none;
-  -webkit-text-size-adjust: none;
+    font-size: 100%;
+    text-size-adjust: none;
+    -webkit-text-size-adjust: none;
 
-  --tx-font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --tx-font-size: calc((12/16) * 1rem); /* equivalent to 12pt on paper */
-  --tx-font-size-info: calc((11/16) * 1rem);
+    --tx-font-family: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --tx-font-size: calc((12/16) * 1rem);
+    /* equivalent to 12pt on paper */
+    --tx-font-size-info: calc((11/16) * 1rem);
 
-  --tx-fg-color: var(--tx-gray-700);
-  --tx-bg-color: var(--tx-gray-50);
-  --tx-placeholder-fg-color: var(--tx-gray-600);
-  --tx-placeholder-fg-color-hover: var(--tx-gray-900);
+    --tx-fg-color: var(--tx-gray-700);
+    --tx-bg-color: var(--tx-gray-50);
+    --tx-placeholder-fg-color: var(--tx-gray-600);
+    --tx-placeholder-fg-color-hover: var(--tx-gray-900);
 
-  --tx-fg-color-disabled: var(--tx-gray-500);
-  --tx-bg-color-disabled: var(--tx-gray-100);
+    --tx-fg-color-disabled: var(--tx-gray-500);
+    --tx-bg-color-disabled: var(--tx-gray-100);
 
-  /* Edit */
-  --tx-edit-font-size: calc((12/16) * 1rem);
-  --tx-edit-font-weight: 400;
+    /* Edit */
+    --tx-edit-font-size: calc((12/16) * 1rem);
+    --tx-edit-font-weight: 400;
 
-  --tx-edit-fg-color: var(--tx-gray-800);
-  --tx-edit-fg-color-disabled: var(--tx-gray-500);
+    --tx-edit-fg-color: var(--tx-gray-800);
+    --tx-edit-fg-color-disabled: var(--tx-gray-500);
 
-  --tx-edit-bg-color: var(--tx-gray-50);
-  --tx-edit-bg-color-disabled: var(--tx-gray-100);
+    --tx-edit-bg-color: var(--tx-gray-50);
+    --tx-edit-bg-color-disabled: var(--tx-gray-100);
 
-  --tx-selection-color: var(--tx-global-blue-500);
-  --tx-warning-color: var(--tx-global-red-600);
+    --tx-selection-color: var(--tx-global-blue-500);
+    --tx-warning-color: var(--tx-global-red-600);
 
-  /* Border/Outline */
+    /* Border/Outline */
 
-  /* outline indicates that the element has the focus */
-  --tx-outline-color: var(--tx-blue-500);
-  --tx-border-color: var(--tx-gray-400);
-  --tx-border-color-hover: var(--tx-gray-500);
-  --tx-border-width: 1px;
-  --tx-border-radius: 4px;
+    /* outline indicates that the element has the focus */
+    --tx-outline-color: var(--tx-blue-500);
+    --tx-border-color: var(--tx-gray-400);
+    --tx-border-color-hover: var(--tx-gray-500);
+    --tx-border-width: 1px;
+    --tx-border-radius: 4px;
 }
+
 body {
-  font-family: var(--tx-font-family);
-  font-size: var(--tx-font-size);
-  font-weight: 400;
-  line-height: 1.5;
+    font-family: var(--tx-font-family);
+    font-size: var(--tx-font-size);
+    font-weight: 400;
+    line-height: 1.5;
 }
+
 p {
     margin: calc((6/16) * 1rem) 0;
 }
-b      { font-weight: 500; }
-strong { font-weight: 500; }
+
+b {
+    font-weight: 500;
+}
+
+strong {
+    font-weight: 500;
+}
+
 /* 
  * headings follow the classic typographic scale (see also: Bringhurst, The Elements of Typographic Style)
  *  6 7 8 9 10 11 12 14 16 18 21 24 36 48 60 72
  * | +1             | +2        |+3| +12
  */
 /* TODO: improve: the grid-column is for when we are inside a form */
-h1, h2, h3, h4, h5, h6 {
-  margin-block-start: calc((6/16) * 1rem);
-  margin-block-end: calc((6/16) * 1rem);
-  font-weight: 500;
-}
-h1 {
-  font-size: calc((36/16) * 1rem);
-  font-weight: 600;
-}
-h2 {
-  font-size: calc((24/16) * 1rem);
-  font-weight: 600;
-}
-h3 {
-  font-size: calc((21/16) * 1rem);
-}
-h4 {
-  font-size: calc((18/16) * 1rem);
-}
-h5 {
-  font-size: calc((16/16) * 1rem);
-}
+h1,
+h2,
+h3,
+h4,
+h5,
 h6 {
-  font-size: calc((14/16) * 1rem);
+    margin-block-start: calc((6/16) * 1rem);
+    margin-block-end: calc((6/16) * 1rem);
+    font-weight: 500;
 }
+
+h1 {
+    font-size: calc((36/16) * 1rem);
+    font-weight: 600;
+}
+
+h2 {
+    font-size: calc((24/16) * 1rem);
+    font-weight: 600;
+}
+
+h3 {
+    font-size: calc((21/16) * 1rem);
+}
+
+h4 {
+    font-size: calc((18/16) * 1rem);
+}
+
+h5 {
+    font-size: calc((16/16) * 1rem);
+}
+
+h6 {
+    font-size: calc((14/16) * 1rem);
+}
+
 pre {
-  font-family: "IBM Plex Mono", Courier, monospaced;
-  font-size: calc((12/16) * 1rem);
-  font-weight: 400;
-  line-height: 1.1; /* 1.5625rem 25px */
+    font-family: "IBM Plex Mono", Courier, monospaced;
+    font-size: calc((12/16) * 1rem);
+    font-weight: 400;
+    line-height: 1.1;
+    /* 1.5625rem 25px */
 }
 
 /*
  * COLOR
  */
-body, dialog {
+body,
+dialog {
     background: var(--tx-gray-100);
     color: var(--tx-gray-800);
 }
+
 dialog {
     border: solid 1px var(--tx-outline-color);
     border-radius: 4px;
     box-shadow: 5px 5px 5px #000;
 }
+
 dialog::backdrop {
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
-a:link { 
+a:link {
     color: var(--tx-gray-900);
     font-weight: bold;
     text-decoration: none;
     text-decoration-style: solid;
     cursor: auto;
 }
+
 a:hover {
-    text-decoration: underline; 
+    text-decoration: underline;
 }
-a:visited { 
+
+a:visited {
     color: var(--tx-gray-900);
     cursor: auto;
 }
-a:link:active, a:visited:active { 
-     color: var(--tx-gray-900);
+
+a:link:active,
+a:visited:active {
+    color: var(--tx-gray-900);
 }
+
 /* a:link::before {
   content: "→";
   text-decoration: none;
 } */
+
+.tx-loading {
+    background: repeating-linear-gradient(-45deg, #fff 0 10px, #faa 0 20px) 100% 100%;
+    background-size: calc(20px / cos(45deg)) calc(20px / cos(45deg));
+    animation: tx-loading 1s infinite linear;
+}
+
+@keyframes tx-loading {
+    0% {
+        background-position: 0 0;
+    }
+
+    100% {
+        background-position: calc(20px / cos(45deg)) 0;
+    }
+}
