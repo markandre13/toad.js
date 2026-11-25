@@ -19,37 +19,10 @@
 import { OptionModelBase } from "../appkit/OptionModelBase"
 import { ModelView, type ModelViewProps } from "./ModelView"
 
-import { css } from 'src/util/lsx'
+import styleText from "./ToolButton.css?inline"
 
 export const toolbuttonStyle = new CSSStyleSheet()
-toolbuttonStyle.replaceSync(css`
-:host {
-    display: inline-block;
-    overflow: hidden;
-    box-sizing: border-box;
-    border: 1px solid var(--tx-gray-400);
-    border-radius: 3px;
-    background: var(--tx-gray-400);
-    color: var(--tx-gray-900);
-    width: 24px;
-    height: 22px;
-    margin: 0;
-    padding: 0;
-}
-
-:host([selected]) {
-    background-color: var(--tx-gray-100);
-    border: 1px solid var(--tx-gray-100);
-}
-
-:host([disabled]) {
-    opacity: 0.5;
-}
-
-:host([disabled]) img {
-    opacity: 0.5;
-}
-`)
+toolbuttonStyle.replaceSync(styleText)
 
 export interface ToolButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {
     value: V

@@ -1,4 +1,4 @@
-import { css } from "src/util/lsx"
+import styleText from "./tx-scrollbar.css?inline"
 
 /*
 ::-webkit-scrollbar the scrollbar.
@@ -13,21 +13,4 @@ import { css } from "src/util/lsx"
 /* TODO: this doesn't support all browsers */
 
 export const style = new CSSStyleSheet()
-style.replaceSync(css`
-    ::-webkit-scrollbar {
-        width: 10px;
-        height: 10px;
-    }
-    ::-webkit-scrollbar-thumb {
-        border-radius: 5px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #1e1e1e;
-    }
-    ::-webkit-scrollbar-corner {
-        background: #1e1e1e;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: var(--tx-gray-500);
-    }
-`)
+style.replaceSync(styleText)
