@@ -120,9 +120,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;TextField&gt;</th>
@@ -150,9 +150,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;TextField&gt;</th>
@@ -180,9 +180,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;TextField&gt;</th>
@@ -210,9 +210,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;TextField&gt;</th>
@@ -234,9 +234,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;TextField&gt;</th>
@@ -264,9 +264,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;Checkbox&gt;</th>
@@ -288,9 +288,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;ColorSelector&gt;</th>
@@ -306,9 +306,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;RadioButton&gt;</th>
@@ -348,9 +348,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;RadioButton&gt;</th>
@@ -390,9 +390,9 @@ export default () => (
             <table>
                 <tr>
                     <th></th>
-                    <th>value</th>
-                    <th>VALUE_UNKNOWN</th>
-                    <th>VALUE_LOADING</th>
+                    <th>value is known</th>
+                    <th>value is unknown</th>
+                    <th>value is loading</th>
                 </tr>
                 <tr>
                     <th>&lt;TextField&gt;</th>
