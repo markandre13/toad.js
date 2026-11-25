@@ -159,6 +159,7 @@ export class TextArea extends ModelView<TextModel> {
         if (!this.model) {
             return
         }
+        this.content.contentEditable = this.model.enabled ? "true" : "false"
         this.model.applySpecialStyle(this.content)
         if (this.model.isUnknown() || this.model.isLoading()) {
             this.content.innerText = ""

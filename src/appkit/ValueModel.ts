@@ -141,6 +141,16 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
         return this._value === VALUE_LOADING
     }
 
+    override set enabled(enabled: boolean) {
+        super.enabled = enabled
+    }
+    /**
+     * a model which is loading behaves like a disabled model
+     */
+    override get enabled(): boolean {
+        return super.enabled && !this.isLoading()
+    }
+
     protected hasSpecialValue(): boolean {
         return isSpecialValue(this._value)
     }

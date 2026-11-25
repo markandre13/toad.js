@@ -47,6 +47,9 @@ export class ColorSelector extends ModelView<RGBModel> {
 
         let skew: number | undefined
         this.hsCaret.onpointerdown = (ev: PointerEvent) => {
+            if (this.model?.enabled !== true) {
+                return
+            }
             skew = 1
             this.hsCaret.setPointerCapture(ev.pointerId)
             ev.preventDefault()
@@ -145,6 +148,11 @@ export class ColorSelector extends ModelView<RGBModel> {
             return
         }
         this.model.applySpecialStyle(this.newColor)
+        this.block = true
+        for (const m of [this.h, this.s, this.v, this.r, this.g, this.b]) {
+            m.enabled = this.model.enabled
+        }
+        this.block = false
         if (this.model.isUnknown() || this.model.isLoading()) {
             return
         }
