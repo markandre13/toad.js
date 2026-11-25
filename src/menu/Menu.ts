@@ -19,10 +19,13 @@
 import * as dom from "../util/dom"
 import { MenuNode, type MenuNodeType } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuHelper"
-import { menuStyle } from "./menuStyle"
 import { type HTMLElementProps } from "toad.jsx"
 import { TextModel } from "../appkit/TextModel"
 import { HtmlModel } from "../appkit/HtmlModel"
+import menuStyleCss from "./menuStyle.css?inline"
+
+const menuStyle = new CSSStyleSheet()
+menuStyle.replaceSync(menuStyleCss)
 
 
 

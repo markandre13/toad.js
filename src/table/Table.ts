@@ -34,10 +34,16 @@ import { type HTMLElementProps, setInitialProperties } from "toad.jsx"
 
 import { span, div, text } from "../util/lsx"
 import { scrollIntoView } from "../util/scrollIntoView"
-import { style as txTable } from "./style/tx-table"
-import { style as txScrollbar } from "../style/tx-scrollbar"
 import { hasFocus } from "../util/dom"
 import { ALL } from "../appkit/Model"
+import txScrollbarCss from "../style/tx-scrollbar.css?inline"
+import txTableCss from "./style/tx-table.css?inline"
+
+const txTable = new CSSStyleSheet()
+txTable.replaceSync(txTableCss)
+
+const txScrollbar = new CSSStyleSheet()
+txScrollbar.replaceSync(txScrollbarCss)
 
 // TABLE ANIMATION
 //

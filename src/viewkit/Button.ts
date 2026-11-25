@@ -20,7 +20,10 @@ import { HtmlModel } from "../appkit/HtmlModel"
 import { ActionView, type ActionViewProps } from "./ActionView"
 
 import { button, span } from "../util/lsx"
-import { style as txButton } from "../style/tx-button"
+import txButtonCss from "../style/tx-button.css?inline"
+
+const txButton = new CSSStyleSheet()
+txButton.replaceSync(txButtonCss)
 
 export enum ButtonVariant {
     PRIMARY,

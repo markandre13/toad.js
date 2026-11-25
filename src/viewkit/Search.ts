@@ -19,7 +19,10 @@
 import { ModelView, type ModelViewProps } from "./ModelView"
 import { form, input, button, svg, path, div } from "../util/lsx"
 import { TextModel } from "../appkit/TextModel"
-import { style as txSearch } from "../style/tx-search"
+import txSearchCss from "../style/tx-search.css?inline"
+
+const txSearch = new CSSStyleSheet()
+txSearch.replaceSync(txSearchCss)
 
 /**
  * @category View

@@ -1,5 +1,0 @@
-import styleText from "./tx-colorselector.css?inline"
-import { specialStyle } from "./tx-special"
-
-export const style = new CSSStyleSheet()
-style.replaceSync(styleText + specialStyle)

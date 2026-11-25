@@ -20,8 +20,12 @@ import { BooleanView } from "./BooleanView"
 import { BooleanModel } from "../appkit/BooleanModel"
 import { type ModelViewProps } from "./ModelView"
 
-import { style as txSwitch } from "../style/tx-switch"
 import { input, span } from "../util/lsx"
+import { specialStyleFor } from "../style/tx-special"
+import txSwitchCss from "../style/tx-switch.css?inline"
+
+const txSwitch = new CSSStyleSheet()
+txSwitch.replaceSync(txSwitchCss + specialStyleFor(":host(.tx-switch) > span"))
 
 /**
  * @category View

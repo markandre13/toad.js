@@ -21,7 +21,11 @@ import { BooleanModel } from "../appkit/BooleanModel"
 import { type ModelViewProps } from "./ModelView"
 
 import { input, svg, path } from "../util/lsx"
-import { style as txCheckbox } from "../style/tx-checkbox"
+import { specialStyle } from "../style/tx-special"
+import txCheckboxCss from "../style/tx-checkbox.css?inline"
+
+const txCheckbox = new CSSStyleSheet()
+txCheckbox.replaceSync(txCheckboxCss + specialStyle)
 
 /**
  * @category View

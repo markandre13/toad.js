@@ -1,10 +1,17 @@
 import { type HTMLElementProps } from "toad.jsx"
 import { View } from "./View"
 import { slot } from '../util/lsx'
-import { styleBase, styleNarrow } from "../style/tx-form"
 
 import { Model } from "../appkit/Model"
 import { ModelView, type ModelViewProps } from "./ModelView"
+import styleBaseCss from "../style/tx-form.css?inline"
+import styleNarrowCss from "../style/tx-form-narrow.css?inline"
+
+const styleBase = new CSSStyleSheet()
+styleBase.replaceSync(styleBaseCss)
+
+const styleNarrow = new CSSStyleSheet()
+styleNarrow.replaceSync(styleNarrowCss)
 
 interface FormProps extends HTMLElementProps {
     variant?: "wide" | "narrow"

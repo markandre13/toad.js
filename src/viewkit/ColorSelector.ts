@@ -3,9 +3,13 @@ import { div, span, text } from "../util/lsx"
 import { hsv2rgb, rgb2hsv } from "../util/color"
 import { Slider } from "./Slider"
 import { TextField } from "./TextField"
-import { style } from "../style/tx-colorselector"
 import { RGBModel } from "../appkit/RGBModel"
 import { ModelView, type ModelViewProps } from "./ModelView"
+import { specialStyle } from "../style/tx-special"
+import styleCss from "../style/tx-colorselector.css?inline"
+
+const style = new CSSStyleSheet()
+style.replaceSync(styleCss + specialStyle)
 
 // i know, this implementation is a mess. i just wanted to get it done.
 

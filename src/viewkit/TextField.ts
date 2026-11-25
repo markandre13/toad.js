@@ -20,7 +20,11 @@ import { TextModel } from "../appkit/TextModel"
 import { NumberModel } from "../appkit/NumberModel"
 import { Converter } from "../appkit/Converter"
 import { ModelView, type ModelViewProps } from "./ModelView"
-import { style as txText } from "../style/tx-text"
+import { specialStyle } from "../style/tx-special"
+import txTextCss from "../style/tx-text.css?inline"
+
+const txText = new CSSStyleSheet()
+txText.replaceSync(txTextCss + specialStyle)
 
 export type TextFieldModel = TextModel | NumberModel | Converter<string>
 

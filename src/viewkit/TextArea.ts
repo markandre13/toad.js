@@ -20,7 +20,11 @@ import { HtmlModel } from "../appkit/HtmlModel"
 import { TextModel } from "../appkit/TextModel"
 import { TextTool } from "./TextTool"
 import { ModelView, type ModelViewProps } from "./ModelView"
-import { style as txText } from "../style/tx-text"
+import { specialStyle } from "../style/tx-special"
+import txTextCss from "../style/tx-text.css?inline"
+
+const txText = new CSSStyleSheet()
+txText.replaceSync(txTextCss + specialStyle)
 
 /**
  * @category View

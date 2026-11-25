@@ -17,12 +17,16 @@
  */
 
 import { NumberModel, type NumberModelEvent } from "../appkit/NumberModel"
-import { style as txSlider } from "../style/tx-slider"
 import { div, input, span } from "../util/lsx"
 import { parseColor, type RGBA } from "../util/color"
 import { type HTMLElementProps } from "toad.jsx"
 import { View } from "./View"
 import { ALL, Model } from "../appkit/Model"
+import { specialStyle } from "../style/tx-special"
+import txSliderCss from "../style/tx-slider.css?inline"
+
+const txSlider = new CSSStyleSheet()
+txSlider.replaceSync(txSliderCss + specialStyle)
 
 /**
  * @category View

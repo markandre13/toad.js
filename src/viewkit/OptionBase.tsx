@@ -2,8 +2,15 @@ import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 import { button, svg, path, div, li } from "../util/lsx"
 import { placePopupVertical } from "../menu/PopupMenu"
-import { style as txCombobox } from "../style/tx-combobox"
-import { style as txMenu } from "../style/tx-menu"
+import { specialStyle } from "../style/tx-special"
+import txComboboxCss from "../style/tx-combobox.css?inline"
+import txMenuCss from "../style/tx-menu.css?inline"
+
+const txCombobox = new CSSStyleSheet()
+txCombobox.replaceSync(txComboboxCss + specialStyle)
+
+const txMenu = new CSSStyleSheet()
+txMenu.replaceSync(txMenuCss)
 
 function isChildOf(child: Node, parent: Node) {
     if (child.parentNode === parent) {

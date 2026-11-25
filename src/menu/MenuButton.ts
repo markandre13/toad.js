@@ -20,11 +20,14 @@ import { Action, globalController } from "../appkit/Action"
 import { HtmlModel } from "../appkit/HtmlModel"
 import { TextModel } from "../appkit/TextModel"
 import { ModelView } from "../viewkit/ModelView"
-import { menuStyle } from "./menuStyle"
 import { MenuState } from "./MenuState"
 import { MenuNode } from "./MenuNode"
 import { MenuButtonContainer } from "./MenuButtonContainer"
 import { PopupMenu } from "./PopupMenu"
+import menuStyleCss from "./menuStyle.css?inline"
+
+const menuStyle = new CSSStyleSheet()
+menuStyle.replaceSync(menuStyleCss)
 
 /**
  * @internal

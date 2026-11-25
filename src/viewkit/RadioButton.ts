@@ -19,7 +19,11 @@
 import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
 import { input, label, slot, span } from "../util/lsx"
-import { style as txRadio } from "../style/tx-radio"
+import { specialStyleFor } from "../style/tx-special"
+import txRadioCss from "../style/tx-radio.css?inline"
+
+const txRadio = new CSSStyleSheet()
+txRadio.replaceSync(txRadioCss + specialStyleFor(":host(.tx-radio) > span"))
 
 export interface RadioButtonProps<V> extends ModelViewProps<OptionModelBase<V>> {
     value: V,

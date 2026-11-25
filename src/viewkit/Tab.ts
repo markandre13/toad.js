@@ -18,11 +18,17 @@
 
 import { View } from "../viewkit/View"
 import { ul, li, span, text, div, slot } from "../util/lsx"
-import { style as txTabs } from "../style/tx-tabs"
-import { style as txScrollbar } from "../style/tx-scrollbar"
 import { type HTMLElementProps, type JSX } from "toad.jsx"
 import { ModelView, type ModelViewProps } from "./ModelView"
 import { OptionModelBase } from "../appkit/OptionModelBase"
+import txTabsCss from "../style/tx-tabs.css?inline"
+import txScrollbarCss from "../style/tx-scrollbar.css?inline"
+
+const txTabs = new CSSStyleSheet()
+txTabs.replaceSync(txTabsCss)
+
+const txScrollbar = new CSSStyleSheet()
+txScrollbar.replaceSync(txScrollbarCss)
 
 export interface TabsProps<V = void> extends ModelViewProps<OptionModelBase<V>> {
     orientation?: "horizontal" | "vertical"
