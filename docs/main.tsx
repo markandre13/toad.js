@@ -1,14 +1,25 @@
 import { EnumModel } from "@toad/appkit/EnumModel"
 import { Tabs, Tab } from "@toad/viewkit/Tab"
-import { initHistoryManager, TAB } from "./history"
 import { loadFont } from "@toad/util/loadFont"
 import { loadStyle } from "@toad/util/loadStyle"
-import type { JSX } from "toad.jsx"
-// import { replaceChildren } from "toad.jsx"
+import { replaceChildren } from "toad.jsx"
+
+export enum TAB {
+    INTRODUCTION = "introduction",
+    DEMO = "demo",
+    FORM = "form",
+    ACTION = "action",
+    TEXT = "text",
+    NUMBER = "number",
+    BOOLEAN = "boolean",
+    CHOICE = "choice",
+    TABLE = "table",
+    TABS = "tabs",
+    MENU = "menu",
+}
 
 window.onload = () => {
-    const tabModel = new EnumModel(TAB.INTRODUCTION, TAB)
-    initHistoryManager(tabModel)
+    const tabModel = new EnumModel(TAB.INTRODUCTION, TAB, {fragment: "tab", default: TAB.INTRODUCTION})
     loadFont()
     loadStyle()
     replaceChildren(document.body, <>
@@ -17,7 +28,7 @@ window.onload = () => {
             <br />
             Web Edition
         </p>
-        <Tabs orientation="vertical" model={tabModel}>
+        <Tabs orientation="vertical" model={tabModel} >
             <Tab value={TAB.INTRODUCTION} label="Introduction" content={() => import("./00_introduction")} />
             <Tab value={TAB.DEMO} label="Demo" content={() => import("./01_demo")} />
             <Tab value={TAB.FORM} label="Form" content={() => import("./02_form")} />
@@ -31,16 +42,4 @@ window.onload = () => {
             <Tab value={TAB.MENU} label="Menu" content={() => import("./10_menu")} />
         </Tabs>
     </>)
-}
-
-function replaceChildren(parent: Element, content: JSX.Element) {
-    if (Array.isArray(content)) {
-        if (content.length === 1 && Array.isArray(content[0])) {
-            parent.replaceChildren(...content[0] as any[])
-        } else {
-            parent.replaceChildren(...content as any[])
-        }
-    } else {
-        parent.replaceChildren(content as any)
-    }
 }

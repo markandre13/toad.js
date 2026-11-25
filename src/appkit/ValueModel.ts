@@ -43,6 +43,68 @@ export interface ValueModelOptions<V> extends ModelOptions {
      * when set, the model is persisted in local storage during browser sessions
      */
     local?: string
+
+    /**
+     * persist value in the url fragment identifier
+     *
+     * when set, the model is stored as key-value pair in the fragment, e.g. `#tab-demo`.
+     * multiple pairs are separated by `_`, key and value by `-`.
+     * keys must not contain `-` or `_`.
+     */
+    fragment?: string
+}
+
+const URL_HASH_PAIR_SEPARATOR = "_"
+const URL_HASH_KEY_VALUE_SEPARATOR = "-"
+
+function readUrlHashPairs(): Map<string, string> {
+    const pairs = new Map<string, string>()
+    const hash = location.hash.substring(1)
+    if (hash === "") {
+        return pairs
+    }
+    for (const pair of hash.split(URL_HASH_PAIR_SEPARATOR)) {
+        const index = pair.indexOf(URL_HASH_KEY_VALUE_SEPARATOR)
+        if (index > 0) {
+            pairs.set(pair.substring(0, index), pair.substring(index + 1))
+        }
+    }
+    return pairs
+}
+
+/**
+ * @returns the decoded value stored for key in the url fragment, or undefined
+ */
+export function getUrlHashValue(key: string): string | undefined {
+    const raw = readUrlHashPairs().get(key)
+    if (raw === undefined) {
+        return undefined
+    }
+    try {
+        return decodeURIComponent(raw)
+    } catch (e) {
+        return undefined
+    }
+}
+
+/**
+ * stores value for key in the url fragment, keeping all other key-value pairs
+ *
+ * @param push add a history entry instead of replacing the current one
+ */
+export function setUrlHashValue(key: string, value: string, push: boolean) {
+    const pairs = readUrlHashPairs()
+    pairs.set(key, encodeURIComponent(value).replace(/[-_]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))
+    const hash = [...pairs].map(([k, v]) => `${k}${URL_HASH_KEY_VALUE_SEPARATOR}${v}`).join(URL_HASH_PAIR_SEPARATOR)
+    if (location.hash === `#${hash}`) {
+        return
+    }
+    const url = `${location.pathname}${location.search}#${hash}`
+    if (push) {
+        history.pushState(null, "", url)
+    } else {
+        history.replaceState(history.state, "", url)
+    }
 }
 
 /**
@@ -82,11 +144,79 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
 export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
     extends AbstractValueModel<V, E, O> {
     protected _value: V
+    private urlHashSuppressed = false
 
     constructor(value: V, options?: O) {
         super(options)
         this._value = value
         this.setFromLocalStorage()
+        this.setFromUrlHash()
+        if (this.options?.fragment !== undefined) {
+            window.addEventListener("popstate", () => this.onUrlHashChange())
+            window.addEventListener("hashchange", () => this.onUrlHashChange())
+        }
+    }
+
+    protected setFromUrlHash() {
+        if (this.options?.fragment === undefined) {
+            return
+        }
+        if (!this.restoreUrlHash()) {
+            this.persistToUrlHash(false)
+        }
+    }
+    protected persistToUrlHash(push: boolean) {
+        if (this.options?.fragment === undefined) {
+            return
+        }
+        setUrlHashValue(this.options.fragment, this.urlHashString(), push)
+    }
+
+    /**
+     * restores the value from the url fragment without writing it back
+     *
+     * @returns false if the fragment does not contain a valid value for this model
+     */
+    private restoreUrlHash(): boolean {
+        const key = this.options!.fragment!
+        const raw = getUrlHashValue(key)
+        if (raw === undefined) {
+            return false
+        }
+        this.urlHashSuppressed = true
+        try {
+            this.restoreFromUrlHash(raw)
+            return true
+        } catch (error) {
+            console.log(`ValueModel: failed to restore "${key}" = "${raw}" from url hash`)
+            return false
+        } finally {
+            this.urlHashSuppressed = false
+        }
+    }
+    private onUrlHashChange() {
+        if (!this.restoreUrlHash()) {
+            this.urlHashSuppressed = true
+            try {
+                this.resetToDefault()
+            } finally {
+                this.urlHashSuppressed = false
+            }
+        }
+    }
+    protected urlHashString(): string {
+        if (typeof this._value === "string") {
+            return this._value
+        }
+        return this.toJsonString()
+    }
+    protected restoreFromUrlHash(raw: string) {
+        if (typeof this._value === "string") {
+            this._value = raw as any
+        } else {
+            this.fromJsonString(raw)
+        }
+        this.signal.emit({ type: VALUE })
     }
 
     protected setFromLocalStorage() {
@@ -155,6 +285,9 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         if (this._value === value) return
         this._value = value
         this.persistToLocalStorage()
+        if (!this.urlHashSuppressed) {
+            this.persistToUrlHash(true)
+        }
         this.signal.emit({ type: VALUE })
     }
     override get value(): V {

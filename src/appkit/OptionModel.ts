@@ -139,6 +139,7 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
         // we might have previously failed to restore the value from local storage because of a wrong mapping
         // let's try again
         this.setFromLocalStorage()
+        this.setFromUrlHash()
 
         this.signal.emit({ type: ALL })
     }
@@ -181,5 +182,19 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
         let name  = this.options.local
         // console.log(`OptionModel.writeToLocalStorage(): ${name} = '${this.id}'`)
         localStorage.setItem(name, this.id)
+    }
+
+    protected override urlHashString(): string {
+        if (this._mapper === undefined) {
+            return super.urlHashString()
+        }
+        return this.id
+    }
+    protected override restoreFromUrlHash(raw: string) {
+        if (this._mapper === undefined) {
+            super.restoreFromUrlHash(raw)
+            return
+        }
+        this.id = raw
     }
 }
