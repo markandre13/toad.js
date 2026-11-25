@@ -155,6 +155,10 @@ a:visited:active {
   text-decoration: none;
 } */
 
+.tx-unknown {
+    background: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%) 0 0 / 4px 4px;
+}
+
 .tx-loading {
     background: repeating-linear-gradient(-45deg, #fff 0 10px, #faa 0 20px) 100% 100%;
     background-size: calc(20px / cos(45deg)) calc(20px / cos(45deg));

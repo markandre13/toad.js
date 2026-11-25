@@ -19,6 +19,7 @@
 import { BigDecimal } from "../util/BigDecimal"
 import { expression } from "../util/expressions/expression"
 import { AUTOCORRECT_VALUE, MAX_VALUE, MIN_VALUE, NumericModel, type NumericModelEvent, type NumericModelOptions, STEP_VALUE } from "./NumericModel"
+import { isSpecialValue, type SpecialValue } from "./ValueModel"
 export { AUTOCORRECT_VALUE, MAX_VALUE, MIN_VALUE, STEP_VALUE }
 
 export type NumberModelEvent = NumericModelEvent
@@ -32,21 +33,25 @@ export class NumberModel extends NumericModel<number> {
     //     super(value, options)
     // }
     increment() {
-        if (this.step !== undefined) {
+        if (this.step !== undefined && this._special === undefined) {
             const value = new BigDecimal(this.value)
             const step = new BigDecimal(this.step)
             this.value = this.clip(parseFloat(value.add(step).toString()))
         }
     }
     decrement() {
-        if (this.step !== undefined) {
+        if (this.step !== undefined && this._special === undefined) {
             const value = new BigDecimal(this.value)
             const step = new BigDecimal(this.step)
             this.value = this.clip(parseFloat(value.sub(step).toString()))
         }
     }
 
-    override set value(value: number | string) {
+    override set value(value: number | string | SpecialValue) {
+        if (isSpecialValue(value)) {
+            super.value = value
+            return
+        }
         let number: number
         if (typeof value === "string") {
             // const lexer = new Lexer(value)

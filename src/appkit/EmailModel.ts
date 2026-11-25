@@ -17,19 +17,24 @@
  */
 
 import { TextModel } from "./TextModel"
+import { isSpecialValue, type SpecialValue } from "./ValueModel"
 
 /**
  * @category Application Model
  */
 export class EmailModel extends TextModel {
-    override set value(value: string) {
+    override set value(value: string | SpecialValue) {
+        if (isSpecialValue(value)) {
+            super.value = value
+            return
+        }
         this.signal.withLock(() => {
-            if (this._value === value) {
+            if (this._special === undefined && this._value === value) {
                 return
             }
-            value = value.trim()
-            super.value = value
-            if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value)) {
+            const email = value.trim()
+            super.value = email
+            if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
                 this.error = `The value is not a valid email address.`
             }
         })

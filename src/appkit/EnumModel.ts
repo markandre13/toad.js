@@ -17,6 +17,7 @@
  */
 
 import { OptionModelBase, type OptionModelOptions } from "./OptionModelBase"
+import { type SpecialValue } from "./ValueModel"
 
 /**
  * @category Application Model
@@ -29,7 +30,7 @@ export type EnumType<T> = {
 export class EnumModel<T, V extends T = T, E = void, O extends OptionModelOptions<T> = OptionModelOptions<T>> 
 extends OptionModelBase<T, E, O> {
     protected enumType: EnumType<T>
-    constructor(value: V, enumType: EnumType<T>, options?: O) {
+    constructor(value: V | SpecialValue, enumType: EnumType<T>, options?: O) {
         super(value, options)
         this.enumType = enumType
     }

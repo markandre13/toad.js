@@ -21,6 +21,11 @@ import { Model, type ModelOptions, type ModelEvent } from "./Model"
 
 export const VALUE_UNKNOWN = Symbol("VALUE_UNKNOWN")
 export const VALUE_LOADING = Symbol("VALUE_LOADING")
+export type SpecialValue = typeof VALUE_UNKNOWN | typeof VALUE_LOADING
+
+export function isSpecialValue(value: unknown): value is SpecialValue {
+    return value === VALUE_UNKNOWN || value === VALUE_LOADING
+}
 
 export const VALUE = Symbol("VALUE")
 export const DEFAULT_VALUE = Symbol("DEFAULT_VALUE")
@@ -113,9 +118,36 @@ export function setUrlHashValue(key: string, value: string, push: boolean) {
  */
 export abstract class AbstractValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
     extends Model<ValueModelEvent | E, O> {
+    protected _special?: SpecialValue
 
-    abstract set value(value: V)
+    /**
+     * the getter returns undefined (typed as V) while the value is VALUE_UNKNOWN or VALUE_LOADING.
+     * use isUnknown() and isLoading() to check for them.
+     */
+    abstract set value(value: V | SpecialValue)
     abstract get value(): V
+
+    isUnknown(): boolean {
+        produceValue(this.signal)
+        return this._special === VALUE_UNKNOWN
+    }
+
+    isLoading(): boolean {
+        produceValue(this.signal)
+        return this._special === VALUE_LOADING
+    }
+
+    protected setSpecialValue(value: SpecialValue) {
+        if (this._special === value) return
+        this._special = value
+        this.signal.emit({ type: VALUE })
+    }
+
+    override applyStyle(element: HTMLElement) {
+        super.applyStyle(element)
+        element.classList.toggle("tx-unknown", this._special === VALUE_UNKNOWN)
+        element.classList.toggle("tx-loading", this._special === VALUE_LOADING)
+    }
 
     set default(aDefault: V | undefined) {
         if (this.options?.default === aDefault) return
@@ -146,9 +178,14 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
     protected _value: V
     private urlHashSuppressed = false
 
-    constructor(value: V, options?: O) {
+    constructor(value: V | SpecialValue, options?: O) {
         super(options)
-        this._value = value
+        if (isSpecialValue(value)) {
+            this._special = value
+            this._value = undefined as V
+        } else {
+            this._value = value
+        }
         this.setFromLocalStorage()
         this.setFromUrlHash()
         if (this.options?.fragment !== undefined) {
@@ -161,7 +198,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         if (this.options?.fragment === undefined) {
             return
         }
-        if (!this.restoreUrlHash()) {
+        if (!this.restoreUrlHash() && this._special === undefined) {
             this.persistToUrlHash(false)
         }
     }
@@ -216,6 +253,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         } else {
             this.fromJsonString(raw)
         }
+        this._special = undefined
         this.signal.emit({ type: VALUE })
     }
 
@@ -232,7 +270,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
             } catch (error) {
                 console.log(`ValueModel.constructor(): failed to restore "${name}" = "${value}" from local`)
             }
-        } else {
+        } else if (this._special === undefined) {
             localStorage.setItem(name, this.toJsonString())
         }
     }
@@ -279,10 +317,16 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         } else {
             this._value = JSON.parse(value)
         }
+        this._special = undefined
     }
 
-    override set value(value: V) {
-        if (this._value === value) return
+    override set value(value: V | SpecialValue) {
+        if (isSpecialValue(value)) {
+            this.setSpecialValue(value)
+            return
+        }
+        if (this._special === undefined && this._value === value) return
+        this._special = undefined
         this._value = value
         this.persistToLocalStorage()
         if (!this.urlHashSuppressed) {
@@ -292,6 +336,6 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
     }
     override get value(): V {
         produceValue(this.signal)
-        return this._value
+        return this._special === undefined ? this._value : undefined as V
     }
 }

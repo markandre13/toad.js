@@ -17,7 +17,7 @@
  */
 
 import { produceValue } from "../reactive/Computed"
-import { AbstractValueModel, VALUE, type ValueModelOptions } from "./ValueModel"
+import { AbstractValueModel, isSpecialValue, VALUE, type SpecialValue, type ValueModelOptions } from "./ValueModel"
 
 export type StringFunction = () => string
 
@@ -27,7 +27,7 @@ export type StringFunction = () => string
 export class TextModel extends AbstractValueModel<string, void, ValueModelOptions<string>> {
     protected _value!: string | StringFunction
 
-    constructor(value: string = "", options?: ValueModelOptions<string>) {
+    constructor(value: string | SpecialValue = "", options?: ValueModelOptions<string>) {
         super(options)
         this.value = value
     }
@@ -41,6 +41,7 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
      * with the actual value only retrieved when needed.
      */
     set promise(promise: StringFunction) {
+        this._special = undefined
         this._value = promise
         this.signal.emit({type: VALUE})
     }
@@ -55,8 +56,12 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
         return this._value
     }
 
-    override set value(value: string) {
-        if (this._value === value) {
+    override set value(value: string | SpecialValue) {
+        if (isSpecialValue(value)) {
+            this.setSpecialValue(value)
+            return
+        }
+        if (this._special === undefined && this._value === value) {
             return
         }
         if (typeof value !== "string") {
@@ -65,12 +70,17 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
         }
         this.signal.withLock(() => {
             this.error = undefined
+            this._special = undefined
             this._value = value
             this.signal.emit({type:VALUE})   
         })
     }
 
     override get value(): string {
+        if (this._special !== undefined) {
+            produceValue(this.signal)
+            return undefined as unknown as string
+        }
         switch (typeof this._value) {
             case "number": // ????
                 this._value = `${this._value}`

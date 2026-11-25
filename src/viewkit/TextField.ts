@@ -103,7 +103,10 @@ export class TextField extends ModelView<TextFieldModel> {
 
     override updateModel() {
         if (this.model) {
-            this.model.value = this.input.value
+            // keep unknown/loading values when the empty field is left unchanged
+            if (!(this.isSpecial() && this.input.value === "")) {
+                this.model.value = this.input.value
+            }
         }
         this.setAttribute("value", this.input.value)
     }
@@ -126,11 +129,15 @@ export class TextField extends ModelView<TextFieldModel> {
             return
         }
 
-        const strValue = `${this.model.value}`
+        const strValue = this.isSpecial() ? "" : `${this.model.value}`
         if (this.input.value !== strValue) {
             this.input.value = strValue
             this.setAttribute("value", strValue)
         }
+    }
+
+    protected isSpecial() {
+        return this.model !== undefined && (this.model.isUnknown() || this.model.isLoading())
     }
 
     get value() {

@@ -18,7 +18,7 @@
 
 import { evaluateAndDiscoverDependencies, produceValue } from "../reactive/Computed"
 import { Signal } from "../reactive/Signal"
-import { AbstractValueModel, type ValueModelOptions } from "./ValueModel"
+import { AbstractValueModel, isSpecialValue, type SpecialValue, type ValueModelOptions } from "./ValueModel"
 
 /**
  * Converter is updated whenever one of it's dependant models changes.
@@ -32,9 +32,17 @@ export abstract class Converter<T> extends AbstractValueModel<T, void, ValueMode
     }
     override get value(): T {
         produceValue(this.signal)
+        if (this._special !== undefined) {
+            return undefined as T
+        }
         return evaluateAndDiscoverDependencies(this.signal as Signal<void>, () => this.output())
     }
-    override set value(value: T) {
+    override set value(value: T | SpecialValue) {
+        if (isSpecialValue(value)) {
+            this.setSpecialValue(value)
+            return
+        }
+        this._special = undefined
         this.input(value)
     }
     abstract output(): T

@@ -20,6 +20,7 @@ import { type JSX } from "toad.jsx"
 import { deepEqual } from "../util/deepEqual"
 import { ALL, type ModelEvent } from "./Model"
 import { type OptionMapping, OptionModelBase, type OptionModelOptions } from "./OptionModelBase"
+import { type SpecialValue } from "./ValueModel"
 
 /**
  * @category Application Model
@@ -53,18 +54,18 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
      * @param options
      */
     constructor(
-        value: V,
+        value: V | SpecialValue,
         list: ReadonlyArray<V>,
         mapper: (value: V) => OptionMapping,
         modelOptions?: O
     )
     constructor(
-        value: V,
+        value: V | SpecialValue,
         mapping: ReadonlyArray<[V, string | number | JSX.Element ] | string>,
         modelOptions?: O
     )
     constructor(
-        value: V,
+        value: V | SpecialValue,
         listOrMapping: ReadonlyArray<V> | ReadonlyArray<[V, string | number | JSX.Element] | string>,
         mapperOrOptions: (value: V) => OptionMapping | O,
         options?: O
@@ -163,7 +164,7 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
         if (local !== null) {
             // console.log(`OptionModel.readFromLocalStorage(): ${local}`)
             this.id = local
-        } else {
+        } else if (this._special === undefined) {
             localStorage.setItem(name, this.id)
         }
     }

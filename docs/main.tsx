@@ -16,10 +16,11 @@ export enum TAB {
     TABLE = "table",
     TABS = "tabs",
     MENU = "menu",
+    SPECIAL = "special"
 }
 
 window.onload = () => {
-    const tabModel = new EnumModel(TAB.INTRODUCTION, TAB, {fragment: "tab", default: TAB.INTRODUCTION})
+    const tabModel = new EnumModel(TAB.INTRODUCTION, TAB, { fragment: "tab", default: TAB.INTRODUCTION })
     loadFont()
     loadStyle()
     replaceChildren(document.body, <>
@@ -40,6 +41,7 @@ window.onload = () => {
             <Tab value={TAB.TABLE} label="Table" content={() => import("./08_table")} />
             <Tab value={TAB.TABS} label="Tabs" content={() => import("./09_tabs")} />
             <Tab value={TAB.MENU} label="Menu" content={() => import("./10_menu")} />
+            <Tab value={TAB.SPECIAL} label="Special" content={() => import("./11_special")} />
         </Tabs>
     </>)
 }
