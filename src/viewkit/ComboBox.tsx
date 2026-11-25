@@ -52,7 +52,7 @@ export class ComboBox<V> extends OptionBase<string | number> {
     override updateView() {
         super.updateView()
         if (this.model !== undefined) {
-            this.displayElement.value = `${this.model.value}`
+            this.displayElement.value = this.model.isUnknown() || this.model.isLoading() ? "" : `${this.model.value}`
         }
         this.focusToItem()
     }

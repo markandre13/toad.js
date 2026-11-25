@@ -1,4 +1,5 @@
 import { css } from 'src/util/lsx'
+import { specialStyle } from './tx-special'
 
 export const style = new CSSStyleSheet()
 style.replaceSync(css`
@@ -116,4 +117,5 @@ style.replaceSync(css`
 :host > :first-child.tx-error + button {
     border-color: var(--tx-warning-color)
 }
+${specialStyle}
 `)

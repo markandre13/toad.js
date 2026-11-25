@@ -1,5 +1,6 @@
 
 import { css } from 'src/util/lsx'
+import { specialStyle } from './tx-special'
 
 // rail disabled: 3f3f3f
 // thumb disabled: 6a6a6a
@@ -144,4 +145,5 @@ style.replaceSync(css`
         white-space: nowrap;
         direction: ltr;
     }
+${specialStyle}
 `)

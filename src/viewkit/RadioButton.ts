@@ -33,6 +33,7 @@ export interface RadioButtonProps<V> extends ModelViewProps<OptionModelBase<V>> 
 export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
     protected input: HTMLInputElement
     protected label: HTMLLabelElement
+    protected dot: HTMLSpanElement
     protected value?: V
 
     static radioGroupCounter = 0
@@ -55,12 +56,13 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
         this.input.disabled = true
 
         this.label = label()
+        this.dot = span()
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.adoptedStyleSheets = [txRadio]
         this.shadowRoot!.replaceChildren(
             this.input,
-            span(),
+            this.dot,
             this.label)
     }
 
@@ -144,6 +146,7 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
         }
 
         if (this.model) {
+            this.model.applySpecialStyle(this.dot)
             this.input.checked = this.model.value === this.value
             this.input.tabIndex = this.input.checked ? 0 : -1
         }

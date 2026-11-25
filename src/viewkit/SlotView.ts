@@ -31,6 +31,7 @@ export class SlotView extends ModelView<TextModel> {
         if (!this.model)
             return
 
+        this.model.applySpecialStyle(this)
         let value = this.model.value === undefined ? "" : this.model.value
         if (this.model instanceof HtmlModel)
             this.innerHTML = value

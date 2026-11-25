@@ -303,5 +303,7 @@ export abstract class OptionBase<V> extends ModelView<OptionModelBase<V>> {
         } else {
             this.displayElement.classList.remove("tx-error")
         }
+
+        this.model?.applySpecialStyle(this.displayElement)
     }
 }

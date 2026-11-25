@@ -159,6 +159,11 @@ export class TextArea extends ModelView<TextModel> {
         if (!this.model) {
             return
         }
+        this.model.applySpecialStyle(this.content)
+        if (this.model.isUnknown() || this.model.isLoading()) {
+            this.content.innerText = ""
+            return
+        }
         if (this.model instanceof HtmlModel) {
             // because of TextModel.promise we check here instead inside the model
             // if we don't check at all, the cursor ends up in the wrong location

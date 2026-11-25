@@ -1,4 +1,5 @@
 import { css } from "../util/lsx"
+import { specialStyle } from "./tx-special"
 
 export const style = new CSSStyleSheet()
 style.replaceSync(css`
@@ -161,4 +162,5 @@ style.replaceSync(css`
     width: ${28 - 8 + 28}px;
     height: ${28 - 8 + 28}px;
 }
+${specialStyle}
 `)

@@ -18,12 +18,13 @@
 
 import { type ModelOptions } from "./Model"
 import { TextModel } from "./TextModel"
+import { type SpecialValue } from "./ValueModel"
 
 /**
  * @category Application Model
  */
 export class HtmlModel extends TextModel {
-  constructor(value: string, options?: ModelOptions) {
+  constructor(value: string | SpecialValue, options?: ModelOptions) {
     super(value, options)
   }
 }

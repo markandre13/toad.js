@@ -1,4 +1,5 @@
 import { css } from 'src/util/lsx'
+import { specialStyle } from './tx-special'
 
 export const style = new CSSStyleSheet()
 style.replaceSync(css`
@@ -92,4 +93,5 @@ style.replaceSync(css`
 }
 :host(.tx-switch) > input:disabled + span + label {
     color: var(--tx-gray-400);
-}`)
+}
+${specialStyle}`)

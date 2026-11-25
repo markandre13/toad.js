@@ -1,4 +1,5 @@
 import { css } from 'src/util/lsx'
+import { specialStyle } from './tx-special'
 
 export const style = document.createElement("style")
 style.textContent = css`
@@ -119,4 +120,5 @@ body::-webkit-scrollbar-thumb {
   content: "→";
   text-decoration: none;
 } */
+${specialStyle}
 `

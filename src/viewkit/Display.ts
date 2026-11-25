@@ -17,6 +17,11 @@ export class Display extends ModelView<TextModel|HtmlModel|NumberModel> {
         this.innerText = ""
         return
     }
+    this.model.applySpecialStyle(this)
+    if (this.model.isUnknown() || this.model.isLoading()) {
+        this.innerText = ""
+        return
+    }
     if (this.model instanceof TextModel) {
         this.innerText = this.model.value
         return

@@ -36,7 +36,7 @@ export class Select<V> extends OptionBase<V> {
     override updateView() {
         super.updateView()
         if (this.model !== undefined) {
-            this.displayElement.replaceChildren(this.model.html)
+            this.displayElement.replaceChildren(this.model.html ?? "")
         }
         this.focusToItem()
     }

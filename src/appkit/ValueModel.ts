@@ -153,6 +153,13 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
 
     override applyStyle(element: HTMLElement) {
         super.applyStyle(element)
+        this.applySpecialStyle(element)
+    }
+
+    /**
+     * marks element as showing a special value (tx-unknown or tx-loading) or removes the marks
+     */
+    applySpecialStyle(element: HTMLElement) {
         element.classList.toggle("tx-unknown", this._value === VALUE_UNKNOWN)
         element.classList.toggle("tx-loading", this._value === VALUE_LOADING)
     }

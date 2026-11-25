@@ -144,6 +144,10 @@ export class ColorSelector extends ModelView<RGBModel> {
         if (!this.model) {
             return
         }
+        this.model.applySpecialStyle(this.newColor)
+        if (this.model.isUnknown() || this.model.isLoading()) {
+            return
+        }
         this.block = true
         const rgb = this.model.value
         if (this.oldColor.style.backgroundColor === "") {

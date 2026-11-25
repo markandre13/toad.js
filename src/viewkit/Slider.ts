@@ -235,6 +235,7 @@ export class Slider extends View {
 
     updateView(_event: NumberModelEvent): void {
         let index = -1
+        let special = false
         const va: number[] = []
         for (const { model, slider, thumb } of this.knob) {
             ++index
@@ -256,6 +257,12 @@ export class Slider extends View {
             }
             slider.min = String(model.min)
             slider.max = String(model.max)
+
+            model.applySpecialStyle(thumb)
+            if (model.isUnknown() || model.isLoading()) {
+                special = true
+                continue
+            }
             slider.value = String(model.value)
 
             const min = model.min!
@@ -282,6 +289,11 @@ export class Slider extends View {
             } else {
                 thumb.style.left = `${v}%`
             }
+        }
+
+        this.track.style.visibility = special ? "hidden" : ""
+        if (special) {
+            return
         }
 
         if (this.knob.length === 1) {
