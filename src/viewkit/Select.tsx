@@ -35,6 +35,7 @@ export class Select<V> extends OptionBase<V> {
 
     override updateView() {
         super.updateView()
+        this.displayElement.tabIndex = this.model?.enabled ? 0 : -1
         if (this.model !== undefined) {
             this.displayElement.replaceChildren(this.model.html ?? "")
         }

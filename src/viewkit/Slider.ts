@@ -250,6 +250,7 @@ export class Slider extends View {
             } else {
                 this.setAttribute("disabled", "disabled")
             }
+            slider.disabled = !model.enabled
             if (model.step === undefined && model.min !== undefined && model.max !== undefined) {
                 slider.step = `${(model.max - model.min) / 100}`
             } else {
