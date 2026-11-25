@@ -5,6 +5,7 @@ import { EnumModel } from "@toad/appkit/EnumModel"
 import { HtmlModel } from "@toad/appkit/HtmlModel"
 import { IntegerModel } from "@toad/appkit/IntegerModel"
 import { NumberModel } from "@toad/appkit/NumberModel"
+import { OptionModel } from "@toad/appkit/OptionModel"
 import { RGBModel } from "@toad/appkit/RGBModel"
 import { TextModel } from "@toad/appkit/TextModel"
 import { VALUE_LOADING, VALUE_UNKNOWN } from "@toad/appkit/ValueModel"
@@ -66,6 +67,14 @@ const choiceLoading = new EnumModel<Color>(VALUE_LOADING, Color)
 const comboTextKnown = new TextModel("")
 const comboTextUnknown = new TextModel("")
 const comboTextLoading = new TextModel("")
+
+const optionKnown = new OptionModel<string>("Grape", ["Blueberry", "Grape", "Tangerine", "Lime"])
+const optionUnknown = new OptionModel<string>(VALUE_UNKNOWN, ["Blueberry", "Grape", "Tangerine", "Lime"])
+const optionLoading = new OptionModel<string>(VALUE_LOADING, ["Blueberry", "Grape", "Tangerine", "Lime"])
+
+const optionTextKnown = new TextModel("")
+const optionTextUnknown = new TextModel("")
+const optionTextLoading = new TextModel("")
 
 class PercentConverter extends Converter<string> {
     constructor(private source: NumberModel) {
@@ -288,6 +297,48 @@ export default () => (
                     <td><ColorSelector model={colorKnown} /></td>
                     <td><ColorSelector model={colorUnknown} /></td>
                     <td><ColorSelector model={colorLoading} /></td>
+                </tr>
+            </table>
+        </div>
+
+        <h3>OptionModel</h3>
+        <div class="section">
+            <table>
+                <tr>
+                    <th></th>
+                    <th>value</th>
+                    <th>VALUE_UNKNOWN</th>
+                    <th>VALUE_LOADING</th>
+                </tr>
+                <tr>
+                    <th>&lt;RadioButton&gt;</th>
+                    <td>
+                        <RadioButton model={optionKnown} value="Blueberry" />
+                        <RadioButton model={optionKnown} value="Grape" />
+                        <RadioButton model={optionKnown} value="Tangerine" />
+                    </td>
+                    <td>
+                        <RadioButton model={optionUnknown} value="Blueberry" />
+                        <RadioButton model={optionUnknown} value="Grape" />
+                        <RadioButton model={optionUnknown} value="Tangerine" />
+                    </td>
+                    <td>
+                        <RadioButton model={optionLoading} value="Blueberry" />
+                        <RadioButton model={optionLoading} value="Grape" />
+                        <RadioButton model={optionLoading} value="Tangerine" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>&lt;Select&gt;</th>
+                    <td><Select model={optionKnown} /></td>
+                    <td><Select model={optionUnknown} /></td>
+                    <td><Select model={optionLoading} /></td>
+                </tr>
+                <tr>
+                    <th>&lt;ComboBox&gt;</th>
+                    <td><ComboBox model={optionKnown} text={optionTextKnown} /></td>
+                    <td><ComboBox model={optionUnknown} text={optionTextUnknown} /></td>
+                    <td><ComboBox model={optionLoading} text={optionTextLoading} /></td>
                 </tr>
             </table>
         </div>
