@@ -46,8 +46,15 @@ export abstract class BooleanView extends ModelView<BooleanModel> {
         }
 
         if (this.model) {
-            this.model.applySpecialStyle(this.input)
+            this.model.applySpecialStyle(this.visual())
             this.input.checked = this.model.value
         }
+    }
+
+    /**
+     * the element which shows the state; it gets the style of special values
+     */
+    protected visual(): HTMLElement {
+        return this.input
     }
 }

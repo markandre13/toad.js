@@ -1,6 +1,6 @@
 /* a div on top serves as the container for elements used for the switch*/
 import { css } from 'src/util/lsx'
-import { specialStyle } from './tx-special'
+import { specialStyleFor } from './tx-special'
 
 export const style = new CSSStyleSheet()
 style.replaceSync(css`
@@ -87,5 +87,9 @@ style.replaceSync(css`
 :host(.tx-radio) > input:disabled + span + label {
     color: var(--tx-gray-500);
 }
-${specialStyle}
+:host(.tx-radio) > span.tx-unknown:before,
+:host(.tx-radio) > span.tx-loading:before {
+    display: none;
+}
+${specialStyleFor(":host(.tx-radio) > span")}
 `)

@@ -27,6 +27,7 @@ import { input, span } from "../util/lsx"
  * @category View
  */
 export class Switch extends BooleanView {
+    protected track: HTMLSpanElement
 
     constructor(init?: ModelViewProps<BooleanModel>) {
         super(init)
@@ -38,11 +39,16 @@ export class Switch extends BooleanView {
         this.input.onchange = () => {
             this.updateModel()
         }
+        this.track = span()
 
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.adoptedStyleSheets = [txSwitch]
         this.shadowRoot!.appendChild(this.input)
-        this.shadowRoot!.appendChild(span())
+        this.shadowRoot!.appendChild(this.track)
+    }
+
+    protected override visual(): HTMLElement {
+        return this.track
     }
 }
 
