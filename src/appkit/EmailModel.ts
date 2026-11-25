@@ -29,7 +29,7 @@ export class EmailModel extends TextModel {
             return
         }
         this.signal.withLock(() => {
-            if (this._special === undefined && this._value === value) {
+            if (this._value === value) {
                 return
             }
             const email = value.trim()

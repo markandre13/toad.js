@@ -25,8 +25,7 @@ export class RGBModel extends ValueModel<RGB, void, ValueModelOptions<RGB>> {
             }
             value = v
         }
-        if (this._special !== undefined) {
-            this._special = undefined
+        if (isSpecialValue(this._value)) {
             this._value = Object.assign({}, value)
             this.signal.emit({ type: VALUE })
             return

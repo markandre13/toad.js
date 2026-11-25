@@ -25,7 +25,7 @@ export type StringFunction = () => string
  * @category Application Model
  */
 export class TextModel extends AbstractValueModel<string, void, ValueModelOptions<string>> {
-    protected _value!: string | StringFunction
+    protected override _value!: string | StringFunction | SpecialValue
 
     constructor(value: string | SpecialValue = "", options?: ValueModelOptions<string>) {
         super(options)
@@ -41,7 +41,6 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
      * with the actual value only retrieved when needed.
      */
     set promise(promise: StringFunction) {
-        this._special = undefined
         this._value = promise
         this.signal.emit({type: VALUE})
     }
@@ -53,7 +52,7 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
                 return value
             }
         }
-        return this._value
+        return this._value as StringFunction
     }
 
     override set value(value: string | SpecialValue) {
@@ -61,7 +60,7 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
             this.setSpecialValue(value)
             return
         }
-        if (this._special === undefined && this._value === value) {
+        if (this._value === value) {
             return
         }
         if (typeof value !== "string") {
@@ -70,14 +69,13 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
         }
         this.signal.withLock(() => {
             this.error = undefined
-            this._special = undefined
             this._value = value
             this.signal.emit({type:VALUE})   
         })
     }
 
     override get value(): string {
-        if (this._special !== undefined) {
+        if (this.hasSpecialValue()) {
             produceValue(this.signal)
             return undefined as unknown as string
         }

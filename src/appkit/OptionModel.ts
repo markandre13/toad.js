@@ -88,7 +88,7 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
         if (this._mapper === undefined) {
             throw Error('to use id(), a mapper function is needed')
         }
-        return this._mapper(this._value).id
+        return this._mapper(this._value as V).id
     }
     set id(id: string) {
         if (this._mapper === undefined) {
@@ -164,14 +164,14 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
         if (local !== null) {
             // console.log(`OptionModel.readFromLocalStorage(): ${local}`)
             this.id = local
-        } else if (this._special === undefined) {
-            localStorage.setItem(name, this.id)
+        } else {
+            this.persistToLocalStorage()
         }
     }
     protected override persistToLocalStorage() {
         // console.log(`OptionModel.writeToLocalStorage()`)
         // console.log(this.options?.local)
-        if (this.options?.local === undefined) {
+        if (this.options?.local === undefined || this.hasSpecialValue()) {
             // console.log(`OptionModel.writeToLocalStorage(): no local`)
             return
         }

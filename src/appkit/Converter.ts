@@ -32,8 +32,8 @@ export abstract class Converter<T> extends AbstractValueModel<T, void, ValueMode
     }
     override get value(): T {
         produceValue(this.signal)
-        if (this._special !== undefined) {
-            return undefined as T
+        if (this.hasSpecialValue()) {
+            return undefined as unknown as T
         }
         return evaluateAndDiscoverDependencies(this.signal as Signal<void>, () => this.output())
     }
@@ -42,7 +42,7 @@ export abstract class Converter<T> extends AbstractValueModel<T, void, ValueMode
             this.setSpecialValue(value)
             return
         }
-        this._special = undefined
+        this._value = value
         this.input(value)
     }
     abstract output(): T

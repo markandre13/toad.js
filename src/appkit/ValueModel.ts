@@ -118,7 +118,11 @@ export function setUrlHashValue(key: string, value: string, push: boolean) {
  */
 export abstract class AbstractValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
     extends Model<ValueModelEvent | E, O> {
-    protected _special?: SpecialValue
+    /**
+     * holds the value, or VALUE_UNKNOWN / VALUE_LOADING while the value is special.
+     * sub-classes declare the concrete type.
+     */
+    protected _value!: unknown
 
     /**
      * the getter returns undefined (typed as V) while the value is VALUE_UNKNOWN or VALUE_LOADING.
@@ -129,24 +133,28 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
 
     isUnknown(): boolean {
         produceValue(this.signal)
-        return this._special === VALUE_UNKNOWN
+        return this._value === VALUE_UNKNOWN
     }
 
     isLoading(): boolean {
         produceValue(this.signal)
-        return this._special === VALUE_LOADING
+        return this._value === VALUE_LOADING
+    }
+
+    protected hasSpecialValue(): boolean {
+        return isSpecialValue(this._value)
     }
 
     protected setSpecialValue(value: SpecialValue) {
-        if (this._special === value) return
-        this._special = value
+        if (this._value === value) return
+        this._value = value
         this.signal.emit({ type: VALUE })
     }
 
     override applyStyle(element: HTMLElement) {
         super.applyStyle(element)
-        element.classList.toggle("tx-unknown", this._special === VALUE_UNKNOWN)
-        element.classList.toggle("tx-loading", this._special === VALUE_LOADING)
+        element.classList.toggle("tx-unknown", this._value === VALUE_UNKNOWN)
+        element.classList.toggle("tx-loading", this._value === VALUE_LOADING)
     }
 
     set default(aDefault: V | undefined) {
@@ -175,17 +183,12 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
  */
 export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
     extends AbstractValueModel<V, E, O> {
-    protected _value: V
+    protected override _value!: V | SpecialValue
     private urlHashSuppressed = false
 
     constructor(value: V | SpecialValue, options?: O) {
         super(options)
-        if (isSpecialValue(value)) {
-            this._special = value
-            this._value = undefined as V
-        } else {
-            this._value = value
-        }
+        this._value = value
         this.setFromLocalStorage()
         this.setFromUrlHash()
         if (this.options?.fragment !== undefined) {
@@ -198,12 +201,12 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         if (this.options?.fragment === undefined) {
             return
         }
-        if (!this.restoreUrlHash() && this._special === undefined) {
+        if (!this.restoreUrlHash()) {
             this.persistToUrlHash(false)
         }
     }
     protected persistToUrlHash(push: boolean) {
-        if (this.options?.fragment === undefined) {
+        if (this.options?.fragment === undefined || this.hasSpecialValue()) {
             return
         }
         setUrlHashValue(this.options.fragment, this.urlHashString(), push)
@@ -253,7 +256,6 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         } else {
             this.fromJsonString(raw)
         }
-        this._special = undefined
         this.signal.emit({ type: VALUE })
     }
 
@@ -270,12 +272,12 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
             } catch (error) {
                 console.log(`ValueModel.constructor(): failed to restore "${name}" = "${value}" from local`)
             }
-        } else if (this._special === undefined) {
-            localStorage.setItem(name, this.toJsonString())
+        } else {
+            this.persistToLocalStorage()
         }
     }
     protected persistToLocalStorage() {
-        if (this.options?.local === undefined) {
+        if (this.options?.local === undefined || this.hasSpecialValue()) {
             return
         }
         try {
@@ -317,7 +319,6 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         } else {
             this._value = JSON.parse(value)
         }
-        this._special = undefined
     }
 
     override set value(value: V | SpecialValue) {
@@ -325,8 +326,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
             this.setSpecialValue(value)
             return
         }
-        if (this._special === undefined && this._value === value) return
-        this._special = undefined
+        if (this._value === value) return
         this._value = value
         this.persistToLocalStorage()
         if (!this.urlHashSuppressed) {
@@ -336,6 +336,6 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
     }
     override get value(): V {
         produceValue(this.signal)
-        return this._special === undefined ? this._value : undefined as V
+        return isSpecialValue(this._value) ? undefined as V : this._value
     }
 }

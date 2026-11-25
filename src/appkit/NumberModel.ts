@@ -33,14 +33,14 @@ export class NumberModel extends NumericModel<number> {
     //     super(value, options)
     // }
     increment() {
-        if (this.step !== undefined && this._special === undefined) {
+        if (this.step !== undefined && !this.hasSpecialValue()) {
             const value = new BigDecimal(this.value)
             const step = new BigDecimal(this.step)
             this.value = this.clip(parseFloat(value.add(step).toString()))
         }
     }
     decrement() {
-        if (this.step !== undefined && this._special === undefined) {
+        if (this.step !== undefined && !this.hasSpecialValue()) {
             const value = new BigDecimal(this.value)
             const step = new BigDecimal(this.step)
             this.value = this.clip(parseFloat(value.sub(step).toString()))
