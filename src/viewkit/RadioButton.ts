@@ -148,7 +148,13 @@ export class RadioButton<V> extends ModelView<OptionModelBase<V>> {
         if (this.model) {
             this.model.applySpecialStyle(this.dot)
             this.input.checked = this.model.value === this.value
-            this.input.tabIndex = this.input.checked ? 0 : -1
+            let tabbable = this.input.checked
+            if (!tabbable && this.model.isUnknown()) {
+                const values: V[] = []
+                this.model.forEach((value) => values.push(value))
+                tabbable = values.find((value) => this.model!.isEnabledOf(value)) === this.value
+            }
+            this.input.tabIndex = tabbable ? 0 : -1
         }
     }
 }
