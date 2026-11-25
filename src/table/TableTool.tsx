@@ -20,6 +20,7 @@ import { Model } from "../appkit/Model"
 import { View } from "../viewkit/View"
 import { GenericTool } from "../viewkit/GenericTool"
 import { textAreaStyle } from "../viewkit/textAreaStyle"
+import sprite from "./TableTool.svg?raw"
 
 import { Table } from "./Table"
 import { type RowEditInterface, type ColumnEditInterface } from "./model/TableModel"
@@ -51,16 +52,10 @@ export class TableTool extends GenericTool<Model> {
         super()
 
         this.toolbar = <div class="toolbar"/> as HTMLDivElement
+        this.toolbar.insertAdjacentHTML("afterbegin", sprite)
 
         this.buttonAddRowAbove = <button class="left" title="add row above">
-            <svg style={{ display: "block" }} viewBox="0 0 13 13" width="13" height="13">
-                <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill" />
-                <line x1="0.5" y1="8.5" x2="12.5" y2="8.5" class="stroke" />
-                <line x1="4.5" y1="8.5" x2="4.5" y2="13.5" class="stroke" />
-                <line x1="8.5" y1="8.5" x2="8.5" y2="13.5" class="stroke" />
-                <line x1="6.5" y1="2" x2="6.5" y2="7" class="stroke" />
-                <line x1="4" y1="4.5" x2="9" y2="4.5" class="stroke" />
-            </svg>
+            <svg style={{ display: "block" }} width="13" height="13"><use href="#add-row-above" /></svg>
         </button>as HTMLElement
         this.buttonAddRowAbove.onclick = () => {
             this.lastActiveTable?.focus()
@@ -73,14 +68,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddRowAbove)
 
         this.buttonAddRowBelow = <button title="add row below">
-            <svg viewBox="0 0 13 13" width="13" height="13">
-                <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill" />
-                <line x1="0.5" y1="4.5" x2="12.5" y2="4.5" class="stroke" />
-                <line x1="4.5" y1="0.5" x2="4.5" y2="4.5" class="stroke" />
-                <line x1="8.5" y1="0.5" x2="8.5" y2="4.5" class="stroke" />
-                <line x1="6.5" y1="6" x2="6.5" y2="11" class="stroke" />
-                <line x1="4" y1="8.5" x2="9" y2="8.5" class="stroke" />
-            </svg>
+            <svg width="13" height="13"><use href="#add-row-below" /></svg>
         </button>as HTMLElement
         this.buttonAddRowBelow.onclick = () => {
             this.lastActiveTable?.focus()
@@ -93,13 +81,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddRowBelow)
 
         this.buttonDeleteRow = <button class="right" title="delete row">
-            <svg viewBox="0 0 13 13" width="13" height="13">
-                <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill" />
-                <line x1="0.5" y1="4.5" x2="12.5" y2="4.5" class="stroke" />
-                <line x1="0.5" y1="8.5" x2="12.5" y2="8.5" class="stroke" />
-                <line x1="5.5" y1="3.5" x2="11.5" y2="9.5" class="stroke" stroke-width="1.5" />
-                <line x1="11.5" y1="3.5" x2="5.5" y2="9.5" class="stroke" stroke-width="1.5" />
-            </svg>
+            <svg width="13" height="13"><use href="#delete-row" /></svg>
         </button>as HTMLElement
         this.buttonDeleteRow.onclick = () => {
             this.lastActiveTable?.focus()
@@ -114,14 +96,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(document.createTextNode(" "))
 
         this.buttonAddColumnLeft = <button class="left" title="add column left">
-            <svg viewBox="0 0 13 13" width="13" height="13">
-                <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill" />
-                <line x1="8.5" y1="0.5" x2="8.5" y2="12.5" class="stroke" />
-                <line x1="8.5" y1="4.5" x2="12.5" y2="4.5" class="stroke" />
-                <line x1="8.5" y1="8.5" x2="12.5" y2="8.5" class="stroke" />
-                <line x1="2" y1="6.5" x2="7" y2="6.5" class="stroke" />
-                <line x1="4.5" y1="4" x2="4.5" y2="9" class="stroke" />
-            </svg>
+            <svg width="13" height="13"><use href="#add-column-left" /></svg>
         </button> as HTMLElement
         this.buttonAddColumnLeft.onclick = () => {
             this.lastActiveTable?.focus()
@@ -134,14 +109,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddColumnLeft)
 
         this.buttonAddColumnRight = <button title="add column right">
-            <svg viewBox="0 0 13 13" width="13" height="13">
-                <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill" />
-                <line x1="4.5" y1="0.5" x2="4.5" y2="12.5" class="stroke" />
-                <line x1="0.5" y1="4.5" x2="4.5" y2="4.5" class="stroke" />
-                <line x1="0.5" y1="8.5" x2="4.5" y2="8.5" class="stroke" />
-                <line x1="6" y1="6.5" x2="11" y2="6.5" class="stroke" />
-                <line x1="8.5" y1="4" x2="8.5" y2="9" class="stroke" />
-            </svg>
+            <svg width="13" height="13"><use href="#add-column-right" /></svg>
         </button> as HTMLElement
         this.buttonAddColumnRight.onclick = () => {
             this.lastActiveTable?.focus()
@@ -154,13 +122,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddColumnRight)
 
         this.buttonDeleteColumn = <button class="right" title="delete column">
-            <svg viewBox="0 0 13 13" width="13" height="13">
-                <rect x="0.5" y="0.5" width="12" height="12" class="strokeFill" />
-                <line x1="4.5" y1="0.5" x2="4.5" y2="12.5" class="stroke" />
-                <line x1="8.5" y1="0.5" x2="8.5" y2="12.5" class="stroke" />
-                <line x1="3.5" y1="5.5" x2="9.5" y2="11.5" class="stroke" stroke-width="1.5" />
-                <line x1="3.5" y1="11.5" x2="9.5" y2="5.5" class="stroke" stroke-width="1.5" />
-            </svg>
+            <svg width="13" height="13"><use href="#delete-column" /></svg>
         </button> as HTMLElement
         this.buttonDeleteColumn.onclick = () => {
             this.lastActiveTable?.focus()
@@ -175,14 +137,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(document.createTextNode(" "))
 
         this.buttonAddNodeAbove = <button class="left" title="add node above">
-            <svg style={{ display: "block", border: "none" }} viewBox="0 0 8 17" width="8" height="17">
-                <rect x="0.5" y="1.5" width="6" height="6" class="strokeFill" />
-                <rect x="0.5" y="9.5" width="6" height="6" class="fill" />
-                <line x1="3.5" y1="3" x2="3.5" y2="6" class="stroke" />
-                <line x1="2" y1="4.5" x2="5" y2="4.5" class="stroke" />
-                <line x1="3.5" y1="0" x2="3.5" y2="1" class="stroke" />
-                <line x1="3.5" y1="8" x2="3.5" y2="17" class="stroke" />
-            </svg>
+            <svg style={{ display: "block", border: "none" }} width="8" height="17"><use href="#add-node-above" /></svg>
         </button> as HTMLElement
         // this.buttonAddNodeAbove.onclick = () => {
         //     document.execCommand("bold", false)
@@ -191,14 +146,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddNodeAbove)
 
         this.buttonAddNodeBelow = <button title="add node below">
-            <svg style={{ display: "block", border: "none" }} viewBox="0 0 8 17" width="8" height="17">
-                <rect x="0.5" y="1.5" width="6" height="6" class="fill" />
-                <rect x="0.5" y="9.5" width="6" height="6" class="strokeFill" />
-                <line x1="3.5" y1="11" x2="3.5" y2="14" class="stroke" />
-                <line x1="2" y1="12.5" x2="5" y2="12.5" class="stroke" />
-                <line x1="3.5" y1="0" x2="3.5" y2="9" class="stroke" />
-                <line x1="3.5" y1="16" x2="3.5" y2="17" class="stroke" />
-            </svg>
+            <svg style={{ display: "block", border: "none" }} width="8" height="17"><use href="#add-node-below" /></svg>
         </button> as HTMLElement
         // this.buttonAddNodeBelow.onclick = () => {
         //     document.execCommand("italic", false)
@@ -207,16 +155,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddNodeBelow)
 
         this.buttonAddNodeParent = <button title="add node parent">
-            <svg viewBox="0 0 13 17" width="13" height="17">
-                <rect x="0.5" y="1.5" width="6" height="6" class="strokeFill" />
-                <rect x="6.5" y="9.5" width="6" height="6" class="fill" />
-                <line x1="7" y1="4.5" x2="10" y2="4.5" class="stroke" />
-                <line x1="9.5" y1="4" x2="9.5" y2="9" class="stroke" />
-                <line x1="3.5" y1="3" x2="3.5" y2="6" class="stroke" />
-                <line x1="2" y1="4.5" x2="5" y2="4.5" class="stroke" />
-                <line x1="3.5" y1="0" x2="3.5" y2="1" class="stroke" />
-                <line x1="3.5" y1="8" x2="3.5" y2="17" class="stroke" />
-            </svg>
+            <svg width="13" height="17"><use href="#add-node-parent" /></svg>
         </button> as HTMLElement
         this.buttonAddNodeParent.onclick = () => {
             // document.execCommand("underline", false)
@@ -225,15 +164,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddNodeParent)
 
         this.buttonAddNodeChild = <button title="add node child">
-            <svg viewBox="0 0 13 17" width="13" height="17">
-                <rect x="0.5" y="1.5" width="6" height="6" class="fill" />
-                <rect x="6.5" y="9.5" width="6" height="6" class="strokeFill" />
-                <line x1="7" y1="4.5" x2="10" y2="4.5" class="stroke" />
-                <line x1="9.5" y1="4" x2="9.5" y2="9" class="stroke" />
-                <line x1="9.5" y1="11" x2="9.5" y2="14" class="stroke" />
-                <line x1="8" y1="12.5" x2="11" y2="12.5" class="stroke" />
-                <line x1="3.5" y1="0" x2="3.5" y2="17" class="stroke" />
-            </svg>
+            <svg width="13" height="17"><use href="#add-node-child" /></svg>
         </button> as HTMLElement
         // this.buttonAddNodeChild.onclick = () => {
         //     document.execCommand("strikeThrough", false)
@@ -242,13 +173,7 @@ export class TableTool extends GenericTool<Model> {
         this.toolbar.appendChild(this.buttonAddNodeChild)
 
         this.buttonDeleteNode = <button class="right" title="delete node">
-            <svg viewBox="0 0 10 17" width="10" height="17">
-                <rect x="1.5" y="5.5" width="6" height="6" class="strokeFill" />
-                <line x1="4.5" y1="2" x2="4.5" y2="5" class="stroke" />
-                <line x1="4.5" y1="12" x2="4.5" y2="15" class="stroke" />
-                <line x1="0.5" y1="4.5" x2="8.5" y2="12.5" class="stroke" stroke-width="1.5" />
-                <line x1="8.5" y1="4.5" x2="0.5" y2="12.5" class="stroke" stroke-width="1.5" />
-            </svg>
+            <svg width="10" height="17"><use href="#delete-node" /></svg>
         </button> as HTMLElement
         // this.buttonDeleteNode.onclick = () => {
         //     document.execCommand("subscript", false)

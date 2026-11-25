@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" style="position:absolute;width:0;height:0;overflow:hidden">
+    <symbol id="justify-left" viewBox="0 0 10 9">
+        <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
+        <line x1="0" y1="2.5" x2="6" y2="2.5" class="stroke" />
+        <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
+        <line x1="0" y1="6.5" x2="6" y2="6.5" class="stroke" />
+        <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
+    </symbol>
+    <symbol id="justify-center" viewBox="0 0 10 9">
+        <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
+        <line x1="2" y1="2.5" x2="8" y2="2.5" class="stroke" />
+        <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
+        <line x1="2" y1="6.5" x2="8" y2="6.5" class="stroke" />
+        <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
+    </symbol>
+    <symbol id="justify-right" viewBox="0 0 10 9">
+        <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
+        <line x1="4" y1="2.5" x2="10" y2="2.5" class="stroke" />
+        <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
+        <line x1="4" y1="6.5" x2="10" y2="6.5" class="stroke" />
+        <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
+    </symbol>
+</svg>

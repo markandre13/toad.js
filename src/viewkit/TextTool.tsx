@@ -19,6 +19,7 @@
 import { Model } from "../appkit/Model"
 import { ModelView } from "./ModelView"
 import { textAreaStyle } from "./textAreaStyle"
+import sprite from "./TextTool.svg?raw"
 
 // TODO: we should be able to reduce the amount of code by adding some helper functions
 
@@ -54,6 +55,7 @@ export class TextTool extends ModelView<Model> {
         TextTool.texttool = this
 
         let toolbar = <div class="toolbar" /> as HTMLElement
+        toolbar.insertAdjacentHTML("afterbegin", sprite)
 
         this.buttonH1 = <button class="left">H1</button> as HTMLElement
         this.buttonH1.onclick = () => {
@@ -131,13 +133,7 @@ export class TextTool extends ModelView<Model> {
         toolbar.appendChild(document.createTextNode(" "))
 
         this.buttonJustifyLeft = <button class="left">
-            <svg viewBox="0 0 10 9" width="10" height="9">
-                <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
-                <line x1="0" y1="2.5" x2="6" y2="2.5" class="stroke" />
-                <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
-                <line x1="0" y1="6.5" x2="6" y2="6.5" class="stroke" />
-                <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
-            </svg>
+            <svg width="10" height="9"><use href="#justify-left" /></svg>
         </button> as HTMLElement
         this.buttonJustifyLeft.onclick = () => {
             document.execCommand("justifyLeft", false)
@@ -146,13 +142,7 @@ export class TextTool extends ModelView<Model> {
         toolbar.appendChild(this.buttonJustifyLeft)
 
         this.buttonJustifyCenter = <button>
-            <svg viewBox="0 0 10 9" width="10" height="9">
-                <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
-                <line x1="2" y1="2.5" x2="8" y2="2.5" class="stroke" />
-                <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
-                <line x1="2" y1="6.5" x2="8" y2="6.5" class="stroke" />
-                <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
-            </svg>
+            <svg width="10" height="9"><use href="#justify-center" /></svg>
         </button> as HTMLElement
         this.buttonJustifyCenter.onclick = () => {
             document.execCommand("justifyCenter", false)
@@ -161,13 +151,7 @@ export class TextTool extends ModelView<Model> {
         toolbar.appendChild(this.buttonJustifyCenter)
 
         this.buttonJustifyRight = <button class="right">
-            <svg viewBox="0 0 10 9" width="10" height="9">
-                <line x1="0" y1="0.5" x2="10" y2="0.5" class="stroke" />
-                <line x1="4" y1="2.5" x2="10" y2="2.5" class="stroke" />
-                <line x1="0" y1="4.5" x2="10" y2="4.5" class="stroke" />
-                <line x1="4" y1="6.5" x2="10" y2="6.5" class="stroke" />
-                <line x1="0" y1="8.5" x2="10" y2="8.5" class="stroke" />
-            </svg>
+            <svg width="10" height="9"><use href="#justify-right" /></svg>
         </button> as HTMLElement
         this.buttonJustifyRight.onclick = () => {
             document.execCommand("justifyRight", false)
