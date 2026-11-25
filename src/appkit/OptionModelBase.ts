@@ -69,13 +69,15 @@ export abstract class OptionModelBase<V, E = void, O extends OptionModelOptions<
      * For the current value, return an HTMLElement suitable to be used in <Select>/<ComboBox>
      */
     get html(): any | undefined {
+        let found = false
         let foundLabel: any
         this.forEach((value, label) => {
             if (this.value === value) {
+                found = true
                 foundLabel = label
             }
         })
-        return this.asHtml(foundLabel)
+        return found ? this.asHtml(foundLabel) : undefined
     }
     /**
      * Convert the label into an HTMLElement suitable to be used in <Select>/<ComboBox>
