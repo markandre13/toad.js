@@ -17,6 +17,7 @@
  */
 
 import { css } from 'src/util/lsx'
+import menuSideIcon from "./menuStyle.svg"
 
 // function btoa(str: string): string {
 //     return Buffer.from(str).toString("base64")
@@ -91,7 +92,7 @@ menuStyle.replaceSync(css`
   } */
   :host(.menu-button.menu-side) {
     padding-right: 14px;
-    background-image: url("data:image/svg+xml;base64,${btoa('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="14"><path d="M 0 3 l 0 6 l 4 -3 Z" fill="#ccc" stroke="#ccc"/></svg>')}");
+    background-image: url("${menuSideIcon}");
     background-repeat: no-repeat;
     background-position: right center;
   }
