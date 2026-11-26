@@ -124,10 +124,8 @@ export class ColorSelector extends ModelView<RGBModel> {
         const sliderG = new Slider({ orientation: "vertical", minColor: "#000", maxColor: "#0f0", id: "sg", model: this.g })
         const sliderB = new Slider({ orientation: "vertical", minColor: "#000", maxColor: "#00f", id: "sb", model: this.b })
 
-        const root = div()
-        root.id = "root"
         this.shadowRoot!.adoptedStyleSheets = [style]
-        root.replaceChildren(
+        this.shadowRoot!.replaceChildren(
             canvas,
             sliderV,
             sliderR, sliderG, sliderB,
@@ -136,7 +134,6 @@ export class ColorSelector extends ModelView<RGBModel> {
             this.oldColor, this.newColor,
             this.hsCaret
         )
-        this.shadowRoot!.appendChild(root)
     }
 
     override updateModel() {
