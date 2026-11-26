@@ -17,9 +17,9 @@
  */
 
 import { ModelView, type ModelViewProps } from "./ModelView"
-import { form, input, button, svg, path, div } from "../util/lsx"
 import { TextModel } from "../appkit/TextModel"
 import txSearchCss from "../style/tx-search.css?inline"
+import sprite from "./Search.svg?raw"
 
 const txSearch = new CSSStyleSheet()
 txSearch.replaceSync(txSearchCss)
@@ -30,35 +30,16 @@ txSearch.replaceSync(txSearchCss)
 export class Search extends ModelView<TextModel> {
     constructor(init?: ModelViewProps<TextModel>) {
         super(init)
-        let s0, s1, i, p
-        const f = form(
-            div(
-                s0 = svg(
-                    p = path("M33.173 30.215L25.4 22.443a12.826 12.826 0 10-2.957 2.957l7.772 7.772a2.1 2.1 0 002.958-2.958zM6 15a9 9 0 119 9 9 9 0 01-9-9z")
-                ),
-                i = input()
-            ),
-            button(
-                s1 = svg(
-                    path("M6.548 5L9.63 1.917A1.094 1.094 0 008.084.371L5.001 3.454 1.917.37A1.094 1.094 0 00.371 1.917L3.454 5 .37 8.085A1.094 1.094 0 101.917 9.63l3.084-3.083L8.084 9.63a1.094 1.094 0 101.547-1.546z")
-                )
-            )
-        )
-        // s0.setAttributeNS(null, "viewbox", "0 0 36 36")
-        s0.setAttributeNS(null, "width", "100%")
-        s0.setAttributeNS(null, "height", "100%")
-        p.setAttributeNS(null, "transform", "scale(0.5, 0.5)")
-        s1.setAttributeNS(null, "width", "100%")
-        s1.setAttributeNS(null, "height", "100%")
-
-        i.type = "search"
-        i.placeholder = "Search"
-        i.autocomplete = "off"
-
-        f.classList.add("tx-search")
+        const spriteTemplate = document.createElement("template")
+        spriteTemplate.innerHTML = sprite
         this.attachShadow({ mode: 'open' })
         this.shadowRoot!.adoptedStyleSheets = [txSearch]
-        this.shadowRoot!.appendChild(f)
+        this.shadowRoot!.replaceChildren(
+            spriteTemplate.content,
+            <svg><use href="#magnifier" /></svg> as SVGElement,
+            <input type="search" placeholder="Search" autocomplete="off" /> as HTMLInputElement,
+            <button><svg width="10" height="10"><use href="#cross" /></svg></button> as HTMLButtonElement
+        )
         //         this.attachStyle("menu") // menu & popover
         //         this.shadowRoot!.appendChild(this.input)
         //         this.shadowRoot!.appendChild(b)
