@@ -10,6 +10,15 @@ function collectEvents(model: ValueModel<any, any, any>): any[] {
     return events
 }
 
+let keySequence = 0
+
+/**
+ * local and fragment keys may only be used by one model per page, so every test needs its own key
+ */
+function uniqueKey(prefix: string): string {
+    return `${prefix}${++keySequence}`
+}
+
 describe("models", () => {
     describe("ValueModel", () => {
         afterEach(() => {
@@ -192,27 +201,25 @@ describe("models", () => {
         })
 
         describe("local", () => {
-            const key = "spec.ValueModel.local"
-            afterEach(() => {
-                localStorage.removeItem(key)
-            })
-
             it("persists the value on set", () => {
+                const key = uniqueKey("localspec")
                 const model = new ValueModel(42, { local: key })
                 model.value = 24
                 expect(localStorage.getItem(key)).to.equal("24")
             })
             it("persists the initial value when nothing is stored", () => {
-                localStorage.removeItem(key)
+                const key = uniqueKey("localspec")
                 new ValueModel(42, { local: key })
                 expect(localStorage.getItem(key)).to.equal("42")
             })
             it("restores the value from storage on construction", () => {
+                const key = uniqueKey("localspec")
                 localStorage.setItem(key, "13")
                 const model = new ValueModel(42, { local: key })
                 expect(model.value).to.equal(13)
             })
             it("does not persist a special value", () => {
+                const key = uniqueKey("localspec")
                 const model = new ValueModel(42, { local: key })
                 model.value = 24
                 model.value = VALUE_UNKNOWN
@@ -221,29 +228,32 @@ describe("models", () => {
         })
 
         describe("fragment", () => {
-            const key = "vmspec"
-
             it("persists the value in the url hash on set", () => {
+                const key = uniqueKey("vmspec")
                 const model = new ValueModel(42, { fragment: key })
                 model.value = 24
                 expect(getUrlHashValue(key)).to.equal("24")
             })
             it("writes the initial value into the url hash when none is set", () => {
+                const key = uniqueKey("vmspec")
                 new ValueModel(42, { fragment: key })
                 expect(getUrlHashValue(key)).to.equal("42")
             })
             it("restores the value from the url hash on construction", () => {
+                const key = uniqueKey("vmspec")
                 setUrlHashValue(key, "13", false)
                 const model = new ValueModel(42, { fragment: key })
                 expect(model.value).to.equal(13)
             })
             it("does not change the url hash for a special value", () => {
+                const key = uniqueKey("vmspec")
                 const model = new ValueModel(42, { fragment: key })
                 model.value = 24
                 model.value = VALUE_LOADING
                 expect(getUrlHashValue(key)).to.equal("24")
             })
             it("keeps other keys in the url hash", () => {
+                const key = uniqueKey("vmspec")
                 setUrlHashValue("other", "x", false)
                 const model = new ValueModel(42, { fragment: key })
                 model.value = 24
@@ -259,53 +269,87 @@ describe("models", () => {
                 }
 
                 it("models with different keys keep their own hash entries", () => {
-                    const a = new ValueModel(1, { fragment: "vma" })
-                    const b = new ValueModel(2, { fragment: "vmb" })
+                    const keyA = uniqueKey("vma")
+                    const keyB = uniqueKey("vmb")
+                    const a = new ValueModel(1, { fragment: keyA })
+                    const b = new ValueModel(2, { fragment: keyB })
                     a.value = 10
-                    expect(getUrlHashValue("vma")).to.equal("10")
-                    expect(getUrlHashValue("vmb")).to.equal("2")
+                    expect(getUrlHashValue(keyA)).to.equal("10")
+                    expect(getUrlHashValue(keyB)).to.equal("2")
                     expect(b.value).to.equal(2)
                     b.value = 20
                     expect(a.value).to.equal(10)
-                    expect(getUrlHashValue("vma")).to.equal("10")
-                    expect(getUrlHashValue("vmb")).to.equal("20")
+                    expect(getUrlHashValue(keyA)).to.equal("10")
+                    expect(getUrlHashValue(keyB)).to.equal("20")
                 })
                 it("each model restores its own value on construction", () => {
-                    setUrlHashValue("vma", "11", false)
-                    setUrlHashValue("vmb", "22", false)
-                    const a = new ValueModel(1, { fragment: "vma" })
-                    const b = new ValueModel(2, { fragment: "vmb" })
+                    const keyA = uniqueKey("vma")
+                    const keyB = uniqueKey("vmb")
+                    setUrlHashValue(keyA, "11", false)
+                    setUrlHashValue(keyB, "22", false)
+                    const a = new ValueModel(1, { fragment: keyA })
+                    const b = new ValueModel(2, { fragment: keyB })
                     expect(a.value).to.equal(11)
                     expect(b.value).to.equal(22)
                 })
                 it("a special value of one model leaves the other's value alone", () => {
-                    const a = new ValueModel(1, { fragment: "vma" })
-                    const b = new ValueModel(2, { fragment: "vmb" })
+                    const keyA = uniqueKey("vma")
+                    const keyB = uniqueKey("vmb")
+                    const a = new ValueModel(1, { fragment: keyA })
+                    const b = new ValueModel(2, { fragment: keyB })
                     a.value = VALUE_UNKNOWN
                     expect(a.isUnknown()).to.be.true
                     expect(b.isUnknown()).to.be.false
                     expect(b.value).to.equal(2)
-                    expect(getUrlHashValue("vma")).to.equal("1")
-                    expect(getUrlHashValue("vmb")).to.equal("2")
+                    expect(getUrlHashValue(keyA)).to.equal("1")
+                    expect(getUrlHashValue(keyB)).to.equal("2")
                 })
                 it("a hash change restores all models", async () => {
-                    const a = new ValueModel(1, { fragment: "vma" })
-                    const b = new ValueModel(2, { fragment: "vmb" })
+                    const keyA = uniqueKey("vma")
+                    const keyB = uniqueKey("vmb")
+                    const a = new ValueModel(1, { fragment: keyA })
+                    const b = new ValueModel(2, { fragment: keyB })
                     const changed = nextHashChange()
-                    location.hash = "vma-5_vmb-6"
+                    location.hash = `${keyA}-5_${keyB}-6`
                     await changed
                     expect(a.value).to.equal(5)
                     expect(b.value).to.equal(6)
                 })
                 it("a hash change without a model's key resets it to its default", async () => {
-                    const a = new ValueModel(1, { fragment: "vma", default: 0 })
-                    const b = new ValueModel(2, { fragment: "vmb", default: 9 })
+                    const keyA = uniqueKey("vma")
+                    const keyB = uniqueKey("vmb")
+                    const a = new ValueModel(1, { fragment: keyA, default: 0 })
+                    const b = new ValueModel(2, { fragment: keyB, default: 9 })
                     const changed = nextHashChange()
-                    location.hash = "vma-5"
+                    location.hash = `${keyA}-5`
                     await changed
                     expect(a.value).to.equal(5)
                     expect(b.value).to.equal(9)
                 })
+            })
+        })
+
+        describe("restrictions", () => {
+            it("local and fragment cannot be used together", () => {
+                expect(() => new ValueModel(1, { local: uniqueKey("localspec"), fragment: uniqueKey("vmspec") }))
+                    .to.throw(/local and fragment/)
+            })
+            it("a rejected model does not claim its keys", () => {
+                const local = uniqueKey("localspec")
+                const fragment = uniqueKey("vmspec")
+                expect(() => new ValueModel(1, { local, fragment })).to.throw()
+                expect(() => new ValueModel(1, { local })).not.to.throw()
+                expect(() => new ValueModel(1, { fragment })).not.to.throw()
+            })
+            it("two models cannot share a local key", () => {
+                const key = uniqueKey("localspec")
+                new ValueModel(1, { local: key })
+                expect(() => new ValueModel(2, { local: key })).to.throw(/local key/)
+            })
+            it("two models cannot share a fragment key", () => {
+                const key = uniqueKey("vmspec")
+                new ValueModel(1, { fragment: key })
+                expect(() => new ValueModel(2, { fragment: key })).to.throw(/fragment key/)
             })
         })
     })

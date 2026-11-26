@@ -152,6 +152,9 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
  * @category Application Model
  *
  */
+const localKeys = new Set<string>()
+const fragmentKeys = new Set<string>()
+
 export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
     extends AbstractValueModel<V, E, O> {
     protected override _value!: V | SpecialValue
@@ -159,12 +162,37 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
 
     constructor(value: V | SpecialValue, options?: O) {
         super(options)
+        this.registerStorageKeys()
         this._value = value
         this.setFromLocalStorage()
         this.setFromUrlHash()
         if (this.options?.fragment !== undefined) {
             window.addEventListener("popstate", () => this.onUrlHashChange())
             window.addEventListener("hashchange", () => this.onUrlHashChange())
+        }
+    }
+
+    /**
+     * a model is either persisted in local storage or in the url fragment, and
+     * each key may only be used by one model
+     */
+    private registerStorageKeys() {
+        const local = this.options?.local
+        const fragment = this.options?.fragment
+        if (local !== undefined && fragment !== undefined) {
+            throw new Error("ValueModel: local and fragment cannot be used together")
+        }
+        if (local !== undefined && localKeys.has(local)) {
+            throw new Error(`ValueModel: local key "${local}" is already used by another model`)
+        }
+        if (fragment !== undefined && fragmentKeys.has(fragment)) {
+            throw new Error(`ValueModel: fragment key "${fragment}" is already used by another model`)
+        }
+        if (local !== undefined) {
+            localKeys.add(local)
+        }
+        if (fragment !== undefined) {
+            fragmentKeys.add(fragment)
         }
     }
 
