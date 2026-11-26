@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { styleBase as txBase, styleDark as txDark, styleStatic as txStatic } from "@toad/util/loadStyle"
+import { txBase, txDark, txStatic } from "@toad/util/loadStyle"
 
 import { MemoryLogger, Table } from "@toad/table/Table"
 import { TablePos } from "@toad/table/TablePos"

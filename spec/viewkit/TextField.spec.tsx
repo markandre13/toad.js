@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { styleBase as txBase, styleDark as txDark, styleStatic as txStatic } from "@toad/util/loadStyle"
+import { txBase, txDark, txStatic } from "@toad/util/loadStyle"
 
 import { TextModel } from "@toad/appkit/TextModel"
 import { TextField } from "@toad/viewkit/TextField"

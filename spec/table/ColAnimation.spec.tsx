@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { styleBase as txBase, styleDark as txDark, styleStatic as txStatic } from "@toad/util/loadStyle"
+import { txBase, txDark, txStatic } from "@toad/util/loadStyle"
 import { Table } from '@toad/table/Table'
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { sleep } from "../testlib"
@@ -12,7 +12,7 @@ import {
     headColInfo, stagingColHeadInfo, headMaskX, headMaskW, splitColHeadInfo, splitColHeadX, splitColHeadW
 } from "./util"
 import { beforeEach, describe, it } from 'vitest'
-import { xit } from 'spec/spec'
+import { xit } from '../spec'
 
 describe("table", function () {
     beforeEach(async function () {

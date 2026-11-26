@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { styleBase as txBase, styleDark as txDark, styleStatic as txStatic } from "@toad/util/loadStyle"
+import { txBase, txDark, txStatic } from "@toad/util/loadStyle"
 import { TableAdapter } from '@toad/table/adapter/TableAdapter'
 import { px2float, sleep } from "../testlib"
 import { InsertRowAnimation } from '@toad/table/detail/InsertRowAnimation'
@@ -17,7 +17,7 @@ import { Table } from '@toad/table/Table'
 import { TableTool } from '@toad/table/TableTool'
 import { replaceChildren } from 'toad.jsx'
 import { beforeEach, describe, it } from 'vitest'
-import { xdescribe, xit } from 'spec/spec'
+import { xdescribe, xit } from '../spec'
 
 describe("table", function () {
     beforeEach(async function () {

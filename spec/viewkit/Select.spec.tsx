@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { styleBase as txBase, styleDark as txDark, styleStatic as txStatic } from "@toad/util/loadStyle"
+import { txBase, txDark, txStatic } from "@toad/util/loadStyle"
 import { OptionModel } from "@toad/appkit/OptionModel"
 import { Select } from "@toad/viewkit/Select"
 import { ComboBox } from "@toad/viewkit/ComboBox"
