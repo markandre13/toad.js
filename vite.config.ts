@@ -55,7 +55,7 @@ export default defineConfig({
             external: ['toad.jsx'],
             input: allSourceFilesAsObject,
             output: {
-                minify: false,
+                minify: true,
                 exports: "auto",
                 generatedCode: {
                     preset: 'es5',
