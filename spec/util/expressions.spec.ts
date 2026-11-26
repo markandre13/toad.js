@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { xit } from 'spec/spec'
+import { xit } from '../spec'
 import { Lexer } from 'src/util/expressions/Lexer'
 import { assignmentExpression } from 'src/util/expressions/expression'
 import { describe, it } from 'vitest'

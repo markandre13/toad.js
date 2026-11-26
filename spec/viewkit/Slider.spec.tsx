@@ -3,7 +3,7 @@ import { TextModel } from "@toad/appkit/TextModel"
 import { Slider } from "@toad/viewkit/Slider"
 import { TextField } from "@toad/viewkit/TextField"
 import { expect } from "chai"
-import { xit } from "spec/spec"
+import { xit } from "../spec"
 import { replaceChildren } from "toad.jsx"
 import { describe, it } from "vitest"
 

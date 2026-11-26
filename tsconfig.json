@@ -24,6 +24,9 @@
             "DOM.Iterable",
             "ESNext"
         ],
+        "types": [
+            "node"
+        ],
         "jsx": "react-jsx",
         "jsxImportSource": "toad.jsx",
         "isolatedDeclarations": false,

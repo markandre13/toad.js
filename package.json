@@ -34,12 +34,12 @@
         "url": "git+https://github.com/markandre13/toad.js.git"
     },
     "scripts": {
-        "build": "vite build",
         "start": "node docs/highlight.cjs && vite --open docs/index.dev.html",
+        "build": "vite build",
+        "typecheck": "tsc",
         "test": "if test -z \"$npm_config_file\" ; then vitest --run ; else vitest --run \"$npm_config_file\" ; fi",
-        "lint": "tsc -p tslint.json",
         "build:watch": "vite build --watch",
-        "lint:watch": "tsc --watch -p tslint.json",
+        "typecheck:watch": "tsc --watch",
         "test:watch": "if test -z \"$npm_config_file\" ; then vitest ; else vitest \"$npm_config_file\" ; fi",
         "update": "npx npm-check-updates -u && npm install"
     },

@@ -7,7 +7,7 @@ import { ComboBox } from "@toad/viewkit/ComboBox"
 import { TextModel } from "@toad/appkit/TextModel"
 import { replaceChildren } from "toad.jsx"
 import { beforeEach, describe, it } from "vitest"
-import { xit } from "spec/spec"
+import { xit } from "../spec"
 
 enum Enum {
     A,

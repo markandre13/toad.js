@@ -4,8 +4,8 @@ chai.use(chaiSubset)
 import { INSERT_ROW, REMOVE_ROW, type TableEvent } from "@toad/table/TableEvent"
 import { TreeNodeModel } from "@toad/table/model/TreeNodeModel"
 import { TextModel } from "@toad/appkit/TextModel"
-import { chaiSubset } from "spec/chaiSubset"
-import { xit } from "spec/spec"
+import { chaiSubset } from "../../chaiSubset"
+import { xit } from "../../spec"
 
 describe("model", function () {
     describe("table", function () {
