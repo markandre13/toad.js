@@ -19,6 +19,10 @@
 import { produceValue } from "../reactive/Computed"
 import { Model, type ModelOptions, type ModelEvent } from "./Model"
 
+//
+// special values
+//
+
 export const VALUE_UNKNOWN = Symbol("VALUE_UNKNOWN")
 export const VALUE_LOADING = Symbol("VALUE_LOADING")
 export type SpecialValue = typeof VALUE_UNKNOWN | typeof VALUE_LOADING
@@ -27,6 +31,9 @@ export function isSpecialValue(value: unknown): value is SpecialValue {
     return value === VALUE_UNKNOWN || value === VALUE_LOADING
 }
 
+//
+// events
+//
 export const VALUE = Symbol("VALUE")
 export const DEFAULT_VALUE = Symbol("DEFAULT_VALUE")
 export type ValueEvent = { type: typeof VALUE }
@@ -57,59 +64,6 @@ export interface ValueModelOptions<V> extends ModelOptions {
      * keys must not contain `-` or `_`.
      */
     fragment?: string
-}
-
-const URL_HASH_PAIR_SEPARATOR = "_"
-const URL_HASH_KEY_VALUE_SEPARATOR = "-"
-
-function readUrlHashPairs(): Map<string, string> {
-    const pairs = new Map<string, string>()
-    const hash = location.hash.substring(1)
-    if (hash === "") {
-        return pairs
-    }
-    for (const pair of hash.split(URL_HASH_PAIR_SEPARATOR)) {
-        const index = pair.indexOf(URL_HASH_KEY_VALUE_SEPARATOR)
-        if (index > 0) {
-            pairs.set(pair.substring(0, index), pair.substring(index + 1))
-        }
-    }
-    return pairs
-}
-
-/**
- * @returns the decoded value stored for key in the url fragment, or undefined
- */
-export function getUrlHashValue(key: string): string | undefined {
-    const raw = readUrlHashPairs().get(key)
-    if (raw === undefined) {
-        return undefined
-    }
-    try {
-        return decodeURIComponent(raw)
-    } catch (e) {
-        return undefined
-    }
-}
-
-/**
- * stores value for key in the url fragment, keeping all other key-value pairs
- *
- * @param push add a history entry instead of replacing the current one
- */
-export function setUrlHashValue(key: string, value: string, push: boolean) {
-    const pairs = readUrlHashPairs()
-    pairs.set(key, encodeURIComponent(value).replace(/[-_]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))
-    const hash = [...pairs].map(([k, v]) => `${k}${URL_HASH_KEY_VALUE_SEPARATOR}${v}`).join(URL_HASH_PAIR_SEPARATOR)
-    if (location.hash === `#${hash}`) {
-        return
-    }
-    const url = `${location.pathname}${location.search}#${hash}`
-    if (push) {
-        history.pushState(null, "", url)
-    } else {
-        history.replaceState(history.state, "", url)
-    }
 }
 
 /**
@@ -354,5 +308,58 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
     override get value(): V {
         produceValue(this.signal)
         return isSpecialValue(this._value) ? undefined as V : this._value
+    }
+}
+
+const URL_HASH_PAIR_SEPARATOR = "_"
+const URL_HASH_KEY_VALUE_SEPARATOR = "-"
+
+function readUrlHashPairs(): Map<string, string> {
+    const pairs = new Map<string, string>()
+    const hash = location.hash.substring(1)
+    if (hash === "") {
+        return pairs
+    }
+    for (const pair of hash.split(URL_HASH_PAIR_SEPARATOR)) {
+        const index = pair.indexOf(URL_HASH_KEY_VALUE_SEPARATOR)
+        if (index > 0) {
+            pairs.set(pair.substring(0, index), pair.substring(index + 1))
+        }
+    }
+    return pairs
+}
+
+/**
+ * @returns the decoded value stored for key in the url fragment, or undefined
+ */
+export function getUrlHashValue(key: string): string | undefined {
+    const raw = readUrlHashPairs().get(key)
+    if (raw === undefined) {
+        return undefined
+    }
+    try {
+        return decodeURIComponent(raw)
+    } catch (e) {
+        return undefined
+    }
+}
+
+/**
+ * stores value for key in the url fragment, keeping all other key-value pairs
+ *
+ * @param push add a history entry instead of replacing the current one
+ */
+export function setUrlHashValue(key: string, value: string, push: boolean) {
+    const pairs = readUrlHashPairs()
+    pairs.set(key, encodeURIComponent(value).replace(/[-_]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))
+    const hash = [...pairs].map(([k, v]) => `${k}${URL_HASH_KEY_VALUE_SEPARATOR}${v}`).join(URL_HASH_PAIR_SEPARATOR)
+    if (location.hash === `#${hash}`) {
+        return
+    }
+    const url = `${location.pathname}${location.search}#${hash}`
+    if (push) {
+        history.pushState(null, "", url)
+    } else {
+        history.replaceState(history.state, "", url)
     }
 }
