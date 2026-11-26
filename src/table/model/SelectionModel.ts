@@ -29,7 +29,7 @@ import { TablePos } from "../TablePos"
 export class SelectionModel extends ValueModel<TablePos> {
     mode: TableEditMode // FIXME: there might be a way to do without, just by the behaviour of a common API towards Table
     trigger = new Signal()
-    protected override _value!: TablePos
+    protected declare _value: TablePos
 
     constructor(mode = TableEditMode.EDIT_CELL) {
         super(new TablePos(0, 0))

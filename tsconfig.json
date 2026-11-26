@@ -30,6 +30,7 @@
         "jsx": "react-jsx",
         "jsxImportSource": "toad.jsx",
         "isolatedDeclarations": false,
+        "useDefineForClassFields": true,
         "isolatedModules": true,
         "verbatimModuleSyntax": true,
         "forceConsistentCasingInFileNames": true,

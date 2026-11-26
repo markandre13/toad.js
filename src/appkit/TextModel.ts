@@ -25,7 +25,7 @@ export type StringFunction = () => string
  * @category Application Model
  */
 export class TextModel extends AbstractValueModel<string, void, ValueModelOptions<string>> {
-    protected override _value!: string | SpecialValue | undefined
+    protected declare _value: string | SpecialValue | undefined
     private _promise?: StringFunction
 
     constructor(value: string | SpecialValue = "", options?: ValueModelOptions<string>) {

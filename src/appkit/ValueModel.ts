@@ -199,7 +199,7 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
  */
 export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
     extends AbstractValueModel<V, E, O> {
-    protected override _value!: V | SpecialValue
+    protected declare _value: V | SpecialValue
     private urlHashSuppressed = false
 
     constructor(value: V | SpecialValue, options?: O) {
