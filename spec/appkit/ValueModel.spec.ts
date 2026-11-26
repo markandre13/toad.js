@@ -250,6 +250,63 @@ describe("models", () => {
                 expect(getUrlHashValue("other")).to.equal("x")
                 expect(getUrlHashValue(key)).to.equal("24")
             })
+
+            describe("multiple instances", () => {
+                function nextHashChange(): Promise<void> {
+                    return new Promise((resolve) => {
+                        window.addEventListener("hashchange", () => resolve(), { once: true })
+                    })
+                }
+
+                it("models with different keys keep their own hash entries", () => {
+                    const a = new ValueModel(1, { fragment: "vma" })
+                    const b = new ValueModel(2, { fragment: "vmb" })
+                    a.value = 10
+                    expect(getUrlHashValue("vma")).to.equal("10")
+                    expect(getUrlHashValue("vmb")).to.equal("2")
+                    expect(b.value).to.equal(2)
+                    b.value = 20
+                    expect(a.value).to.equal(10)
+                    expect(getUrlHashValue("vma")).to.equal("10")
+                    expect(getUrlHashValue("vmb")).to.equal("20")
+                })
+                it("each model restores its own value on construction", () => {
+                    setUrlHashValue("vma", "11", false)
+                    setUrlHashValue("vmb", "22", false)
+                    const a = new ValueModel(1, { fragment: "vma" })
+                    const b = new ValueModel(2, { fragment: "vmb" })
+                    expect(a.value).to.equal(11)
+                    expect(b.value).to.equal(22)
+                })
+                it("a special value of one model leaves the other's value alone", () => {
+                    const a = new ValueModel(1, { fragment: "vma" })
+                    const b = new ValueModel(2, { fragment: "vmb" })
+                    a.value = VALUE_UNKNOWN
+                    expect(a.isUnknown()).to.be.true
+                    expect(b.isUnknown()).to.be.false
+                    expect(b.value).to.equal(2)
+                    expect(getUrlHashValue("vma")).to.equal("1")
+                    expect(getUrlHashValue("vmb")).to.equal("2")
+                })
+                it("a hash change restores all models", async () => {
+                    const a = new ValueModel(1, { fragment: "vma" })
+                    const b = new ValueModel(2, { fragment: "vmb" })
+                    const changed = nextHashChange()
+                    location.hash = "vma-5_vmb-6"
+                    await changed
+                    expect(a.value).to.equal(5)
+                    expect(b.value).to.equal(6)
+                })
+                it("a hash change without a model's key resets it to its default", async () => {
+                    const a = new ValueModel(1, { fragment: "vma", default: 0 })
+                    const b = new ValueModel(2, { fragment: "vmb", default: 9 })
+                    const changed = nextHashChange()
+                    location.hash = "vma-5"
+                    await changed
+                    expect(a.value).to.equal(5)
+                    expect(b.value).to.equal(9)
+                })
+            })
         })
     })
 })
