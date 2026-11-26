@@ -18,6 +18,7 @@
 
 import { produceValue } from "../reactive/Computed"
 import { Model, type ModelOptions, type ModelEvent } from "./Model"
+import { getUrlHashValue, setUrlHashValue } from "../util/urlHash"
 
 //
 // special values
@@ -34,6 +35,7 @@ export function isSpecialValue(value: unknown): value is SpecialValue {
 //
 // events
 //
+
 export const VALUE = Symbol("VALUE")
 export const DEFAULT_VALUE = Symbol("DEFAULT_VALUE")
 export type ValueEvent = { type: typeof VALUE }
@@ -64,6 +66,49 @@ export interface ValueModelOptions<V> extends ModelOptions {
      * keys must not contain `-` or `_`.
      */
     fragment?: string
+}
+
+//
+// storage keys
+//
+
+const localKeys = new Set<string>()
+const fragmentKeys = new Set<string>()
+
+/**
+ * a model is either persisted in local storage or in the url fragment, and
+ * each key may only be used by one model
+ */
+function claimStorageKeys(local?: string, fragment?: string) {
+    if (local !== undefined && fragment !== undefined) {
+        throw new Error("ValueModel: local and fragment cannot be used together")
+    }
+    if (local !== undefined && localKeys.has(local)) {
+        throw new Error(`ValueModel: local key "${local}" is already used by another model`)
+    }
+    if (fragment !== undefined && fragmentKeys.has(fragment)) {
+        throw new Error(`ValueModel: fragment key "${fragment}" is already used by another model`)
+    }
+    if (local !== undefined) {
+        localKeys.add(local)
+    }
+    if (fragment !== undefined) {
+        fragmentKeys.add(fragment)
+    }
+}
+
+//
+// serialization
+//
+
+const TYPED_ARRAYS = [
+    Int8Array, Uint8Array, Uint8ClampedArray,
+    Int16Array, Uint16Array, Int32Array, Uint32Array,
+    Float32Array, Float64Array
+]
+
+function isTypedArray(value: unknown): value is { join(separator: string): string } {
+    return TYPED_ARRAYS.some((type) => value instanceof type)
 }
 
 /**
@@ -152,9 +197,6 @@ export abstract class AbstractValueModel<V, E = void, O extends ValueModelOption
  * @category Application Model
  *
  */
-const localKeys = new Set<string>()
-const fragmentKeys = new Set<string>()
-
 export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModelOptions<V>>
     extends AbstractValueModel<V, E, O> {
     protected override _value!: V | SpecialValue
@@ -162,161 +204,13 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
 
     constructor(value: V | SpecialValue, options?: O) {
         super(options)
-        this.registerStorageKeys()
+        claimStorageKeys(this.options?.local, this.options?.fragment)
         this._value = value
         this.setFromLocalStorage()
         this.setFromUrlHash()
         if (this.options?.fragment !== undefined) {
             window.addEventListener("popstate", () => this.onUrlHashChange())
             window.addEventListener("hashchange", () => this.onUrlHashChange())
-        }
-    }
-
-    /**
-     * a model is either persisted in local storage or in the url fragment, and
-     * each key may only be used by one model
-     */
-    private registerStorageKeys() {
-        const local = this.options?.local
-        const fragment = this.options?.fragment
-        if (local !== undefined && fragment !== undefined) {
-            throw new Error("ValueModel: local and fragment cannot be used together")
-        }
-        if (local !== undefined && localKeys.has(local)) {
-            throw new Error(`ValueModel: local key "${local}" is already used by another model`)
-        }
-        if (fragment !== undefined && fragmentKeys.has(fragment)) {
-            throw new Error(`ValueModel: fragment key "${fragment}" is already used by another model`)
-        }
-        if (local !== undefined) {
-            localKeys.add(local)
-        }
-        if (fragment !== undefined) {
-            fragmentKeys.add(fragment)
-        }
-    }
-
-    protected setFromUrlHash() {
-        if (this.options?.fragment === undefined) {
-            return
-        }
-        if (!this.restoreUrlHash()) {
-            this.persistToUrlHash(false)
-        }
-    }
-    protected persistToUrlHash(push: boolean) {
-        if (this.options?.fragment === undefined || this.hasSpecialValue()) {
-            return
-        }
-        setUrlHashValue(this.options.fragment, this.urlHashString(), push)
-    }
-
-    /**
-     * restores the value from the url fragment without writing it back
-     *
-     * @returns false if the fragment does not contain a valid value for this model
-     */
-    private restoreUrlHash(): boolean {
-        const key = this.options!.fragment!
-        const raw = getUrlHashValue(key)
-        if (raw === undefined) {
-            return false
-        }
-        this.urlHashSuppressed = true
-        try {
-            this.restoreFromUrlHash(raw)
-            return true
-        } catch (error) {
-            console.log(`ValueModel: failed to restore "${key}" = "${raw}" from url hash`)
-            return false
-        } finally {
-            this.urlHashSuppressed = false
-        }
-    }
-    private onUrlHashChange() {
-        if (!this.restoreUrlHash()) {
-            this.urlHashSuppressed = true
-            try {
-                this.resetToDefault()
-            } finally {
-                this.urlHashSuppressed = false
-            }
-        }
-    }
-    protected urlHashString(): string {
-        if (typeof this._value === "string") {
-            return this._value
-        }
-        return this.toJsonString()
-    }
-    protected restoreFromUrlHash(raw: string) {
-        if (typeof this._value === "string") {
-            this._value = raw as any
-        } else {
-            this.fromJsonString(raw)
-        }
-        this.signal.emit({ type: VALUE })
-    }
-
-    protected setFromLocalStorage() {
-        if (this.options?.local === undefined) {
-            return
-        }
-        const name = this.options.local
-        const value = localStorage.getItem(this.options.local)
-        if (value !== null) {
-            try {
-                this.fromJsonString(value)
-                return
-            } catch (error) {
-                console.log(`ValueModel.constructor(): failed to restore "${name}" = "${value}" from local`)
-            }
-        } else {
-            this.persistToLocalStorage()
-        }
-    }
-    protected persistToLocalStorage() {
-        if (this.options?.local === undefined || this.hasSpecialValue()) {
-            return
-        }
-        try {
-            const name = this.options.local
-            localStorage.setItem(name, this.toJsonString())
-        } catch (e) { }
-    }
-
-    protected toJsonString() {
-        let value: string
-        if (this._value instanceof Int8Array ||
-            this._value instanceof Uint8Array ||
-            this._value instanceof Uint8ClampedArray ||
-            this._value instanceof Int16Array ||
-            this._value instanceof Uint16Array ||
-            this._value instanceof Int32Array ||
-            this._value instanceof Uint32Array ||
-            this._value instanceof Float32Array ||
-            this._value instanceof Float64Array
-        ) {
-            return `[${this._value.join(",")}]`
-        } else {
-            return JSON.stringify(this._value)
-        }
-    }
-
-    protected fromJsonString(value: string) {
-        if (this._value instanceof Int8Array ||
-            this._value instanceof Uint8Array ||
-            this._value instanceof Uint8ClampedArray ||
-            this._value instanceof Int16Array ||
-            this._value instanceof Uint16Array ||
-            this._value instanceof Int32Array ||
-            this._value instanceof Uint32Array ||
-            this._value instanceof Float32Array ||
-            this._value instanceof Float64Array
-        ) {
-            this._value = new (this._value.constructor as any)(JSON.parse(value))
-        } else {
-            this._value = JSON.parse(value)
         }
     }
 
@@ -337,57 +231,120 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         produceValue(this.signal)
         return isSpecialValue(this._value) ? undefined as V : this._value
     }
-}
 
-const URL_HASH_PAIR_SEPARATOR = "_"
-const URL_HASH_KEY_VALUE_SEPARATOR = "-"
+    //
+    // local storage
+    //
 
-function readUrlHashPairs(): Map<string, string> {
-    const pairs = new Map<string, string>()
-    const hash = location.hash.substring(1)
-    if (hash === "") {
-        return pairs
-    }
-    for (const pair of hash.split(URL_HASH_PAIR_SEPARATOR)) {
-        const index = pair.indexOf(URL_HASH_KEY_VALUE_SEPARATOR)
-        if (index > 0) {
-            pairs.set(pair.substring(0, index), pair.substring(index + 1))
+    protected setFromLocalStorage() {
+        if (this.options?.local === undefined) {
+            return
+        }
+        const name = this.options.local
+        const value = localStorage.getItem(name)
+        if (value !== null) {
+            try {
+                this.fromJsonString(value)
+                return
+            } catch (error) {
+                console.log(`ValueModel.constructor(): failed to restore "${name}" = "${value}" from local`)
+            }
+        } else {
+            this.persistToLocalStorage()
         }
     }
-    return pairs
-}
+    protected persistToLocalStorage() {
+        if (this.options?.local === undefined || this.hasSpecialValue()) {
+            return
+        }
+        try {
+            localStorage.setItem(this.options.local, this.toJsonString())
+        } catch (e) { }
+    }
 
-/**
- * @returns the decoded value stored for key in the url fragment, or undefined
- */
-export function getUrlHashValue(key: string): string | undefined {
-    const raw = readUrlHashPairs().get(key)
-    if (raw === undefined) {
-        return undefined
-    }
-    try {
-        return decodeURIComponent(raw)
-    } catch (e) {
-        return undefined
-    }
-}
+    //
+    // url fragment
+    //
 
-/**
- * stores value for key in the url fragment, keeping all other key-value pairs
- *
- * @param push add a history entry instead of replacing the current one
- */
-export function setUrlHashValue(key: string, value: string, push: boolean) {
-    const pairs = readUrlHashPairs()
-    pairs.set(key, encodeURIComponent(value).replace(/[-_]/g, (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`))
-    const hash = [...pairs].map(([k, v]) => `${k}${URL_HASH_KEY_VALUE_SEPARATOR}${v}`).join(URL_HASH_PAIR_SEPARATOR)
-    if (location.hash === `#${hash}`) {
-        return
+    protected setFromUrlHash() {
+        if (this.options?.fragment === undefined) {
+            return
+        }
+        if (!this.restoreUrlHash()) {
+            this.persistToUrlHash(false)
+        }
     }
-    const url = `${location.pathname}${location.search}#${hash}`
-    if (push) {
-        history.pushState(null, "", url)
-    } else {
-        history.replaceState(history.state, "", url)
+    private persistToUrlHash(push: boolean) {
+        if (this.options?.fragment === undefined || this.hasSpecialValue()) {
+            return
+        }
+        setUrlHashValue(this.options.fragment, this.urlHashString(), push)
+    }
+    /**
+     * restores the value from the url fragment without writing it back
+     *
+     * @returns false if the fragment does not contain a valid value for this model
+     */
+    private restoreUrlHash(): boolean {
+        const key = this.options!.fragment!
+        const raw = getUrlHashValue(key)
+        if (raw === undefined) {
+            return false
+        }
+        let restored = true
+        this.withoutUrlHashWrite(() => {
+            try {
+                this.restoreFromUrlHash(raw)
+            } catch (error) {
+                console.log(`ValueModel: failed to restore "${key}" = "${raw}" from url hash`)
+                restored = false
+            }
+        })
+        return restored
+    }
+    private onUrlHashChange() {
+        if (!this.restoreUrlHash()) {
+            this.withoutUrlHashWrite(() => this.resetToDefault())
+        }
+    }
+    private withoutUrlHashWrite(closure: () => void) {
+        this.urlHashSuppressed = true
+        try {
+            closure()
+        } finally {
+            this.urlHashSuppressed = false
+        }
+    }
+    protected urlHashString(): string {
+        if (typeof this._value === "string") {
+            return this._value
+        }
+        return this.toJsonString()
+    }
+    protected restoreFromUrlHash(raw: string) {
+        if (typeof this._value === "string") {
+            this._value = raw as any
+        } else {
+            this.fromJsonString(raw)
+        }
+        this.signal.emit({ type: VALUE })
+    }
+
+    //
+    // serialization
+    //
+
+    private toJsonString(): string {
+        if (isTypedArray(this._value)) {
+            return `[${this._value.join(",")}]`
+        }
+        return JSON.stringify(this._value)
+    }
+    private fromJsonString(value: string) {
+        if (isTypedArray(this._value)) {
+            this._value = new ((this._value as any).constructor)(JSON.parse(value))
+        } else {
+            this._value = JSON.parse(value)
+        }
     }
 }

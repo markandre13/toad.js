@@ -1,4 +1,5 @@
-import { DEFAULT_VALUE, VALUE, VALUE_LOADING, VALUE_UNKNOWN, ValueModel, setUrlHashValue, getUrlHashValue } from "@toad/appkit/ValueModel"
+import { DEFAULT_VALUE, VALUE, VALUE_LOADING, VALUE_UNKNOWN, ValueModel } from "@toad/appkit/ValueModel"
+import { setUrlHashValue, getUrlHashValue } from "@toad/util/urlHash"
 import { expect } from "chai"
 import { afterEach, describe, it } from "vitest"
 
