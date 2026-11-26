@@ -25,8 +25,8 @@ export type StringFunction = () => string
  * @category Application Model
  */
 export class TextModel extends AbstractValueModel<string, void, ValueModelOptions<string>> {
-    protected override _value!: string | StringFunction | SpecialValue
-    private cache?: string
+    protected override _value!: string | SpecialValue | undefined
+    private _promise?: StringFunction
 
     constructor(value: string | SpecialValue = "", options?: ValueModelOptions<string>) {
         super(options)
@@ -42,31 +42,33 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
      * with the actual value only retrieved when needed.
      */
     set promise(promise: StringFunction) {
-        this._value = promise
-        this.cache = undefined
+        this._promise = promise
+        this._value = undefined
         this.signal.emit({type: VALUE})
     }
 
     get promise(): StringFunction {
-        if (typeof this._value === "string") {
-            const value = this._value
-            return () => {
-                return value
-            }
+        if (this._promise !== undefined) {
+            return this._promise
         }
-        return this._value as StringFunction
+        const value = this._value
+        return () => {
+            return value as string
+        }
     }
 
     override set value(value: string | SpecialValue) {
         if (isSpecialValue(value)) {
+            this._promise = undefined
             this.setSpecialValue(value)
-            return
-        }
-        if (this._value === value) {
             return
         }
         if (typeof value !== "string") {
             console.trace(`TextModel.set value(value: string): ${typeof value} is not type string`)
+            return
+        }
+        this._promise = undefined
+        if (this._value === value) {
             return
         }
         this.signal.withLock(() => {
@@ -81,11 +83,8 @@ export class TextModel extends AbstractValueModel<string, void, ValueModelOption
         if (this.hasSpecialValue()) {
             return undefined as unknown as string
         }
-        if (typeof this._value === "function") {
-            if (this.cache === undefined) {
-                this.cache = this._value()
-            }
-            return this.cache
+        if (this._value === undefined) {
+            this._value = this._promise!()
         }
         return this._value as string
     }
