@@ -35,7 +35,7 @@ menuStyle.replaceSync(menuStyleCss)
 export class MenuButton extends ModelView<TextModel> {
     static inside?: MenuButton
     static buttonDown: boolean
-    static documentMouseDown?: (event: MouseEvent) => void
+    static documentMouseDown?: (event: PointerEvent) => void
 
     node: MenuNode
     master?: MenuButtonContainer // FIXME: rename into container
@@ -110,12 +110,14 @@ export class MenuButton extends ModelView<TextModel> {
                     } else {
                         this.master.state = MenuState.UP_N_HOLD
 
+                        // pointerdown, not mousedown: a preventDefault() on pointerdown (e.g. ShapeEditor, ToolButton)
+                        // suppresses the compatibility mousedown event
                         if (MenuButton.documentMouseDown) {
-                            document.removeEventListener("mousedown", MenuButton.documentMouseDown, { capture: false })
+                            document.removeEventListener("pointerdown", MenuButton.documentMouseDown, { capture: false })
                         }
-                        MenuButton.documentMouseDown = function (event: MouseEvent) {
+                        MenuButton.documentMouseDown = function (event: PointerEvent) {
                             if (MenuButton.documentMouseDown)
-                                document.removeEventListener("mousedown", MenuButton.documentMouseDown, {
+                                document.removeEventListener("pointerdown", MenuButton.documentMouseDown, {
                                     capture: false,
                                 })
                             MenuButton.documentMouseDown = undefined
@@ -124,7 +126,7 @@ export class MenuButton extends ModelView<TextModel> {
                                 menuButton.collapse()
                             }
                         }
-                        document.addEventListener("mousedown", MenuButton.documentMouseDown, { capture: false })
+                        document.addEventListener("pointerdown", MenuButton.documentMouseDown, { capture: false })
                     }
                     break
                 case MenuState.DOWN_N_HOLD:
