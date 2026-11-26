@@ -206,8 +206,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         super(options)
         claimStorageKeys(this.options?.local, this.options?.fragment)
         this._value = value
-        this.setFromLocalStorage()
-        this.setFromUrlHash()
+        this.restoreFromStorage()
         if (this.options?.fragment !== undefined) {
             window.addEventListener("popstate", () => this.onUrlHashChange())
             window.addEventListener("hashchange", () => this.onUrlHashChange())
@@ -236,6 +235,10 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
     // local storage
     //
 
+    protected restoreFromStorage() {
+        this.setFromLocalStorage()
+        this.setFromUrlHash()
+    }
     protected setFromLocalStorage() {
         if (this.options?.local === undefined) {
             return
@@ -244,7 +247,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         const value = localStorage.getItem(name)
         if (value !== null) {
             try {
-                this.fromJsonString(value)
+                this.decodeLocal(value)
                 return
             } catch (error) {
                 console.log(`ValueModel.constructor(): failed to restore "${name}" = "${value}" from local`)
@@ -258,8 +261,14 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
             return
         }
         try {
-            localStorage.setItem(this.options.local, this.toJsonString())
+            localStorage.setItem(this.options.local, this.encodeLocal())
         } catch (e) { }
+    }
+    protected encodeLocal(): string {
+        return this.toJsonString()
+    }
+    protected decodeLocal(raw: string) {
+        this.fromJsonString(raw)
     }
 
     //
@@ -278,7 +287,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         if (this.options?.fragment === undefined || this.hasSpecialValue()) {
             return
         }
-        setUrlHashValue(this.options.fragment, this.urlHashString(), push)
+        setUrlHashValue(this.options.fragment, this.encodeUrl(), push)
     }
     /**
      * restores the value from the url fragment without writing it back
@@ -294,7 +303,7 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
         let restored = true
         this.withoutUrlHashWrite(() => {
             try {
-                this.restoreFromUrlHash(raw)
+                this.decodeUrl(raw)
             } catch (error) {
                 console.log(`ValueModel: failed to restore "${key}" = "${raw}" from url hash`)
                 restored = false
@@ -315,13 +324,13 @@ export class ValueModel<V, E = void, O extends ValueModelOptions<V> = ValueModel
             this.urlHashSuppressed = false
         }
     }
-    protected urlHashString(): string {
+    protected encodeUrl(): string {
         if (typeof this._value === "string") {
             return this._value
         }
         return this.toJsonString()
     }
-    protected restoreFromUrlHash(raw: string) {
+    protected decodeUrl(raw: string) {
         if (typeof this._value === "string") {
             this._value = raw as any
         } else {

@@ -1,6 +1,7 @@
 import { expect } from "chai"
 import { OptionModel } from "@toad/appkit/OptionModel"
-import { VALUE } from "@toad/appkit/ValueModel"
+import { VALUE, VALUE_UNKNOWN } from "@toad/appkit/ValueModel"
+import { getUrlHashValue, setUrlHashValue } from "@toad/util/urlHash"
 import { ALL } from "@toad/appkit/Model"
 import { makeOptionMapping } from "@toad/appkit/OptionModelBase"
 import { describe, it } from "vitest"
@@ -185,6 +186,94 @@ describe("OptionModel", function () {
         it("get id", () => {
             activeCamera.value = cameras[2]
             expect(activeCamera.id).to.equal(cameras[2].id)
+        })
+    })
+    describe("list, special values and default", () => {
+        it("length is the number of options", () => {
+            const model = new OptionModel("a", ["a", "b", "c"])
+            expect(model.length).to.equal(3)
+        })
+        it("forEach passes value, label and index", () => {
+            const model = new OptionModel("a", ["a", "b"])
+            const calls: any[] = []
+            model.forEach((value, label, index) => calls.push([value, label, index]))
+            expect(calls).to.deep.equal([["a", "a", 0], ["b", "b", 1]])
+        })
+        it("setMapping with a different list emits ALL", () => {
+            const model = new OptionModel("a", ["a", "b"])
+            const events: any[] = []
+            model.signal.add((ev) => events.push(ev))
+            model.setMapping(["x", "y"])
+            expect(events).to.have.length(1)
+            expect(events[0].type).to.equal(ALL)
+        })
+        it("id getter throws without a mapper", () => {
+            const model = new OptionModel("a", ["a", "b"])
+            expect(() => model.id).to.throw(/mapper/)
+        })
+        it("id setter throws without a mapper", () => {
+            const model = new OptionModel("a", ["a", "b"])
+            expect(() => { model.id = "b" }).to.throw(/mapper/)
+        })
+        it("setting an unknown id leaves the value unchanged", () => {
+            const cameras = [{ id: "one", name: "first" }, { id: "two", name: "second" }]
+            const model = new OptionModel(cameras[0], cameras, (v) => makeOptionMapping(v.id, v.name))
+            model.id = "unknown"
+            expect(model.value).to.equal(cameras[0])
+        })
+        it("value can be set to a special value", () => {
+            const model = new OptionModel<string>("a", ["a", "b"])
+            model.value = VALUE_UNKNOWN
+            expect(model.isUnknown()).to.be.true
+            expect(model.value).to.be.undefined
+        })
+        it("resetToDefault sets the default option", () => {
+            const model = new OptionModel("a", ["a", "b"], { default: "b" })
+            model.resetToDefault()
+            expect(model.value).to.equal("b")
+        })
+        it("resetToDefault does nothing without a default", () => {
+            const model = new OptionModel("a", ["a", "b"])
+            model.resetToDefault()
+            expect(model.value).to.equal("a")
+        })
+    })
+    describe("storage", () => {
+        interface Camera {
+            id: string,
+            name: string
+        }
+        const cameras: Camera[] = [
+            { id: "B0B255DB-22AC-4826-B8B6-ACA5F9CAC646", name: "sony pcr101" },
+            { id: "924580AC-7ECA-4497-8603-29B30E78342A", name: "canon xm-1" },
+            { id: "1C9AEF84-B37A-49A9-8045-982F0A3D506D", name: "olympus d-600l" }
+        ]
+        const mapper = (v: Camera) => makeOptionMapping(v.id, v.name)
+
+        it("local without mapper stores the value as JSON", () => {
+            const model = new OptionModel("b", ["a", "b"], { local: "optspec-local-plain" })
+            model.value = "a"
+            expect(localStorage.getItem("optspec-local-plain")).to.equal('"a"')
+        })
+        it("local with mapper stores the id", () => {
+            const model = new OptionModel(cameras[0], cameras, mapper, { local: "optspec-local-mapped" })
+            model.value = cameras[1]
+            expect(localStorage.getItem("optspec-local-mapped")).to.equal(cameras[1].id)
+        })
+        it("local with mapper restores the value from the id", () => {
+            localStorage.setItem("optspec-local-restore", cameras[2].id)
+            const model = new OptionModel(cameras[0], cameras, mapper, { local: "optspec-local-restore" })
+            expect(model.value).to.equal(cameras[2])
+        })
+        it("fragment with mapper stores the id", () => {
+            const model = new OptionModel(cameras[0], cameras, mapper, { fragment: "optspecfrag1" })
+            model.value = cameras[1]
+            expect(getUrlHashValue("optspecfrag1")).to.equal(cameras[1].id)
+        })
+        it("fragment with mapper restores the value from the id", () => {
+            setUrlHashValue("optspecfrag2", cameras[2].id, false)
+            const model = new OptionModel(cameras[0], cameras, mapper, { fragment: "optspecfrag2" })
+            expect(model.value).to.equal(cameras[2])
         })
     })
 })

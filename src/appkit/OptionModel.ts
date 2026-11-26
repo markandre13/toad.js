@@ -150,50 +150,37 @@ export class OptionModel<V, E = void, O extends OptionModelOptions<V> = OptionMo
         })
     }
 
-    protected override setFromLocalStorage() {
-        if (this.options?.local === undefined) {
+    // the stored value can only be decoded once the mapping is known, setMapping() restores it
+    protected override restoreFromStorage() {
+        if (this._mapping === undefined) {
             return
         }
-        if (this._mapper === undefined) {
-            super.setFromLocalStorage()
-            return
-        }
-        
-        let name = this.options.local
-        const local = localStorage.getItem(name)
-        if (local !== null) {
-            // console.log(`OptionModel.readFromLocalStorage(): ${local}`)
-            this.id = local
-        } else {
-            this.persistToLocalStorage()
-        }
-    }
-    protected override persistToLocalStorage() {
-        // console.log(`OptionModel.writeToLocalStorage()`)
-        // console.log(this.options?.local)
-        if (this.options?.local === undefined || this.hasSpecialValue()) {
-            // console.log(`OptionModel.writeToLocalStorage(): no local`)
-            return
-        }
-        if (this._mapper === undefined) {
-            // console.log(`OptionModel.writeToLocalStorage(): no mapper`)
-            super.persistToLocalStorage()
-            return
-        }
-        let name  = this.options.local
-        // console.log(`OptionModel.writeToLocalStorage(): ${name} = '${this.id}'`)
-        localStorage.setItem(name, this.id)
+        super.restoreFromStorage()
     }
 
-    protected override urlHashString(): string {
+    // with a mapper, the id of the mapped option is stored instead of the value
+    protected override encodeLocal(): string {
         if (this._mapper === undefined) {
-            return super.urlHashString()
+            return super.encodeLocal()
         }
         return this.id
     }
-    protected override restoreFromUrlHash(raw: string) {
+    protected override decodeLocal(raw: string) {
         if (this._mapper === undefined) {
-            super.restoreFromUrlHash(raw)
+            super.decodeLocal(raw)
+            return
+        }
+        this.id = raw
+    }
+    protected override encodeUrl(): string {
+        if (this._mapper === undefined) {
+            return super.encodeUrl()
+        }
+        return this.id
+    }
+    protected override decodeUrl(raw: string) {
+        if (this._mapper === undefined) {
+            super.decodeUrl(raw)
             return
         }
         this.id = raw
